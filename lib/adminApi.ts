@@ -153,6 +153,7 @@ export interface TaxPayment {
   financial_year: string;
   amount: number;
   kind: string;
+  period: string;
   paid_on: string;
   reference: string;
   note: string;
@@ -162,6 +163,7 @@ export interface TaxPaymentPayload {
   financial_year: string;
   amount: number;
   kind: string;
+  period: string;
   paid_on: string;
   reference: string;
   note: string;

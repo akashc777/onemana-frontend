@@ -37,7 +37,9 @@ export function VisitorsPanel() {
     load();
   }, [load]);
 
-  const maxDay = data?.daily.reduce((m, d) => Math.max(m, d.views), 0) || 1;
+  const daily = data?.daily ?? [];
+  const topPaths = data?.top_paths ?? [];
+  const maxDay = daily.reduce((m, d) => Math.max(m, d.views), 0) || 1;
 
   return (
     <div>
@@ -79,11 +81,11 @@ export function VisitorsPanel() {
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <p className="mb-3 text-sm font-semibold text-white">Daily traffic</p>
-              {data.daily.length === 0 ? (
+              {daily.length === 0 ? (
                 <p className="py-6 text-center text-sm text-slate-500">No visits in this range.</p>
               ) : (
                 <div className="space-y-1.5">
-                  {data.daily.map((d) => (
+                  {daily.map((d) => (
                     <div key={d.date} className="flex items-center gap-2 text-xs">
                       <span className="w-20 flex-shrink-0 text-slate-500">{d.date.slice(5)}</span>
                       <div className="h-4 flex-1 overflow-hidden rounded bg-white/5">
@@ -99,11 +101,11 @@ export function VisitorsPanel() {
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <p className="mb-3 text-sm font-semibold text-white">Top pages</p>
-              {data.top_paths.length === 0 ? (
+              {topPaths.length === 0 ? (
                 <p className="py-6 text-center text-sm text-slate-500">No data.</p>
               ) : (
                 <div className="space-y-2">
-                  {data.top_paths.map((p) => (
+                  {topPaths.map((p) => (
                     <div key={p.path} className="flex items-center justify-between gap-2 text-sm">
                       <span className="truncate font-mono text-xs text-slate-300">{p.path || "/"}</span>
                       <span className="flex-shrink-0 text-slate-400">{p.views}</span>

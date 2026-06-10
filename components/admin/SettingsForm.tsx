@@ -44,12 +44,14 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "owner_email", label: "Owner alert email", hint: "Where new-Cloud-order notifications are sent." },
       { key: "gst_rate", label: "GST Rate (%)", type: "number" },
       {
-        key: "tax_export_zero_rated",
-        label: "Zero-rate foreign sales",
+        key: "tax_export_policy",
+        label: "Foreign-sale tax",
         type: "select",
-        options: ["false", "true"],
-        hint: "Keep 'false' to charge GST to all buyers (safe). Set 'true' only with proper export-of-service documentation — charges are in INR.",
+        options: ["never", "auto", "always"],
+        hint: "never = charge GST to everyone (safe). auto = zero-rate as export only when Razorpay flags the payment international (recommended if you have an LUT). always = zero-rate every non-India sale.",
       },
+      { key: "lut_number", label: "GST LUT number", hint: "Printed on export (0%) invoices. e.g. AD2906…" },
+      { key: "lut_date", label: "LUT date", hint: "LUT issue date (for your records)." },
     ],
   },
   {

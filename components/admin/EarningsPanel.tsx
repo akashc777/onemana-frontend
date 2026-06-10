@@ -45,6 +45,7 @@ export function EarningsPanel() {
   const [fy, setFy] = useState("");
   const [amount, setAmount] = useState("");
   const [kind, setKind] = useState("gst");
+  const [period, setPeriod] = useState("");
   const [paidOn, setPaidOn] = useState("");
   const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
@@ -63,11 +64,12 @@ export function EarningsPanel() {
         financial_year: fy.trim(),
         amount: Math.round(rupees * 100),
         kind,
+        period: period.trim(),
         paid_on: paidOn,
         reference: reference.trim(),
         note: note.trim(),
       });
-      setFy(""); setAmount(""); setKind("gst"); setPaidOn(""); setReference(""); setNote("");
+      setFy(""); setAmount(""); setKind("gst"); setPeriod(""); setPaidOn(""); setReference(""); setNote("");
       load();
     } catch {
       window.alert("Failed to add payment.");
@@ -137,10 +139,10 @@ export function EarningsPanel() {
                 </tr>
               </thead>
               <tbody>
-                {data.by_fy.length === 0 ? (
+                {(data.by_fy ?? []).length === 0 ? (
                   <tr><td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">No earnings in this range.</td></tr>
                 ) : (
-                  data.by_fy.map((fyRow) => (
+                  (data.by_fy ?? []).map((fyRow) => (
                     <tr key={fyRow.financial_year} className="border-t border-white/5">
                       <td className="px-3 py-2.5 font-medium text-white">{fyRow.financial_year}</td>
                       <td className="px-3 py-2.5 text-slate-400">{fyRow.count}</td>
@@ -160,21 +162,24 @@ export function EarningsPanel() {
 
           {/* Tax payment ledger */}
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <h3 className="text-sm font-semibold text-white">Tax paid (annual filings)</h3>
-            <p className="mt-1 text-xs text-slate-500">Record GST/income-tax you remit so you can reconcile collected vs paid.</p>
+            <h3 className="text-sm font-semibold text-white">Tax filings &amp; payments</h3>
+            <p className="mt-1 text-xs text-slate-500">Record what you remit so you can reconcile collected vs paid. GST is monthly; MCA/ROC is annual — use the Period field (e.g. &quot;Jun 2026&quot; or &quot;FY 2026-27&quot;).</p>
 
-            <form onSubmit={addPayment} className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
-              <input value={fy} onChange={(e) => setFy(e.target.value)} placeholder="FY e.g. 2026-27" className={inputCls} />
-              <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount ₹" type="number" min="0" step="0.01" className={inputCls} />
+            <form onSubmit={addPayment} className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
               <select value={kind} onChange={(e) => setKind(e.target.value)} className={inputCls}>
-                <option value="gst">GST</option>
+                <option value="gst">GST (monthly)</option>
+                <option value="mca">MCA / ROC (annual)</option>
                 <option value="income_tax">Income tax</option>
+                <option value="tds">TDS</option>
                 <option value="other">Other</option>
               </select>
+              <input value={period} onChange={(e) => setPeriod(e.target.value)} placeholder="Period e.g. Jun 2026" className={inputCls} />
+              <input value={fy} onChange={(e) => setFy(e.target.value)} placeholder="FY e.g. 2026-27" className={inputCls} />
+              <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount ₹" type="number" min="0" step="0.01" className={inputCls} />
               <input value={paidOn} onChange={(e) => setPaidOn(e.target.value)} type="date" className={inputCls} />
               <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="Ref / challan no" className={inputCls} />
               <button type="submit" disabled={saving} className="btn-primary px-4 py-2 text-sm">
-                {saving ? "Adding…" : "Add payment"}
+                {saving ? "Adding…" : "Add"}
               </button>
             </form>
 
@@ -187,6 +192,7 @@ export function EarningsPanel() {
                     <div className="min-w-0">
                       <span className="font-medium text-white">{formatINR(p.amount)}</span>
                       <span className="ml-2 rounded-full bg-white/5 px-2 py-0.5 text-[10px] uppercase text-slate-400">{p.kind}</span>
+                      {p.period && <span className="ml-2 text-slate-400">{p.period}</span>}
                       <span className="ml-2 text-slate-500">{p.financial_year}</span>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-slate-500">
