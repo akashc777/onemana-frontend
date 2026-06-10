@@ -15,7 +15,7 @@ export const site = {
   docsPath: "/docs",
   // Static display fallbacks (live values come from /onecamp/pricing, which is
   // admin-editable). Charges are always enforced server-side in INR.
-  priceInr: 1499,
+  priceInr: 2000,
   priceUsd: 19,
   // OneCamp Cloud — managed hosting, monthly subscription (charged in INR).
   cloudPriceUsd: 99,

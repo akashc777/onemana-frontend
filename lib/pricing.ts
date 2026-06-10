@@ -18,9 +18,9 @@ export interface Pricing {
 
 export const defaultPricing: Pricing = {
   currency: "INR",
-  lifetime_inr: 1499,
+  lifetime_inr: 2000,
   lifetime_usd: 19,
-  lifetime_paise: 149900,
+  lifetime_paise: 200000,
   cloud_inr: 10000,
   cloud_usd: 99,
   cloud_paise: 1000000,

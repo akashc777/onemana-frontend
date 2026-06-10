@@ -35,7 +35,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
   {
     group: "Pricing (admin-editable)",
     fields: [
-      { key: "onecamp_price", label: "Lifetime price (paise)", type: "number", hint: "149900 = ₹1,499 — the amount charged in INR (GST-inclusive)" },
+      { key: "onecamp_price", label: "Lifetime price (paise)", type: "number", hint: "200000 = ₹2,000 — the amount charged in INR (GST-inclusive)" },
       { key: "onecamp_price_usd", label: "Lifetime price (USD)", type: "number", hint: "Display only, shown prominently. e.g. 19" },
       { key: "cloud_price", label: "Cloud price (paise/mo)", type: "number", hint: "1000000 = ₹10,000 — invoice amount (charge follows the Razorpay plan)" },
       { key: "cloud_price_usd", label: "Cloud price (USD/mo)", type: "number", hint: "Display only. e.g. 99" },

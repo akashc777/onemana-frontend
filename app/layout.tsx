@@ -63,7 +63,7 @@ const jsonLd = {
       operatingSystem: "Docker, Linux",
       description: site.description,
       offers: [
-        { "@type": "Offer", price: "1499", priceCurrency: "INR", name: "Lifetime self-host license (≈ $19)" },
+        { "@type": "Offer", price: "2000", priceCurrency: "INR", name: "Lifetime self-host license (≈ $19)" },
         { "@type": "Offer", price: "10000", priceCurrency: "INR", name: "OneCamp Cloud — managed hosting, monthly (≈ $99)" },
       ],
     },
