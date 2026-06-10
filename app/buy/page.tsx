@@ -5,6 +5,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
 import { indianStates } from "@/lib/states";
+import { countries } from "@/lib/countries";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
 import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, type Pricing } from "@/lib/pricing";
 import { AuroraBackdrop } from "@/components/site/Visuals";
@@ -146,10 +147,7 @@ function BuyInner() {
                 value={country}
                 onChange={setCountry}
                 ariaLabel="Country"
-                options={[
-                  { value: "IN", label: "India" },
-                  { value: "OTHER", label: "Outside India" },
-                ]}
+                options={countries.map((c) => ({ value: c.code, label: c.name }))}
               />
             </Field>
             {isIndia && (

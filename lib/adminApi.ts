@@ -121,6 +121,29 @@ export const adminApi = {
   invoiceCsvUrl: () => `${site.backendUrl}/onecamp/admin/invoices.csv`,
   invoicePdfUrl: (id: string) => `${site.backendUrl}/onecamp/admin/invoice/${id}/pdf`,
 
+  // ---- Delete (admin cleanup of test data) ----
+  async deleteOrder(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete order");
+  },
+  async deleteInvoice(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/invoice/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete invoice");
+  },
+  async deleteCustomer(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete customer");
+  },
+
   // ---- Blog CMS ----
   blogList: () => adminGet<{ data: AdminBlogPost[] }>("/onecamp/admin/blog").then((d) => d.data ?? []),
   blogGet: (id: string) => adminGet<{ data: AdminBlogPost }>(`/onecamp/admin/blog/${id}`).then((d) => d.data),

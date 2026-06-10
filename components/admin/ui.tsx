@@ -45,6 +45,19 @@ export function StatusPill({ status }: { status: string }) {
   );
 }
 
+/** Small destructive action button for admin row deletes. */
+export function RowDeleteButton({ onClick, busy = false }: { onClick: () => void; busy?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={busy}
+      className="rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-300 transition hover:bg-red-500/20 disabled:opacity-50"
+    >
+      {busy ? "…" : "Delete"}
+    </button>
+  );
+}
+
 /** Renders loading / error / empty states consistently; returns null when there's data. */
 export function AsyncState({
   loading,

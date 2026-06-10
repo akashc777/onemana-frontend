@@ -43,6 +43,13 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "cloud_plan_id", label: "Razorpay Cloud Plan ID", hint: "plan_… created in Razorpay (INR). Required for Cloud checkout." },
       { key: "owner_email", label: "Owner alert email", hint: "Where new-Cloud-order notifications are sent." },
       { key: "gst_rate", label: "GST Rate (%)", type: "number" },
+      {
+        key: "tax_export_zero_rated",
+        label: "Zero-rate foreign sales",
+        type: "select",
+        options: ["false", "true"],
+        hint: "Keep 'false' to charge GST to all buyers (safe). Set 'true' only with proper export-of-service documentation — charges are in INR.",
+      },
     ],
   },
   {
