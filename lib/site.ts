@@ -12,6 +12,7 @@ export const site = {
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "https://backend.onemana.dev",
   demoUrl: process.env.NEXT_PUBLIC_DEMO_URL || "https://onecamp.onemana.dev",
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
+  githubRepo: process.env.NEXT_PUBLIC_GITHUB_REPO || "OneMana-Soft/OneCamp-fe",
   docsPath: "/docs",
   // Static display fallbacks (live values come from /onecamp/pricing, which is
   // admin-editable). Charges are always enforced server-side in INR.

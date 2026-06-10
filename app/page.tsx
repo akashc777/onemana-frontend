@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/site/Reveal";
 import { AuroraBackdrop, ProductMock } from "@/components/site/Visuals";
 import { Pricing } from "@/components/site/Pricing";
+import { GitHubStars } from "@/components/site/GitHubStars";
 import { FeatureCard, StepCard, StatStrip, ReplacesMarquee, FaqItem } from "@/components/site/marketing";
 
 export const revalidate = 300;
@@ -35,13 +36,14 @@ export default async function HomePage() {
             </p>
           </Reveal>
           <Reveal delay={180}>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
               <ButtonLink href="/buy" size="lg">
                 Get OneCamp — {fmtUSD(pricing.lifetime_usd)} one-time
               </ButtonLink>
               <ButtonLink href={site.demoUrl} external variant="ghost" size="lg">
                 Try Live Demo →
               </ButtonLink>
+              <GitHubStars className="!py-3.5" />
             </div>
           </Reveal>
           <Reveal delay={240}>
