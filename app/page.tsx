@@ -69,7 +69,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="One workspace"
           title={<>One install replaces your <span className="text-gradient">entire stack</span></>}
-          subtitle="Chat, channels, docs, tasks &amp; kanban, calendar, and meetings — every tool your team juggles, folded into a single self-hosted app with AI at its core."
+          subtitle="Chat, channels, docs, tasks & kanban, calendar, and meetings. Every tool your team juggles, folded into a single self-hosted app with AI at its core."
         />
         <div className="mt-12">
           <StackConvergence />

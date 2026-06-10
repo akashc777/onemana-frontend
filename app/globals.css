@@ -155,3 +155,16 @@ body {
     animation: none;
   }
 }
+
+/* Stack-convergence rotations (orbit rings + conic glow). */
+@keyframes oc-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="oc-spin"] {
+    animation: none !important;
+  }
+}

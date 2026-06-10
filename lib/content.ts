@@ -40,7 +40,7 @@ export const requirements = [
 ];
 
 // Tools OneCamp consolidates into one self-hosted deploy.
-export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Loom", "Confluence"];
+export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Confluence"];
 
 export const stats = [
   { value: "8-in-1", label: "tools, one deploy" },
