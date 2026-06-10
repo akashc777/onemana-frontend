@@ -165,7 +165,7 @@ export const adminApi = {
   },
 };
 
-// Helper for authenticated file downloads (CSV/PDF) — fetch with token then
+// Helper for authenticated file downloads (CSV/PDF) - fetch with token then
 // trigger a blob download (the endpoints require the X-Admin-Token header).
 export async function downloadWithToken(url: string, filename: string) {
   const res = await fetch(url, { headers: { "X-Admin-Token": getToken() } });

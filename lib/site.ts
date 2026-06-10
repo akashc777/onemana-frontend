@@ -6,7 +6,7 @@ export const site = {
   company: "OneMana Solutions (OPC) Private Limited",
   tagline: "One workspace. Yours forever.",
   description:
-    "OneCamp is a self-hosted, all-in-one workspace — chat, tasks, docs, video, calendar, and a local AI assistant. One-time payment, unlimited users, your server.",
+    "OneCamp is a self-hosted, all-in-one workspace - chat, tasks, docs, video, calendar, and a local AI assistant. One-time payment, unlimited users, your server.",
   url: "https://onemana.dev",
   backendUrl:
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "https://backend.onemana.dev",
@@ -18,7 +18,7 @@ export const site = {
   // admin-editable). Charges are always enforced server-side in INR.
   priceInr: 2000,
   priceUsd: 19,
-  // OneCamp Cloud — managed hosting, monthly subscription (charged in INR).
+  // OneCamp Cloud - managed hosting, monthly subscription (charged in INR).
   cloudPriceUsd: 99,
   cloudPriceInr: 10000,
   cloudSeats: 30,

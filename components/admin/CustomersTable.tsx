@@ -23,9 +23,9 @@ export function CustomersTable() {
           <Tr key={c.id}>
             <Td>{formatDateTime(c.created_at)}</Td>
             <Td>{c.email}</Td>
-            <Td>{c.name || "—"}</Td>
-            <Td>{c.gstin || "—"}</Td>
-            <Td>{c.state || "—"}</Td>
+            <Td>{c.name || "-"}</Td>
+            <Td>{c.gstin || "-"}</Td>
+            <Td>{c.state || "-"}</Td>
             <Td>{c.country}</Td>
           </Tr>
         ))

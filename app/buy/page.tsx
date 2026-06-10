@@ -50,7 +50,7 @@ function BuyInner() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) {
-      setError("Please enter your email — your license key is sent there.");
+      setError("Please enter your email - your license key is sent there.");
       return;
     }
     if (!scriptReady) {
@@ -85,7 +85,7 @@ function BuyInner() {
           <aside>
             <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Get OneCamp</h1>
             <p className="mt-2 text-slate-400">
-              {isCloud ? "Managed hosting, set up for you within 12 hours." : "Self-hosted unified workspace — lifetime license."}
+              {isCloud ? "Managed hosting, set up for you within 12 hours." : "Self-hosted unified workspace - lifetime license."}
             </p>
 
             {/* Plan switch */}
@@ -173,7 +173,7 @@ function BuyInner() {
               {busy
                 ? "Processing…"
                 : isCloud
-                  ? `Subscribe — ${fmtUSD(pricing.cloud_usd)}/mo (${fmtINR(pricing.cloud_inr)})`
+                  ? `Subscribe - ${fmtUSD(pricing.cloud_usd)}/mo (${fmtINR(pricing.cloud_inr)})`
                   : `Pay ${fmtUSD(pricing.lifetime_usd)} (${fmtINR(pricing.lifetime_inr)}) & get your key`}
             </Button>
             <p className="text-center text-xs text-slate-500">

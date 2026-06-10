@@ -15,16 +15,16 @@ export function formatINR(paise: number): string {
 
 /** Formats an ISO timestamp as a locale date-time, with a graceful dash. */
 export function formatDateTime(iso?: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString();
+  return Number.isNaN(d.getTime()) ? "-" : d.toLocaleString();
 }
 
 /** Formats an ISO timestamp as a short, deterministic date, e.g. "10 Jun 2026". */
 export function formatDate(iso?: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "-";
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",

@@ -26,7 +26,7 @@ export function OrdersTable() {
             <Td>{formatINR(o.amount)}</Td>
             <Td><StatusPill status={o.status} /></Td>
             <Td>{o.plan_code}</Td>
-            <Td mono>{o.razorpay_payment_id || "—"}</Td>
+            <Td mono>{o.razorpay_payment_id || "-"}</Td>
           </Tr>
         ))
       )}

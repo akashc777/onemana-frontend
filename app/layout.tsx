@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swa
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — The self-hosted workspace for the AI era`,
+    default: `${site.name} - The self-hosted workspace for the AI era`,
     template: `%s · ${site.name}`,
   },
   description: site.description,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   authors: [{ name: site.company }],
   alternates: { canonical: "/" },
   openGraph: {
-    title: `${site.name} — One workspace. Yours forever.`,
+    title: `${site.name} - One workspace. Yours forever.`,
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -64,7 +64,7 @@ const jsonLd = {
       description: site.description,
       offers: [
         { "@type": "Offer", price: "2000", priceCurrency: "INR", name: "Lifetime self-host license (≈ $19)" },
-        { "@type": "Offer", price: "10000", priceCurrency: "INR", name: "OneCamp Cloud — managed hosting, monthly (≈ $99)" },
+        { "@type": "Offer", price: "10000", priceCurrency: "INR", name: "OneCamp Cloud - managed hosting, monthly (≈ $99)" },
       ],
     },
   ],

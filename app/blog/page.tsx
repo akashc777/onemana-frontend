@@ -7,7 +7,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { PostCard } from "@/components/blog/PostCard";
 
 export const metadata: Metadata = {
-  title: "Blog — product, AI & the future of work",
+  title: "Blog - product, AI & the future of work",
   description: `News, deep dives, and guides from the ${site.name} team on self-hosted, AI-native collaboration.`,
   alternates: { canonical: "/blog" },
   openGraph: { title: `${site.name} Blog`, url: `${site.url}/blog`, type: "website" },

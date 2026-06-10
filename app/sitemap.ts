@@ -33,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
   } catch {
-    // Blog API unreachable at build time — ship the static sitemap.
+    // Blog API unreachable at build time - ship the static sitemap.
   }
 
   return [...staticEntries, ...blogEntries];

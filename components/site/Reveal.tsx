@@ -12,7 +12,7 @@ interface RevealProps {
 
 /**
  * Reveal animates its children into view on first scroll-intersection using a
- * single IntersectionObserver — no animation library, SSR-safe, and a no-op
+ * single IntersectionObserver - no animation library, SSR-safe, and a no-op
  * when prefers-reduced-motion is set (handled in CSS).
  */
 export function Reveal({ children, delay = 0, className = "", as }: RevealProps) {

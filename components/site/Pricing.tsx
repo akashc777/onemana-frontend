@@ -45,7 +45,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
         </div>
       </Reveal>
 
-      {/* Cloud — featured */}
+      {/* Cloud - featured */}
       <Reveal delay={80}>
         <div className="relative h-full rounded-2xl bg-gradient-to-b from-brand/60 to-accent-cyan/30 p-px shadow-[0_30px_80px_-30px_rgba(109,94,252,0.6)]">
           <div className="card flex h-full flex-col bg-canvas-raised">

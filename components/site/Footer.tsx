@@ -11,7 +11,7 @@ export function Footer() {
             {site.name}
           </div>
           <p className="mt-3 max-w-xs text-sm text-slate-500">
-            The self-hosted, all-in-one workspace for the AI era. Your data, your server — own it forever or let us manage it.
+            The self-hosted, all-in-one workspace for the AI era. Your data, your server - own it forever or let us manage it.
           </p>
         </div>
 

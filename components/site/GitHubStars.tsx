@@ -52,7 +52,7 @@ export function GitHubStars({ className = "", compact = false }: { className?: s
       href={site.githubUrl}
       target="_blank"
       rel="noreferrer"
-      aria-label={`Star ${site.githubRepo} on GitHub${stars !== null ? ` — ${stars} stars` : ""}`}
+      aria-label={`Star ${site.githubRepo} on GitHub${stars !== null ? ` - ${stars} stars` : ""}`}
       className={`group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 backdrop-blur transition-all duration-200 hover:border-white/20 hover:bg-white/10 ${className}`}
     >
       <GitHubMark />

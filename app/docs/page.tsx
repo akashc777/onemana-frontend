@@ -5,7 +5,7 @@ import { CodeBlock } from "@/components/docs/CodeBlock";
 import { Badge } from "@/components/ui/Badge";
 
 export const metadata: Metadata = {
-  title: "Setup & Docs — install OneCamp on your server",
+  title: "Setup & Docs - install OneCamp on your server",
   description:
     "Step-by-step guide to deploy OneCamp: DNS subdomains, install commands, OAuth callbacks, and service reference.",
   alternates: { canonical: "/docs" },

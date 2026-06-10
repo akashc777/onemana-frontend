@@ -44,7 +44,7 @@ function SuccessInner() {
             {isCloud ? "☁️" : "🎉"}
           </div>
           <h1 className="mt-4 text-2xl font-bold text-white">
-            {isCloud ? "You're all set — welcome to OneCamp Cloud" : "Payment successful"}
+            {isCloud ? "You're all set - welcome to OneCamp Cloud" : "Payment successful"}
           </h1>
 
           {isCloud ? (
