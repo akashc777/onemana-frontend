@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { adminApi, downloadWithToken, type Invoice } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { formatINR, formatDateTime } from "@/lib/format";
 import { AsyncState, DataTable, RowDeleteButton, Td, Tr } from "./ui";
+import { FilterBar, emptyFilter, matchesQuery, withinRange, type RangeFilter } from "./filtering";
 
 export function InvoicesTable() {
   const { data, loading, error, reload } = useAsync<Invoice[]>(() => adminApi.invoices());
   const [exporting, setExporting] = useState(false);
   const [downloadErr, setDownloadErr] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const invoices = data ?? [];
+  const [filter, setFilter] = useState<RangeFilter>(emptyFilter);
+
+  const filtered = useMemo(
+    () =>
+      (data ?? []).filter(
+        (i) => withinRange(i.issued_at, filter.from, filter.to) && matchesQuery(filter.q, i.invoice_no, i.buyer_email, i.buyer_name, i.place_of_supply),
+      ),
+    [data, filter],
+  );
 
   async function remove(inv: Invoice) {
     if (!window.confirm(`Delete invoice ${inv.invoice_no}? For real sales this breaks your filing sequence — only do this for test data. This cannot be undone.`)) return;
@@ -52,18 +61,19 @@ export function InvoicesTable() {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        {downloadErr ? <p className="text-sm text-red-600">{downloadErr}</p> : <span />}
+        {downloadErr ? <p className="text-sm text-red-400">{downloadErr}</p> : <span />}
         <button onClick={exportCsv} disabled={exporting} className="btn-ghost px-4 py-2 text-sm">
           {exporting ? "Exporting…" : "Export CSV (for filings)"}
         </button>
       </div>
+      <FilterBar value={filter} onChange={setFilter} placeholder="Search invoice no, buyer…" count={filtered.length} />
       <DataTable head={["Invoice No", "Date", "Buyer", "Place of Supply", "Taxable", "CGST", "SGST", "IGST", "Total", ""]}>
-        {invoices.length === 0 ? (
+        {filtered.length === 0 ? (
           <Tr>
-            <td colSpan={10} className="px-3 py-8 text-center text-sm text-slate-400">No invoices yet.</td>
+            <td colSpan={10} className="px-3 py-8 text-center text-sm text-slate-500">No matching invoices.</td>
           </Tr>
         ) : (
-          invoices.map((i) => (
+          filtered.map((i) => (
             <Tr key={i.id}>
               <Td mono>{i.invoice_no}</Td>
               <Td>{formatDateTime(i.issued_at)}</Td>

@@ -17,6 +17,15 @@ export function clearToken() {
   window.sessionStorage.removeItem(TOKEN_KEY);
 }
 
+/** Builds a ?from=&to= query string from optional YYYY-MM-DD dates. */
+function rangeQuery(from?: string, to?: string): string {
+  const p = new URLSearchParams();
+  if (from) p.set("from", from);
+  if (to) p.set("to", to);
+  const s = p.toString();
+  return s ? `?${s}` : "";
+}
+
 async function adminGet<T>(path: string): Promise<T> {
   const res = await fetch(`${site.backendUrl}${path}`, {
     headers: { "X-Admin-Token": getToken() },
@@ -69,8 +78,7 @@ export interface Invoice {
   issued_at: string;
 }
 
-export interface AdminBlogPost {
-  id: string;
+export interface AdminBlogPost {  id: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -97,6 +105,66 @@ export interface BlogPostPayload {
   status: "draft" | "published";
   seo_title: string;
   seo_desc: string;
+}
+
+export interface VisitDay {
+  date: string;
+  views: number;
+  uniques: number;
+}
+export interface VisitPath {
+  path: string;
+  views: number;
+}
+export interface VisitStats {
+  total_views: number;
+  unique_visitors: number;
+  daily: VisitDay[];
+  top_paths: VisitPath[];
+}
+
+export interface FYEarning {
+  financial_year: string;
+  gross: number;
+  taxable: number;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  total_gst: number;
+  count: number;
+  gst_paid: number;
+  gst_outstanding: number;
+}
+export interface EarningsSummary {
+  gross: number;
+  taxable: number;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  total_gst: number;
+  count: number;
+  export_count: number;
+  total_gst_paid: number;
+  by_fy: FYEarning[];
+}
+
+export interface TaxPayment {
+  id: string;
+  financial_year: string;
+  amount: number;
+  kind: string;
+  paid_on: string;
+  reference: string;
+  note: string;
+  created_at: string;
+}
+export interface TaxPaymentPayload {
+  financial_year: string;
+  amount: number;
+  kind: string;
+  paid_on: string;
+  reference: string;
+  note: string;
 }
 
 export const adminApi = {
@@ -142,6 +210,30 @@ export const adminApi = {
       headers: { "X-Admin-Token": getToken() },
     });
     if (!res.ok) throw new Error("Failed to delete customer");
+  },
+
+  // ---- Analytics + earnings ----
+  visitStats: (from?: string, to?: string) =>
+    adminGet<{ data: VisitStats }>(`/onecamp/admin/visits${rangeQuery(from, to)}`).then((d) => d.data),
+  earnings: (from?: string, to?: string) =>
+    adminGet<{ data: EarningsSummary }>(`/onecamp/admin/earnings${rangeQuery(from, to)}`).then((d) => d.data),
+  taxPayments: () => adminGet<{ data: TaxPayment[] }>("/onecamp/admin/tax-payments").then((d) => d.data ?? []),
+  async createTaxPayment(payload: TaxPaymentPayload): Promise<TaxPayment> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/tax-payments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to add payment");
+    return (data as { data: TaxPayment }).data;
+  },
+  async deleteTaxPayment(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/tax-payments/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete payment");
   },
 
   // ---- Blog CMS ----

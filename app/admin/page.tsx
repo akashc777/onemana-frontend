@@ -8,8 +8,10 @@ import { CustomersTable } from "@/components/admin/CustomersTable";
 import { InvoicesTable } from "@/components/admin/InvoicesTable";
 import { SettingsForm } from "@/components/admin/SettingsForm";
 import { BlogManager } from "@/components/admin/BlogManager";
+import { VisitorsPanel } from "@/components/admin/VisitorsPanel";
+import { EarningsPanel } from "@/components/admin/EarningsPanel";
 
-const TABS = ["orders", "customers", "invoices", "blog", "settings"] as const;
+const TABS = ["orders", "earnings", "customers", "invoices", "visitors", "blog", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -32,13 +34,13 @@ export default function AdminPage() {
         </button>
       </header>
 
-      <nav className="mb-6 flex gap-1 rounded-xl border border-white/10 bg-white/5 p-1 text-sm" aria-label="Admin sections">
+      <nav className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-white/10 bg-white/5 p-1 text-sm" aria-label="Admin sections">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             aria-current={tab === t ? "page" : undefined}
-            className={`flex-1 rounded-lg px-3 py-2 font-medium capitalize transition ${
+            className={`whitespace-nowrap rounded-lg px-3.5 py-2 font-medium capitalize transition ${
               tab === t ? "bg-brand text-white" : "text-slate-400 hover:text-white"
             }`}
           >
@@ -48,8 +50,10 @@ export default function AdminPage() {
       </nav>
 
       {tab === "orders" && <OrdersTable />}
+      {tab === "earnings" && <EarningsPanel />}
       {tab === "customers" && <CustomersTable />}
       {tab === "invoices" && <InvoicesTable />}
+      {tab === "visitors" && <VisitorsPanel />}
       {tab === "blog" && <BlogManager />}
       {tab === "settings" && <SettingsForm />}
     </div>
