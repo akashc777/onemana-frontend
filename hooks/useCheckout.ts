@@ -61,7 +61,7 @@ export function useCheckout(): CheckoutController {
           name: "OneCamp",
           description: "Self-Hosted Unified Workspace — Lifetime License",
           prefill: { email: order.email, name: order.name, contact: contact ?? "" },
-          theme: { color: "#2563eb" },
+          theme: { color: "#6d5efc" },
           handler: async (resp: unknown) => {
             const r = resp as RazorpaySuccess;
             const params = new URLSearchParams({ email: input.email });
