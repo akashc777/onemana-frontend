@@ -26,13 +26,28 @@ function formatStars(n: number): string {
 
 /**
  * GitHub button with live star count for the open-source frontend repo.
- * Fetches the count client-side (cached by the browser) and degrades to a
- * plain "Star on GitHub" button if the API is unavailable or rate-limited.
+ * Prefers a server-provided `stars` (fetched + cached server-side to dodge
+ * GitHub's per-IP rate limit); falls back to a client fetch only when no
+ * value is supplied, and degrades to a plain button if all else fails.
  */
-export function GitHubStars({ className = "", compact = false }: { className?: string; compact?: boolean }) {
-  const [stars, setStars] = useState<number | null>(null);
+export function GitHubStars({
+  className = "",
+  compact = false,
+  stars: starsProp,
+}: {
+  className?: string;
+  compact?: boolean;
+  stars?: number | null;
+}) {
+  const [stars, setStars] = useState<number | null>(starsProp ?? null);
 
   useEffect(() => {
+    // Server already provided a value — don't hit the API from the browser.
+    if (starsProp !== undefined && starsProp !== null) {
+      setStars(starsProp);
+      return;
+    }
+    if (starsProp === null) return; // server tried and failed; don't spam the API
     let alive = true;
     fetch(`https://api.github.com/repos/${site.githubRepo}`, {
       headers: { Accept: "application/vnd.github+json" },
@@ -45,7 +60,7 @@ export function GitHubStars({ className = "", compact = false }: { className?: s
     return () => {
       alive = false;
     };
-  }, []);
+  }, [starsProp]);
 
   return (
     <a

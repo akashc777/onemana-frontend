@@ -59,6 +59,15 @@ const config: Config = {
           "0%": { transform: "scale(0.9)", opacity: "0.7" },
           "100%": { transform: "scale(1.6)", opacity: "0" },
         },
+        drift: {
+          "0%,100%": { transform: "translate(0,0) scale(1)" },
+          "33%": { transform: "translate(4%,-3%) scale(1.08)" },
+          "66%": { transform: "translate(-3%,4%) scale(0.96)" },
+        },
+        "beam-pulse": {
+          "0%,100%": { opacity: "0.55", transform: "scaleY(1)" },
+          "50%": { opacity: "0.9", transform: "scaleY(1.06)" },
+        },
         marquee: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
@@ -70,6 +79,8 @@ const config: Config = {
         aurora: "aurora 18s ease-in-out infinite",
         shimmer: "shimmer 2.5s linear infinite",
         "pulse-ring": "pulse-ring 2.4s cubic-bezier(0.4,0,0.2,1) infinite",
+        drift: "drift 24s ease-in-out infinite",
+        "beam-pulse": "beam-pulse 5s ease-in-out infinite",
         marquee: "marquee 32s linear infinite",
       },
     },

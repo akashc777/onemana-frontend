@@ -6,7 +6,7 @@ import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 import { GitHubStars } from "@/components/site/GitHubStars";
 
-export function Nav() {
+export function Nav({ stars }: { stars?: number | null }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -38,7 +38,7 @@ export function Nav() {
           <a href={site.demoUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">
             Live Demo
           </a>
-          <GitHubStars compact />
+          <GitHubStars compact stars={stars} />
           <ButtonLink href="/buy" size="sm">
             Get {site.name}
           </ButtonLink>
@@ -78,7 +78,7 @@ export function Nav() {
               Live Demo
             </a>
             <div className="px-2 py-2">
-              <GitHubStars />
+              <GitHubStars stars={stars} />
             </div>
             <ButtonLink href="/buy" size="md" className="mt-2 w-full">
               Get {site.name}

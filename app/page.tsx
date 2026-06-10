@@ -1,26 +1,31 @@
 import { site } from "@/lib/site";
 import { features, steps, faqs, requirements } from "@/lib/content";
 import { getPricing, fmtUSD } from "@/lib/pricing";
+import { getGithubStars } from "@/lib/github";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/site/Reveal";
 import { AuroraBackdrop } from "@/components/site/Visuals";
+import { HeroBeam } from "@/components/site/SiteBackground";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroShowcase } from "@/components/site/HeroShowcase";
 import { StackConvergence } from "@/components/site/StackConvergence";
+import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
 import { FeatureCard, StepCard, StatStrip, ReplacesMarquee, FaqItem } from "@/components/site/marketing";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
   const pricing = await getPricing();
+  const stars = await getGithubStars();
   return (
     <>
       {/* Hero */}
       <section className="relative overflow-hidden pt-20 sm:pt-28">
         <AuroraBackdrop />
+        <HeroBeam />
         <div className="container-x flex flex-col items-center pb-16 text-center">
           <Reveal>
             <Badge dot>Self-hosted · AI-native · One-time or managed</Badge>
@@ -45,7 +50,7 @@ export default async function HomePage() {
               <ButtonLink href={site.demoUrl} external variant="ghost" size="lg">
                 Try Live Demo →
               </ButtonLink>
-              <GitHubStars className="!py-3.5" />
+              <GitHubStars className="!py-3.5" stars={stars} />
             </div>
           </Reveal>
           <Reveal delay={240}>
@@ -96,6 +101,18 @@ export default async function HomePage() {
             <FeatureCard key={f.title} icon={f.icon} title={f.title} body={f.body} index={i} />
           ))}
         </div>
+      </Section>
+
+      {/* See it in action — animated Tasks + Docs showcases */}
+      <Section divider>
+        <SectionHeading
+          eyebrow="See it in action"
+          title={<>Watch your work <span className="text-gradient">come to life</span></>}
+          subtitle="Real-time boards and multiplayer docs - the same calm, fast experience your team uses every day."
+        />
+        <Reveal className="mt-12">
+          <WorkspaceShowcase />
+        </Reveal>
       </Section>
 
       {/* Steps */}

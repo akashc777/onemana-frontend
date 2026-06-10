@@ -4,6 +4,8 @@ import "./globals.css";
 import { site } from "@/lib/site";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
+import { SiteBackground } from "@/components/site/SiteBackground";
+import { getGithubStars } from "@/lib/github";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
@@ -70,18 +72,20 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const stars = await getGithubStars();
   return (
     <html lang="en" className={inter.variable}>
       <body className="flex min-h-screen flex-col">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <SiteBackground />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-white"
         >
           Skip to content
         </a>
-        <Nav />
+        <Nav stars={stars} />
         <main id="main" className="flex-1">
           {children}
         </main>
