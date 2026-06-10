@@ -11,6 +11,7 @@ import { HeroBeam } from "@/components/site/SiteBackground";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroShowcase } from "@/components/site/HeroShowcase";
+import { ParallaxBox } from "@/components/site/ParallaxBox";
 import { StackConvergence } from "@/components/site/StackConvergence";
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
 import { FeatureCard, StepCard, StatStrip, ReplacesMarquee, FaqItem } from "@/components/site/marketing";
@@ -60,11 +61,13 @@ export default async function HomePage() {
           </Reveal>
 
           {/* Live product preview */}
-          <Reveal delay={200} className="mt-16 w-full max-w-5xl">
-            <div className="relative animate-float">
-              <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-r from-brand/20 via-accent-cyan/10 to-accent-pink/20 blur-2xl" />
-              <HeroShowcase />
-            </div>
+          <Reveal delay={200} direction="scale" className="mt-16 w-full max-w-5xl">
+            <ParallaxBox speed={0.08}>
+              <div className="relative animate-float">
+                <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-r from-brand/20 via-accent-cyan/10 to-accent-pink/20 blur-2xl" />
+                <HeroShowcase />
+              </div>
+            </ParallaxBox>
           </Reveal>
         </div>
       </section>
@@ -79,7 +82,7 @@ export default async function HomePage() {
         <div className="mt-12">
           <StackConvergence />
         </div>
-        <Reveal className="mt-6">
+        <Reveal direction="scale" className="mt-6">
           <ReplacesMarquee />
         </Reveal>
       </Section>
@@ -110,7 +113,7 @@ export default async function HomePage() {
           title={<>Watch your work <span className="text-gradient">come to life</span></>}
           subtitle="Real-time boards and multiplayer docs - the same calm, fast experience your team uses every day."
         />
-        <Reveal className="mt-12">
+        <Reveal direction="left" className="mt-12">
           <WorkspaceShowcase />
         </Reveal>
       </Section>
@@ -154,7 +157,7 @@ export default async function HomePage() {
             title="System requirements"
             subtitle="Packaged as Docker containers. Our command handles deploy, SSL, and AI setup."
           />
-          <Reveal className="mt-12 overflow-hidden rounded-2xl border border-white/10">
+          <Reveal direction="right" className="mt-12 overflow-hidden rounded-2xl border border-white/10">
             <table className="w-full text-center text-sm">
               <thead className="bg-white/5 text-slate-400">
                 <tr>

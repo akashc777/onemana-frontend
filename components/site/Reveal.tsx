@@ -6,6 +6,8 @@ interface RevealProps {
   children: ReactNode;
   /** Stagger delay in ms. */
   delay?: number;
+  /** Entrance direction. Defaults to "up". */
+  direction?: "up" | "down" | "left" | "right" | "scale";
   className?: string;
   as?: ElementType;
 }
@@ -13,9 +15,10 @@ interface RevealProps {
 /**
  * Reveal animates its children into view on first scroll-intersection using a
  * single IntersectionObserver - no animation library, SSR-safe, and a no-op
- * when prefers-reduced-motion is set (handled in CSS).
+ * when prefers-reduced-motion is set (handled in CSS). The entrance direction
+ * is GPU-only (transform/opacity).
  */
-export function Reveal({ children, delay = 0, className = "", as }: RevealProps) {
+export function Reveal({ children, delay = 0, direction = "up", className = "", as }: RevealProps) {
   const Tag = (as ?? "div") as ElementType;
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -41,7 +44,7 @@ export function Reveal({ children, delay = 0, className = "", as }: RevealProps)
   return (
     <Tag
       ref={ref as never}
-      className={`reveal ${visible ? "is-visible" : ""} ${className}`}
+      className={`reveal reveal-${direction} ${visible ? "is-visible" : ""} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

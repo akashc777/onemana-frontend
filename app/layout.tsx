@@ -5,6 +5,7 @@ import { site } from "@/lib/site";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { SiteBackground } from "@/components/site/SiteBackground";
+import { ScrollProgress } from "@/components/site/ScrollProgress";
 import { VisitorTracker } from "@/components/site/VisitorTracker";
 import { getGithubStars } from "@/lib/github";
 
@@ -80,6 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="flex min-h-screen flex-col">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <SiteBackground />
+        <ScrollProgress />
         <VisitorTracker />
         <a
           href="#main"
