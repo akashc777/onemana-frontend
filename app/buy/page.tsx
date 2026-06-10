@@ -1,22 +1,37 @@
 "use client";
 
 import Script from "next/script";
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
 import { indianStates } from "@/lib/states";
-import { site } from "@/lib/site";
+import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
+import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, type Pricing } from "@/lib/pricing";
+import { AuroraBackdrop } from "@/components/site/Visuals";
+import { Button } from "@/components/ui/Button";
 
-const BENEFITS = [
-  "Unlimited users, no per-seat fees",
-  "All modules incl. local AI",
-  "Runs on your own server",
-  "GST invoice emailed instantly",
-  "Install command emailed with your key",
-];
+type Plan = "lifetime" | "cloud";
 
 export default function BuyPage() {
-  const { busy, error, setError, start } = useCheckout();
+  return (
+    <Suspense fallback={<div className="container-x py-24 text-center text-slate-500">Loading…</div>}>
+      <BuyInner />
+    </Suspense>
+  );
+}
+
+function BuyInner() {
+  const params = useSearchParams();
+  const initialPlan: Plan = params.get("plan") === "cloud" ? "cloud" : "lifetime";
+
+  const { busy, error, setError, start, startCloud } = useCheckout();
   const [scriptReady, setScriptReady] = useState(false);
+  const [plan, setPlan] = useState<Plan>(initialPlan);
+  const [pricing, setPricing] = useState<Pricing>(defaultPricing);
+
+  useEffect(() => {
+    fetchPricingClient().then(setPricing);
+  }, []);
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -26,6 +41,7 @@ export default function BuyPage() {
   const [phone, setPhone] = useState("");
 
   const isIndia = country === "IN";
+  const isCloud = plan === "cloud";
   const stateCode = useMemo(
     () => (isIndia ? indianStates.find((s) => s.name === stateName)?.code ?? "" : ""),
     [isIndia, stateName],
@@ -41,19 +57,20 @@ export default function BuyPage() {
       setError("Payment library is still loading. Please try again in a moment.");
       return;
     }
-    await start(
-      {
-        email: email.trim(),
-        name: name.trim(),
-        country,
-        gstin: isIndia ? gstin.trim() : "",
-        state: isIndia ? stateName : "",
-        state_code: stateCode,
-        phone: phone.trim(),
-      },
-      phone.trim(),
-    );
+    const input = {
+      email: email.trim(),
+      name: name.trim(),
+      country,
+      gstin: isIndia ? gstin.trim() : "",
+      state: isIndia ? stateName : "",
+      state_code: stateCode,
+      phone: phone.trim(),
+    };
+    if (isCloud) await startCloud(input, phone.trim());
+    else await start(input, phone.trim());
   }
+
+  const benefits = isCloud ? cloudBenefits : lifetimeBenefits;
 
   return (
     <>
@@ -62,27 +79,58 @@ export default function BuyPage() {
         onReady={() => setScriptReady(true)}
         onLoad={() => setScriptReady(true)}
       />
-      <section className="py-16">
+      <section className="relative overflow-hidden py-16 sm:py-20">
+        <AuroraBackdrop className="!h-[50vh]" />
         <div className="container-x grid gap-10 lg:grid-cols-2">
           <aside>
-            <h1 className="text-3xl font-bold tracking-tight text-ink">Get OneCamp</h1>
-            <p className="mt-2 text-slate-600">Self-Hosted Unified Workspace — Lifetime License.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Get OneCamp</h1>
+            <p className="mt-2 text-slate-400">
+              {isCloud ? "Managed hosting, set up for you within 12 hours." : "Self-hosted unified workspace — lifetime license."}
+            </p>
+
+            {/* Plan switch */}
+            <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-white/5 p-1 text-sm">
+              <button
+                type="button"
+                onClick={() => setPlan("lifetime")}
+                aria-pressed={!isCloud}
+                className={`rounded-lg px-3 py-2 font-medium transition ${!isCloud ? "bg-brand text-white" : "text-slate-400 hover:text-white"}`}
+              >
+                Lifetime · {fmtUSD(pricing.lifetime_usd)}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPlan("cloud")}
+                aria-pressed={isCloud}
+                className={`rounded-lg px-3 py-2 font-medium transition ${isCloud ? "bg-brand text-white" : "text-slate-400 hover:text-white"}`}
+              >
+                Cloud · {fmtUSD(pricing.cloud_usd)}/mo
+              </button>
+            </div>
+
             <div className="card mt-6">
               <div className="flex items-baseline justify-between">
-                <span className="font-medium text-ink">OneCamp Lifetime</span>
-                <span className="text-2xl font-bold text-ink">₹{site.priceInr}</span>
+                <span className="font-medium text-white">{isCloud ? "OneCamp Cloud" : "OneCamp Lifetime"}</span>
+                <span className="text-2xl font-bold text-white">
+                  {isCloud ? fmtUSD(pricing.cloud_usd) : fmtUSD(pricing.lifetime_usd)}
+                  {isCloud && <span className="text-sm font-normal text-slate-400"> /mo</span>}
+                </span>
               </div>
-              <p className="mt-1 text-xs text-slate-400">One-time · all taxes included · unlimited users</p>
-              <ul className="mt-5 space-y-2 text-sm text-slate-700">
-                {BENEFITS.map((b) => (
+              <p className="mt-1 text-xs text-slate-500">
+                {isCloud
+                  ? `${fmtINR(pricing.cloud_inr)}/mo billed in INR · up to ${pricing.cloud_seats} users · includes a self-host license`
+                  : `${fmtINR(pricing.lifetime_inr)} billed in INR · one-time · all taxes included · unlimited users`}
+              </p>
+              <ul className="mt-5 space-y-2 text-sm text-slate-300">
+                {benefits.map((b) => (
                   <li key={b} className="flex items-start gap-2">
-                    <span className="mt-0.5 text-emerald-500">✓</span>
+                    <span className="mt-0.5 text-accent-cyan">✓</span>
                     {b}
                   </li>
                 ))}
               </ul>
             </div>
-            <p className="mt-4 text-xs text-slate-400">Secure payment via Razorpay. We never see your card details.</p>
+            <p className="mt-4 text-xs text-slate-500">Secure payment via Razorpay. We never see your card details.</p>
           </aside>
 
           <form onSubmit={handleSubmit} className="card h-fit space-y-4" noValidate>
@@ -118,15 +166,20 @@ export default function BuyPage() {
             </Field>
 
             {error && (
-              <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+              <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>
             )}
 
-            <button type="submit" disabled={busy} className="btn-primary w-full py-3.5 text-base">
-              {busy ? "Processing…" : `Pay ₹${site.priceInr} & get your key`}
-            </button>
-            <p className="text-center text-xs text-slate-400">
-              By purchasing you agree to our <a href="/terms-of-service" className="underline">Terms</a> and{" "}
-              <a href="/refund-policy" className="underline">Refund Policy</a>.
+            <Button type="submit" disabled={busy} size="lg" className="w-full">
+              {busy
+                ? "Processing…"
+                : isCloud
+                  ? `Subscribe — ${fmtUSD(pricing.cloud_usd)}/mo (${fmtINR(pricing.cloud_inr)})`
+                  : `Pay ${fmtUSD(pricing.lifetime_usd)} (${fmtINR(pricing.lifetime_inr)}) & get your key`}
+            </Button>
+            <p className="text-center text-xs text-slate-500">
+              By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
+              <a href="/terms-of-service" className="underline hover:text-slate-300">Terms</a> and{" "}
+              <a href="/refund-policy" className="underline hover:text-slate-300">Refund Policy</a>.
             </p>
           </form>
         </div>
@@ -136,16 +189,16 @@ export default function BuyPage() {
 }
 
 const inputCls =
-  "w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-700">
-        {label} {required && <span className="text-red-500">*</span>}
+      <span className="mb-1.5 block text-sm font-medium text-slate-300">
+        {label} {required && <span className="text-red-400">*</span>}
       </span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-slate-400">{hint}</span>}
+      {hint && <span className="mt-1 block text-xs text-slate-500">{hint}</span>}
     </label>
   );
 }

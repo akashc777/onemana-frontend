@@ -20,9 +20,15 @@ export function formatDateTime(iso?: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString();
 }
 
-/** Formats an ISO timestamp as a short date. */
+/** Formats an ISO timestamp as a short, deterministic date, e.g. "10 Jun 2026". */
 export function formatDate(iso?: string | null): string {
   if (!iso) return "—";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
+  if (Number.isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(d);
 }

@@ -13,9 +13,14 @@ export const site = {
   demoUrl: process.env.NEXT_PUBLIC_DEMO_URL || "https://onecamp.onemana.dev",
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
   docsPath: "/docs",
-  // Display pricing (the authoritative amount is enforced server-side).
+  // Static display fallbacks (live values come from /onecamp/pricing, which is
+  // admin-editable). Charges are always enforced server-side in INR.
   priceInr: 1499,
-  priceUsdApprox: 19,
+  priceUsd: 19,
+  // OneCamp Cloud — managed hosting, monthly subscription (charged in INR).
+  cloudPriceUsd: 99,
+  cloudPriceInr: 10000,
+  cloudSeats: 30,
   demoVideoId: "hh5gwvLsAjA",
   twitter: "https://twitter.com/akashc777",
 };
@@ -23,6 +28,7 @@ export const site = {
 export const navLinks = [
   { label: "Features", href: "/#features" },
   { label: "Pricing", href: "/#pricing" },
+  { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/#faq" },
   { label: "Docs", href: "/docs" },
 ];
@@ -31,6 +37,7 @@ export const footerLinks = {
   Product: [
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },
+    { label: "Blog", href: "/blog" },
     { label: "Live Demo", href: site.demoUrl, external: true },
     { label: "Setup Docs", href: "/docs" },
   ],

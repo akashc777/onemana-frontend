@@ -69,6 +69,36 @@ export interface Invoice {
   issued_at: string;
 }
 
+export interface AdminBlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  cover_image: string;
+  content: string;
+  author: string;
+  tags: string[];
+  status: "draft" | "published";
+  seo_title: string;
+  seo_desc: string;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BlogPostPayload {
+  slug?: string;
+  title: string;
+  excerpt: string;
+  cover_image: string;
+  content: string;
+  author: string;
+  tags: string[];
+  status: "draft" | "published";
+  seo_title: string;
+  seo_desc: string;
+}
+
 export const adminApi = {
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
@@ -90,6 +120,49 @@ export const adminApi = {
   },
   invoiceCsvUrl: () => `${site.backendUrl}/onecamp/admin/invoices.csv`,
   invoicePdfUrl: (id: string) => `${site.backendUrl}/onecamp/admin/invoice/${id}/pdf`,
+
+  // ---- Blog CMS ----
+  blogList: () => adminGet<{ data: AdminBlogPost[] }>("/onecamp/admin/blog").then((d) => d.data ?? []),
+  blogGet: (id: string) => adminGet<{ data: AdminBlogPost }>(`/onecamp/admin/blog/${id}`).then((d) => d.data),
+  async blogCreate(payload: BlogPostPayload): Promise<AdminBlogPost> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create post");
+    return (data as { data: AdminBlogPost }).data;
+  },
+  async blogUpdate(id: string, payload: BlogPostPayload): Promise<AdminBlogPost> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update post");
+    return (data as { data: AdminBlogPost }).data;
+  },
+  async blogDelete(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete post");
+  },
+  async blogUpload(file: File): Promise<{ url: string }> {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/media`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+      body: form,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Upload failed");
+    return (data as { data: { url: string } }).data;
+  },
 };
 
 // Helper for authenticated file downloads (CSV/PDF) — fetch with token then

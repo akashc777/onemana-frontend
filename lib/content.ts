@@ -38,3 +38,31 @@ export const requirements = [
   { team: "Large (200–1000)", ram: "32 GB", cpu: "16 CPU", ai: "✅ + GPU optional" },
   { team: "Enterprise (1000+)", ram: "64 GB", cpu: "32 CPU", ai: "✅ + GPU recommended" },
 ];
+
+// Tools OneCamp consolidates into one self-hosted deploy.
+export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Loom", "Confluence"];
+
+export const stats = [
+  { value: "8-in-1", label: "tools, one deploy" },
+  { value: "∞", label: "users, no per-seat fees" },
+  { value: "100%", label: "self-hosted & private" },
+  { value: "<10 min", label: "to a running install" },
+];
+
+// OneCamp Cloud (managed hosting) selling points.
+export const cloudBenefits = [
+  "Fully managed hosting on your own subdomain",
+  "Automatic backups, updates & monitoring",
+  "We handle SSL, scaling, and uptime",
+  "Includes a self-host license — switch anytime",
+  "We set everything up within 12 hours",
+];
+
+export const lifetimeBenefits = [
+  "Unlimited users — no per-seat fees",
+  "All modules incl. local AI",
+  "Open-source frontend, yours forever",
+  "Runs on your own server",
+  "Free updates within your major version",
+];
+

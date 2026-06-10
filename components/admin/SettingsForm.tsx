@@ -33,9 +33,15 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
     ],
   },
   {
-    group: "Pricing",
+    group: "Pricing (admin-editable)",
     fields: [
-      { key: "onecamp_price", label: "Price (paise)", type: "number", hint: "149900 = ₹1,499 (GST-inclusive)" },
+      { key: "onecamp_price", label: "Lifetime price (paise)", type: "number", hint: "149900 = ₹1,499 — the amount charged in INR (GST-inclusive)" },
+      { key: "onecamp_price_usd", label: "Lifetime price (USD)", type: "number", hint: "Display only, shown prominently. e.g. 19" },
+      { key: "cloud_price", label: "Cloud price (paise/mo)", type: "number", hint: "1000000 = ₹10,000 — invoice amount (charge follows the Razorpay plan)" },
+      { key: "cloud_price_usd", label: "Cloud price (USD/mo)", type: "number", hint: "Display only. e.g. 99" },
+      { key: "cloud_seats", label: "Cloud seats", type: "number", hint: "Users included in the Cloud plan, e.g. 30" },
+      { key: "cloud_plan_id", label: "Razorpay Cloud Plan ID", hint: "plan_… created in Razorpay (INR). Required for Cloud checkout." },
+      { key: "owner_email", label: "Owner alert email", hint: "Where new-Cloud-order notifications are sent." },
       { key: "gst_rate", label: "GST Rate (%)", type: "number" },
     ],
   },
@@ -74,7 +80,7 @@ export function SettingsForm() {
 function SettingsGroup({ group, fields, stored }: { group: string; fields: FieldDef[]; stored: Record<string, string> }) {
   return (
     <section className="card">
-      <h2 className="mb-4 font-semibold text-ink">{group}</h2>
+      <h2 className="mb-4 font-semibold text-white">{group}</h2>
       <div className="space-y-4">
         {fields.map((f) => (
           <SettingField key={f.key} field={f} initial={stored[f.key] ?? ""} />
@@ -124,7 +130,7 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
 
   return (
     <div className="grid items-start gap-2 sm:grid-cols-[180px_1fr_auto]">
-      <label htmlFor={field.key} className="pt-2 text-sm font-medium text-slate-700">{field.label}</label>
+      <label htmlFor={field.key} className="pt-2 text-sm font-medium text-slate-300">{field.label}</label>
       <div>
         {field.type === "select" ? (
           <select
@@ -146,8 +152,8 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
             className={inputCls}
           />
         )}
-        {field.hint && <p className="mt-1 text-xs text-slate-400">{field.hint}</p>}
-        {err && <p className="mt-1 text-xs text-red-600">{err}</p>}
+        {field.hint && <p className="mt-1 text-xs text-slate-500">{field.hint}</p>}
+        {err && <p className="mt-1 text-xs text-red-400">{err}</p>}
       </div>
       <button
         onClick={save}
@@ -161,4 +167,4 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
 }
 
 const inputCls =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";

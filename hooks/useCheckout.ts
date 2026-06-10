@@ -2,7 +2,12 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createCheckoutOrder, verifyPayment, type CheckoutInput } from "@/lib/api";
+import {
+  createCheckoutOrder,
+  createCloudSubscription,
+  verifyPayment,
+  type CheckoutInput,
+} from "@/lib/api";
 
 interface RazorpaySuccess {
   razorpay_order_id: string;
@@ -24,6 +29,7 @@ export interface CheckoutController {
   error: string;
   setError: (msg: string) => void;
   start: (input: CheckoutInput, contact?: string) => Promise<void>;
+  startCloud: (input: CheckoutInput, contact?: string) => Promise<void>;
 }
 
 /**
@@ -87,5 +93,43 @@ export function useCheckout(): CheckoutController {
     [router],
   );
 
-  return { busy, error, setError, start };
+  const startCloud = useCallback(
+    async (input: CheckoutInput, contact?: string) => {
+      setError("");
+      if (typeof window === "undefined" || !window.Razorpay) {
+        setError("Payment library is still loading. Please try again in a moment.");
+        return;
+      }
+      setBusy(true);
+      try {
+        const sub = await createCloudSubscription(input);
+        const rzp = new window.Razorpay({
+          key: sub.razorpay_key_id,
+          subscription_id: sub.subscription_id,
+          name: "OneCamp Cloud",
+          description: "Managed Hosting — Monthly (includes a self-host license)",
+          prefill: { email: sub.email, name: sub.name, contact: contact ?? "" },
+          theme: { color: "#6d5efc" },
+          handler: () => {
+            // Subscription activation + fulfillment is webhook-driven. Route to
+            // a reassuring success page; the welcome email carries the license.
+            const params = new URLSearchParams({ email: input.email, cloud: "1" });
+            router.push(`/buy/success?${params.toString()}`);
+          },
+          modal: { ondismiss: () => setBusy(false) },
+        });
+        rzp.on("payment.failed", () => {
+          setBusy(false);
+          setError("Payment failed or was cancelled. You have not been charged.");
+        });
+        rzp.open();
+      } catch (err) {
+        setBusy(false);
+        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      }
+    },
+    [router],
+  );
+
+  return { busy, error, setError, start, startCloud };
 }

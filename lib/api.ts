@@ -23,6 +23,13 @@ export interface CheckoutOrder {
   email: string;
 }
 
+export interface CloudCheckout {
+  subscription_id: string;
+  razorpay_key_id: string;
+  name: string;
+  email: string;
+}
+
 export interface VerifyResult {
   status: "success" | "pending";
   license_key?: string;
@@ -45,6 +52,11 @@ async function postJSON<T>(path: string, body: unknown): Promise<T> {
 
 export async function createCheckoutOrder(input: CheckoutInput): Promise<CheckoutOrder> {
   const data = await postJSON<{ data: CheckoutOrder }>("/onecamp/checkout/order", input);
+  return data.data;
+}
+
+export async function createCloudSubscription(input: CheckoutInput): Promise<CloudCheckout> {
+  const data = await postJSON<{ data: CloudCheckout }>("/onecamp/checkout/cloud", input);
   return data.data;
 }
 
