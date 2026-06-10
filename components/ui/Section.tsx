@@ -1,21 +1,20 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/site/Reveal";
+import { SectionHairline } from "@/components/site/Visuals";
 
 interface SectionProps {
   id?: string;
   children: ReactNode;
   className?: string;
-  /** Adds a subtle top divider that reads well on the dark canvas. */
+  /** Adds a subtle animated hairline divider that reads well on the dark canvas. */
   divider?: boolean;
 }
 
 /** Semantic <section> with consistent vertical rhythm and width. */
 export function Section({ id, children, className = "", divider = false }: SectionProps) {
   return (
-    <section
-      id={id}
-      className={`relative py-20 sm:py-24 ${divider ? "border-t border-white/5" : ""} ${className}`}
-    >
+    <section id={id} className={`relative py-20 sm:py-24 ${className}`}>
+      {divider && <SectionHairline />}
       <div className="container-x">{children}</div>
     </section>
   );

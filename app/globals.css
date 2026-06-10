@@ -185,6 +185,79 @@ body {
   }
 }
 
+/* Section hairline: a light blip sweeping left-to-right (transform-only). */
+@keyframes hairline-sweep {
+  0% {
+    transform: translateX(-12rem);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+.hairline-sweep {
+  will-change: transform;
+  animation: hairline-sweep 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* Hero constellation: slow drift + per-node twinkle. */
+@keyframes constellation-drift {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-1.5%, 1.2%, 0);
+  }
+}
+
+@keyframes constellation-twinkle {
+
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.constellation {
+  will-change: transform;
+  animation: constellation-drift 26s ease-in-out infinite;
+}
+
+.constellation-node {
+  animation: constellation-twinkle 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .hairline-sweep,
+  .constellation,
+  .constellation-node {
+    animation: none !important;
+  }
+
+  .hairline-sweep {
+    opacity: 0;
+  }
+}
+
 /* Stack-convergence rotations (orbit rings + conic glow). */
 @keyframes oc-spin {
   to {

@@ -6,7 +6,7 @@ import { Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/site/Reveal";
-import { AuroraBackdrop } from "@/components/site/Visuals";
+import { AuroraBackdrop, Constellation, GridTicks, CornerBrackets } from "@/components/site/Visuals";
 import { HeroBeam } from "@/components/site/SiteBackground";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
@@ -26,6 +26,8 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden pt-20 sm:pt-28">
         <AuroraBackdrop />
+        <GridTicks />
+        <Constellation className="opacity-70 [mask-image:radial-gradient(70%_60%_at_50%_40%,black,transparent)]" />
         <HeroBeam />
         <div className="container-x flex flex-col items-center pb-16 text-center">
           <Reveal>
@@ -33,9 +35,11 @@ export default async function HomePage() {
           </Reveal>
           <Reveal delay={60}>
             <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-              The workspace for the{" "}
-              <span className="text-gradient">AI era</span>.
-              <br className="hidden sm:block" /> Yours forever.
+              <span className="block">
+                The workspace for the{" "}
+                <span className="text-gradient whitespace-nowrap">AI era</span>.
+              </span>
+              <span className="block">Yours forever.</span>
             </h1>
           </Reveal>
           <Reveal delay={120}>
@@ -65,6 +69,7 @@ export default async function HomePage() {
             <ParallaxBox speed={0.08}>
               <div className="relative animate-float">
                 <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-r from-brand/20 via-accent-cyan/10 to-accent-pink/20 blur-2xl" />
+                <CornerBrackets />
                 <HeroShowcase />
               </div>
             </ParallaxBox>
@@ -199,6 +204,7 @@ export default async function HomePage() {
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl border border-white/10 px-8 py-16 text-center">
             <AuroraBackdrop />
+            <GridTicks />
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ready to own your workspace?</h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-400">
               Deploy a self-hosted, AI-native workspace in minutes - or let us host it for you. Your data, your terms.
