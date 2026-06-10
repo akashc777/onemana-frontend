@@ -9,6 +9,7 @@ import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
 import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, type Pricing } from "@/lib/pricing";
 import { AuroraBackdrop } from "@/components/site/Visuals";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 
 type Plan = "lifetime" | "cloud";
 
@@ -141,20 +142,26 @@ function BuyInner() {
               <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Your name or company" autoComplete="name" />
             </Field>
             <Field label="Country">
-              <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputCls}>
-                <option value="IN">India</option>
-                <option value="OTHER">Outside India</option>
-              </select>
+              <Select
+                value={country}
+                onChange={setCountry}
+                ariaLabel="Country"
+                options={[
+                  { value: "IN", label: "India" },
+                  { value: "OTHER", label: "Outside India" },
+                ]}
+              />
             </Field>
             {isIndia && (
               <>
                 <Field label="State" hint="For your GST invoice (place of supply).">
-                  <select value={stateName} onChange={(e) => setStateName(e.target.value)} className={inputCls}>
-                    <option value="">Select state</option>
-                    {indianStates.map((s) => (
-                      <option key={s.code} value={s.name}>{s.name}</option>
-                    ))}
-                  </select>
+                  <Select
+                    value={stateName}
+                    onChange={setStateName}
+                    ariaLabel="State"
+                    placeholder="Select state"
+                    options={indianStates.map((s) => ({ value: s.name, label: s.name }))}
+                  />
                 </Field>
                 <Field label="GSTIN (optional)" hint="Add to claim input tax credit (B2B).">
                   <input value={gstin} onChange={(e) => setGstin(e.target.value.toUpperCase())} className={inputCls} placeholder="29ABCDE1234F1Z5" maxLength={15} />

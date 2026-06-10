@@ -52,7 +52,7 @@ export function StackConvergence() {
       {/* beams + traveling particles */}
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden>
         <defs>
-          <linearGradient id="beamGrad" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="beamGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
             <stop offset="0" stopColor="#34e3e3" />
             <stop offset="1" stopColor="#6d5efc" />
           </linearGradient>

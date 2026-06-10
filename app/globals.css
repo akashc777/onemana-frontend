@@ -168,3 +168,10 @@ body {
     animation: none !important;
   }
 }
+
+/* Native <select> dropdowns: ensure readable options on the dark canvas
+   (the custom <Select> is used on the storefront; this covers admin selects). */
+select option {
+  background-color: #101019;
+  color: #e2e8f0;
+}
