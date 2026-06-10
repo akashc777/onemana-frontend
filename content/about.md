@@ -216,7 +216,7 @@ Circle
 
 **content:**
 
-OneCamp is live! Get it for ₹2,000 ($19) - a one-time purchase that lets you host your own unified workspace forever. Chat, Tasks, Docs, and Video Meetings, all on your server.
+
 
 **title:**
 

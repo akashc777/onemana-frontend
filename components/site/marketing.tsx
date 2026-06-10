@@ -80,7 +80,9 @@ export function FaqItem({ q, a }: { q: string; a: string }) {
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white">
         {q}
         <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full border border-white/10 text-slate-400 transition group-open:rotate-45 group-open:border-brand/40 group-open:text-brand-light">
-          +
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden>
+            <path d="M6 1.5V10.5M1.5 6H10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
         </span>
       </summary>
       <p className="mt-3 text-sm leading-relaxed text-slate-400">{a}</p>
