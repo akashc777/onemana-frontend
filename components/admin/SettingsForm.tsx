@@ -53,6 +53,15 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
     ],
   },
   {
+    group: "OneCamp distribution",
+    fields: [
+      { key: "onecamp_latest_version", label: "Latest version", type: "number", hint: "Major version minted on each purchase, e.g. 2 (license unlocks v2.x.x)." },
+      { key: "onecamp_github_url", label: "Release repo URL", hint: "Private OneCamp repo cloned + built per customer, e.g. https://github.com/you/OneCamp" },
+      { key: "github_username", label: "GitHub username", hint: "Account that can read the release repo." },
+      { key: "github_password", label: "GitHub token", type: "password", hint: "Personal access token (repo read). Stored securely; shown masked." },
+    ],
+  },
+  {
     group: "Company / GST",
     fields: [
       { key: "company_name", label: "Legal Name" },
@@ -67,7 +76,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
   },
 ];
 
-const isSecret = (key: string) => key.endsWith("secret") || key.endsWith("api_key");
+const isSecret = (key: string) => key.endsWith("secret") || key.endsWith("api_key") || key.endsWith("password");
 
 export function SettingsForm() {
   const { data, loading, error, reload } = useAsync<Record<string, string>>(() => adminApi.config());
