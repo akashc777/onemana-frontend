@@ -213,6 +213,15 @@ export const adminApi = {
     });
     if (!res.ok) throw new Error("Failed to delete order");
   },
+  async refundOrder(id: string): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}/refund`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to mark refunded");
+    return (data as { msg?: string })?.msg || "Marked refunded";
+  },
   async deleteInvoice(id: string): Promise<void> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/invoice/${id}`, {
       method: "DELETE",

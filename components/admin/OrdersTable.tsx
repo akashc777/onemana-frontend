@@ -10,6 +10,7 @@ import { FilterBar, emptyFilter, matchesQuery, withinRange, type RangeFilter } f
 export function OrdersTable() {
   const { data, loading, error, reload } = useAsync<Order[]>(() => adminApi.orders());
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [refundingId, setRefundingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<RangeFilter>(emptyFilter);
 
   const filtered = useMemo(
@@ -33,6 +34,19 @@ export function OrdersTable() {
     }
   }
 
+  async function refund(o: Order) {
+    if (!window.confirm(`Mark the order for ${o.email} as refunded? Do this after you've issued the refund (Razorpay, PayPal, or bank). The customer will be emailed a confirmation. This does not move money itself.`)) return;
+    setRefundingId(o.id);
+    try {
+      await adminApi.refundOrder(o.id);
+      reload();
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Failed to mark refunded.");
+    } finally {
+      setRefundingId(null);
+    }
+  }
+
   if (loading || error)
     return <AsyncState loading={loading} error={error} onRetry={reload} />;
 
@@ -53,7 +67,20 @@ export function OrdersTable() {
               <Td><StatusPill status={o.status} /></Td>
               <Td>{o.plan_code}</Td>
               <Td mono>{o.razorpay_payment_id || "-"}</Td>
-              <Td><RowDeleteButton onClick={() => remove(o)} busy={deletingId === o.id} /></Td>
+              <Td>
+                <div className="flex items-center gap-2">
+                  {o.status === "paid" && (
+                    <button
+                      onClick={() => refund(o)}
+                      disabled={refundingId === o.id}
+                      className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300 transition hover:bg-amber-500/20 disabled:opacity-50"
+                    >
+                      {refundingId === o.id ? "…" : "Mark refunded"}
+                    </button>
+                  )}
+                  <RowDeleteButton onClick={() => remove(o)} busy={deletingId === o.id} />
+                </div>
+              </Td>
             </Tr>
           ))
         )}
