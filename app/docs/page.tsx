@@ -10,7 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/docs" },
 };
 
-export const revalidate = 300;
+// Render fresh on each request so newly published docs appear immediately and
+// the page never freezes to an empty build-time snapshot.
+export const dynamic = "force-dynamic";
 
 export default async function DocsIndexPage() {
   let docs = [] as Awaited<ReturnType<typeof listPublishedDocs>>;

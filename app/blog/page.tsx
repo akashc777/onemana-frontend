@@ -13,8 +13,10 @@ export const metadata: Metadata = {
   openGraph: { title: `${site.name} Blog`, url: `${site.url}/blog`, type: "website" },
 };
 
-// Revalidate the index periodically so new posts appear without a redeploy.
-export const revalidate = 300;
+// Render fresh on each request so newly published posts appear immediately
+// (the list is also fetched with no-store) and the page never freezes to an
+// empty build-time snapshot when the backend is unreachable during CI.
+export const dynamic = "force-dynamic";
 
 export default async function BlogIndexPage() {
   let posts = [] as Awaited<ReturnType<typeof listPublishedPosts>>;

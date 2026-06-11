@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 
 interface Props {
   doc: AdminDoc | null;
+  categories?: string[];
   onClose: () => void;
   onSaved: () => void;
 }
@@ -17,7 +18,7 @@ const inputCls =
 /** Markdown-based doc editor with a formatting toolbar, media upload, and a
  *  live preview. Docs use a category + order index for sidebar grouping.
  *  Trusted (admin-only) authoring. */
-export function DocEditor({ doc, onClose, onSaved }: Props) {
+export function DocEditor({ doc, categories = [], onClose, onSaved }: Props) {
   const [title, setTitle] = useState(doc?.title ?? "");
   const [slug, setSlug] = useState(doc?.slug ?? "");
   const [category, setCategory] = useState(doc?.category ?? "");
@@ -218,13 +219,21 @@ export function DocEditor({ doc, onClose, onSaved }: Props) {
               <option value="published">Published</option>
             </select>
           </Field>
-          <Field label="Category" hint="Groups docs in the sidebar. Leave blank for General.">
+          <Field label="Category" hint="Groups docs in the sidebar. Pick an existing one or type a new name.">
             <input
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="Getting started"
+              list="doc-category-options"
               className={inputCls}
             />
+            {categories.length > 0 && (
+              <datalist id="doc-category-options">
+                {categories.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+            )}
           </Field>
           <Field label="Order" hint="Lower numbers appear first within a category.">
             <input

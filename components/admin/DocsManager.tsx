@@ -8,19 +8,33 @@ import { DocEditor } from "@/components/admin/DocEditor";
 
 type View = { mode: "list" } | { mode: "new" } | { mode: "edit"; doc: AdminDoc };
 
-/** Groups admin docs by category, preserving first-seen order. */
+/** Groups admin docs by category, case-insensitively, preserving first-seen
+ *  order and the first-seen label (so "deployment" and "Deployment" merge). */
 function groupByCategory(docs: AdminDoc[]): { category: string; items: AdminDoc[] }[] {
   const order: string[] = [];
+  const labels = new Map<string, string>();
   const map = new Map<string, AdminDoc[]>();
   for (const d of docs) {
-    const cat = d.category.trim() || "General";
-    if (!map.has(cat)) {
-      map.set(cat, []);
-      order.push(cat);
+    const label = d.category.trim() || "General";
+    const key = label.toLowerCase();
+    if (!map.has(key)) {
+      map.set(key, []);
+      labels.set(key, label);
+      order.push(key);
     }
-    map.get(cat)!.push(d);
+    map.get(key)!.push(d);
   }
-  return order.map((category) => ({ category, items: map.get(category)! }));
+  return order.map((key) => ({ category: labels.get(key)!, items: map.get(key)! }));
+}
+
+/** Unique existing category labels (for the editor's reuse datalist). */
+function uniqueCategories(docs: AdminDoc[]): string[] {
+  const seen = new Map<string, string>();
+  for (const d of docs) {
+    const label = d.category.trim();
+    if (label && !seen.has(label.toLowerCase())) seen.set(label.toLowerCase(), label);
+  }
+  return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
 }
 
 export function DocsManager() {
@@ -64,10 +78,10 @@ export function DocsManager() {
   }
 
   if (view.mode === "new") {
-    return <DocEditor doc={null} onClose={() => setView({ mode: "list" })} onSaved={() => setView({ mode: "list" })} />;
+    return <DocEditor doc={null} categories={uniqueCategories(docs)} onClose={() => setView({ mode: "list" })} onSaved={() => setView({ mode: "list" })} />;
   }
   if (view.mode === "edit") {
-    return <DocEditor doc={view.doc} onClose={() => setView({ mode: "list" })} onSaved={() => setView({ mode: "list" })} />;
+    return <DocEditor doc={view.doc} categories={uniqueCategories(docs)} onClose={() => setView({ mode: "list" })} onSaved={() => setView({ mode: "list" })} />;
   }
 
   const groups = groupByCategory(docs);

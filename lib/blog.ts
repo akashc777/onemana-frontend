@@ -26,22 +26,26 @@ export function mediaUrl(url: string): string {
   return `${site.backendUrl}${url.startsWith("/") ? "" : "/"}${url}`;
 }
 
-async function getJSON<T>(path: string, revalidate = 300): Promise<T> {
-  const res = await fetch(`${site.backendUrl}${path}`, { next: { revalidate } });
+async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: boolean } = {}): Promise<T> {
+  const init: RequestInit & { next?: { revalidate: number } } = opts.noStore
+    ? { cache: "no-store" }
+    : { next: { revalidate: opts.revalidate ?? 300 } };
+  const res = await fetch(`${site.backendUrl}${path}`, init);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((data as { msg?: string })?.msg || `Request failed (${res.status})`);
   return (data as { data: T }).data;
 }
 
-/** Published posts for the public blog index (content omitted by the API). */
+/** Published posts for the public blog index (content omitted by the API).
+ *  Always fetched fresh so newly published posts appear immediately. */
 export async function listPublishedPosts(): Promise<BlogPost[]> {
-  return (await getJSON<BlogPost[] | null>("/onecamp/blog")) ?? [];
+  return (await getJSON<BlogPost[] | null>("/onecamp/blog", { noStore: true })) ?? [];
 }
 
 /** A single published post by slug. Returns null on 404. */
 export async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    return await getJSON<BlogPost>(`/onecamp/blog/${encodeURIComponent(slug)}`, 120);
+    return await getJSON<BlogPost>(`/onecamp/blog/${encodeURIComponent(slug)}`, { revalidate: 120 });
   } catch {
     return null;
   }
