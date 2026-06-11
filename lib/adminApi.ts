@@ -120,6 +120,32 @@ export interface BlogPostPayload {
   seo_desc: string;
 }
 
+export interface AdminDoc {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  content: string;
+  order_index: number;
+  status: "draft" | "published";
+  seo_title: string;
+  seo_desc: string;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DocPayload {
+  slug?: string;
+  title: string;
+  category: string;
+  content: string;
+  order_index: number;
+  status: "draft" | "published";
+  seo_title: string;
+  seo_desc: string;
+}
+
 export interface VisitDay {
   date: string;
   views: number;
@@ -349,6 +375,37 @@ export const adminApi = {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Upload failed");
     return (data as { data: { url: string } }).data;
+  },
+
+  // ---- Docs CMS ----
+  docList: () => adminGet<{ data: AdminDoc[] }>("/onecamp/admin/docs").then((d) => d.data ?? []),
+  docGet: (id: string) => adminGet<{ data: AdminDoc }>(`/onecamp/admin/docs/${id}`).then((d) => d.data),
+  async docCreate(payload: DocPayload): Promise<AdminDoc> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/docs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create doc");
+    return (data as { data: AdminDoc }).data;
+  },
+  async docUpdate(id: string, payload: DocPayload): Promise<AdminDoc> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/docs/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update doc");
+    return (data as { data: AdminDoc }).data;
+  },
+  async docDelete(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/docs/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete doc");
   },
 
   // ---- Announcements (broadcast) ----

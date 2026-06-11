@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 import { listPublishedPosts } from "@/lib/blog";
+import { listPublishedDocs } from "@/lib/docs";
 
 const STATIC_ROUTES = [
   "",
@@ -36,5 +37,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Blog API unreachable at build time - ship the static sitemap.
   }
 
-  return [...staticEntries, ...blogEntries];
+  let docEntries: MetadataRoute.Sitemap = [];
+  try {
+    const docs = await listPublishedDocs();
+    docEntries = docs.map((d) => ({
+      url: `${site.url}/docs/${d.slug}`,
+      lastModified: d.updated_at ? new Date(d.updated_at) : now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+  } catch {
+    // Docs API unreachable at build time - ship without doc entries.
+  }
+
+  return [...staticEntries, ...blogEntries, ...docEntries];
 }
