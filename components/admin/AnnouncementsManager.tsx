@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminApi, type Announcement } from "@/lib/adminApi";
+import { mediaUrl as resolveMediaUrl } from "@/lib/blog";
 import { formatDateTime } from "@/lib/format";
 import { AsyncState, StatusPill } from "./ui";
 
@@ -19,6 +20,25 @@ export function AnnouncementsManager() {
   const [saving, setSaving] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+
+  function insertImageMarker() {
+    const marker = "[[image]]";
+    const ta = bodyRef.current;
+    if (!ta) {
+      setBody((b) => (b ? b + "\n\n" : "") + marker + "\n");
+      return;
+    }
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const next = body.slice(0, start) + "\n" + marker + "\n" + body.slice(end);
+    setBody(next);
+    requestAnimationFrame(() => {
+      ta.focus();
+      const pos = start + marker.length + 2;
+      ta.selectionStart = ta.selectionEnd = pos;
+    });
+  }
 
   const load = useCallback(() => {
     setError(null);
@@ -95,9 +115,9 @@ export function AnnouncementsManager() {
       {/* Composer */}
       <form onSubmit={create} className="card space-y-3">
         <h2 className="font-semibold text-white">New product update</h2>
-        <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email.</p>
+        <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email. Emails are personalized with each customer&apos;s name.</p>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title - e.g. OneCamp 2.4: faster search & new calendar" className={inputCls} />
-        <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="What's new… (plain text; blank lines start new paragraphs)" rows={6} className={inputCls} />
+        <textarea ref={bodyRef} value={body} onChange={(e) => setBody(e.target.value)} placeholder="What's new… (plain text; blank lines start new paragraphs). Use Insert image here to place the image within the text." rows={6} className={inputCls} />
         <div className="flex flex-wrap items-center gap-3">
           <input ref={fileRef} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} className="text-xs text-slate-400 file:mr-3 file:rounded-md file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-white" />
           {uploading && <span className="text-xs text-slate-500">Uploading…</span>}
@@ -107,13 +127,18 @@ export function AnnouncementsManager() {
               <button type="button" onClick={() => { setMediaUrl(""); if (fileRef.current) fileRef.current.value = ""; }} className="text-slate-400 hover:text-white">remove</button>
             </span>
           )}
+          {mediaUrl && (
+            <button type="button" onClick={insertImageMarker} className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-300 hover:bg-white/10">
+              Insert image here
+            </button>
+          )}
           <button type="submit" disabled={saving || !title.trim()} className="btn-primary ml-auto px-4 py-2 text-sm">
             {saving ? "Saving…" : "Save draft"}
           </button>
         </div>
         {mediaUrl && (
           // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary uploaded image
-          <img src={mediaUrl} alt="" className="max-h-48 rounded-lg border border-white/10" />
+          <img src={resolveMediaUrl(mediaUrl)} alt="" className="max-h-48 rounded-lg border border-white/10" />
         )}
       </form>
 
@@ -152,13 +177,56 @@ export function AnnouncementsManager() {
                 </div>
                 {a.media_url && (
                   // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary uploaded image
-                  <img src={a.media_url} alt="" className="mt-3 max-h-40 rounded-lg border border-white/10" />
+                  <img src={resolveMediaUrl(a.media_url)} alt="" className="mt-3 max-h-40 rounded-lg border border-white/10" />
                 )}
+                <TestSend id={a.id} />
               </div>
             ))}
           </div>
         )
       )}
+    </div>
+  );
+}
+
+/** Inline control to email a single preview copy before broadcasting. */
+function TestSend({ id }: { id: string }) {
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+
+  async function go() {
+    if (!email.trim()) {
+      window.alert("Enter an email to send the test to.");
+      return;
+    }
+    setSending(true);
+    try {
+      const msg = await adminApi.testAnnouncement(id, email.trim());
+      window.alert(msg);
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Failed to send test");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/5 pt-3">
+      <span className="text-xs text-slate-500">Send a test first:</span>
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        type="email"
+        placeholder="you@example.com"
+        className="w-52 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-white outline-none placeholder:text-slate-500 focus:border-brand"
+      />
+      <button
+        onClick={go}
+        disabled={sending}
+        className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-300 hover:bg-white/10 disabled:opacity-50"
+      >
+        {sending ? "Sending…" : "Send test"}
+      </button>
     </div>
   );
 }

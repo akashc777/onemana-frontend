@@ -309,6 +309,16 @@ export const adminApi = {
     });
     if (!res.ok) throw new Error("Failed to delete customer");
   },
+  async updateCustomerName(id: string, name: string): Promise<Customer> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify({ name }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update customer");
+    return (data as { data: Customer }).data;
+  },
 
   // ---- Analytics + earnings ----
   visitStats: (from?: string, to?: string) =>
@@ -428,6 +438,16 @@ export const adminApi = {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to send");
     return (data as { msg?: string })?.msg || "Broadcast started";
+  },
+  async testAnnouncement(id: string, email: string): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}/test`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to send test");
+    return (data as { msg?: string })?.msg || "Test sent";
   },
   async deleteAnnouncement(id: string): Promise<void> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}`, {
