@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/site/Reveal";
+import { Tilt } from "@/components/site/Tilt";
 import { replaces, stats } from "@/lib/content";
 
 /** Single feature tile. */
@@ -15,13 +16,15 @@ export function FeatureCard({
 }) {
   return (
     <Reveal delay={(index % 3) * 70}>
-      <div className="card card-hover group h-full">
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand/30 to-accent-cyan/20 text-2xl transition-transform duration-300 group-hover:scale-110">
-          {icon}
+      <Tilt className="h-full">
+        <div className="card card-hover group h-full">
+          <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand/30 to-accent-cyan/20 text-2xl transition-transform duration-300 group-hover:scale-110">
+            {icon}
+          </div>
+          <h3 className="mt-4 font-semibold text-white">{title}</h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{body}</p>
         </div>
-        <h3 className="mt-4 font-semibold text-white">{title}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{body}</p>
-      </div>
+      </Tilt>
     </Reveal>
   );
 }

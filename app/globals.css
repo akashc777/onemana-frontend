@@ -245,6 +245,27 @@ body {
   animation: constellation-twinkle 4.5s ease-in-out infinite;
 }
 
+/* Hero pointer-follow spotlight (painted via radial-gradient, no layout). */
+.spotlight {
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 30%),
+      rgba(109, 94, 252, 0.16),
+      rgba(52, 227, 227, 0.06) 40%,
+      transparent 70%);
+}
+
+/* Tilt-card cursor sheen. */
+.tilt-sheen {
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.1),
+      transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.tilt-card:hover .tilt-sheen {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   .hairline-sweep,

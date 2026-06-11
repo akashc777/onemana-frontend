@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/site/Reveal";
 import { AuroraBackdrop, Constellation, GridTicks, CornerBrackets } from "@/components/site/Visuals";
+import { Spotlight } from "@/components/site/Spotlight";
 import { HeroBeam } from "@/components/site/SiteBackground";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
@@ -28,6 +29,7 @@ export default async function HomePage() {
         <AuroraBackdrop />
         <GridTicks />
         <Constellation className="opacity-70 [mask-image:radial-gradient(70%_60%_at_50%_40%,black,transparent)]" />
+        <Spotlight />
         <HeroBeam />
         <div className="container-x flex flex-col items-center pb-16 text-center">
           <Reveal>
@@ -116,7 +118,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="See it in action"
           title={<>Watch your work <span className="text-gradient">come to life</span></>}
-          subtitle="Real-time boards and multiplayer docs - the same calm, fast experience your team uses every day."
+          subtitle="Real-time calendars and multiplayer docs - the same calm, fast experience your team uses every day."
         />
         <Reveal direction="left" className="mt-12">
           <WorkspaceShowcase />

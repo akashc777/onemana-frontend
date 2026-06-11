@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { KanbanShowcase } from "@/components/site/showcase/KanbanShowcase";
+import { CalendarShowcase } from "@/components/site/showcase/CalendarShowcase";
 import { DocShowcase } from "@/components/site/showcase/DocShowcase";
 
 const TABS = [
-  { key: "tasks", label: "Tasks & Kanban", path: "tasks", Comp: KanbanShowcase },
+  { key: "calendar", label: "Calendar & Meetings", path: "calendar", Comp: CalendarShowcase },
   { key: "docs", label: "Collaborative Docs", path: "doc/roadmap", Comp: DocShowcase },
 ] as const;
 
 /**
  * WorkspaceShowcase frames the animated product scenes in a browser window and
- * lets visitors switch tabs (Tasks / Docs). It auto-advances, pausing for a
+ * lets visitors switch tabs (Calendar / Docs). It auto-advances, pausing for a
  * while after a manual selection. Reduced-motion: no auto-advance.
  */
 export function WorkspaceShowcase() {
