@@ -196,6 +196,23 @@ export interface TaxPaymentPayload {
   note: string;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  media_url: string;
+  status: string;
+  recipient_count: number;
+  created_at: string;
+  sent_at: string | null;
+}
+export interface GiftResult {
+  email: string;
+  license_key: string;
+  kind: string;
+  months?: number;
+}
+
 export const adminApi = {
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
@@ -332,6 +349,47 @@ export const adminApi = {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Upload failed");
     return (data as { data: { url: string } }).data;
+  },
+
+  // ---- Announcements (broadcast) ----
+  announcements: () => adminGet<{ data: Announcement[] }>("/onecamp/admin/announcements").then((d) => d.data ?? []),
+  async createAnnouncement(payload: { title: string; body: string; media_url: string }): Promise<Announcement> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create");
+    return (data as { data: Announcement }).data;
+  },
+  async sendAnnouncement(id: string): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}/send`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to send");
+    return (data as { msg?: string })?.msg || "Broadcast started";
+  },
+  async deleteAnnouncement(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete");
+  },
+
+  // ---- Gift (comp a license or Cloud months) ----
+  async gift(payload: { email: string; name: string; kind: "license" | "subscription"; months?: number }): Promise<GiftResult> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/gift`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to gift");
+    return (data as { data: GiftResult }).data;
   },
 };
 
