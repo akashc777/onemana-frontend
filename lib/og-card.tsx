@@ -1,7 +1,7 @@
 import { site } from "@/lib/site";
 
 export const OG_SIZE = { width: 1200, height: 630 };
-export const OG_ALT = "OneCamp — self-hosted workspace with chat, tasks, docs, video, and local AI";
+export const OG_ALT = "OneCamp. Self-hosted workspace with chat, tasks, docs, video, and local AI.";
 
 /** JSX tree consumed by next/og ImageResponse (Satori). */
 export function OgCard() {
@@ -17,7 +17,7 @@ export function OgCard() {
         fontFamily: "Inter",
       }}
     >
-      {/* Aurora + grid — engineered dark canvas */}
+      {/* Aurora + grid background */}
       <div
         style={{
           position: "absolute",
@@ -77,7 +77,7 @@ export function OgCard() {
             </div>
 
             <div style={{ display: "flex", marginTop: 22, fontSize: 22, lineHeight: 1.45, color: "#94a3b8", maxWidth: 560 }}>
-              Replace Slack, Notion, Asana, Zoom & Calendar in one Docker deploy — with local AI that never phones home.
+              {"Slack, Notion, Asana, Zoom, and Calendar in one Docker install. Local AI runs on your server, not someone else's."}
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: 26, gap: 10 }}>
@@ -256,7 +256,7 @@ function WorkspaceMock() {
 
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "14px 16px", gap: 12 }}>
           <ChatLine name="Alex" text="Can we ship the onboarding doc by Thursday?" time="10:42" />
-          <ChatLine name="You" text="Yeah — I'll have it done by Thursday." time="10:43" mine />
+          <ChatLine name="You" text="Yeah, I'll have it done by Thursday." time="10:43" mine />
           <ChatLine name="Sam" text="Budget approved in today's call." time="10:51" />
 
           <div
@@ -275,7 +275,7 @@ function WorkspaceMock() {
               <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e8f0" }}>AI Nudge</div>
             </div>
             <div style={{ display: "flex", marginTop: 6, fontSize: 12, lineHeight: 1.4, color: "#94a3b8" }}>
-              Onboarding doc is overdue — you committed for Thursday.
+              Heads up: onboarding doc is past due. You said Thursday.
             </div>
           </div>
 

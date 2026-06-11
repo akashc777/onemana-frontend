@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 import { loadOgFonts } from "@/lib/og-fonts";
 
 export const runtime = "edge";
-export const alt = `Get OneCamp — $${site.priceUsd} lifetime license`;
+export const alt = `Get OneCamp for $${site.priceUsd} (lifetime license)`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -31,7 +31,7 @@ export default async function BuyOpenGraphImage() {
           <span style={{ color: "#8b7dff" }}> Pay once.</span>
         </div>
         <div style={{ display: "flex", marginTop: 20, fontSize: 28, color: "#94a3b8", maxWidth: 900 }}>
-          Lifetime self-host from ${site.priceUsd} — or managed cloud from ${site.cloudPriceUsd}/mo. Unlimited users. Your server.
+          Self-host for ${site.priceUsd} one time, or managed cloud from ${site.cloudPriceUsd}/mo. Unlimited users on your server.
         </div>
         <div style={{ display: "flex", marginTop: 40, gap: 14 }}>
           <div
