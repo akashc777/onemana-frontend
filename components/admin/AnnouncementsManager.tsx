@@ -136,7 +136,7 @@ export function AnnouncementsManager() {
       {/* Composer */}
       <form ref={formRef} onSubmit={create} className="card space-y-3">
         <h2 className="font-semibold text-white">{editingId ? "Edit draft" : "New product update"}</h2>
-        <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email. Emails are personalized with each customer&apos;s name.</p>
+        <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email. Type {"{name}"} anywhere to insert the customer&apos;s name (falls back to &quot;there&quot;).</p>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title - e.g. OneCamp 2.4: faster search & new calendar" className={inputCls} />
         <textarea ref={bodyRef} value={body} onChange={(e) => setBody(e.target.value)} placeholder="What's new… (plain text; blank lines start new paragraphs). Use Insert image here to place the image within the text." rows={6} className={inputCls} />
         <div className="flex flex-wrap items-center gap-3">
