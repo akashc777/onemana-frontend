@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { footerLinks, site } from "@/lib/site";
+import { OneCampLogo, OneManaLogo } from "@/components/site/BrandMarks";
 
 export function Footer() {
   return (
@@ -7,12 +8,16 @@ export function Footer() {
       <div className="container-x grid grid-cols-2 gap-8 py-14 md:grid-cols-5">
         <div className="col-span-2">
           <div className="flex items-center gap-2 font-semibold text-white">
-            <span className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-brand to-accent-cyan text-white">◎</span>
+            <OneCampLogo className="h-7 w-7" />
             {site.name}
           </div>
           <p className="mt-3 max-w-xs text-sm text-slate-500">
             The self-hosted, all-in-one workspace for the AI era. Your data, your server - own it forever or let us manage it.
           </p>
+          <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+            <OneManaLogo className="h-5 w-5" />
+            <span>A product by {site.company}</span>
+          </div>
         </div>
 
         {Object.entries(footerLinks).map(([group, links]) => (

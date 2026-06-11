@@ -71,3 +71,36 @@ export function OneCampMark({ className = "" }: { className?: string }) {
     </svg>
   );
 }
+
+/** OneCamp product logo: white ring on a warm orange gradient tile. */
+export function OneCampLogo({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 512 512" className={className} fill="none" aria-hidden>
+      <defs>
+        <linearGradient id="ocLogoGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#FF8A00" />
+          <stop offset="1" stopColor="#FF3D00" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="112" fill="url(#ocLogoGrad)" />
+      <circle cx="256" cy="256" r="150" stroke="#FFFFFF" strokeWidth="56" />
+    </svg>
+  );
+}
+
+/** OneMana company logo: white ring on a blue-to-cyan gradient tile (echoes the
+ * site's brand → cyan motif). */
+export function OneManaLogo({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 512 512" className={className} fill="none" aria-hidden>
+      <defs>
+        <linearGradient id="omLogoGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#0066FF" />
+          <stop offset="1" stopColor="#34E3E3" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="112" fill="url(#omLogoGrad)" />
+      <circle cx="256" cy="256" r="150" stroke="#FFFFFF" strokeWidth="56" />
+    </svg>
+  );
+}

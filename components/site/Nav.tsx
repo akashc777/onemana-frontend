@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 import { GitHubStars } from "@/components/site/GitHubStars";
+import { OneCampLogo } from "@/components/site/BrandMarks";
 
 export function Nav({ stars }: { stars?: number | null }) {
   const [open, setOpen] = useState(false);
@@ -25,7 +26,7 @@ export function Nav({ stars }: { stars?: number | null }) {
     >
       <nav className="container-x flex h-16 items-center justify-between" aria-label="Primary">
         <Link href="/" className="flex items-center gap-2 font-semibold text-white">
-          <span className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-brand to-accent-cyan text-white">◎</span>
+          <OneCampLogo className="h-7 w-7" />
           {site.name}
         </Link>
 
