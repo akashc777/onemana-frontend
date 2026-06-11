@@ -50,8 +50,6 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
         options: ["never", "auto", "always"],
         hint: "never = charge GST to everyone (safe). auto = zero-rate as export only when Razorpay flags the payment international (recommended if you have an LUT). always = zero-rate every non-India sale.",
       },
-      { key: "lut_number", label: "GST LUT number", hint: "Printed on export (0%) invoices. e.g. AD2906…" },
-      { key: "lut_date", label: "LUT date", hint: "LUT issue date (for your records)." },
     ],
   },
   {
