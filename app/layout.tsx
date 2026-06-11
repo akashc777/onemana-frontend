@@ -32,14 +32,28 @@ export const metadata: Metadata = {
   authors: [{ name: site.company }],
   alternates: { canonical: "/" },
   openGraph: {
-    title: `${site.name} - One workspace. Yours forever.`,
+    title: `${site.name} — The workspace for the AI era. Yours forever.`,
     description: site.description,
     url: site.url,
     siteName: site.name,
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "OneCamp — self-hosted workspace with chat, tasks, docs, video, and local AI",
+        type: "image/png",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image", title: site.name, description: site.description },
+  twitter: {
+    card: "summary_large_image",
+    title: `${site.name} — One workspace. Yours forever.`,
+    description: site.description,
+    images: ["/twitter-image"],
+  },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };
 
