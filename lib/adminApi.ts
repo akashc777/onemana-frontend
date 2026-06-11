@@ -129,11 +129,23 @@ export interface VisitPath {
   path: string;
   views: number;
 }
+export interface CountryCount {
+  code: string;
+  views: number;
+  uniques: number;
+}
+export interface DeviceCount {
+  device: string;
+  views: number;
+  uniques: number;
+}
 export interface VisitStats {
   total_views: number;
   unique_visitors: number;
   daily: VisitDay[];
   top_paths: VisitPath[];
+  by_country: CountryCount[];
+  by_device: DeviceCount[];
 }
 
 export interface FYEarning {
