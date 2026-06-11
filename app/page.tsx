@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/site/Reveal";
 import { AuroraBackdrop, Constellation, GridTicks, CornerBrackets } from "@/components/site/Visuals";
 import { Spotlight } from "@/components/site/Spotlight";
+import { StepsConnector } from "@/components/site/StepsConnector";
 import { HeroBeam } from "@/components/site/SiteBackground";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
@@ -132,10 +133,13 @@ export default async function HomePage() {
           title="Up and running in 3 steps"
           subtitle="One person installs it. Everyone else just logs in."
         />
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {steps.map((s, i) => (
-            <StepCard key={s.n} n={s.n} title={s.title} body={s.body} index={i} />
-          ))}
+        <div className="relative mt-14">
+          <StepsConnector />
+          <div className="grid gap-5 md:grid-cols-3">
+            {steps.map((s, i) => (
+              <StepCard key={s.n} n={s.n} title={s.title} body={s.body} index={i} />
+            ))}
+          </div>
         </div>
         <Reveal className="mx-auto mt-10 max-w-3xl">
           <div className="glass rounded-2xl p-6 text-center">
