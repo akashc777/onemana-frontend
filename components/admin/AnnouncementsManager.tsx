@@ -19,8 +19,10 @@ export function AnnouncementsManager() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function insertImageMarker() {
     const marker = "[[image]]";
@@ -65,6 +67,23 @@ export function AnnouncementsManager() {
     }
   }
 
+  function resetComposer() {
+    setEditingId(null);
+    setTitle("");
+    setBody("");
+    setMediaUrl("");
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function startEdit(a: Announcement) {
+    setEditingId(a.id);
+    setTitle(a.title);
+    setBody(a.body);
+    setMediaUrl(a.media_url || "");
+    if (fileRef.current) fileRef.current.value = "";
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function create(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
@@ -73,11 +92,13 @@ export function AnnouncementsManager() {
     }
     setSaving(true);
     try {
-      await adminApi.createAnnouncement({ title: title.trim(), body: body.trim(), media_url: mediaUrl });
-      setTitle("");
-      setBody("");
-      setMediaUrl("");
-      if (fileRef.current) fileRef.current.value = "";
+      const payload = { title: title.trim(), body: body.trim(), media_url: mediaUrl };
+      if (editingId) {
+        await adminApi.updateAnnouncement(editingId, payload);
+      } else {
+        await adminApi.createAnnouncement(payload);
+      }
+      resetComposer();
       load();
     } catch (e) {
       window.alert(e instanceof Error ? e.message : "Failed to save");
@@ -113,8 +134,8 @@ export function AnnouncementsManager() {
   return (
     <div className="space-y-8">
       {/* Composer */}
-      <form onSubmit={create} className="card space-y-3">
-        <h2 className="font-semibold text-white">New product update</h2>
+      <form ref={formRef} onSubmit={create} className="card space-y-3">
+        <h2 className="font-semibold text-white">{editingId ? "Edit draft" : "New product update"}</h2>
         <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email. Emails are personalized with each customer&apos;s name.</p>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title - e.g. OneCamp 2.4: faster search & new calendar" className={inputCls} />
         <textarea ref={bodyRef} value={body} onChange={(e) => setBody(e.target.value)} placeholder="What's new… (plain text; blank lines start new paragraphs). Use Insert image here to place the image within the text." rows={6} className={inputCls} />
@@ -133,8 +154,13 @@ export function AnnouncementsManager() {
             </button>
           )}
           <button type="submit" disabled={saving || !title.trim()} className="btn-primary ml-auto px-4 py-2 text-sm">
-            {saving ? "Saving…" : "Save draft"}
+            {saving ? "Saving…" : editingId ? "Update draft" : "Save draft"}
           </button>
+          {editingId && (
+            <button type="button" onClick={resetComposer} className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10">
+              Cancel
+            </button>
+          )}
         </div>
         {mediaUrl && (
           // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary uploaded image
@@ -165,6 +191,9 @@ export function AnnouncementsManager() {
                     </p>
                   </div>
                   <div className="flex flex-shrink-0 items-center gap-2">
+                    {a.status === "draft" && (
+                      <button onClick={() => startEdit(a)} className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-300 hover:bg-white/10">Edit</button>
+                    )}
                     <button
                       onClick={() => send(a)}
                       disabled={sendingId === a.id || a.status === "sending"}

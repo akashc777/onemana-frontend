@@ -430,6 +430,16 @@ export const adminApi = {
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create");
     return (data as { data: Announcement }).data;
   },
+  async updateAnnouncement(id: string, payload: { title: string; body: string; media_url: string }): Promise<Announcement> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update");
+    return (data as { data: Announcement }).data;
+  },
   async sendAnnouncement(id: string): Promise<string> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}/send`, {
       method: "POST",
