@@ -157,6 +157,8 @@ export interface EarningsSummary {
   total_gst: number;
   count: number;
   export_count: number;
+  refunded_count: number;
+  refunded_amount: number;
   total_gst_paid: number;
   by_fy: FYEarning[];
 }

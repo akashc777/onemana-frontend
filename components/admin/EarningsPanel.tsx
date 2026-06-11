@@ -118,11 +118,17 @@ export function EarningsPanel() {
         <>
           {/* Summary cards */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Gross revenue" value={formatINR(data.gross)} hint={`${data.count} invoice${data.count === 1 ? "" : "s"}`} accent />
+            <StatCard label="Gross revenue" value={formatINR(data.gross)} hint={`${data.count} invoice${data.count === 1 ? "" : "s"}${data.refunded_count ? ` · ${data.refunded_count} refunded` : ""}`} accent />
             <StatCard label="Taxable value" value={formatINR(data.taxable)} />
             <StatCard label="GST collected" value={formatINR(data.total_gst)} hint={`CGST ${formatINR(data.cgst)} · SGST ${formatINR(data.sgst)} · IGST ${formatINR(data.igst)}`} />
             <StatCard label="GST remitted" value={formatINR(data.total_gst_paid)} hint={`Outstanding ${formatINR(data.total_gst - data.total_gst_paid)}`} />
           </div>
+
+          {data.refunded_count > 0 && (
+            <p className="text-xs text-slate-500">
+              Net of {data.refunded_count} refunded order{data.refunded_count === 1 ? "" : "s"} ({formatINR(data.refunded_amount)}), which are excluded from revenue and GST above. Record a credit note with your CA to reconcile GST filings.
+            </p>
+          )}
 
           {/* Per-financial-year breakdown */}
           <div className="overflow-x-auto rounded-2xl border border-white/10">
