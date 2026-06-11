@@ -44,6 +44,7 @@ export const footerLinks = {
   ],
   Company: [
     { label: "About Us", href: "/about" },
+    { label: "My Account", href: "/account" },
     { label: "Terms of Service", href: "/terms-of-service" },
   ],
   Policies: [

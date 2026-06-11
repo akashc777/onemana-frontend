@@ -39,6 +39,9 @@ export function Nav({ stars }: { stars?: number | null }) {
             Live Demo
           </a>
           <GitHubStars compact stars={stars} />
+          <Link href="/account" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">
+            Sign in
+          </Link>
           <ButtonLink href="/buy" size="sm">
             Get {site.name}
           </ButtonLink>
@@ -80,6 +83,13 @@ export function Nav({ stars }: { stars?: number | null }) {
             <div className="px-2 py-2">
               <GitHubStars stars={stars} />
             </div>
+            <Link
+              href="/account"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/5"
+            >
+              Sign in
+            </Link>
             <ButtonLink href="/buy" size="md" className="mt-2 w-full">
               Get {site.name}
             </ButtonLink>
