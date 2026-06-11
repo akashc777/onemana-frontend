@@ -18,6 +18,8 @@ function statusBadge(status: string) {
     active: "bg-emerald-500/15 text-emerald-300",
     created: "bg-sky-500/15 text-sky-300",
     paid: "bg-emerald-500/15 text-emerald-300",
+    paused: "bg-sky-500/15 text-sky-300",
+    pending: "bg-amber-500/15 text-amber-300",
     cancelled: "bg-rose-500/15 text-rose-300",
     halted: "bg-amber-500/15 text-amber-300",
     completed: "bg-slate-500/20 text-slate-300",
@@ -298,11 +300,13 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               </div>
               <p className="mt-1 text-xs text-slate-400">{s.seats} seats · {s.plan_code}</p>
               <p className="mt-2 text-sm text-slate-300">
-                {s.cancel_at_period_end
-                  ? `Cancels on ${s.next_due_date ? formatDate(s.next_due_date) : "period end"} — no further charges.`
-                  : s.next_due_date
-                    ? `Next payment on ${formatDate(s.next_due_date)}.`
-                    : "Active."}
+                {s.status === "paused"
+                  ? "Paused - no charges will be made while paused."
+                  : s.cancel_at_period_end
+                    ? `Cancels on ${s.next_due_date ? formatDate(s.next_due_date) : "period end"} - no further charges.`
+                    : s.next_due_date
+                      ? `Next payment on ${formatDate(s.next_due_date)}.`
+                      : "Active."}
               </p>
             </div>
             {s.can_cancel ? (

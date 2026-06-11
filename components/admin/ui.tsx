@@ -32,8 +32,13 @@ const STATUS_STYLES: Record<string, string> = {
   paid: "bg-emerald-500/15 text-emerald-300",
   active: "bg-emerald-500/15 text-emerald-300",
   created: "bg-amber-500/15 text-amber-300",
+  pending: "bg-amber-500/15 text-amber-300",
+  paused: "bg-sky-500/15 text-sky-300",
+  halted: "bg-red-500/15 text-red-300",
   failed: "bg-red-500/15 text-red-300",
   cancelled: "bg-slate-500/20 text-slate-400",
+  completed: "bg-slate-500/20 text-slate-400",
+  expired: "bg-slate-500/20 text-slate-400",
   refunded: "bg-slate-500/20 text-slate-400",
 };
 

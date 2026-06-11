@@ -58,6 +58,19 @@ export interface Customer {
   country: string;
   created_at: string;
 }
+export interface Subscription {
+  id: string;
+  customer_id: string;
+  razorpay_subscription_id: string;
+  plan_code: string;
+  seats: number;
+  status: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  license_id?: string | null;
+  created_at: string;
+  updated_at: string;
+}
 export interface Invoice {
   id: string;
   invoice_no: string;
@@ -178,6 +191,7 @@ export const adminApi = {
   },
   orders: () => adminGet<{ data: Order[] }>("/onecamp/admin/orders").then((d) => d.data ?? []),
   customers: () => adminGet<{ data: Customer[] }>("/onecamp/admin/customers").then((d) => d.data ?? []),
+  subscriptions: () => adminGet<{ data: Subscription[] }>("/onecamp/admin/subscriptions").then((d) => d.data ?? []),
   invoices: () => adminGet<{ data: Invoice[] }>("/onecamp/admin/invoices").then((d) => d.data ?? []),
   config: () => adminGet<{ data: Record<string, string> }>("/onecamp/admin/config").then((d) => d.data ?? {}),
   async setConfig(key: string, value: string): Promise<void> {

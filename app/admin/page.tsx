@@ -6,12 +6,13 @@ import { AdminLogin } from "@/components/admin/AdminLogin";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { CustomersTable } from "@/components/admin/CustomersTable";
 import { InvoicesTable } from "@/components/admin/InvoicesTable";
+import { SubscriptionsTable } from "@/components/admin/SubscriptionsTable";
 import { SettingsForm } from "@/components/admin/SettingsForm";
 import { BlogManager } from "@/components/admin/BlogManager";
 import { VisitorsPanel } from "@/components/admin/VisitorsPanel";
 import { EarningsPanel } from "@/components/admin/EarningsPanel";
 
-const TABS = ["orders", "earnings", "customers", "invoices", "visitors", "blog", "settings"] as const;
+const TABS = ["orders", "earnings", "subscriptions", "customers", "invoices", "visitors", "blog", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -51,6 +52,7 @@ export default function AdminPage() {
 
       {tab === "orders" && <OrdersTable />}
       {tab === "earnings" && <EarningsPanel />}
+      {tab === "subscriptions" && <SubscriptionsTable />}
       {tab === "customers" && <CustomersTable />}
       {tab === "invoices" && <InvoicesTable />}
       {tab === "visitors" && <VisitorsPanel />}
