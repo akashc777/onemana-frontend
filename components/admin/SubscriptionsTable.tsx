@@ -20,6 +20,20 @@ export function SubscriptionsTable() {
     })),
   );
   const [filter, setFilter] = useState<RangeFilter>(emptyFilter);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
+
+  async function cancel(s: Subscription) {
+    if (!window.confirm("Cancel this customer's subscription? No further renewals will be charged; access stays until the current period ends.")) return;
+    setCancelingId(s.id);
+    try {
+      await adminApi.cancelSubscription(s.id);
+      reload();
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Failed to cancel subscription.");
+    } finally {
+      setCancelingId(null);
+    }
+  }
 
   const emailById = data?.emailById ?? {};
   const filtered = useMemo(() => {
@@ -39,30 +53,46 @@ export function SubscriptionsTable() {
         OneCamp Cloud subscriptions. Failed auto-pay is stopped automatically and the customer is emailed; every successful charge issues a GST invoice (see the Invoices tab).
       </p>
       <FilterBar value={filter} onChange={setFilter} placeholder="Search email, plan, status…" count={filtered.length} />
-      <DataTable head={["Customer", "Plan", "Status", "Seats", "Next due", "Created", "Razorpay ID"]}>
+      <DataTable head={["Customer", "Plan", "Status", "Seats", "Next due", "Created", "Razorpay ID", ""]}>
         {filtered.length === 0 ? (
           <Tr>
-            <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">No matching subscriptions.</td>
+            <td colSpan={8} className="px-3 py-8 text-center text-sm text-slate-500">No matching subscriptions.</td>
           </Tr>
         ) : (
-          filtered.map((s) => (
-            <Tr key={s.id}>
-              <Td>{emailById[s.customer_id] || <span className="text-slate-500">unknown</span>}</Td>
-              <Td>{s.plan_code}</Td>
-              <Td>
-                <div className="flex items-center gap-1.5">
-                  <StatusPill status={s.status} />
-                  {s.cancel_at_period_end && s.status !== "cancelled" && (
-                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-300">cancels at period end</span>
+          filtered.map((s) => {
+            const canCancel = ["active", "created", "paused", "authenticated", "pending"].includes(s.status) && !s.cancel_at_period_end;
+            return (
+              <Tr key={s.id}>
+                <Td>{emailById[s.customer_id] || <span className="text-slate-500">unknown</span>}</Td>
+                <Td>{s.plan_code}</Td>
+                <Td>
+                  <div className="flex items-center gap-1.5">
+                    <StatusPill status={s.status} />
+                    {s.cancel_at_period_end && s.status !== "cancelled" && (
+                      <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-300">cancels at period end</span>
+                    )}
+                  </div>
+                </Td>
+                <Td>{s.seats}</Td>
+                <Td>{s.current_period_end ? formatDate(s.current_period_end) : "—"}</Td>
+                <Td>{formatDateTime(s.created_at)}</Td>
+                <Td mono>{s.razorpay_subscription_id || "—"}</Td>
+                <Td>
+                  {canCancel ? (
+                    <button
+                      onClick={() => cancel(s)}
+                      disabled={cancelingId === s.id}
+                      className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300 transition hover:bg-amber-500/20 disabled:opacity-50"
+                    >
+                      {cancelingId === s.id ? "…" : "Cancel"}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-slate-600">—</span>
                   )}
-                </div>
-              </Td>
-              <Td>{s.seats}</Td>
-              <Td>{s.current_period_end ? formatDate(s.current_period_end) : "—"}</Td>
-              <Td>{formatDateTime(s.created_at)}</Td>
-              <Td mono>{s.razorpay_subscription_id || "—"}</Td>
-            </Tr>
-          ))
+                </Td>
+              </Tr>
+            );
+          })
         )}
       </DataTable>
     </div>

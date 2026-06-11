@@ -236,6 +236,22 @@ export const adminApi = {
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to mark refunded");
     return (data as { msg?: string })?.msg || "Marked refunded";
   },
+  async revokeOrderLicense(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}/revoke-license`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to revoke license");
+  },
+  async cancelSubscription(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/subscription/${id}/cancel`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to cancel subscription");
+  },
   async deleteInvoice(id: string): Promise<void> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/invoice/${id}`, {
       method: "DELETE",
