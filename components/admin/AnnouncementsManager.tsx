@@ -14,6 +14,7 @@ export function AnnouncementsManager() {
   const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
+  const [preheader, setPreheader] = useState("");
   const [body, setBody] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -70,6 +71,7 @@ export function AnnouncementsManager() {
   function resetComposer() {
     setEditingId(null);
     setTitle("");
+    setPreheader("");
     setBody("");
     setMediaUrl("");
     if (fileRef.current) fileRef.current.value = "";
@@ -78,6 +80,7 @@ export function AnnouncementsManager() {
   function startEdit(a: Announcement) {
     setEditingId(a.id);
     setTitle(a.title);
+    setPreheader(a.preheader || "");
     setBody(a.body);
     setMediaUrl(a.media_url || "");
     if (fileRef.current) fileRef.current.value = "";
@@ -92,7 +95,7 @@ export function AnnouncementsManager() {
     }
     setSaving(true);
     try {
-      const payload = { title: title.trim(), body: body.trim(), media_url: mediaUrl };
+      const payload = { title: title.trim(), preheader: preheader.trim(), body: body.trim(), media_url: mediaUrl };
       if (editingId) {
         await adminApi.updateAnnouncement(editingId, payload);
       } else {
@@ -138,6 +141,7 @@ export function AnnouncementsManager() {
         <h2 className="font-semibold text-white">{editingId ? "Edit draft" : "New product update"}</h2>
         <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email. Type {"{name}"} anywhere to insert the customer&apos;s name (falls back to &quot;there&quot;).</p>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title - e.g. OneCamp 2.4: faster search & new calendar" className={inputCls} />
+        <input value={preheader} onChange={(e) => setPreheader(e.target.value)} placeholder="Preview text (preheader) - the line shown after the subject in the inbox" className={inputCls} />
         <textarea ref={bodyRef} value={body} onChange={(e) => setBody(e.target.value)} placeholder="What's new… (plain text; blank lines start new paragraphs). Use Insert image here to place the image within the text." rows={6} className={inputCls} />
         <div className="flex flex-wrap items-center gap-3">
           <input ref={fileRef} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} className="text-xs text-slate-400 file:mr-3 file:rounded-md file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-white" />

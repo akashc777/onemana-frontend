@@ -225,6 +225,7 @@ export interface TaxPaymentPayload {
 export interface Announcement {
   id: string;
   title: string;
+  preheader: string;
   body: string;
   media_url: string;
   status: string;
@@ -420,7 +421,7 @@ export const adminApi = {
 
   // ---- Announcements (broadcast) ----
   announcements: () => adminGet<{ data: Announcement[] }>("/onecamp/admin/announcements").then((d) => d.data ?? []),
-  async createAnnouncement(payload: { title: string; body: string; media_url: string }): Promise<Announcement> {
+  async createAnnouncement(payload: { title: string; preheader: string; body: string; media_url: string }): Promise<Announcement> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
@@ -430,7 +431,7 @@ export const adminApi = {
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create");
     return (data as { data: Announcement }).data;
   },
-  async updateAnnouncement(id: string, payload: { title: string; body: string; media_url: string }): Promise<Announcement> {
+  async updateAnnouncement(id: string, payload: { title: string; preheader: string; body: string; media_url: string }): Promise<Announcement> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
