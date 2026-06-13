@@ -70,7 +70,7 @@ export function OrdersTable() {
       <DataTable head={["Date", "Email", "Amount", "Status", "Plan", "Payment ID", ""]}>
         {filtered.length === 0 ? (
           <Tr>
-            <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">No matching orders.</td>
+            <td colSpan={7} className="px-3 py-8 text-center text-sm text-muted-foreground">No matching orders.</td>
           </Tr>
         ) : (
           filtered.map((o) => (
@@ -87,7 +87,7 @@ export function OrdersTable() {
                     <button
                       onClick={() => refund(o)}
                       disabled={refundingId === o.id}
-                      className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300 transition hover:bg-amber-500/20 disabled:opacity-50"
+                      className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700 transition hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-300"
                     >
                       {refundingId === o.id ? "…" : "Mark refunded"}
                     </button>
@@ -96,7 +96,7 @@ export function OrdersTable() {
                     <button
                       onClick={() => revokeKey(o)}
                       disabled={revokingId === o.id}
-                      className="rounded-md border border-orange-500/20 bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-300 transition hover:bg-orange-500/20 disabled:opacity-50"
+                      className="rounded-md border border-orange-500/20 bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-700 transition hover:bg-orange-500/20 disabled:opacity-50 dark:text-orange-300"
                     >
                       {revokingId === o.id ? "…" : "Revoke key"}
                     </button>

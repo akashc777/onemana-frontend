@@ -1,202 +1,208 @@
+import Link from "next/link";
+import { features, steps, faqs, requirements, trustPoints, whyBuilt } from "@/lib/content";
 import { site } from "@/lib/site";
-import { features, steps, faqs, requirements } from "@/lib/content";
-import { getPricing, fmtUSD } from "@/lib/pricing";
+import { getPricing } from "@/lib/pricing";
 import { getGithubStars } from "@/lib/github";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/site/Reveal";
-import { AuroraBackdrop, Constellation, GridTicks, CornerBrackets } from "@/components/site/Visuals";
-import { Spotlight } from "@/components/site/Spotlight";
-import { StepsConnector } from "@/components/site/StepsConnector";
-import { HeroBeam } from "@/components/site/SiteBackground";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
-import { HeroShowcase } from "@/components/site/HeroShowcase";
-import { ParallaxBox } from "@/components/site/ParallaxBox";
+import { HeroMedia } from "@/components/site/HeroMedia";
+import { HeroProductVideo } from "@/components/site/HeroProductVideo";
+
 import { StackConvergence } from "@/components/site/StackConvergence";
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
-import { FeatureCard, StepCard, StatStrip, ReplacesMarquee, FaqItem } from "@/components/site/marketing";
+import { FeatureCard, StepCard, StatStrip, FaqItem } from "@/components/site/marketing";
+import { StepsConnector } from "@/components/site/StepsConnector";
+import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
+import { StickyBuyCta } from "@/components/site/StickyBuyCta";
+import { SocialProof } from "@/components/site/SocialProof";
+import { SectionAmbient } from "@/components/site/SectionAmbient";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
   const pricing = await getPricing();
   const stars = await getGithubStars();
+
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-20 sm:pt-28">
-        <AuroraBackdrop />
-        <GridTicks />
-        <Constellation className="opacity-70 [mask-image:radial-gradient(70%_60%_at_50%_40%,black,transparent)]" />
-        <Spotlight />
-        <HeroBeam />
-        <div className="container-x flex flex-col items-center pb-16 text-center">
-          <Reveal>
-            <Badge dot>Self-hosted · AI-native · One-time or managed</Badge>
-          </Reveal>
-          <Reveal delay={60}>
-            <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-              <span className="block">
-                The workspace for the{" "}
-                <span className="text-gradient whitespace-nowrap">AI era</span>.
-              </span>
-              <span className="block">Yours forever.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={120}>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-400">
-              OneCamp replaces Slack, Notion, Asana, Zoom, and Google Calendar in a single Docker deploy - with a built-in AI that runs entirely on your own server. No per-seat fees. No data leaving your infrastructure.
-            </p>
-          </Reveal>
-          <Reveal delay={180}>
-            <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-              <ButtonLink href="/buy" size="lg">
-                Get OneCamp - {fmtUSD(pricing.lifetime_usd)} one-time
-              </ButtonLink>
-              <ButtonLink href={site.demoUrl} external variant="ghost" size="lg">
-                Try Live Demo →
-              </ButtonLink>
-              <GitHubStars className="!py-3.5" stars={stars} />
-            </div>
-          </Reveal>
-          <Reveal delay={240}>
-            <p className="mt-4 text-xs text-slate-500">
-              Just {fmtUSD(pricing.lifetime_usd)} once · or go fully managed with OneCamp Cloud at {fmtUSD(pricing.cloud_usd)}/mo
-            </p>
-          </Reveal>
+      <StickyBuyCta />
 
-          {/* Live product preview */}
-          <Reveal delay={200} direction="scale" className="mt-16 w-full max-w-5xl">
-            <ParallaxBox speed={0.08}>
-              <div className="relative animate-float">
-                <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-r from-brand/20 via-accent-cyan/10 to-accent-pink/20 blur-2xl" />
-                <CornerBrackets />
-                <HeroShowcase />
+      {/* Hero */}
+      <section className="relative overflow-hidden pb-8 pt-14 sm:pb-12 sm:pt-20">
+        <HeroAmbient />
+        <div className="container-x">
+          <div className="mx-auto max-w-4xl text-center">
+            <Reveal>
+              <Badge dot>Built by OneMana · Self-hosted · Open-source frontend</Badge>
+            </Reveal>
+            <Reveal delay={60}>
+              <h1 className="mt-7 text-4xl font-semibold leading-[1.04] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.5rem]">
+                <span className="block">
+                  The workspace for the <ShimmerText>AI era</ShimmerText>.
+                </span>
+                <span className="hero-line-2 mt-1 block tracking-[-0.04em]">Yours forever.</span>
+              </h1>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                OneCamp puts chat, docs, tasks, video, calendar, and local AI in one Docker deploy on your server. No per-seat fees. Your data stays where you put it.
+              </p>
+            </Reveal>
+            <Reveal delay={180}>
+              <div className="mt-9 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mx-auto sm:max-w-none sm:flex-row">
+                <ButtonLink href="/buy" variant="brandPremium" size="lg" className="w-full sm:w-auto">
+                  Get OneCamp
+                </ButtonLink>
+                <ButtonLink href={site.demoUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
+                  Try live demo
+                </ButtonLink>
               </div>
-            </ParallaxBox>
+              <p className="mt-4 flex justify-center text-xs text-muted-foreground">
+                <GitHubStars className="!py-1.5" stars={stars} />
+              </p>
+            </Reveal>
+            <Reveal delay={240}>
+              <TrustStrip points={trustPoints} />
+            </Reveal>
+          </div>
+
+          <Reveal delay={200} direction="scale" className="mx-auto mt-16 w-full max-w-6xl">
+            <HeroMedia />
           </Reveal>
         </div>
       </section>
 
-      {/* Stack convergence — the wow moment */}
-      <Section divider>
+      <Section id="tour" divider className="overflow-hidden">
+        <SectionAmbient variant="tour" />
         <SectionHeading
-          eyebrow="One workspace"
-          title={<>One install replaces your <span className="text-gradient">entire stack</span></>}
-          subtitle="Chat, channels, docs, tasks & kanban, calendar, and meetings. Every tool your team juggles, folded into a single self-hosted app with AI at its core."
+          eyebrow="Product tour"
+          title="See it before you commit"
+          subtitle="Walk through the real app: channels, AI, docs, tasks, and more. No slick mockups."
         />
-        <div className="mt-12">
-          <StackConvergence />
-        </div>
-        <Reveal direction="scale" className="mt-6">
-          <ReplacesMarquee />
+        <Reveal direction="scale" className="mt-12">
+          <div className="tour-video-glow relative">
+            <HeroProductVideo />
+          </div>
         </Reveal>
       </Section>
 
-      {/* Stats */}
-      <Section className="!py-16">
+      <Section divider className="overflow-hidden">
+        <SectionAmbient variant="features" />
+        <SectionHeading
+          eyebrow={whyBuilt.eyebrow}
+          title={whyBuilt.title}
+          subtitle={whyBuilt.subtitle}
+        />
+        <Reveal className="mx-auto mt-8 max-w-2xl">
+          <p className="text-center text-base leading-relaxed text-muted-foreground">{whyBuilt.story}</p>
+        </Reveal>
+        <div className="mt-12">
+          <StackConvergence />
+        </div>
+        <div className="mt-14">
+          <SocialProof />
+        </div>
+      </Section>
+
+      <Section divider spacing="compact">
         <StatStrip />
       </Section>
 
-      {/* Features */}
-      <Section id="features" divider>
+      <Section id="features" divider className="overflow-hidden">
         <SectionHeading
-          eyebrow="Features"
-          title="Everything your team needs"
-          subtitle="Eight modules, one unified workspace - all self-hosted, with AI at the core."
+          eyebrow="What's inside"
+          title="Everything in one workspace"
+          subtitle="Not integrations taped onto chat. Native modules built to work together from day one."
         />
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
             <FeatureCard key={f.title} icon={f.icon} title={f.title} body={f.body} index={i} />
           ))}
         </div>
       </Section>
 
-      {/* See it in action — animated Tasks + Docs showcases */}
-      <Section divider>
+      <Section divider className="overflow-hidden">
+        <SectionAmbient variant="product" />
         <SectionHeading
-          eyebrow="See it in action"
-          title={<>Watch your work <span className="text-gradient">come to life</span></>}
-          subtitle="Real-time calendars and multiplayer docs - the same calm, fast experience your team uses every day."
+          eyebrow="Inside the product"
+          title="What it actually looks like"
+          subtitle="Calendars with a live now-line. Docs with someone else's cursor in them. The same UI we use at OneMana."
         />
         <Reveal direction="left" className="mt-12">
           <WorkspaceShowcase />
         </Reveal>
       </Section>
 
-      {/* Steps */}
       <Section divider>
         <SectionHeading
-          eyebrow="How it works"
-          title="Up and running in 3 steps"
-          subtitle="One person installs it. Everyone else just logs in."
+          eyebrow="Getting started"
+          title="One person installs. Everyone else logs in."
+          subtitle="Most teams are up in under ten minutes. SSL, database, and AI models are handled by the installer."
         />
-        <div className="relative mt-14">
+        <div className="relative mt-12 grid gap-5 md:grid-cols-3">
           <StepsConnector />
-          <div className="grid gap-5 md:grid-cols-3">
-            {steps.map((s, i) => (
-              <StepCard key={s.n} n={s.n} title={s.title} body={s.body} index={i} />
-            ))}
-          </div>
+          {steps.map((s, i) => (
+            <StepCard key={s.n} n={s.n} title={s.title} body={s.body} index={i} />
+          ))}
         </div>
-        <Reveal className="mx-auto mt-10 max-w-3xl">
-          <div className="glass rounded-2xl p-6 text-center">
-            <p className="text-sm text-slate-300">
-              📱 <span className="font-semibold text-white">Works on every device.</span> Desktop, tablet, and mobile - as a web app or a PWA you launch from your home screen, with push notifications and app badges. No app store needed.
-            </p>
+        <Reveal className="mx-auto mt-10 max-w-2xl">
+          <div className="rounded-lg border border-border bg-muted/30 px-5 py-4 text-center text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Works on every device.</span> Web, PWA with push notifications, no app store required.
           </div>
         </Reveal>
       </Section>
 
-      {/* Pricing */}
-      <Section id="pricing" divider>
+      <Section id="pricing" divider className="overflow-hidden">
+        <SectionAmbient variant="pricing" />
         <SectionHeading
           eyebrow="Pricing"
-          title="Own it, or let us run it"
-          subtitle="Buy a lifetime self-host license, or go fully managed with OneCamp Cloud. Either way, your Cloud plan includes a self-host license."
+          title="Buy once, or let us host it"
+          subtitle="One lifetime license for self-hosting, or fully managed OneCamp Cloud. Cloud includes a self-host license if you ever want to move."
         />
         <Pricing pricing={pricing} />
       </Section>
 
-      {/* System requirements */}
       <Section divider>
         <div className="mx-auto max-w-3xl">
           <SectionHeading
-            eyebrow="Specs"
-            title="System requirements"
-            subtitle="Packaged as Docker containers. Our command handles deploy, SSL, and AI setup."
+            eyebrow="Hardware"
+            title="What you'll need"
+            subtitle="Docker containers. The install command handles deploy, SSL, and optional local AI."
           />
-          <Reveal direction="right" className="mt-12 overflow-hidden rounded-2xl border border-white/10">
-            <table className="w-full text-center text-sm">
-              <thead className="bg-white/5 text-slate-400">
+          <Reveal direction="right" className="mt-12 overflow-hidden rounded-lg border border-border">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[32rem] text-center text-sm">
+              <thead className="border-b border-border bg-muted/50 text-muted-foreground">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">Team Size</th>
-                  <th className="px-4 py-3 font-semibold">RAM</th>
-                  <th className="px-4 py-3 font-semibold">CPU</th>
-                  <th className="px-4 py-3 font-semibold">AI Ready</th>
+                  <th className="px-4 py-3.5 font-medium">Team size</th>
+                  <th className="px-4 py-3.5 font-medium">RAM</th>
+                  <th className="px-4 py-3.5 font-medium">CPU</th>
+                  <th className="px-4 py-3.5 font-medium">Local AI</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border/70">
                 {requirements.map((r) => (
-                  <tr key={r.team} className="transition-colors hover:bg-white/[0.03]">
-                    <td className="px-4 py-3 font-medium text-white">{r.team}</td>
-                    <td className="px-4 py-3 text-slate-400">{r.ram}</td>
-                    <td className="px-4 py-3 text-slate-400">{r.cpu}</td>
-                    <td className="px-4 py-3 text-slate-400">{r.ai}</td>
+                  <tr key={r.team} className="transition-colors hover:bg-muted/40">
+                    <td className="px-4 py-3.5 font-medium text-foreground">{r.team}</td>
+                    <td className="px-4 py-3.5 text-muted-foreground">{r.ram}</td>
+                    <td className="px-4 py-3.5 text-muted-foreground">{r.cpu}</td>
+                    <td className="px-4 py-3.5 text-muted-foreground">{r.ai}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            </div>
           </Reveal>
         </div>
       </Section>
 
-      {/* FAQ */}
       <Section id="faq" divider>
-        <div className="mx-auto max-w-3xl">
-          <SectionHeading eyebrow="FAQ" title="Frequently asked questions" />
+        <div className="mx-auto max-w-2xl">
+          <SectionHeading eyebrow="Questions" title="Things people ask before they buy" />
           <div className="mt-12 space-y-3">
             {faqs.map((f) => (
               <FaqItem key={f.q} q={f.q} a={f.a} />
@@ -205,24 +211,37 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* Final CTA */}
       <Section>
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 px-8 py-16 text-center">
-            <AuroraBackdrop />
-            <GridTicks />
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ready to own your workspace?</h2>
-            <p className="mx-auto mt-4 max-w-xl text-slate-400">
-              Deploy a self-hosted, AI-native workspace in minutes - or let us host it for you. Your data, your terms.
+          <div className="premium-cta px-8 py-16 text-center sm:px-12">
+            <div className="premium-cta-mesh" aria-hidden />
+            <h2 className="relative text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              If your tab bar is full of subscriptions, this is for you.
+            </h2>
+            <p className="relative mx-auto mt-4 max-w-md text-muted-foreground">
+              One workspace on your server. No renting it forever.
             </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <ButtonLink href="/buy" size="lg">
-                Get OneCamp - {fmtUSD(pricing.lifetime_usd)}
+            <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <ButtonLink href="/buy" variant="brandPremium" size="lg">
+                Get OneCamp
               </ButtonLink>
-              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="lg">
-                Explore OneCamp Cloud
+              <ButtonLink href={site.demoUrl} external variant="ghost" size="lg">
+                Try live demo
               </ButtonLink>
             </div>
+            <p className="relative mt-4 text-xs text-muted-foreground">
+              <Link href="#pricing" className="underline-offset-2 hover:text-foreground hover:underline">
+                See pricing
+              </Link>
+              {" "}
+              for lifetime and cloud plans
+            </p>
+            <p className="relative mt-5 text-xs text-muted-foreground">
+              Instant license key · GST invoice ·{" "}
+              <Link href="/refund-policy" className="underline-offset-2 hover:text-foreground hover:underline">
+                30-day refund policy
+              </Link>
+            </p>
           </div>
         </Reveal>
       </Section>

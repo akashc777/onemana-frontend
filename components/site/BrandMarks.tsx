@@ -15,11 +15,31 @@ export function SlackMark({ className = "" }: { className?: string }) {
   );
 }
 
+/** Slack hash with a periodic "organize" motion — pieces drift, then snap into place. */
+export function SlackMarkAnimated({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden>
+      <g className="slack-piece slack-piece-a">
+        <rect x="4" y="10.5" width="7.5" height="3" rx="1.5" fill="#36C5F0" />
+      </g>
+      <g className="slack-piece slack-piece-b">
+        <rect x="10.5" y="4" width="3" height="7.5" rx="1.5" fill="#2EB67D" />
+      </g>
+      <g className="slack-piece slack-piece-c">
+        <rect x="12.5" y="10.5" width="7.5" height="3" rx="1.5" fill="#ECB22E" />
+      </g>
+      <g className="slack-piece slack-piece-d">
+        <rect x="10.5" y="12.5" width="3" height="7.5" rx="1.5" fill="#E01E5A" />
+      </g>
+    </svg>
+  );
+}
+
 export function NotionMark({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>
       <rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="#fff" />
-      <path d="M8 16.5V7.5l8 9v-9" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 16.5V7.5l8 9v-9" fill="none" stroke="#37352f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

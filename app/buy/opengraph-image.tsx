@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 import { loadOgFonts } from "@/lib/og-fonts";
 
 export const runtime = "edge";
-export const alt = `Get OneCamp for $${site.priceUsd} (lifetime license)`;
+export const alt = `Get OneCamp — $${site.priceUsd} lifetime or $${site.cloudPriceUsd}/mo cloud`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -19,29 +19,54 @@ export default async function BuyOpenGraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           padding: 72,
-          background:
-            "radial-gradient(90% 70% at 15% 10%, rgba(109,94,252,0.35) 0%, transparent 55%), radial-gradient(70% 60% at 90% 90%, rgba(52,227,227,0.14) 0%, transparent 55%), #06060a",
-          color: "#fff",
+          background: "#ffffff",
+          color: "#222222",
           fontFamily: "Inter",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", fontSize: 22, fontWeight: 600, color: "#64748b" }}>onemana.dev / buy</div>
-        <div style={{ display: "flex", marginTop: 28, fontSize: 64, fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
-          Get OneCamp.
-          <span style={{ color: "#8b7dff" }}> Pay once.</span>
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "linear-gradient(#e1e4e8 1px, transparent 1px), linear-gradient(90deg, #e1e4e8 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            opacity: 0.4,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 180,
+            background: "radial-gradient(ellipse 90% 70% at 50% -20%, rgba(255,77,0,0.12), transparent 62%)",
+          }}
+        />
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "#FF4D00" }} />
+
+        <div style={{ display: "flex", fontSize: 16, fontWeight: 600, color: "#FF4D00", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+          Pricing
         </div>
-        <div style={{ display: "flex", marginTop: 20, fontSize: 28, color: "#94a3b8", maxWidth: 900 }}>
-          Self-host for ${site.priceUsd} one time, or managed cloud from ${site.cloudPriceUsd}/mo. Unlimited users on your server.
+        <div style={{ display: "flex", marginTop: 20, fontSize: 54, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
+          Buy once,
+          <span style={{ color: "#FF4D00" }}> or let us host it.</span>
         </div>
-        <div style={{ display: "flex", marginTop: 40, gap: 14 }}>
+        <div style={{ display: "flex", marginTop: 18, fontSize: 23, color: "#5f6368", maxWidth: 820, lineHeight: 1.4 }}>
+          Lifetime self-host for ${site.priceUsd}, unlimited users, local AI included. Or managed OneCamp Cloud from ${site.cloudPriceUsd}/mo.
+        </div>
+        <div style={{ display: "flex", marginTop: 34, gap: 10 }}>
           <div
             style={{
               display: "flex",
-              padding: "14px 24px",
-              borderRadius: 14,
-              background: "linear-gradient(135deg, #6d5efc, #5847e0)",
-              fontSize: 24,
-              fontWeight: 700,
+              padding: "13px 22px",
+              borderRadius: 8,
+              background: "#FF4D00",
+              fontSize: 21,
+              fontWeight: 600,
+              color: "#ffffff",
             }}
           >
             ${site.priceUsd} lifetime
@@ -49,17 +74,20 @@ export default async function BuyOpenGraphImage() {
           <div
             style={{
               display: "flex",
-              padding: "14px 24px",
-              borderRadius: 14,
-              border: "1px solid rgba(255,255,255,0.12)",
-              background: "rgba(255,255,255,0.05)",
-              fontSize: 24,
+              padding: "13px 22px",
+              borderRadius: 8,
+              border: "1px solid #e1e4e8",
+              background: "#fafbfc",
+              fontSize: 21,
               fontWeight: 600,
-              color: "#cbd5e1",
+              color: "#5f6368",
             }}
           >
             ${site.cloudPriceUsd}/mo cloud
           </div>
+        </div>
+        <div style={{ display: "flex", marginTop: 28, fontSize: 15, color: "#5f6368" }}>
+          onemana.dev/buy · GST invoice · 30-day refund
         </div>
       </div>
     ),

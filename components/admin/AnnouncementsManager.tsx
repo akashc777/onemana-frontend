@@ -7,7 +7,7 @@ import { formatDateTime } from "@/lib/format";
 import { AsyncState, StatusPill } from "./ui";
 
 const inputCls =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";
+  "w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
 
 export function AnnouncementsManager() {
   const [items, setItems] = useState<Announcement[] | null>(null);
@@ -138,22 +138,22 @@ export function AnnouncementsManager() {
     <div className="space-y-8">
       {/* Composer */}
       <form ref={formRef} onSubmit={create} className="card space-y-3">
-        <h2 className="font-semibold text-white">{editingId ? "Edit draft" : "New product update"}</h2>
-        <p className="-mt-1 text-xs text-slate-500">Write an update, optionally attach an image, then send it to every customer by email. Type {"{name}"} anywhere to insert the customer&apos;s name (falls back to &quot;there&quot;).</p>
+        <h2 className="font-semibold text-foreground">{editingId ? "Edit draft" : "New product update"}</h2>
+        <p className="-mt-1 text-xs text-muted-foreground">Write an update, optionally attach an image, then send it to every customer by email. Type {"{name}"} anywhere to insert the customer&apos;s name (falls back to &quot;there&quot;).</p>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title - e.g. OneCamp 2.4: faster search & new calendar" className={inputCls} />
         <input value={preheader} onChange={(e) => setPreheader(e.target.value)} placeholder="Preview text (preheader) - the line shown after the subject in the inbox" className={inputCls} />
         <textarea ref={bodyRef} value={body} onChange={(e) => setBody(e.target.value)} placeholder="What's new… (plain text; blank lines start new paragraphs). Use Insert image here to place the image within the text." rows={6} className={inputCls} />
         <div className="flex flex-wrap items-center gap-3">
-          <input ref={fileRef} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} className="text-xs text-slate-400 file:mr-3 file:rounded-md file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:text-white" />
-          {uploading && <span className="text-xs text-slate-500">Uploading…</span>}
+          <input ref={fileRef} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} className="text-xs text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-xs file:text-foreground" />
+          {uploading && <span className="text-xs text-muted-foreground">Uploading…</span>}
           {mediaUrl && (
-            <span className="flex items-center gap-2 text-xs text-emerald-300">
+            <span className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300">
               Image attached
-              <button type="button" onClick={() => { setMediaUrl(""); if (fileRef.current) fileRef.current.value = ""; }} className="text-slate-400 hover:text-white">remove</button>
+              <button type="button" onClick={() => { setMediaUrl(""); if (fileRef.current) fileRef.current.value = ""; }} className="text-muted-foreground hover:text-foreground">remove</button>
             </span>
           )}
           {mediaUrl && (
-            <button type="button" onClick={insertImageMarker} className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-300 hover:bg-white/10">
+            <button type="button" onClick={insertImageMarker} className="rounded-md border border-border bg-muted px-2.5 py-1.5 text-xs text-foreground/80 hover:bg-muted">
               Insert image here
             </button>
           )}
@@ -161,14 +161,14 @@ export function AnnouncementsManager() {
             {saving ? "Saving…" : editingId ? "Update draft" : "Save draft"}
           </button>
           {editingId && (
-            <button type="button" onClick={resetComposer} className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10">
+            <button type="button" onClick={resetComposer} className="rounded-lg border border-border bg-muted px-4 py-2 text-sm text-foreground/80 hover:bg-muted">
               Cancel
             </button>
           )}
         </div>
         {mediaUrl && (
           // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary uploaded image
-          <img src={resolveMediaUrl(mediaUrl)} alt="" className="max-h-48 rounded-lg border border-white/10" />
+          <img src={resolveMediaUrl(mediaUrl)} alt="" className="max-h-48 rounded-lg border border-border" />
         )}
       </form>
 
@@ -176,19 +176,19 @@ export function AnnouncementsManager() {
       <AsyncState loading={items === null && !error} error={error} onRetry={load} />
       {items && (
         items.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center text-sm text-slate-500">No announcements yet.</p>
+          <p className="rounded-2xl border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">No announcements yet.</p>
         ) : (
           <div className="space-y-3">
             {items.map((a) => (
-              <div key={a.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div key={a.id} className="rounded-2xl border border-border bg-muted/30 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-white">{a.title}</h3>
+                      <h3 className="font-semibold text-foreground">{a.title}</h3>
                       <StatusPill status={a.status} />
                     </div>
-                    <p className="mt-1 whitespace-pre-line text-sm text-slate-400">{a.body.slice(0, 240)}{a.body.length > 240 ? "…" : ""}</p>
-                    <p className="mt-2 text-xs text-slate-500">
+                    <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body.slice(0, 240)}{a.body.length > 240 ? "…" : ""}</p>
+                    <p className="mt-2 text-xs text-muted-foreground">
                       Created {formatDateTime(a.created_at)}
                       {a.status === "sent" && ` · sent to ${a.recipient_count} customer${a.recipient_count === 1 ? "" : "s"}`}
                       {a.sent_at && ` · ${formatDateTime(a.sent_at)}`}
@@ -196,7 +196,7 @@ export function AnnouncementsManager() {
                   </div>
                   <div className="flex flex-shrink-0 items-center gap-2">
                     {a.status === "draft" && (
-                      <button onClick={() => startEdit(a)} className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-300 hover:bg-white/10">Edit</button>
+                      <button onClick={() => startEdit(a)} className="rounded-md border border-border bg-muted px-2.5 py-1.5 text-xs text-foreground/80 hover:bg-muted">Edit</button>
                     )}
                     <button
                       onClick={() => send(a)}
@@ -205,12 +205,12 @@ export function AnnouncementsManager() {
                     >
                       {sendingId === a.id || a.status === "sending" ? "Sending…" : a.status === "sent" ? "Resend to all" : "Send to all"}
                     </button>
-                    <button onClick={() => remove(a)} className="rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1.5 text-xs text-red-300 hover:bg-red-500/20">Delete</button>
+                    <button onClick={() => remove(a)} className="rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1.5 text-xs text-red-700 hover:bg-red-500/20 dark:text-red-300">Delete</button>
                   </div>
                 </div>
                 {a.media_url && (
                   // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary uploaded image
-                  <img src={resolveMediaUrl(a.media_url)} alt="" className="mt-3 max-h-40 rounded-lg border border-white/10" />
+                  <img src={resolveMediaUrl(a.media_url)} alt="" className="mt-3 max-h-40 rounded-lg border border-border" />
                 )}
                 <TestSend id={a.id} />
               </div>
@@ -244,19 +244,19 @@ function TestSend({ id }: { id: string }) {
   }
 
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/5 pt-3">
-      <span className="text-xs text-slate-500">Send a test first:</span>
+    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+      <span className="text-xs text-muted-foreground">Send a test first:</span>
       <input
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         type="email"
         placeholder="you@example.com"
-        className="w-52 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-white outline-none placeholder:text-slate-500 focus:border-brand"
+        className="w-52 rounded-lg border border-border bg-muted px-2.5 py-1.5 text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-brand"
       />
       <button
         onClick={go}
         disabled={sending}
-        className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-300 hover:bg-white/10 disabled:opacity-50"
+        className="rounded-md border border-border bg-muted px-2.5 py-1.5 text-xs text-foreground/80 hover:bg-muted disabled:opacity-50"
       >
         {sending ? "Sending…" : "Send test"}
       </button>

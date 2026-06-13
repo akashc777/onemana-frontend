@@ -17,12 +17,6 @@ interface SelectProps {
   className?: string;
 }
 
-/**
- * A modern, accessible dark-theme dropdown (listbox pattern) — replaces the
- * native <select> whose option popup can't be styled on the dark canvas.
- * Keyboard: ↑/↓ to move, Enter/Space to select, Esc to close, type-ahead.
- * Closes on outside click and blur.
- */
 export function Select({ value, onChange, options, placeholder = "Select…", ariaLabel, disabled, className = "" }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -35,7 +29,6 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
 
   const close = useCallback(() => setOpen(false), []);
 
-  // Close on outside click.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
@@ -45,7 +38,6 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
     return () => document.removeEventListener("mousedown", onDown);
   }, [open, close]);
 
-  // When opening, focus the active option index on the current value.
   useEffect(() => {
     if (open) {
       const i = options.findIndex((o) => o.value === value);
@@ -53,7 +45,6 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
     }
   }, [open, value, options]);
 
-  // Keep the active option in view.
   useEffect(() => {
     if (!open || !listRef.current) return;
     const el = listRef.current.children[active] as HTMLElement | undefined;
@@ -102,7 +93,6 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         setOpen(false);
         break;
       default:
-        // Type-ahead.
         if (e.key.length === 1) {
           const now = Date.now();
           typeahead.current.buf = now - typeahead.current.at > 600 ? e.key : typeahead.current.buf + e.key;
@@ -123,11 +113,11 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-left text-sm text-white outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30 disabled:opacity-50"
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-background px-3.5 py-2.5 text-left text-sm text-foreground outline-none transition focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 disabled:opacity-50"
       >
-        <span className={selected ? "text-white" : "text-slate-500"}>{selected ? selected.label : placeholder}</span>
+        <span className={selected ? "text-foreground" : "text-muted-foreground"}>{selected ? selected.label : placeholder}</span>
         <svg
-          className={`h-4 w-4 flex-shrink-0 text-slate-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`}
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
@@ -143,7 +133,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
           role="listbox"
           aria-labelledby={labelId}
           tabIndex={-1}
-          className="absolute z-50 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-white/10 bg-canvas-raised/95 p-1 shadow-2xl backdrop-blur-xl"
+          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-border bg-background p-1 shadow-elevated"
         >
           {options.map((opt, i) => {
             const isSelected = opt.value === value;
@@ -155,13 +145,13 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
                 aria-selected={isSelected}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => choose(i)}
-                className={`flex cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  isActive ? "bg-brand/20 text-white" : "text-slate-300"
+                className={`flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+                  isActive ? "bg-muted text-foreground" : "text-muted-foreground"
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
                 {isSelected && (
-                  <svg className="h-4 w-4 flex-shrink-0 text-brand-light" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <svg className="h-4 w-4 flex-shrink-0 text-brand" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2">
                     <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}

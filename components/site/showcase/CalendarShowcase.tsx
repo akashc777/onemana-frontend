@@ -59,17 +59,14 @@ function EventBlock({ ev, fresh }: { ev: Ev; fresh?: boolean }) {
         backgroundColor: `${ev.color}22`,
       }}
     >
-      <p className="truncate text-[10px] font-semibold leading-tight text-white">{ev.title}</p>
+      <p className="truncate text-[10px] font-semibold leading-tight text-foreground">{ev.title}</p>
       {ev.live ? (
-        <span className="mt-0.5 inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-wide text-emerald-300">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-emerald-400" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          </span>
+        <span className="mt-0.5 inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
           Live now
         </span>
       ) : (
-        <p className="truncate text-[8px] text-slate-400">
+        <p className="truncate text-[8px] text-muted-foreground">
           {fmt(ev.start)} - {fmt(ev.end)}
         </p>
       )}
@@ -85,7 +82,7 @@ function fmt(h: number) {
   return m ? `${h12}:${String(m).padStart(2, "0")}${ampm}` : `${h12}${ampm}`;
 }
 
-export function CalendarShowcase() {
+export function CalendarShowcase({ embedded = false }: { embedded?: boolean }) {
   const [showNew, setShowNew] = useState(false);
   const reduce = useRef(false);
 
@@ -95,28 +92,29 @@ export function CalendarShowcase() {
       setShowNew(true);
       return;
     }
-    let hideT: ReturnType<typeof setTimeout>;
+    const hideT = { current: undefined as ReturnType<typeof setTimeout> | undefined };
     const cycle = setInterval(() => {
       setShowNew(true);
-      hideT = setTimeout(() => setShowNew(false), 4200);
+      if (hideT.current) clearTimeout(hideT.current);
+      hideT.current = setTimeout(() => setShowNew(false), 4200);
     }, 6500);
     return () => {
       clearInterval(cycle);
-      clearTimeout(hideT);
+      if (hideT.current) clearTimeout(hideT.current);
     };
   }, []);
 
   return (
-    <div className="flex h-[420px] flex-col">
-      <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+    <div className={`flex flex-col ${embedded ? "h-full min-h-0" : "h-[420px]"}`}>
+      <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-white">October 2025</p>
-          <p className="text-xs text-slate-500">Week 42 · Team calendar</p>
+          <p className="text-sm font-medium text-foreground">October 2025</p>
+          <p className="text-xs text-muted-foreground">Week 42 · Team calendar</p>
         </div>
-        <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs">
-          <span className="rounded-md px-2 py-1 text-slate-400">Day</span>
-          <span className="rounded-md bg-brand px-2 py-1 font-medium text-white">Week</span>
-          <span className="rounded-md px-2 py-1 text-slate-400">Month</span>
+        <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-xs">
+          <span className="rounded-md px-2 py-1 text-muted-foreground">Day</span>
+          <span className="rounded-md bg-background px-2 py-1 font-medium text-foreground shadow-sm">Week</span>
+          <span className="rounded-md px-2 py-1 text-muted-foreground">Month</span>
         </div>
       </header>
 
@@ -127,7 +125,7 @@ export function CalendarShowcase() {
             {HOURS.map((h, i) => (
               <div
                 key={h}
-                className="absolute right-1.5 -translate-y-1/2 text-[9px] text-slate-500"
+                className="absolute right-1.5 -translate-y-1/2 text-[9px] text-muted-foreground"
                 style={{ top: `${(i / SPAN) * 100}%` }}
               >
                 {fmt(h)}
@@ -139,13 +137,13 @@ export function CalendarShowcase() {
         {/* day columns */}
         <div className="grid flex-1 grid-cols-5">
           {DAYS.map((d, di) => (
-            <div key={d.label} className="flex flex-col border-l border-white/5">
+            <div key={d.label} className="flex flex-col border-l border-border">
               {/* day header */}
-              <div className="flex h-8 items-center justify-center gap-1.5 border-b border-white/5">
-                <span className="text-[10px] font-medium uppercase text-slate-500">{d.label}</span>
+              <div className="flex h-8 items-center justify-center gap-1.5 border-b border-border">
+                <span className="text-[10px] font-medium uppercase text-muted-foreground">{d.label}</span>
                 <span
                   className={`grid h-5 w-5 place-items-center rounded-full text-[10px] font-semibold ${
-                    d.today ? "bg-brand text-white" : "text-slate-300"
+                    d.today ? "bg-foreground text-background" : "text-muted-foreground"
                   }`}
                 >
                   {d.date}
@@ -158,7 +156,7 @@ export function CalendarShowcase() {
                 {HOURS.map((h, i) => (
                   <div
                     key={h}
-                    className="absolute inset-x-0 border-t border-white/5"
+                    className="absolute inset-x-0 border-t border-border/60"
                     style={{ top: `${(i / SPAN) * 100}%` }}
                   />
                 ))}

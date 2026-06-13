@@ -38,14 +38,14 @@ export default function AccountPage() {
   }
 
   if (state.phase === "loading") {
-    return <div className="grid min-h-[70vh] place-items-center text-sm text-slate-500">Loading…</div>;
+    return <div className="grid min-h-[70vh] place-items-center text-sm text-muted-foreground">Loading…</div>;
   }
 
   if (state.phase === "error") {
     return (
       <div className="grid min-h-[70vh] place-items-center px-5 text-center text-sm">
         <div>
-          <p className="text-red-400">{state.message}</p>
+          <p className="text-red-600 dark:text-red-400">{state.message}</p>
           <button onClick={load} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
         </div>
       </div>

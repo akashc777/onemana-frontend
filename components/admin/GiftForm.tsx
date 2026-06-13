@@ -4,7 +4,7 @@ import { useState } from "react";
 import { adminApi } from "@/lib/adminApi";
 
 const inputCls =
-  "rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";
+  "rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
 
 /**
  * GiftForm lets an admin grant a free lifetime license or N months of Cloud to
@@ -53,8 +53,8 @@ export function GiftForm({ onGifted }: { onGifted?: () => void }) {
   return (
     <form onSubmit={submit} className="card mb-6 space-y-3">
       <div>
-        <h2 className="font-semibold text-white">Gift access</h2>
-        <p className="mt-0.5 text-xs text-slate-500">Grant a free lifetime license or a few months of Cloud to any email. They&apos;ll get their key by email.</p>
+        <h2 className="font-semibold text-foreground">Gift access</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">Grant a free lifetime license or a few months of Cloud to any email. They&apos;ll get their key by email.</p>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Recipient email" className={`${inputCls} lg:col-span-2`} />
@@ -72,8 +72,8 @@ export function GiftForm({ onGifted }: { onGifted?: () => void }) {
       {kind === "subscription" && (
         <button type="submit" disabled={busy} className="btn-primary px-4 py-2 text-sm">{busy ? "Gifting…" : "Gift"}</button>
       )}
-      {msg && <p className="break-all text-xs text-emerald-300">{msg}</p>}
-      {err && <p className="text-xs text-red-400">{err}</p>}
+      {msg && <p className="break-all text-xs text-emerald-700 dark:text-emerald-300">{msg}</p>}
+      {err && <p className="text-xs text-red-600 dark:text-red-400">{err}</p>}
     </form>
   );
 }

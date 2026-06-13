@@ -5,11 +5,9 @@ import { getPost, listPublishedPosts, mediaUrl } from "@/lib/blog";
 import { renderMarkdown, readingTime } from "@/lib/markdown";
 import { formatDate } from "@/lib/format";
 import { site } from "@/lib/site";
-import { AuroraBackdrop } from "@/components/site/Visuals";
 
 export const revalidate = 120;
 
-// Pre-render published posts at build for speed + SEO; new ones are ISR'd.
 export async function generateStaticParams() {
   try {
     const posts = await listPublishedPosts();
@@ -66,12 +64,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   };
 
   return (
-    <article className="relative overflow-hidden">
-      <AuroraBackdrop className="!h-[60vh]" />
+    <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <div className="container-x max-w-3xl pt-16 sm:pt-24">
-        <Link href="/blog" className="text-sm text-slate-400 transition-colors hover:text-white">
+      <div className="container-x max-w-prose pt-12 sm:pt-16">
+        <Link href="/blog" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
           ← Back to blog
         </Link>
 
@@ -79,15 +76,15 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           {post.tags?.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
               {post.tags.map((t) => (
-                <span key={t} className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-brand-light">
+                <span key={t} className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
                   {t}
                 </span>
               ))}
             </div>
           )}
-          <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl">{post.title}</h1>
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-slate-400">
-            {post.author && <span className="font-medium text-slate-300">{post.author}</span>}
+          <h1 className="text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">{post.title}</h1>
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            {post.author && <span className="font-medium text-foreground">{post.author}</span>}
             {post.published_at && (
               <>
                 <span aria-hidden>·</span>
@@ -100,20 +97,20 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </header>
 
         {cover && (
-          <div className="mt-8 overflow-hidden rounded-2xl border border-white/10">
+          <div className="mt-8 overflow-hidden rounded-xl border border-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cover} alt="" className="w-full object-cover" />
           </div>
         )}
 
         <div
-          className="prose prose-invert prose-lg mt-10 max-w-none pb-24
-            prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:text-white
-            prose-a:text-brand-light prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-white prose-code:text-accent-cyan
-            prose-pre:rounded-xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-canvas-soft
-            prose-blockquote:border-l-brand prose-blockquote:text-slate-300
-            prose-img:rounded-xl prose-img:border prose-img:border-white/10"
+          className="prose prose-lg mt-10 max-w-none pb-20
+            prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:text-foreground
+            prose-a:text-brand prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-foreground
+            prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-pre:bg-muted
+            prose-blockquote:border-l-brand prose-blockquote:text-muted-foreground
+            prose-img:rounded-xl prose-img:border prose-img:border-border"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>

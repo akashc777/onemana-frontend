@@ -1,22 +1,41 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ShowcaseShell } from "@/components/site/showcase/ShowcaseShell";
 import { CalendarShowcase } from "@/components/site/showcase/CalendarShowcase";
 import { DocShowcase } from "@/components/site/showcase/DocShowcase";
+import { TasksShowcase } from "@/components/site/showcase/TasksShowcase";
 
 const TABS = [
-  { key: "calendar", label: "Calendar & Meetings", path: "calendar", Comp: CalendarShowcase },
-  { key: "docs", label: "Collaborative Docs", path: "doc/roadmap", Comp: DocShowcase },
+  { key: "calendar", label: "Calendar", nav: "calendar" as const, path: "/app/calendar", Comp: CalendarShowcase },
+  { key: "docs", label: "Docs", nav: "home" as const, path: "/app/doc/roadmap", Comp: DocShowcase },
+  { key: "tasks", label: "Tasks", nav: "tasks" as const, path: "/app/project/board", Comp: TasksShowcase },
 ] as const;
 
-/**
- * WorkspaceShowcase frames the animated product scenes in a browser window and
- * lets visitors switch tabs (Calendar / Docs). It auto-advances, pausing for a
- * while after a manual selection. Reduced-motion: no auto-advance.
- */
 export function WorkspaceShowcase() {
   const [active, setActive] = useState(0);
   const pausedUntil = useRef(0);
+  const tabBarRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+
+  const measure = useCallback(() => {
+    const bar = tabBarRef.current;
+    const tab = tabRefs.current[active];
+    if (!bar || !tab) return;
+    const b = bar.getBoundingClientRect();
+    const t = tab.getBoundingClientRect();
+    setIndicator({ left: t.left - b.left, width: t.width });
+  }, [active]);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure]);
+
+  useEffect(() => {
+    window.addEventListener("resize", measure, { passive: true });
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -33,19 +52,28 @@ export function WorkspaceShowcase() {
     pausedUntil.current = Date.now() + 15000;
   };
 
-  const Active = TABS[active].Comp;
-
   return (
-    <div>
-      {/* tab pills */}
-      <div className="mx-auto mb-6 flex w-fit flex-wrap justify-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
+    <div className="relative">
+      <div
+        ref={tabBarRef}
+        className="relative mb-5 flex gap-1 overflow-x-auto rounded-lg border border-border bg-muted/50 p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <span
+          className="tab-indicator absolute bottom-0.5 top-0.5 rounded-md bg-background shadow-sm transition-all duration-300 ease-out"
+          style={{ left: indicator.left, width: indicator.width }}
+          aria-hidden
+        />
         {TABS.map((t, i) => (
           <button
             key={t.key}
+            ref={(el) => {
+              tabRefs.current[i] = el;
+            }}
+            type="button"
             onClick={() => select(i)}
             aria-pressed={active === i}
-            className={`rounded-lg px-3.5 py-2 text-sm font-medium transition ${
-              active === i ? "bg-brand text-white" : "text-slate-400 hover:text-white"
+            className={`relative z-10 min-h-[44px] flex-shrink-0 rounded-md px-4 py-2.5 text-sm font-medium transition-colors duration-200 sm:px-3.5 sm:py-2 ${
+              active === i ? "text-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t.label}
@@ -53,18 +81,24 @@ export function WorkspaceShowcase() {
         ))}
       </div>
 
-      {/* browser window frame */}
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-canvas-raised shadow-2xl">
-        <div className="flex items-center gap-2 border-b border-white/10 bg-white/[0.03] px-4 py-3">
-          <span className="h-3 w-3 rounded-full bg-rose-400/80" />
-          <span className="h-3 w-3 rounded-full bg-amber-400/80" />
-          <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
-          <div className="mx-auto flex items-center gap-2 rounded-md bg-white/5 px-3 py-1 text-xs text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            onecamp.acme.com/{TABS[active].path}
+      <div className="workspace-beam pointer-events-none absolute inset-x-0 top-1/2 -z-10 hidden h-px bg-gradient-to-r from-transparent via-brand/20 to-transparent lg:block" aria-hidden />
+
+      <div className="relative min-h-[min(420px,72vh)] sm:min-h-[420px]">
+        {TABS.map((t, i) => (
+          <div
+            key={t.key}
+            className={`transition-all duration-500 ease-out ${
+              active === i
+                ? "relative z-10 translate-y-0 opacity-100"
+                : "pointer-events-none absolute inset-0 z-0 translate-y-2 opacity-0"
+            }`}
+            aria-hidden={active !== i}
+          >
+            <ShowcaseShell activeNav={t.nav} path={t.path} heightClass="h-[min(420px,72vh)] sm:h-[420px]">
+              <t.Comp embedded />
+            </ShowcaseShell>
           </div>
-        </div>
-        <Active />
+        ))}
       </div>
     </div>
   );

@@ -50,10 +50,10 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
 
   return (
     <>
-      <section className="border-b border-white/5 pt-16 sm:pt-20">
-        <div className="container-x pb-8">
-          {doc.category && <p className="text-sm font-medium text-brand-light">{doc.category}</p>}
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">{doc.title}</h1>
+      <section className="border-b border-border pt-14 sm:pt-16">
+        <div className="container-x pb-6">
+          {doc.category && <p className="text-sm font-medium text-brand">{doc.category}</p>}
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{doc.title}</h1>
         </div>
       </section>
 
@@ -61,14 +61,14 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
 
       <DocsShell groups={groups} activeSlug={doc.slug}>
         <div
-          className="prose prose-invert prose-lg max-w-none
-            prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:text-white
-            prose-a:text-brand-light prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-white prose-code:text-accent-cyan
-            prose-pre:rounded-xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-canvas-soft
-            prose-blockquote:border-l-brand prose-blockquote:text-slate-300
-            prose-img:rounded-xl prose-img:border prose-img:border-white/10
-            prose-table:overflow-hidden prose-th:text-white"
+          className="prose prose-lg max-w-none
+            prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:text-foreground
+            prose-a:text-brand prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-foreground
+            prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-pre:bg-muted
+            prose-blockquote:border-l-brand prose-blockquote:text-muted-foreground
+            prose-img:rounded-xl prose-img:border prose-img:border-border
+            prose-table:overflow-hidden prose-th:text-foreground"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </DocsShell>

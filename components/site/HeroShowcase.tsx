@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ShowcaseShell } from "@/components/site/showcase/ShowcaseShell";
+import { IconSparkles } from "@/components/site/showcase/ShowcaseIcons";
+import { TypingIndicator } from "@/components/site/TypingIndicator";
 
-/**
- * HeroShowcase renders a realistic, animated OneCamp workspace window modeled
- * on the real product: a live channel chat (messages slide in, a typing
- * indicator resolves into a reply) and the OneCamp AI Assistant panel that
- * streams a grounded answer with source citations — exactly like the app.
- * Pure CSS + light timers, fully responsive, reduced-motion aware.
- */
-
-interface Msg {
+interface Post {
   author: string;
   initials: string;
   color: string;
@@ -19,14 +14,40 @@ interface Msg {
   reaction?: string;
 }
 
-const SCRIPT: Msg[] = [
-  { author: "Priya Nair", initials: "PN", color: "from-rose-400 to-pink-500", text: "Shipped the new checkout flow to staging 🚀", time: "9:41", reaction: "🎉" },
-  { author: "Daniel Cho", initials: "DC", color: "from-sky-400 to-cyan-500", text: "Nice! Reviewing now — the latency drop looks great.", time: "9:42" },
-  { author: "Aisha Khan", initials: "AK", color: "from-violet-400 to-brand", text: "Can we get a recap for the folks in APAC?", time: "9:43" },
+const POSTS: Post[] = [
+  {
+    author: "Priya Nair",
+    initials: "PN",
+    color: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
+    text: "Shipped the new checkout flow to staging. Latency is down 40% on the payment path.",
+    time: "9:41 AM",
+    reaction: "🎉",
+  },
+  {
+    author: "Daniel Cho",
+    initials: "DC",
+    color: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+    text: "Reviewing now. The deploy looks clean — nice work on the rollback guardrails.",
+    time: "9:42 AM",
+  },
+  {
+    author: "Aisha Khan",
+    initials: "AK",
+    color: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
+    text: "Can we get a recap for the folks in APAC? I missed the morning thread.",
+    time: "9:43 AM",
+  },
 ];
 
-const AI_ANSWER =
-  "Here's today in #engineering: Priya shipped the new checkout flow to staging, Daniel is reviewing it (latency is down), and Aisha asked for an APAC recap. Two tasks were closed.";
+const USER_PROMPT = "Summarize #engineering today";
+
+const AI_ANSWER = `Here's today's #engineering recap:
+
+• Priya shipped checkout to staging (latency down 40%)
+• Daniel is reviewing the deploy
+• Aisha asked for an APAC recap
+
+2 tasks closed today.`;
 
 const SOURCES = [
   { label: "Post", ctx: "#engineering" },
@@ -34,227 +55,280 @@ const SOURCES = [
   { label: "Task", ctx: "Checkout v2" },
 ];
 
+type DemoPhase = "channel" | "cue" | "typing" | "sent" | "thinking" | "streaming" | "done";
+
+const POST_GAP_MS = 2400;
+const CUE_MS = 1600;
+const TYPE_MS = 2000;
+const THINK_MS = 1500;
+const HOLD_MS = 5500;
+
+/** Hero product preview — channel posts + AI Assistant panel, aligned with OneCamp FE. */
 export function HeroShowcase({ className = "" }: { className?: string }) {
-  const [visible, setVisible] = useState(1);
-  const [typing, setTyping] = useState(false);
+  const [visiblePosts, setVisiblePosts] = useState(1);
+  const [cycle, setCycle] = useState(0);
+  const [phase, setPhase] = useState<DemoPhase>("channel");
+  const [inputText, setInputText] = useState("");
   const [aiText, setAiText] = useState("");
   const [showSources, setShowSources] = useState(false);
   const reduce = useRef(false);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     reduce.current =
       typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce.current) {
-      setVisible(SCRIPT.length);
+      setVisiblePosts(POSTS.length);
+      setPhase("done");
+      setInputText("");
       setAiText(AI_ANSWER);
       setShowSources(true);
     }
   }, []);
 
-  // Chat stream: reveal messages with a typing beat, then loop.
+  /* Channel: reveal posts one at a time (only rendered posts take space). */
+  useEffect(() => {
+    if (reduce.current || phase !== "channel") return;
+    if (visiblePosts >= POSTS.length) return;
+
+    const t = setTimeout(() => setVisiblePosts((n) => n + 1), POST_GAP_MS);
+    return () => clearTimeout(t);
+  }, [visiblePosts, phase, cycle]);
+
+  /* After last post lands, start the AI sequence. */
+  useEffect(() => {
+    if (reduce.current || visiblePosts < POSTS.length || phase !== "channel") return;
+
+    const t = setTimeout(() => setPhase("cue"), CUE_MS);
+    return () => clearTimeout(t);
+  }, [visiblePosts, phase, cycle]);
+
+  /* cue → typing → sent → thinking → streaming */
   useEffect(() => {
     if (reduce.current) return;
-    let t: ReturnType<typeof setTimeout>;
-    if (visible < SCRIPT.length) {
-      setTyping(true);
-      t = setTimeout(() => {
-        setTyping(false);
-        setVisible((v) => v + 1);
-      }, 1600);
-    } else {
-      t = setTimeout(() => {
-        setVisible(1);
+    if (phase === "cue") {
+      const t = setTimeout(() => setPhase("typing"), 900);
+      return () => clearTimeout(t);
+    }
+    if (phase === "sent") {
+      const t = setTimeout(() => setPhase("thinking"), 400);
+      return () => clearTimeout(t);
+    }
+    if (phase === "thinking") {
+      const t = setTimeout(() => setPhase("streaming"), THINK_MS);
+      return () => clearTimeout(t);
+    }
+    if (phase === "done") {
+      const t = setTimeout(() => {
+        setVisiblePosts(1);
+        setPhase("channel");
+        setInputText("");
         setAiText("");
         setShowSources(false);
-      }, 6500);
+        setCycle((c) => c + 1);
+      }, HOLD_MS);
+      return () => clearTimeout(t);
     }
-    return () => clearTimeout(t);
-  }, [visible]);
+  }, [phase, cycle]);
 
-  // AI Assistant typewriter once the conversation is in view.
+  /* Type prompt into the input field before send. */
   useEffect(() => {
-    if (reduce.current || visible < SCRIPT.length) return;
+    if (reduce.current || phase !== "typing") return;
+
+    let i = 0;
+    const step = Math.max(1, Math.ceil(USER_PROMPT.length / (TYPE_MS / 55)));
+    const id = setInterval(() => {
+      i = Math.min(USER_PROMPT.length, i + step);
+      setInputText(USER_PROMPT.slice(0, i));
+      if (i >= USER_PROMPT.length) {
+        clearInterval(id);
+        setInputText("");
+        setPhase("sent");
+      }
+    }, 55);
+    return () => clearInterval(id);
+  }, [phase, cycle]);
+
+  /* Stream AI reply word-by-word after thinking. */
+  useEffect(() => {
+    if (reduce.current || phase !== "streaming") return;
+
+    const words = AI_ANSWER.split(/(\s+)/);
     let i = 0;
     const id = setInterval(() => {
-      i += 2;
-      setAiText(AI_ANSWER.slice(0, i));
-      if (i >= AI_ANSWER.length) {
+      i += 1;
+      setAiText(words.slice(0, i).join(""));
+      if (i >= words.length) {
         clearInterval(id);
         setShowSources(true);
+        setPhase("done");
       }
-    }, 22);
+    }, 48);
     return () => clearInterval(id);
-  }, [visible]);
+  }, [phase, cycle]);
 
-  const streaming = aiText.length > 0 && aiText.length < AI_ANSWER.length;
+  useEffect(() => {
+    const el = chatRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [phase, inputText, aiText, showSources]);
 
-  return (
-    <div className={`overflow-hidden rounded-2xl border border-white/10 bg-canvas-raised shadow-2xl ${className}`}>
-      {/* window chrome */}
-      <div className="flex items-center gap-2 border-b border-white/10 bg-white/[0.03] px-4 py-3">
-        <span className="h-3 w-3 rounded-full bg-rose-400/80" />
-        <span className="h-3 w-3 rounded-full bg-amber-400/80" />
-        <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
-        <div className="mx-auto flex items-center gap-2 rounded-md bg-white/5 px-3 py-1 text-xs text-slate-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          onecamp.acme.com
+  const aiActive = phase !== "channel";
+  const showUserBubble = phase === "sent" || phase === "thinking" || phase === "streaming" || phase === "done";
+  const showAssistant = phase === "thinking" || phase === "streaming" || phase === "done";
+  const isThinking = phase === "thinking";
+  const isStreaming = phase === "streaming";
+  const highlightCatchMeUp = phase === "cue";
+
+  const aiPanel = (
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex h-10 flex-shrink-0 items-center justify-between border-b border-border/60 bg-card/40 px-3">
+        <div className="flex items-center gap-2">
+          <span className="grid h-6 w-6 place-items-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-400">
+            <IconSparkles className="h-3.5 w-3.5" />
+          </span>
+          <span className="text-xs font-semibold text-foreground">AI Assistant</span>
         </div>
       </div>
 
-      <div className="flex h-[420px] text-left">
-        {/* sidebar */}
-        <aside className="hidden w-48 flex-shrink-0 flex-col border-r border-white/10 bg-white/[0.02] p-3 sm:flex">
-          <div className="flex items-center gap-2 px-1 pb-3">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-gradient-to-br from-brand to-accent-cyan text-xs font-bold text-white">A</span>
-            <span className="text-sm font-semibold text-white">Acme Inc</span>
+      <div ref={chatRef} className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
+        {!aiActive && (
+          <p className="py-6 text-center text-[11px] text-muted-foreground">Ask your workspace anything…</p>
+        )}
+
+        {showUserBubble && (
+          <div className="flex justify-end animate-fade-up">
+            <div className="max-w-[92%] rounded-lg rounded-br-sm bg-foreground px-3 py-2 text-[11px] leading-snug text-background">
+              {USER_PROMPT}
+            </div>
           </div>
-          <p className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Channels</p>
-          <ul className="mt-1 space-y-0.5 text-sm">
-            {[
-              { name: "general", active: false },
-              { name: "engineering", active: true, badge: 3 },
-              { name: "design", active: false },
-              { name: "announcements", active: false },
-            ].map((c) => (
-              <li
-                key={c.name}
-                className={`flex items-center justify-between rounded-md px-2 py-1.5 ${
-                  c.active ? "bg-brand/20 text-white" : "text-slate-400"
-                }`}
-              >
-                <span className="truncate">
-                  <span className="text-slate-500"># </span>
-                  {c.name}
-                </span>
-                {c.badge && <span className="ml-1 rounded-full bg-brand px-1.5 text-[10px] font-bold text-white">{c.badge}</span>}
-              </li>
-            ))}
-          </ul>
-          <p className="px-1 pt-4 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Direct messages</p>
-          <ul className="mt-1 space-y-0.5 text-sm text-slate-400">
-            {[
-              { n: "Priya Nair", on: true },
-              { n: "Daniel Cho", on: true },
-              { n: "Aisha Khan", on: false },
-            ].map((d) => (
-              <li key={d.n} className="flex items-center gap-2 rounded-md px-2 py-1.5">
-                <span className="relative flex h-2 w-2">
-                  {d.on && <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-emerald-400" />}
-                  <span className={`relative inline-flex h-2 w-2 rounded-full ${d.on ? "bg-emerald-400" : "bg-slate-600"}`} />
-                </span>
-                <span className="truncate">{d.n}</span>
-              </li>
-            ))}
-          </ul>
-        </aside>
+        )}
 
-        {/* chat */}
-        <section className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white"># engineering</p>
-              <p className="text-xs text-slate-500">12 members · 3 online</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="rounded-lg border border-brand/30 bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand-light">✨ Catch me up</span>
-              <span className="grid h-7 w-7 place-items-center rounded-lg text-slate-400 hover:bg-white/5" aria-hidden>
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 7l-7 5 7 5V7z" /><rect x="1" y="5" width="15" height="14" rx="2" /></svg>
-              </span>
-            </div>
-          </header>
-
-          <div className="flex flex-1 flex-col justify-end gap-3 overflow-hidden p-4">
-            {SCRIPT.slice(0, visible).map((m, i) => (
-              <div key={`${visible}-${i}`} className="flex animate-fade-up gap-2.5">
-                <span className={`grid h-7 w-7 flex-shrink-0 place-items-center rounded-full bg-gradient-to-br ${m.color} text-[10px] font-bold text-white`}>
-                  {m.initials}
+        {showAssistant && (
+          <div className="flex gap-2 animate-fade-up">
+            <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
+              <IconSparkles className="h-3.5 w-3.5" />
+            </span>
+            <div className="min-w-0 max-w-[calc(100%-2rem)] flex-1 rounded-lg rounded-bl-sm border border-border bg-muted px-3 py-2.5 text-[11px] leading-[1.55] text-foreground">
+              {isThinking && (
+                <span className="inline-flex items-center py-0.5">
+                  <TypingIndicator />
                 </span>
-                <div className="min-w-0">
-                  <p className="flex items-baseline gap-2">
-                    <span className="text-xs font-semibold text-white">{m.author}</span>
-                    <span className="text-[10px] text-slate-500">{m.time}</span>
-                  </p>
-                  <div className="mt-1 inline-block rounded-2xl rounded-tl-sm bg-white/5 px-3 py-1.5 text-sm text-slate-200">
-                    {m.text}
-                  </div>
-                  {m.reaction && (
-                    <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 text-[11px] text-slate-300">
-                      {m.reaction} 4
-                    </span>
+              )}
+              {(isStreaming || phase === "done") && (
+                <span className="whitespace-pre-line">
+                  {aiText}
+                  {isStreaming && (
+                    <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-brand align-middle" />
                   )}
-                </div>
-              </div>
-            ))}
-
-            {typing && (
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-violet-400 to-brand text-[10px] font-bold text-white">AK</span>
-                <div className="flex gap-1 rounded-2xl bg-white/5 px-3 py-2.5">
-                  <Dot delay="0ms" />
-                  <Dot delay="150ms" />
-                  <Dot delay="300ms" />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* composer */}
-          <div className="border-t border-white/10 p-3">
-            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-500">
-              <span>Type a message…</span>
-              <span className="ml-auto grid h-6 w-6 place-items-center rounded-md bg-gradient-to-br from-brand to-accent-cyan text-[11px] text-white">✦</span>
-            </div>
-          </div>
-        </section>
-
-        {/* OneCamp AI Assistant panel — mirrors the real right panel */}
-        <aside className="hidden w-72 flex-shrink-0 flex-col border-l border-white/10 bg-white/[0.02] lg:flex">
-          <div className="flex items-center gap-2 border-b border-white/10 px-3 py-3">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-brand/15 text-brand-light">✨</span>
-            <span className="text-sm font-semibold text-white">AI Assistant</span>
-          </div>
-          <div className="flex flex-1 flex-col gap-3 overflow-hidden p-3">
-            {/* user question */}
-            <div className="flex justify-end">
-              <div className="max-w-[85%] rounded-xl rounded-br-sm bg-brand px-3 py-2 text-xs leading-relaxed text-white">
-                Summarize #engineering today
-              </div>
-            </div>
-            {/* assistant answer */}
-            <div className="flex gap-2">
-              <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-brand/15 text-brand-light">✨</span>
-              <div className="min-w-0 rounded-xl rounded-bl-sm border border-white/10 bg-white/5 px-3 py-2 text-xs leading-relaxed text-slate-200">
-                {aiText || <span className="text-slate-500">Thinking…</span>}
-                {streaming && <span className="ml-0.5 inline-block h-3 w-1 animate-pulse bg-brand-light align-middle" />}
-                {showSources && (
-                  <div className="mt-2.5 border-t border-white/10 pt-2">
-                    <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-wider text-slate-500">Sources</p>
-                    <div className="space-y-1">
-                      {SOURCES.map((s) => (
-                        <div key={s.ctx} className="flex items-center gap-1.5 text-[11px]">
-                          <span className="grid h-3.5 w-3.5 place-items-center rounded bg-brand/20 text-[8px] text-brand-light">◆</span>
-                          <span className="font-medium text-slate-300">{s.label}</span>
-                          <span className="truncate text-slate-500">{s.ctx}</span>
-                        </div>
-                      ))}
-                    </div>
+                </span>
+              )}
+              {showSources && (
+                <div className="mt-2.5 border-t border-border/70 pt-2">
+                  <p className="mb-1.5 text-[9px] font-medium uppercase tracking-wide text-muted-foreground">Sources</p>
+                  <div className="space-y-1">
+                    {SOURCES.map((s) => (
+                      <div key={s.ctx} className="flex items-center gap-1.5 text-[10px]">
+                        <span className="font-medium text-foreground">{s.label}</span>
+                        <span className="truncate text-muted-foreground">{s.ctx}</span>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
-          <div className="border-t border-white/10 p-3">
-            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-500">
-              Ask your workspace anything…
-              <span className="ml-auto grid h-5 w-5 place-items-center rounded bg-brand text-[10px] text-white">↑</span>
-            </div>
-          </div>
-        </aside>
+        )}
+      </div>
+
+      <div className="flex-shrink-0 border-t border-border p-2.5">
+        <div
+          className={`rounded-lg border px-3 py-2 text-[11px] transition-colors ${
+            phase === "typing"
+              ? "border-brand/40 bg-background text-foreground"
+              : "border-border bg-muted/50 text-muted-foreground"
+          }`}
+        >
+          {phase === "typing" ? (
+            <>
+              {inputText}
+              <span className="ml-px inline-block h-3.5 w-0.5 animate-pulse bg-brand align-middle" />
+            </>
+          ) : (
+            "Ask your workspace anything…"
+          )}
+        </div>
       </div>
     </div>
   );
-}
 
-function Dot({ delay }: { delay: string }) {
-  return <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: delay }} />;
+  return (
+    <div className={className}>
+      <ShowcaseShell
+        activeNav="channels"
+        aiPanel={aiPanel}
+        aiActive={aiActive}
+        heightClass="h-[min(480px,74vh)] sm:h-[480px]"
+      >
+        <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-foreground"># engineering</p>
+            <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <span>12 members</span>
+              <span aria-hidden>·</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="status-pulse h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+                3 online
+              </span>
+            </p>
+          </div>
+          <span
+            className={`flex-shrink-0 rounded-md border px-2 py-1 text-[11px] font-medium transition-all duration-300 ${
+              highlightCatchMeUp
+                ? "border-brand/50 bg-brand/[0.08] text-brand shadow-sm"
+                : "border-border bg-muted/60 text-foreground"
+            }`}
+          >
+            Catch me up
+          </span>
+        </header>
+
+        <div className="relative min-h-0 flex-1 overflow-hidden">
+          <div className="absolute inset-0 flex flex-col justify-end gap-3 overflow-hidden p-3 sm:gap-3.5 sm:p-4">
+            {POSTS.slice(0, visiblePosts).map((post, i) => (
+              <article
+                key={`${post.author}-${cycle}`}
+                className="flex gap-2.5 animate-fade-up sm:gap-3"
+                style={{ animationDelay: i === visiblePosts - 1 ? "0ms" : undefined }}
+              >
+                <span
+                  className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-[10px] font-semibold sm:h-9 sm:w-9 ${post.color}`}
+                >
+                  {post.initials}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
+                    <span className="text-xs font-semibold text-foreground">{post.author}</span>
+                    <span className="text-[10px] text-muted-foreground">{post.time}</span>
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-foreground">{post.text}</p>
+                  {post.reaction && (
+                    <span className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
+                      {post.reaction} <span className="text-foreground">4</span>
+                    </span>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-shrink-0 border-t border-border p-2.5 sm:p-3">
+          <div className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
+            Message #engineering…
+          </div>
+        </div>
+      </ShowcaseShell>
+    </div>
+  );
 }

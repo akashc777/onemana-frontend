@@ -15,17 +15,17 @@ const TABS: { key: Tab; label: string }[] = [
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
-    active: "bg-emerald-500/15 text-emerald-300",
-    created: "bg-sky-500/15 text-sky-300",
-    paid: "bg-emerald-500/15 text-emerald-300",
-    paused: "bg-sky-500/15 text-sky-300",
-    pending: "bg-amber-500/15 text-amber-300",
-    cancelled: "bg-rose-500/15 text-rose-300",
-    halted: "bg-amber-500/15 text-amber-300",
-    completed: "bg-slate-500/20 text-slate-300",
-    failed: "bg-rose-500/15 text-rose-300",
+    active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+    created: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+    paid: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+    paused: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+    pending: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+    cancelled: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
+    halted: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+    completed: "bg-slate-500/20 text-foreground/80",
+    failed: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
   };
-  return map[status] || "bg-slate-500/20 text-slate-300";
+  return map[status] || "bg-slate-500/20 text-foreground/80";
 }
 
 function CopyButton({ value, label = "Copy" }: { value: string; label?: string }) {
@@ -41,7 +41,7 @@ function CopyButton({ value, label = "Copy" }: { value: string; label?: string }
           /* clipboard blocked - no-op */
         }
       }}
-      className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-300 hover:bg-white/10"
+      className="rounded-md border border-border bg-muted px-2 py-1 text-xs text-foreground/80 hover:bg-muted"
     >
       {done ? "Copied ✓" : label}
     </button>
@@ -64,10 +64,10 @@ export function AccountDashboard({
     <div className="container-x py-10 sm:py-14">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
             {c.name ? `Hi, ${c.name.split(" ")[0]}` : "Your account"}
           </h1>
-          <p className="mt-1 text-sm text-slate-400">{c.email}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{c.email}</p>
         </div>
         <button onClick={onLogout} className="btn-ghost px-4 py-2 text-sm">
           Sign out
@@ -75,13 +75,13 @@ export function AccountDashboard({
       </div>
 
       {/* tabs */}
-      <div className="mb-8 flex gap-1 overflow-x-auto rounded-xl border border-white/10 bg-white/5 p-1">
+      <div className="mb-8 flex gap-1 overflow-x-auto rounded-xl border border-border bg-muted p-1">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium transition ${
-              tab === t.key ? "bg-brand text-white" : "text-slate-400 hover:text-white"
+              tab === t.key ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t.label}
@@ -99,10 +99,10 @@ export function AccountDashboard({
 
 function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-white">{value}</p>
-      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+    <div className="rounded-2xl border border-border bg-muted/30 p-5">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-foreground">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -117,35 +117,35 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
         <StatCard label="Invoices" value={String(overview.invoice_count)} />
         <StatCard
           label="Next payment"
-          value={nextSub?.next_due_date ? formatDate(nextSub.next_due_date) : "—"}
+          value={nextSub?.next_due_date ? formatDate(nextSub.next_due_date) : "-"}
           hint={nextSub ? nextSub.plan_code : "No active subscription"}
         />
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-white">Your licenses</h2>
+        <h2 className="mb-3 text-sm font-semibold text-foreground">Your licenses</h2>
         {overview.licenses.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm text-slate-500">
+          <p className="rounded-2xl border border-border bg-muted/30 p-5 text-sm text-muted-foreground">
             No licenses yet. Once your payment is processed, your license key appears here.
           </p>
         ) : (
           <div className="space-y-3">
             {overview.licenses.map((l) => (
-              <div key={l.key} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div key={l.key} className="rounded-2xl border border-border bg-muted/30 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-medium uppercase tracking-wider text-slate-500">
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {l.product_type === "saas_subscription" ? "Cloud (includes self-host)" : "Lifetime self-host license"}
                   </span>
-                  <span className="text-xs text-slate-500">Issued {formatDate(l.issued_at)}</span>
+                  <span className="text-xs text-muted-foreground">Issued {formatDate(l.issued_at)}</span>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <code className="min-w-0 flex-1 truncate rounded-lg bg-canvas px-3 py-2 font-mono text-xs text-brand-light">{l.key}</code>
+                  <code className="min-w-0 flex-1 truncate rounded-lg bg-muted px-3 py-2 font-mono text-xs text-brand">{l.key}</code>
                   <CopyButton value={l.key} label="Copy key" />
                 </div>
                 <div className="mt-3">
-                  <p className="mb-1 text-xs text-slate-500">Install on your server:</p>
+                  <p className="mb-1 text-xs text-muted-foreground">Install on your server:</p>
                   <div className="flex items-center gap-2">
-                    <code className="min-w-0 flex-1 truncate rounded-lg bg-canvas px-3 py-2 font-mono text-[11px] text-slate-300">{l.install_cmd}</code>
+                    <code className="min-w-0 flex-1 truncate rounded-lg bg-muted px-3 py-2 font-mono text-[11px] text-foreground/80">{l.install_cmd}</code>
                     <CopyButton value={l.install_cmd} label="Copy" />
                   </div>
                 </div>
@@ -156,11 +156,11 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
       </div>
 
       {nextSub && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-2xl border border-border bg-muted/30 p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-white">OneCamp Cloud subscription</h2>
-              <p className="mt-1 text-xs text-slate-400">
+              <h2 className="text-sm font-semibold text-foreground">OneCamp Cloud subscription</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {nextSub.cancel_at_period_end
                   ? `Cancels on ${nextSub.next_due_date ? formatDate(nextSub.next_due_date) : "the period end"}.`
                   : nextSub.next_due_date
@@ -179,12 +179,12 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
 }
 
 function Loading() {
-  return <p className="py-10 text-center text-sm text-slate-500">Loading…</p>;
+  return <p className="py-10 text-center text-sm text-muted-foreground">Loading…</p>;
 }
 function ErrorState({ msg, onRetry }: { msg: string; onRetry: () => void }) {
   return (
     <div className="py-10 text-center text-sm">
-      <p className="text-red-400">{msg}</p>
+      <p className="text-red-600 dark:text-red-400">{msg}</p>
       <button onClick={onRetry} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
     </div>
   );
@@ -222,12 +222,12 @@ function InvoicesTab() {
   if (error) return <ErrorState msg={error} onRetry={load} />;
   if (!invoices) return <Loading />;
   if (invoices.length === 0)
-    return <p className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center text-sm text-slate-500">No invoices yet.</p>;
+    return <p className="rounded-2xl border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">No invoices yet.</p>;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/10">
+    <div className="overflow-x-auto rounded-2xl border border-border">
       <table className="w-full text-left text-sm">
-        <thead className="bg-white/5 text-xs uppercase tracking-wide text-slate-400">
+        <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
             <th className="px-4 py-3 font-semibold">Invoice</th>
             <th className="px-4 py-3 font-semibold">Date</th>
@@ -238,18 +238,18 @@ function InvoicesTab() {
         </thead>
         <tbody>
           {invoices.map((inv) => (
-            <tr key={inv.id} className="border-t border-white/5">
-              <td className="px-4 py-3 font-medium text-white">{inv.invoice_no}</td>
-              <td className="px-4 py-3 text-slate-400">{formatDate(inv.issued_at)}</td>
-              <td className="px-4 py-3 text-slate-300">{formatINR(inv.gross_amount)}</td>
-              <td className="px-4 py-3 text-slate-400">
+            <tr key={inv.id} className="border-t border-border">
+              <td className="px-4 py-3 font-medium text-foreground">{inv.invoice_no}</td>
+              <td className="px-4 py-3 text-muted-foreground">{formatDate(inv.issued_at)}</td>
+              <td className="px-4 py-3 text-foreground/80">{formatINR(inv.gross_amount)}</td>
+              <td className="px-4 py-3 text-muted-foreground">
                 {inv.is_export ? "Export 0%" : formatINR(inv.cgst_amount + inv.sgst_amount + inv.igst_amount)}
               </td>
               <td className="px-4 py-3 text-right">
                 <button
                   onClick={() => download(inv)}
                   disabled={downloading === inv.id}
-                  className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10 disabled:opacity-50"
+                  className="rounded-md border border-border bg-muted px-3 py-1.5 text-xs text-foreground hover:bg-muted disabled:opacity-50"
                 >
                   {downloading === inv.id ? "…" : "Download PDF"}
                 </button>
@@ -283,7 +283,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
 
   if (subs.length === 0)
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center text-sm text-slate-500">
+      <div className="rounded-2xl border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
         You don&apos;t have any subscriptions. The lifetime license is a one-time purchase with nothing to manage here.
       </div>
     );
@@ -291,15 +291,15 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   return (
     <div className="space-y-4">
       {subs.map((s) => (
-        <div key={s.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div key={s.id} className="rounded-2xl border border-border bg-muted/30 p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-white">OneCamp Cloud</span>
+                <span className="font-semibold text-foreground">OneCamp Cloud</span>
                 <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${statusBadge(s.status)}`}>{s.status}</span>
               </div>
-              <p className="mt-1 text-xs text-slate-400">{s.seats} seats · {s.plan_code}</p>
-              <p className="mt-2 text-sm text-slate-300">
+              <p className="mt-1 text-xs text-muted-foreground">{s.seats} seats · {s.plan_code}</p>
+              <p className="mt-2 text-sm text-foreground/80">
                 {s.status === "paused"
                   ? "Paused - no charges will be made while paused."
                   : s.cancel_at_period_end
@@ -313,15 +313,15 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               <button
                 onClick={() => cancel(s)}
                 disabled={busy === s.id}
-                className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300 hover:bg-rose-500/20 disabled:opacity-50"
+                className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-700 hover:bg-rose-500/20 disabled:opacity-50 dark:text-rose-300"
               >
                 {busy === s.id ? "Cancelling…" : "Cancel subscription"}
               </button>
             ) : s.cancel_at_period_end ? (
-              <span className="rounded-lg border border-white/10 px-4 py-2 text-xs text-slate-400">Cancellation scheduled</span>
+              <span className="rounded-lg border border-border px-4 py-2 text-xs text-muted-foreground">Cancellation scheduled</span>
             ) : null}
           </div>
-          <p className="mt-4 border-t border-white/5 pt-3 text-xs text-slate-500">
+          <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
             Need to update your card or change plan? Reply to your billing email and we&apos;ll help.
           </p>
         </div>
@@ -332,9 +332,9 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-white/5 py-2.5 text-sm last:border-0">
-      <span className="text-slate-500">{label}</span>
-      <span className="text-right text-slate-200">{value || "—"}</span>
+    <div className="flex justify-between gap-4 border-b border-border py-2.5 text-sm last:border-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-right text-foreground">{value || "-"}</span>
     </div>
   );
 }
@@ -343,9 +343,9 @@ function BillingTab({ overview }: { overview: PortalOverview }) {
   const c = overview.customer;
   const address = [c.address_line, c.city, c.state, c.country].filter(Boolean).join(", ");
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <h2 className="mb-2 text-sm font-semibold text-white">Billing details</h2>
-      <p className="mb-4 text-xs text-slate-500">These appear on your GST invoices. To change them, reply to your invoice email.</p>
+    <div className="rounded-2xl border border-border bg-muted/30 p-5">
+      <h2 className="mb-2 text-sm font-semibold text-foreground">Billing details</h2>
+      <p className="mb-4 text-xs text-muted-foreground">These appear on your GST invoices. To change them, reply to your invoice email.</p>
       <Row label="Name" value={c.name} />
       <Row label="Email" value={c.email} />
       <Row label="GSTIN" value={c.gstin} />

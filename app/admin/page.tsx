@@ -23,7 +23,7 @@ export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("orders");
 
   if (status === "checking") {
-    return <div className="grid min-h-[70vh] place-items-center text-sm text-slate-500">Loading…</div>;
+    return <div className="grid min-h-[70vh] place-items-center text-sm text-muted-foreground">Loading…</div>;
   }
   if (status === "unauthed") {
     return <AdminLogin onSignIn={signIn} />;
@@ -32,20 +32,20 @@ export default function AdminPage() {
   return (
     <div className="container-x py-10">
       <header className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">OneMana Admin</h1>
+        <h1 className="text-2xl font-bold text-foreground">OneMana Admin</h1>
         <button onClick={signOut} className="btn-ghost px-4 py-2 text-sm">
           Sign out
         </button>
       </header>
 
-      <nav className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-white/10 bg-white/5 p-1 text-sm" aria-label="Admin sections">
+      <nav className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-border bg-muted p-1 text-sm" aria-label="Admin sections">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             aria-current={tab === t ? "page" : undefined}
             className={`whitespace-nowrap rounded-lg px-3.5 py-2 font-medium capitalize transition ${
-              tab === t ? "bg-brand text-white" : "text-slate-400 hover:text-white"
+              tab === t ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t}

@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { site } from "@/lib/site";
 
-function StarIcon() {
+/** GitHub uses amber/gold for the star icon in repo badges — not foreground gray. */
+function StarIcon({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="currentColor" aria-hidden>
+    <svg viewBox="0 0 16 16" className={`h-3.5 w-3.5 ${className}`} fill="currentColor" aria-hidden>
       <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" />
     </svg>
   );
@@ -24,12 +25,6 @@ function formatStars(n: number): string {
   return `${n}`;
 }
 
-/**
- * GitHub button with live star count for the open-source frontend repo.
- * Prefers a server-provided `stars` (fetched + cached server-side to dodge
- * GitHub's per-IP rate limit); falls back to a client fetch only when no
- * value is supplied, and degrades to a plain button if all else fails.
- */
 export function GitHubStars({
   className = "",
   compact = false,
@@ -42,12 +37,11 @@ export function GitHubStars({
   const [stars, setStars] = useState<number | null>(starsProp ?? null);
 
   useEffect(() => {
-    // Server already provided a value — don't hit the API from the browser.
     if (starsProp !== undefined && starsProp !== null) {
       setStars(starsProp);
       return;
     }
-    if (starsProp === null) return; // server tried and failed; don't spam the API
+    if (starsProp === null) return;
     let alive = true;
     fetch(`https://api.github.com/repos/${site.githubRepo}`, {
       headers: { Accept: "application/vnd.github+json" },
@@ -68,13 +62,13 @@ export function GitHubStars({
       target="_blank"
       rel="noreferrer"
       aria-label={`Star ${site.githubRepo} on GitHub${stars !== null ? ` - ${stars} stars` : ""}`}
-      className={`group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 backdrop-blur transition-all duration-200 hover:border-white/20 hover:bg-white/10 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted ${className}`}
     >
       <GitHubMark />
       {!compact && <span>Star</span>}
-      <span className="flex items-center gap-1 rounded-md bg-white/10 px-1.5 py-0.5 text-xs text-amber-300">
-        <StarIcon />
-        <span className="tabular-nums text-slate-200">{stars !== null ? formatStars(stars) : "★"}</span>
+      <span className="flex items-center gap-1 rounded-md border border-border/80 bg-muted/50 px-1.5 py-0.5 text-xs">
+        <StarIcon className="text-[#E3B341]" />
+        <span className="tabular-nums font-medium text-foreground">{stars !== null ? formatStars(stars) : "—"}</span>
       </span>
     </a>
   );

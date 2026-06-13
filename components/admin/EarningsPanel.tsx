@@ -5,14 +5,14 @@ import { adminApi, type EarningsSummary, type TaxPayment } from "@/lib/adminApi"
 import { formatINR, formatDate } from "@/lib/format";
 
 const inputCls =
-  "rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";
+  "rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
 
 function StatCard({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-5 ${accent ? "border-brand/30 bg-brand/[0.07]" : "border-white/10 bg-white/[0.03]"}`}>
-      <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-white">{value}</p>
-      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+    <div className={`rounded-2xl border p-5 ${accent ? "border-brand/30 bg-brand/[0.07]" : "border-border bg-muted/30"}`}>
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-foreground">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -91,25 +91,25 @@ export function EarningsPanel() {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-end gap-3">
-        <label className="flex items-center gap-1.5 text-xs text-slate-400">
+        <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
           From
           <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
         </label>
-        <label className="flex items-center gap-1.5 text-xs text-slate-400">
+        <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
           To
           <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
         </label>
         {(from || to) && (
-          <button onClick={() => { setFrom(""); setTo(""); }} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300 hover:bg-white/10">
+          <button onClick={() => { setFrom(""); setTo(""); }} className="rounded-lg border border-border bg-muted px-3 py-2 text-xs text-foreground/80 hover:bg-muted">
             All time
           </button>
         )}
       </div>
 
-      {loading && <p className="py-8 text-center text-sm text-slate-500">Loading…</p>}
+      {loading && <p className="py-8 text-center text-sm text-muted-foreground">Loading…</p>}
       {error && (
         <div className="py-8 text-center text-sm">
-          <p className="text-red-400">{error}</p>
+          <p className="text-red-600 dark:text-red-400">{error}</p>
           <button onClick={load} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
         </div>
       )}
@@ -125,15 +125,15 @@ export function EarningsPanel() {
           </div>
 
           {data.refunded_count > 0 && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Net of {data.refunded_count} refunded order{data.refunded_count === 1 ? "" : "s"} ({formatINR(data.refunded_amount)}), which are excluded from revenue and GST above. Record a credit note with your CA to reconcile GST filings.
             </p>
           )}
 
           {/* Per-financial-year breakdown */}
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
+          <div className="overflow-x-auto rounded-2xl border border-border">
             <table className="w-full text-left text-sm">
-              <thead className="bg-white/5 text-xs uppercase tracking-wide text-slate-400">
+              <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2.5 font-semibold">Financial Year</th>
                   <th className="px-3 py-2.5 font-semibold">Invoices</th>
@@ -146,17 +146,17 @@ export function EarningsPanel() {
               </thead>
               <tbody>
                 {(data.by_fy ?? []).length === 0 ? (
-                  <tr><td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">No earnings in this range.</td></tr>
+                  <tr><td colSpan={7} className="px-3 py-8 text-center text-sm text-muted-foreground">No earnings in this range.</td></tr>
                 ) : (
                   (data.by_fy ?? []).map((fyRow) => (
-                    <tr key={fyRow.financial_year} className="border-t border-white/5">
-                      <td className="px-3 py-2.5 font-medium text-white">{fyRow.financial_year}</td>
-                      <td className="px-3 py-2.5 text-slate-400">{fyRow.count}</td>
-                      <td className="px-3 py-2.5 text-slate-300">{formatINR(fyRow.gross)}</td>
-                      <td className="px-3 py-2.5 text-slate-300">{formatINR(fyRow.taxable)}</td>
-                      <td className="px-3 py-2.5 text-slate-300">{formatINR(fyRow.total_gst)}</td>
-                      <td className="px-3 py-2.5 text-slate-300">{formatINR(fyRow.gst_paid)}</td>
-                      <td className={`px-3 py-2.5 font-medium ${fyRow.gst_outstanding > 0 ? "text-amber-300" : "text-emerald-300"}`}>
+                    <tr key={fyRow.financial_year} className="border-t border-border">
+                      <td className="px-3 py-2.5 font-medium text-foreground">{fyRow.financial_year}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground">{fyRow.count}</td>
+                      <td className="px-3 py-2.5 text-foreground/80">{formatINR(fyRow.gross)}</td>
+                      <td className="px-3 py-2.5 text-foreground/80">{formatINR(fyRow.taxable)}</td>
+                      <td className="px-3 py-2.5 text-foreground/80">{formatINR(fyRow.total_gst)}</td>
+                      <td className="px-3 py-2.5 text-foreground/80">{formatINR(fyRow.gst_paid)}</td>
+                      <td className={`px-3 py-2.5 font-medium ${fyRow.gst_outstanding > 0 ? "text-amber-700 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-300"}`}>
                         {formatINR(fyRow.gst_outstanding)}
                       </td>
                     </tr>
@@ -167,9 +167,9 @@ export function EarningsPanel() {
           </div>
 
           {/* Tax payment ledger */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <h3 className="text-sm font-semibold text-white">Tax filings &amp; payments</h3>
-            <p className="mt-1 text-xs text-slate-500">Record what you remit so you can reconcile collected vs paid. GST is monthly; MCA/ROC is annual — use the Period field (e.g. &quot;Jun 2026&quot; or &quot;FY 2026-27&quot;).</p>
+          <div className="rounded-2xl border border-border bg-muted/30 p-5">
+            <h3 className="text-sm font-semibold text-foreground">Tax filings &amp; payments</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Record what you remit so you can reconcile collected vs paid. GST is monthly; MCA/ROC is annual. Use the Period field (e.g. &quot;Jun 2026&quot; or &quot;FY 2026-27&quot;).</p>
 
             <form onSubmit={addPayment} className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
               <select value={kind} onChange={(e) => setKind(e.target.value)} className={inputCls}>
@@ -191,20 +191,20 @@ export function EarningsPanel() {
 
             <div className="mt-5 space-y-2">
               {payments.length === 0 ? (
-                <p className="py-4 text-center text-sm text-slate-500">No payments recorded yet.</p>
+                <p className="py-4 text-center text-sm text-muted-foreground">No payments recorded yet.</p>
               ) : (
                 payments.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 text-sm">
+                  <div key={p.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 px-4 py-2.5 text-sm">
                     <div className="min-w-0">
-                      <span className="font-medium text-white">{formatINR(p.amount)}</span>
-                      <span className="ml-2 rounded-full bg-white/5 px-2 py-0.5 text-[10px] uppercase text-slate-400">{p.kind}</span>
-                      {p.period && <span className="ml-2 text-slate-400">{p.period}</span>}
-                      <span className="ml-2 text-slate-500">{p.financial_year}</span>
+                      <span className="font-medium text-foreground">{formatINR(p.amount)}</span>
+                      <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase text-muted-foreground">{p.kind}</span>
+                      {p.period && <span className="ml-2 text-muted-foreground">{p.period}</span>}
+                      <span className="ml-2 text-muted-foreground">{p.financial_year}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span>{formatDate(p.paid_on)}</span>
                       {p.reference && <span className="truncate">{p.reference}</span>}
-                      <button onClick={() => removePayment(p.id)} className="text-red-300 hover:underline">Delete</button>
+                      <button onClick={() => removePayment(p.id)} className="text-red-700 hover:underline dark:text-red-300">Delete</button>
                     </div>
                   </div>
                 ))

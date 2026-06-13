@@ -23,7 +23,7 @@ export function InvoicesTable() {
   );
 
   async function remove(inv: Invoice) {
-    if (!window.confirm(`Delete invoice ${inv.invoice_no}? For real sales this breaks your filing sequence — only do this for test data. This cannot be undone.`)) return;
+    if (!window.confirm(`Delete invoice ${inv.invoice_no}? For real sales this breaks your filing sequence. Only do this for test data. This cannot be undone.`)) return;
     setDeletingId(inv.id);
     try {
       await adminApi.deleteInvoice(inv.id);
@@ -61,7 +61,7 @@ export function InvoicesTable() {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        {downloadErr ? <p className="text-sm text-red-400">{downloadErr}</p> : <span />}
+        {downloadErr ? <p className="text-sm text-red-600 dark:text-red-400">{downloadErr}</p> : <span />}
         <button onClick={exportCsv} disabled={exporting} className="btn-ghost px-4 py-2 text-sm">
           {exporting ? "Exporting…" : "Export CSV (for filings)"}
         </button>
@@ -70,7 +70,7 @@ export function InvoicesTable() {
       <DataTable head={["Invoice No", "Date", "Buyer", "Place of Supply", "Taxable", "CGST", "SGST", "IGST", "Total", ""]}>
         {filtered.length === 0 ? (
           <Tr>
-            <td colSpan={10} className="px-3 py-8 text-center text-sm text-slate-500">No matching invoices.</td>
+            <td colSpan={10} className="px-3 py-8 text-center text-sm text-muted-foreground">No matching invoices.</td>
           </Tr>
         ) : (
           filtered.map((i) => (
@@ -86,7 +86,7 @@ export function InvoicesTable() {
               <Td>{formatINR(i.gross_amount)}</Td>
               <Td>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => downloadPdf(i)} className="text-brand-light hover:underline">PDF</button>
+                  <button onClick={() => downloadPdf(i)} className="text-brand hover:underline">PDF</button>
                   <RowDeleteButton onClick={() => remove(i)} busy={deletingId === i.id} />
                 </div>
               </Td>

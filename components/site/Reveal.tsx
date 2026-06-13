@@ -12,6 +12,12 @@ interface RevealProps {
   as?: ElementType;
 }
 
+function isInViewport(el: HTMLElement) {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight || document.documentElement.clientHeight;
+  return rect.top < vh * 0.92 && rect.bottom > vh * 0.08;
+}
+
 /**
  * Reveal animates its children into view on first scroll-intersection using a
  * single IntersectionObserver - no animation library, SSR-safe, and a no-op
@@ -26,6 +32,12 @@ export function Reveal({ children, delay = 0, direction = "up", className = "", 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || isInViewport(el)) {
+      setVisible(true);
+      return;
+    }
+
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -35,7 +47,7 @@ export function Reveal({ children, delay = 0, direction = "up", className = "", 
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.08, rootMargin: "0px 0px -4% 0px" },
     );
     obs.observe(el);
     return () => obs.disconnect();

@@ -1,6 +1,6 @@
 // ISO-3166 alpha-2 country list for the checkout billing field. India is
 // listed first (default market); the rest follow alphabetically. The selected
-// country is stored on the customer/invoice — GST is charged to all buyers by
+// country is stored on the customer/invoice. GST is charged to all buyers by
 // default (export zero-rating is an explicit admin opt-in), so this choice
 // never reduces tax owed.
 

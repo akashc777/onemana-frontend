@@ -6,22 +6,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Deep, Notion-meets-Huly dark canvas.
-        canvas: {
-          DEFAULT: "#06060a",
-          soft: "#0b0b12",
-          raised: "#101019",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+        muted: {
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
         },
-        ink: "#0f172a",
-        brand: {
-          DEFAULT: "#6d5efc",
-          dark: "#5847e0",
-          light: "#8b7dff",
+        border: {
+          DEFAULT: "rgb(var(--border) / <alpha-value>)",
+          subtle: "rgb(var(--border) / 0.6)",
         },
         accent: {
-          cyan: "#34e3e3",
-          violet: "#a78bfa",
-          pink: "#f472b6",
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
+        },
+        card: "rgb(var(--card) / <alpha-value>)",
+        ring: "rgb(var(--ring) / <alpha-value>)",
+        brand: {
+          DEFAULT: "#FF4D00",
+          dark: "#E04400",
+          light: "#FF6B2E",
+          subtle: "#FFF4EE",
+        },
+        ink: "#191919",
+        canvas: {
+          DEFAULT: "rgb(var(--background) / <alpha-value>)",
+          soft: "rgb(var(--muted) / <alpha-value>)",
+          raised: "rgb(var(--card) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -29,59 +40,39 @@ const config: Config = {
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       maxWidth: {
-        content: "1160px",
+        content: "1200px",
+        prose: "720px",
       },
-      backgroundImage: {
-        "grid-dark":
-          "linear-gradient(to right, rgba(148,163,184,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.06) 1px, transparent 1px)",
-        "radial-fade":
-          "radial-gradient(60% 50% at 50% 0%, rgba(109,94,252,0.18), transparent 70%)",
+      borderRadius: {
+        DEFAULT: "0.5rem",
+        lg: "0.625rem",
+        xl: "0.75rem",
+      },
+      boxShadow: {
+        sm: "0 1px 2px rgba(0,0,0,0.04)",
+        card: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+        elevated: "0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)",
+        product: "0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)",
       },
       keyframes: {
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(24px)" },
+          "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        float: {
-          "0%,100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-12px)" },
-        },
-        aurora: {
-          "0%,100%": { transform: "translate(0,0) scale(1)", opacity: "0.55" },
-          "33%": { transform: "translate(6%,-4%) scale(1.1)", opacity: "0.75" },
-          "66%": { transform: "translate(-5%,5%) scale(0.95)", opacity: "0.5" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
-        "pulse-ring": {
-          "0%": { transform: "scale(0.9)", opacity: "0.7" },
-          "100%": { transform: "scale(1.6)", opacity: "0" },
-        },
-        drift: {
-          "0%,100%": { transform: "translate(0,0) scale(1)" },
-          "33%": { transform: "translate(4%,-3%) scale(1.08)" },
-          "66%": { transform: "translate(-3%,4%) scale(0.96)" },
-        },
-        "beam-pulse": {
-          "0%,100%": { opacity: "0.55", transform: "scaleY(1)" },
-          "50%": { opacity: "0.9", transform: "scaleY(1.06)" },
         },
         marquee: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        "icon-pop": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.06)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
-        "fade-up": "fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both",
-        float: "float 6s ease-in-out infinite",
-        aurora: "aurora 18s ease-in-out infinite",
-        shimmer: "shimmer 2.5s linear infinite",
-        "pulse-ring": "pulse-ring 2.4s cubic-bezier(0.4,0,0.2,1) infinite",
-        drift: "drift 24s ease-in-out infinite",
-        "beam-pulse": "beam-pulse 5s ease-in-out infinite",
-        marquee: "marquee 32s linear infinite",
+        "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
+        marquee: "marquee 45s linear infinite",
+        "icon-pop": "icon-pop 0.35s ease-out",
       },
     },
   },

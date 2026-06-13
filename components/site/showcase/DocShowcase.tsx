@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * DocShowcase mirrors OneCamp's collaborative doc editor: presence avatars, a
- * "Saved" indicator, a formatting toolbar, and live multiplayer editing — a
+ * "Saved" indicator, a formatting toolbar, and live multiplayer editing: a
  * remote collaborator's caret types text in real time (typewriter), with a
  * second parked remote cursor and a selection highlight. Reduced-motion aware.
  */
@@ -19,7 +19,7 @@ const PEOPLE = [
 
 const TOOLBAR = ["B", "I", "U", "H1", "H2", "• List", "“ ”", "</>", "🔗"];
 
-export function DocShowcase() {
+export function DocShowcase({ embedded = false }: { embedded?: boolean }) {
   const [typed, setTyped] = useState("");
   const [cycle, setCycle] = useState(0);
   const reduce = useRef(false);
@@ -50,46 +50,42 @@ export function DocShowcase() {
   const typing = typed.length > 0 && typed.length < TYPED.length;
 
   return (
-    <div className="flex h-[420px] flex-col">
+    <div className={`flex flex-col ${embedded ? "h-full min-h-0" : "h-[420px]"}`}>
       {/* doc header */}
-      <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+      <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="text-slate-500">📄</span>
-          <span className="text-sm font-semibold text-white">Q3 Product Roadmap</span>
+          <span className="text-sm font-medium text-foreground">Q3 Product Roadmap</span>
         </div>
         <div className="flex items-center gap-3">
-          {/* presence */}
           <div className="flex -space-x-2">
             {PEOPLE.map((p) => (
               <span
                 key={p.initials}
                 title={p.name}
-                className="grid h-6 w-6 place-items-center rounded-full text-[9px] font-bold text-white ring-2 ring-canvas-raised"
+                className="grid h-6 w-6 place-items-center rounded-full text-[9px] font-bold text-white ring-2 ring-background"
                 style={{ backgroundColor: p.color }}
               >
                 {p.initials}
               </span>
             ))}
           </div>
-          <span className="flex items-center gap-1.5 text-xs text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Saved
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Saved
           </span>
         </div>
       </header>
 
-      {/* toolbar */}
-      <div className="flex flex-wrap items-center gap-1 border-b border-white/10 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-1 border-b border-border px-3 py-2">
         {TOOLBAR.map((t) => (
-          <span key={t} className="rounded-md px-2 py-1 text-xs font-medium text-slate-400 hover:bg-white/5">
+          <span key={t} className="rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted">
             {t}
           </span>
         ))}
       </div>
 
-      {/* document body */}
       <div className="flex-1 overflow-hidden p-5">
-        <h3 className="text-xl font-bold text-white">Q3 Product Roadmap</h3>
-        <p className="mt-3 text-sm leading-relaxed text-slate-300">
+        <h3 className="text-xl font-semibold text-foreground">Q3 Product Roadmap</h3>
+        <p className="mt-3 text-sm leading-relaxed text-foreground/80">
           Our north star this quarter is a{" "}
           {/* a remote user's selection highlight */}
           <span className="rounded bg-[#38bdf8]/20 px-0.5" style={{ boxShadow: "inset 0 -1px 0 #38bdf8" }}>
@@ -105,13 +101,12 @@ export function DocShowcase() {
           for every team.
         </p>
 
-        <ul className="mt-3 space-y-1.5 text-sm text-slate-300">
-          <li className="flex gap-2"><span className="text-slate-500">•</span> Real-time sync across web and PWA</li>
-          <li className="flex gap-2"><span className="text-slate-500">•</span> Push notifications and app badges</li>
+        <ul className="mt-3 space-y-1.5 text-sm text-foreground/80">
+          <li className="flex gap-2"><span className="text-muted-foreground">•</span> Real-time sync across web and PWA</li>
+          <li className="flex gap-2"><span className="text-muted-foreground">•</span> Push notifications and app badges</li>
         </ul>
 
-        {/* the line being typed live by a remote collaborator */}
-        <p className="mt-3 text-sm leading-relaxed text-slate-300">
+        <p className="mt-3 text-sm leading-relaxed text-foreground/80">
           {typed}
           {(typing || typed === "") && (
             <span className="relative inline-block align-middle">

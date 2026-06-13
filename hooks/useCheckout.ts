@@ -59,7 +59,7 @@ export function useCheckout(): CheckoutController {
           amount: order.amount,
           currency: order.currency,
           name: "OneCamp",
-          description: "Self-Hosted Unified Workspace — Lifetime License",
+          description: "Self-Hosted Unified Workspace, Lifetime License",
           prefill: { email: order.email, name: order.name, contact: contact ?? "" },
           theme: { color: "#6d5efc" },
           handler: async (resp: unknown) => {
@@ -107,7 +107,7 @@ export function useCheckout(): CheckoutController {
           key: sub.razorpay_key_id,
           subscription_id: sub.subscription_id,
           name: "OneCamp Cloud",
-          description: "Managed Hosting — Monthly (includes a self-host license)",
+          description: "Managed Hosting, Monthly (includes a self-host license)",
           prefill: { email: sub.email, name: sub.name, contact: contact ?? "" },
           theme: { color: "#6d5efc" },
           handler: () => {

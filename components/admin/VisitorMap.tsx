@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import type { CountryCount } from "@/lib/adminApi";
 import { COUNTRIES, countryName, countryFlag } from "@/lib/geo";
@@ -22,12 +23,18 @@ interface Hover {
  * react-simple-maps fetches the topojson at runtime.
  */
 export function VisitorMap({ data }: { data: CountryCount[] }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const [hover, setHover] = useState<Hover | null>(null);
   const points = data.filter((d) => COUNTRIES[d.code]);
   const max = points.reduce((m, d) => Math.max(m, d.views), 1);
 
+  const geoFill = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)";
+  const geoStroke = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)";
+  const geoHover = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-muted/20">
       <ComposableMap
         projection="geoEqualEarth"
         projectionConfig={{ scale: 165 }}
@@ -41,12 +48,12 @@ export function VisitorMap({ data }: { data: CountryCount[] }) {
               <Geography
                 key={geo.rsmKey}
                 geography={geo}
-                fill="rgba(255,255,255,0.05)"
-                stroke="rgba(255,255,255,0.12)"
+                fill={geoFill}
+                stroke={geoStroke}
                 strokeWidth={0.4}
                 style={{
                   default: { outline: "none" },
-                  hover: { outline: "none", fill: "rgba(255,255,255,0.08)" },
+                  hover: { outline: "none", fill: geoHover },
                   pressed: { outline: "none" },
                 }}
               />
@@ -69,8 +76,8 @@ export function VisitorMap({ data }: { data: CountryCount[] }) {
               }
               onMouseLeave={() => setHover(null)}
             >
-              <circle r={r + 4} fill="#6d5efc" opacity={0.15} />
-              <circle r={r} fill="#8b7dff" opacity={0.75} stroke="#34e3e3" strokeWidth={0.6} />
+              <circle r={r + 4} fill="#FF4D00" opacity={0.15} />
+              <circle r={r} fill="#FF4D00" opacity={0.75} stroke="#FF6B2E" strokeWidth={0.6} />
             </Marker>
           );
         })}
@@ -78,13 +85,13 @@ export function VisitorMap({ data }: { data: CountryCount[] }) {
 
       {hover && (
         <div
-          className="pointer-events-none fixed z-50 rounded-lg border border-white/10 bg-canvas-raised/95 px-3 py-2 text-xs shadow-xl backdrop-blur"
+          className="pointer-events-none fixed z-50 rounded-lg border border-border bg-card/95 px-3 py-2 text-xs shadow-xl backdrop-blur"
           style={{ left: hover.x + 12, top: hover.y + 12 }}
         >
-          <p className="font-semibold text-white">
+          <p className="font-semibold text-foreground">
             {countryFlag(hover.code)} {countryName(hover.code)}
           </p>
-          <p className="mt-0.5 text-slate-400">
+          <p className="mt-0.5 text-muted-foreground">
             {hover.views.toLocaleString()} views · {hover.uniques.toLocaleString()} visitors
           </p>
         </div>

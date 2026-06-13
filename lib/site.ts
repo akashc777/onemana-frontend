@@ -4,9 +4,9 @@
 export const site = {
   name: "OneCamp",
   company: "OneMana Solutions (OPC) Private Limited",
-  tagline: "One workspace. Yours forever.",
+  tagline: "One workspace. Your server.",
   description:
-    "OneCamp is a self-hosted, all-in-one workspace - chat, tasks, docs, video, calendar, and a local AI assistant. One-time payment, unlimited users, your server.",
+    "OneCamp puts chat, docs, tasks, video, calendar, and local AI in one Docker deploy on your server. Pay once, unlimited users. No per-seat fees.",
   url: "https://onemana.dev",
   backendUrl:
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "https://backend.onemana.dev",
@@ -23,10 +23,14 @@ export const site = {
   cloudPriceInr: 10000,
   cloudSeats: 30,
   demoVideoId: "hh5gwvLsAjA",
+  version: "2",
   twitter: "https://twitter.com/akashc777",
 };
 
+export const techStack = ["Docker", "SSL", "Ollama", "LiveKit", "MQTT"] as const;
+
 export const navLinks = [
+  { label: "Tour", href: "/#tour" },
   { label: "Features", href: "/#features" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Blog", href: "/blog" },
@@ -36,6 +40,7 @@ export const navLinks = [
 
 export const footerLinks = {
   Product: [
+    { label: "Product tour", href: "/#tour" },
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },
     { label: "Blog", href: "/blog" },

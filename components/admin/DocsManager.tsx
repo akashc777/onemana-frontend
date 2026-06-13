@@ -89,7 +89,7 @@ export function DocsManager() {
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           {docs.length} doc{docs.length === 1 ? "" : "s"}
         </p>
         <Button size="sm" onClick={() => setView({ mode: "new" })}>
@@ -97,10 +97,10 @@ export function DocsManager() {
         </Button>
       </div>
 
-      {loading && <p className="py-8 text-center text-sm text-slate-500">Loading…</p>}
+      {loading && <p className="py-8 text-center text-sm text-muted-foreground">Loading…</p>}
       {error && (
         <div className="py-8 text-center text-sm">
-          <p className="text-red-400">{error}</p>
+          <p className="text-red-600 dark:text-red-400">{error}</p>
           <button onClick={load} className="btn-ghost mt-3 px-4 py-2 text-xs">
             Retry
           </button>
@@ -108,37 +108,37 @@ export function DocsManager() {
       )}
 
       {!loading && !error && docs.length === 0 && (
-        <p className="py-12 text-center text-sm text-slate-500">No docs yet. Create your first one.</p>
+        <p className="py-12 text-center text-sm text-muted-foreground">No docs yet. Create your first one.</p>
       )}
 
       {!loading && !error && docs.length > 0 && (
         <div className="space-y-6">
           {groups.map((g) => (
             <div key={g.category}>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{g.category}</h3>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{g.category}</h3>
               <div className="space-y-2">
                 {g.items.map((d) => (
                   <div
                     key={d.id}
-                    className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                    className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 px-4 py-3"
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="shrink-0 rounded-md bg-white/5 px-1.5 py-0.5 text-xs text-slate-400">
+                        <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
                           #{d.order_index}
                         </span>
-                        <span className="truncate font-medium text-white">{d.title}</span>
+                        <span className="truncate font-medium text-foreground">{d.title}</span>
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             d.status === "published"
-                              ? "bg-emerald-500/15 text-emerald-300"
-                              : "bg-amber-500/15 text-amber-300"
+                              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                              : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
                           }`}
                         >
                           {d.status}
                         </span>
                       </div>
-                      <p className="mt-0.5 truncate text-xs text-slate-500">
+                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
                         /docs/{d.slug} · updated {formatDate(d.updated_at)}
                       </p>
                     </div>
@@ -148,20 +148,20 @@ export function DocsManager() {
                           href={`/docs/${d.slug}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/10"
+                          className="rounded-lg border border-border bg-muted px-3 py-1.5 text-xs text-foreground/80 hover:bg-muted"
                         >
                           View
                         </a>
                       )}
                       <button
                         onClick={() => openEdit(d.id)}
-                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/10"
+                        className="rounded-lg border border-border bg-muted px-3 py-1.5 text-xs text-foreground/80 hover:bg-muted"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => remove(d.id)}
-                        className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-300 hover:bg-red-500/20"
+                        className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-700 hover:bg-red-500/20 dark:text-red-300"
                       >
                         Delete
                       </button>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { portalApi } from "@/lib/portalApi";
 
 const inputCls =
-  "w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";
+  "w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 sm:text-sm";
 
 /**
  * AccountLogin runs the passwordless flow: enter email -> receive a 6-digit
@@ -53,8 +53,8 @@ export function AccountLogin({ onSignedIn }: { onSignedIn: () => void }) {
     <div className="grid min-h-[70vh] place-items-center px-5">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-white">Your OneCamp account</h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <h1 className="text-2xl font-bold text-foreground">Your OneCamp account</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             Sign in to download invoices, view your license, and manage your subscription.
           </p>
         </div>
@@ -62,7 +62,7 @@ export function AccountLogin({ onSignedIn }: { onSignedIn: () => void }) {
         {step === "email" ? (
           <form onSubmit={sendCode} className="card space-y-4">
             <div>
-              <label htmlFor="acc-email" className="mb-1.5 block text-sm font-medium text-slate-300">
+              <label htmlFor="acc-email" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 Email address
               </label>
               <input
@@ -77,18 +77,18 @@ export function AccountLogin({ onSignedIn }: { onSignedIn: () => void }) {
                 placeholder="you@company.com"
                 className={inputCls}
               />
-              <p className="mt-1.5 text-xs text-slate-500">Use the email you purchased with.</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">Use the email you purchased with.</p>
             </div>
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
             <button disabled={busy || !email.trim()} className="btn-primary w-full">
               {busy ? "Sending…" : "Email me a code"}
             </button>
           </form>
         ) : (
           <form onSubmit={verify} className="card space-y-4">
-            {notice && <p className="rounded-lg border border-brand/20 bg-brand/10 px-3 py-2 text-xs text-slate-300">{notice}</p>}
+            {notice && <p className="rounded-lg border border-brand/20 bg-brand/10 px-3 py-2 text-xs text-foreground/80">{notice}</p>}
             <div>
-              <label htmlFor="acc-code" className="mb-1.5 block text-sm font-medium text-slate-300">
+              <label htmlFor="acc-code" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 6-digit code
               </label>
               <input
@@ -103,16 +103,16 @@ export function AccountLogin({ onSignedIn }: { onSignedIn: () => void }) {
                 placeholder="123456"
                 className={`${inputCls} text-center text-lg tracking-[0.5em]`}
               />
-              <p className="mt-1.5 text-xs text-slate-500">Sent to {email}. It expires in 10 minutes.</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">Sent to {email}. It expires in 10 minutes.</p>
             </div>
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
             <button disabled={busy || code.length < 6} className="btn-primary w-full">
               {busy ? "Verifying…" : "Sign in"}
             </button>
             <button
               type="button"
               onClick={() => { setStep("email"); setCode(""); setError(""); }}
-              className="w-full text-center text-xs text-slate-400 hover:text-white"
+              className="w-full text-center text-xs text-muted-foreground hover:text-foreground"
             >
               Use a different email
             </button>

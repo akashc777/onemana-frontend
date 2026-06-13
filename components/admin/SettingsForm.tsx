@@ -96,7 +96,7 @@ export function SettingsForm() {
 function SettingsGroup({ group, fields, stored }: { group: string; fields: FieldDef[]; stored: Record<string, string> }) {
   return (
     <section className="card">
-      <h2 className="mb-4 font-semibold text-white">{group}</h2>
+      <h2 className="mb-4 font-semibold text-foreground">{group}</h2>
       <div className="space-y-4">
         {fields.map((f) => (
           <SettingField key={f.key} field={f} initial={stored[f.key] ?? ""} />
@@ -146,7 +146,7 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
 
   return (
     <div className="grid items-start gap-2 sm:grid-cols-[180px_1fr_auto]">
-      <label htmlFor={field.key} className="pt-2 text-sm font-medium text-slate-300">{field.label}</label>
+      <label htmlFor={field.key} className="pt-2 text-sm font-medium text-foreground/80">{field.label}</label>
       <div>
         {field.type === "select" ? (
           <select
@@ -168,8 +168,8 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
             className={inputCls}
           />
         )}
-        {field.hint && <p className="mt-1 text-xs text-slate-500">{field.hint}</p>}
-        {err && <p className="mt-1 text-xs text-red-400">{err}</p>}
+        {field.hint && <p className="mt-1 text-xs text-muted-foreground">{field.hint}</p>}
+        {err && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{err}</p>}
       </div>
       <button
         onClick={save}
@@ -183,4 +183,4 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
 }
 
 const inputCls =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand focus:ring-2 focus:ring-brand/30";
+  "w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";

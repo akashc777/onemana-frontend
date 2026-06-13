@@ -67,7 +67,7 @@ export function CustomersTable() {
       <DataTable head={["Joined", "Email", "Name", "GSTIN", "State", "Country", ""]}>
         {filtered.length === 0 ? (
           <Tr>
-            <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">No matching customers.</td>
+            <td colSpan={7} className="px-3 py-8 text-center text-sm text-muted-foreground">No matching customers.</td>
           </Tr>
         ) : (
           filtered.map((c) => (
@@ -85,19 +85,19 @@ export function CustomersTable() {
                         if (e.key === "Escape") setEditingId(null);
                       }}
                       autoFocus
-                      className="w-36 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none focus:border-brand"
+                      className="w-36 rounded-md border border-border bg-muted px-2 py-1 text-xs text-foreground outline-none focus:border-brand"
                     />
-                    <button onClick={() => saveName(c)} disabled={savingName} className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50">
+                    <button onClick={() => saveName(c)} disabled={savingName} className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-500/20 disabled:opacity-50 dark:text-emerald-300">
                       {savingName ? "…" : "Save"}
                     </button>
-                    <button onClick={() => setEditingId(null)} className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-400 hover:bg-white/10">
+                    <button onClick={() => setEditingId(null)} className="rounded-md border border-border bg-muted px-2 py-1 text-xs text-muted-foreground hover:bg-muted">
                       Cancel
                     </button>
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     {c.name || "-"}
-                    <button onClick={() => startEdit(c)} className="text-xs text-slate-500 hover:text-brand-light">Edit</button>
+                    <button onClick={() => startEdit(c)} className="text-xs text-muted-foreground hover:text-brand">Edit</button>
                   </span>
                 )}
               </Td>
