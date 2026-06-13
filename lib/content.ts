@@ -94,7 +94,7 @@ export const whyBuilt = {
 /** Builder-authentic proof (not fabricated customer quotes). */
 export const socialProof = {
   quote:
-    "Mornings at OneMana used to start with Slack, Notion, and a task board open before anyone had finished their coffee. OneCamp exists because the team wanted one place on a server they control. OneMana runs on it every day. It is not perfect, but it is theirs, and that matters.",
+    "One payment. No renewals. It runs on your server until you decide otherwise, not until we decide to raise prices.",
   author: "Akash",
   role: "Founder, OneMana",
   signals: [
