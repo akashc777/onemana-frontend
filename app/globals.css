@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: "Inter", system-ui, sans-serif;
   /* Cloudflare-inspired neutrals: crisp white canvas, ink text, hairline borders */
   --background: 255 255 255;
   --foreground: 34 34 34;
@@ -44,7 +43,7 @@ html {
 }
 
 body {
-  @apply bg-background text-foreground antialiased;
+  @apply bg-background font-sans text-foreground antialiased;
   font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "ss01" 1;
   text-rendering: optimizeLegibility;
 }
@@ -111,7 +110,7 @@ body {
   }
 
   .eyebrow-premium {
-    @apply mb-3 inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-brand;
+    @apply mb-3 inline-flex items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-brand;
   }
 
   .eyebrow-premium::before {
@@ -217,6 +216,7 @@ body {
   /* Theme-aware typography (blog, docs, legal, admin previews) */
   .prose,
   .prose.prose-neutral {
+    font-family: inherit;
     --tw-prose-body: rgb(var(--foreground) / 0.92);
     --tw-prose-headings: rgb(var(--foreground));
     --tw-prose-lead: rgb(var(--muted-foreground));
@@ -238,6 +238,10 @@ body {
   .prose :where(code):not(:where(pre *)) {
     background-color: rgb(var(--muted));
     color: rgb(var(--foreground));
+  }
+
+  .prose :where(pre, pre code, kbd, samp) {
+    @apply font-mono;
   }
 
   .prose :where(a):not(:where([class~="not-prose"] *)) {

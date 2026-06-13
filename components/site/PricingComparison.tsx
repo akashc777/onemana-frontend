@@ -28,7 +28,7 @@ export function PricingComparison() {
     <div className="mx-auto max-w-3xl">
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
         <article className="rounded-lg border border-border bg-muted/30 p-5 sm:p-6">
-          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{typical.eyebrow}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{typical.eyebrow}</p>
           <h3 className="mt-1 text-base font-semibold text-foreground">{typical.title}</h3>
           <ul className="mt-5 space-y-3.5">
             {typical.rows.map((row) => (
@@ -47,7 +47,7 @@ export function PricingComparison() {
           <div className="flex items-center gap-2.5">
             <OneCampLogo className="h-7 w-7 rounded-md" />
             <div>
-              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-brand">{onecamp.eyebrow}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-brand">{onecamp.eyebrow}</p>
               <h3 className="text-base font-semibold text-foreground">{onecamp.title}</h3>
             </div>
           </div>

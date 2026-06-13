@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
+import { fontMono, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { defaultOgImages, defaultTwitterImages, OG_DESCRIPTION, OG_TITLE } from "@/lib/og-card";
 import { Nav } from "@/components/site/Nav";
@@ -10,8 +10,6 @@ import { ScrollProgress } from "@/components/site/ScrollProgress";
 import { VisitorTracker } from "@/components/site/VisitorTracker";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { getGithubStars } from "@/lib/github";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -87,8 +85,8 @@ const jsonLd = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const stars = await getGithubStars();
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col">
+    <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
+      <body className={`${fontSans.className} flex min-h-screen flex-col font-sans antialiased`}>
         <ThemeProvider>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           <SiteBackground />

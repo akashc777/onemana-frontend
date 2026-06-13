@@ -67,7 +67,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
             <header>
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-medium text-foreground">OneCamp Cloud · Managed</p>
-                <span className="rounded border border-brand/30 bg-brand/[0.08] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-brand">
+                <span className="rounded border border-brand/30 bg-brand/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
                   Popular
                 </span>
               </div>
