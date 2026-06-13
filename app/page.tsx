@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { features, steps, faqs, requirements, trustPoints, whyBuilt } from "@/lib/content";
+import { features, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt } from "@/lib/content";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { getGithubStars } from "@/lib/github";
@@ -115,8 +115,8 @@ export default async function HomePage() {
       <Section id="features" divider className="overflow-hidden">
         <SectionHeading
           eyebrow="What's inside"
-          title="Everything in one workspace"
-          subtitle="Not integrations taped onto chat. Native modules built to work together from day one."
+          title="The modules, briefly"
+          subtitle="Eight things we got tired of paying for separately. They share one login and one server."
         />
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
@@ -170,39 +170,32 @@ export default async function HomePage() {
         <div className="mx-auto max-w-3xl">
           <SectionHeading
             eyebrow="Hardware"
-            title="What you'll need"
-            subtitle="Docker containers. The install command handles deploy, SSL, and optional local AI."
+            title="Rough sizing"
+            subtitle={requirementsIntro}
           />
-          <Reveal direction="right" className="mt-12 overflow-hidden rounded-lg border border-border">
-            <div className="overflow-x-auto">
-            <table className="w-full min-w-[32rem] text-center text-sm">
-              <thead className="border-b border-border bg-muted/50 text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3.5 font-medium">Team size</th>
-                  <th className="px-4 py-3.5 font-medium">RAM</th>
-                  <th className="px-4 py-3.5 font-medium">CPU</th>
-                  <th className="px-4 py-3.5 font-medium">Local AI</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/70">
-                {requirements.map((r) => (
-                  <tr key={r.team} className="transition-colors hover:bg-muted/40">
-                    <td className="px-4 py-3.5 font-medium text-foreground">{r.team}</td>
-                    <td className="px-4 py-3.5 text-muted-foreground">{r.ram}</td>
-                    <td className="px-4 py-3.5 text-muted-foreground">{r.cpu}</td>
-                    <td className="px-4 py-3.5 text-muted-foreground">{r.ai}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </Reveal>
+          <div className="mt-10 space-y-4">
+            {requirements.map((r, i) => (
+              <Reveal key={r.label} delay={i * 50}>
+                <div className="rounded-lg border border-border bg-card px-5 py-4 sm:px-6">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <p className="font-medium text-foreground">{r.label}</p>
+                    <p className="text-sm text-muted-foreground">{r.spec}</p>
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.note}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </Section>
 
       <Section id="faq" divider>
         <div className="mx-auto max-w-2xl">
-          <SectionHeading eyebrow="Questions" title="Things people ask before they buy" />
+          <SectionHeading
+            eyebrow="Questions"
+            title="Before you buy"
+            subtitle="The emails we actually get. Short answers."
+          />
           <div className="mt-12 space-y-3">
             {faqs.map((f) => (
               <FaqItem key={f.q} q={f.q} a={f.a} />

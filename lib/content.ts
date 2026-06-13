@@ -1,47 +1,47 @@
-// Marketing copy in builder voice, aligned with akash.page blog tone.
+// Marketing copy — company voice, uneven on purpose.
 
 export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "video" | "calendar" | "teams" | "lock";
 
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
   {
     icon: "ai",
-    title: "Local AI assistant",
-    body: "Runs on Ollama on your server. Ask across chats, docs, and tasks: meeting recaps, catch-me-up, proactive nudges. Nothing leaves your infrastructure.",
+    title: "Local AI",
+    body: "Ollama on your box, not someone else's API. Recap a channel, catch up on a thread, nudge about a stale task. Chats and docs stay on your server.",
   },
   {
     icon: "chat",
-    title: "Chat & channels",
-    body: "Channels, DMs, threads, reactions, file sharing. MQTT-backed real-time delivery, the same stack OneMana runs in production every day.",
+    title: "Chat",
+    body: "Channels, threads, DMs, reactions, files. Real-time over MQTT. We built this first and still dogfood it daily at OneMana.",
   },
   {
     icon: "tasks",
-    title: "Tasks & kanban",
-    body: "Boards, assignees, due dates, project views. Not a bolt-on. Tasks live inside the same workspace as your conversations.",
+    title: "Tasks",
+    body: "Kanban in the same app as your channels. No Zapier keeping Asana in sync with Slack.",
   },
   {
     icon: "docs",
-    title: "Collaborative docs",
-    body: "Notion-style editor with real-time co-editing, block handles, and slash commands. Wikis and meeting notes without a second tab.",
+    title: "Docs",
+    body: "Block editor, slash commands, live cursors when two people land on the same page. Good enough that we cancelled Notion.",
   },
   {
     icon: "video",
-    title: "Video meetings",
-    body: "HD calls, screen share, recording, live transcription via LiveKit on your server. No Zoom bill, no third-party relay.",
+    title: "Video",
+    body: "LiveKit runs on your hardware. Calls, screen share, recordings. Transcription stays local too.",
   },
   {
     icon: "calendar",
-    title: "Team calendar",
-    body: "Shared events with two-way Google Calendar sync. Invites and deadlines on one timeline instead of five apps.",
+    title: "Calendar",
+    body: "Google sync works both ways. Task due dates can show up on the team calendar without another tool.",
   },
   {
     icon: "teams",
-    title: "Teams & permissions",
-    body: "Organize people into teams and projects with role-based access. The AI respects the same boundaries you set.",
+    title: "Teams",
+    body: "Roles, projects, the usual permission model. The AI only sees what the logged-in user can see.",
   },
   {
     icon: "lock",
-    title: "Self-hosted by default",
-    body: "Your data on your server. Docker deploy, one command, SSL included. Open-source frontend. No phone-home, no per-seat tax.",
+    title: "Your server",
+    body: "One Docker command, SSL included, open-source frontend on GitHub. No phone home. No per-seat invoice.",
   },
 ];
 
@@ -52,25 +52,59 @@ export const steps = [
 ];
 
 export const faqs = [
-  { q: "What does \"one-time payment\" actually mean?", a: "You pay once and receive a license key. Use OneCamp forever. No renewals, no annual subscriptions, no per-seat charges. Add as many users as you want at no extra cost." },
-  { q: "How does OneCamp AI work? Does it send my data to external servers?", a: "OneCamp AI runs entirely on your server using Ollama with local LLMs. Your conversations, documents, and tasks are never sent to a third-party API. It uses permission-aware retrieval, so it can only access what you can see." },
-  { q: "Do I need a GPU for OneCamp AI?", a: "No. OneCamp AI works on CPU-only servers; the default 3B model runs well on 4+ cores with 16 GB RAM. A GPU makes responses faster and lets you run larger models." },
-  { q: "Can we import Slack or Teams data into OneCamp?", a: "Yes. OneCamp includes a Slack import. Bring your historical channels and messages across when you migrate." },
-  { q: "Does each user have to install it?", a: "No. One person installs it on a server you control. Everyone else just logs in via the web or adds the PWA to their phone." },
-  { q: "Are native iOS and Android apps available?", a: "OneCamp runs beautifully on the mobile web and as a PWA you launch from your home screen, with push notifications and app badges. No app store required." },
-  { q: "Can I run OneCamp on a shared server like DigitalOcean?", a: "Absolutely. Wherever you can host something like WordPress, you can host OneCamp. It's a Docker deploy. Connect to your server and run one command." },
-  { q: "What are the system requirements?", a: "Small teams (<50): 8 GB RAM, 4 vCPU. 50–200 users: 16 GB RAM. Heavy video/AI usage: 32 GB RAM, 16 CPU. With local-LLM AI, 16 GB RAM is recommended. SSL is set up automatically." },
-  { q: "What if I buy it and can't get it installed?", a: "The install script handles Docker, SSL, the database, and AI models. Most installs finish in under 10 minutes. If you hit a snag, open a GitHub issue and we'll help." },
-  { q: "What happens if OneMana shuts down?", a: "The frontend is open-source on GitHub, and the backend binary is yours the moment you buy it. It runs on your server with no phone-home. Your instance keeps running indefinitely." },
-  { q: "How does it compare to Mattermost or Rocket.Chat?", a: "Those are great chat tools, but they're just chat. OneCamp is a unified workspace: chat, Kanban, docs, video with recording & transcription, calendar, and a local AI assistant, all in one install with no per-seat pricing." },
-  { q: "How much does it cost to run?", a: "A ~$12/month droplet (4 vCPU, 8 GB) comfortably runs OneCamp for teams under 50. Compare that to per-seat SaaS that runs into thousands per year." },
+  {
+    q: "I pay once and that's it?",
+    a: "Yes. One license key, unlimited users, no annual renewal. Add the whole company without watching the bill climb.",
+  },
+  {
+    q: "Where does the AI run?",
+    a: "On your server via Ollama. Not our cloud, not OpenAI. It can only read what the logged-in user already has access to.",
+  },
+  {
+    q: "Do I need a GPU?",
+    a: "No for getting started. The default small model is fine on CPU with 16 GB RAM. A GPU just makes replies faster if you want bigger models.",
+  },
+  {
+    q: "Can we import Slack history?",
+    a: "There's a Slack import built in. Bring channels and messages over when you're ready to switch, not before.",
+  },
+  {
+    q: "Does everyone need to install something?",
+    a: "One person runs the installer on a server you control. Everyone else opens a browser or adds the PWA to their phone.",
+  },
+  {
+    q: "What about phones?",
+    a: "Mobile web and PWA work well, push included. We don't ship App Store builds. Most teams don't miss them.",
+  },
+  {
+    q: "Install broke. What now?",
+    a: "Open a GitHub issue with the log. Most installs finish in under ten minutes on a normal VPS. We'll help you untangle it.",
+  },
+  {
+    q: "What if OneMana shuts down?",
+    a: "You already have the backend binary and an open-source frontend. Your instance does not phone home. It keeps running.",
+  },
 ];
 
+export const requirementsIntro =
+  "Starting points from real droplets, not lab benchmarks. Your mileage varies if everyone is on video calls while the AI summarizes docs.";
+
 export const requirements = [
-  { team: "Small Team (<50)", ram: "8 GB", cpu: "4 vCPU", ai: "Basic" },
-  { team: "Medium (50–200)", ram: "16 GB", cpu: "4 CPU", ai: "Recommended" },
-  { team: "Large (200–1000)", ram: "32 GB", cpu: "16 CPU", ai: "+ GPU optional" },
-  { team: "Enterprise (1000+)", ram: "64 GB", cpu: "32 CPU", ai: "+ GPU recommended" },
+  {
+    label: "Under ~50 people",
+    spec: "8 GB RAM · 4 vCPU",
+    note: "What we run OneMana on. Chat, docs, tasks, and CPU AI are fine here.",
+  },
+  {
+    label: "50–200 people",
+    spec: "16 GB RAM · 4+ CPU",
+    note: "Add headroom if local AI is on all day or video is heavy.",
+  },
+  {
+    label: "200+ people",
+    spec: "32 GB RAM and up",
+    note: "Treat this as a conversation, not a formula. We'll help you size it.",
+  },
 ];
 
 export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Confluence"];
