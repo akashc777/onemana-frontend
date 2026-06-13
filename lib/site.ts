@@ -27,8 +27,6 @@ export const site = {
   twitter: "https://twitter.com/akashc777",
 };
 
-export const techStack = ["Docker", "SSL", "Ollama", "LiveKit", "MQTT"] as const;
-
 export const navLinks = [
   { label: "Tour", href: "/#tour" },
   { label: "Features", href: "/#features" },

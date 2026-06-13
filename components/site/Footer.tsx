@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { footerLinks, site, techStack } from "@/lib/site";
+import { footerLinks, site } from "@/lib/site";
 import { OneCampLogo, OneManaLogo } from "@/components/site/BrandMarks";
 
 export function Footer() {
@@ -22,16 +22,6 @@ export function Footer() {
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               The self-hosted, all-in-one workspace. Chat, tasks, docs, video, calendar, and local AI on your server.
             </p>
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {techStack.map((t) => (
-                <span
-                  key={t}
-                  className="rounded border border-border/70 bg-background px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
             <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
               <OneManaLogo className="h-5 w-5 rounded" />
               <span>A product by {site.company}</span>
