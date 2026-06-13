@@ -102,9 +102,14 @@ function BuyInner() {
                 type="button"
                 onClick={() => setPlan("lifetime")}
                 aria-pressed={!isCloud}
-                className={`rounded-md px-3 py-2 font-medium transition ${!isCloud ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                className={`relative rounded-md px-3 py-2 font-medium transition ${!isCloud ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Lifetime · self-host
+                <span className="flex flex-col items-center gap-0.5 sm:flex-row sm:gap-1.5">
+                  <span>Lifetime · self-host</span>
+                  <span className="rounded border border-brand/30 bg-brand/[0.08] px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-brand">
+                    Popular
+                  </span>
+                </span>
               </button>
               <button
                 type="button"

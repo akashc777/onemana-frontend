@@ -32,9 +32,15 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
 
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
         <Reveal>
-          <article className="pricing-card card-premium card flex h-full flex-col p-6 sm:p-7">
+          <article className="pricing-card pricing-card-featured card-premium card relative flex h-full flex-col overflow-hidden border-brand/25 bg-gradient-to-b from-brand/[0.04] to-card p-6 dark:from-brand/[0.08] sm:p-7">
+            <div className="premium-frame-accent absolute inset-x-0 top-0 h-px" aria-hidden />
             <header>
-              <p className="text-sm font-medium text-muted-foreground">Self-Host · Lifetime</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-medium text-foreground">Self-Host · Lifetime</p>
+                <span className="rounded border border-brand/30 bg-brand/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
+                  Popular
+                </span>
+              </div>
               <div className="mt-5 flex items-baseline gap-2">
                 <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-[2.75rem]">
                   {fmtUSD(pricing.lifetime_usd)}
@@ -62,15 +68,9 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
         </Reveal>
 
         <Reveal delay={100}>
-          <article className="pricing-card pricing-card-featured card-premium card relative flex h-full flex-col overflow-hidden border-brand/25 bg-gradient-to-b from-brand/[0.04] to-card p-6 dark:from-brand/[0.08] sm:p-7">
-            <div className="premium-frame-accent absolute inset-x-0 top-0 h-px" aria-hidden />
+          <article className="pricing-card card-premium card flex h-full flex-col p-6 sm:p-7">
             <header>
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-foreground">OneCamp Cloud · Managed</p>
-                <span className="rounded border border-brand/30 bg-brand/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
-                  Popular
-                </span>
-              </div>
+              <p className="text-sm font-medium text-muted-foreground">OneCamp Cloud · Managed</p>
               <div className="mt-5 flex items-baseline gap-2">
                 <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-[2.75rem]">
                   {fmtUSD(pricing.cloud_usd)}
@@ -89,7 +89,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               ))}
             </ul>
             <footer className="mt-8 border-t border-border/60 pt-6">
-              <ButtonLink href="/buy?plan=cloud" variant="brandPremium" size="lg" className="w-full">
+              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="lg" className="w-full">
                 Start with OneCamp Cloud
               </ButtonLink>
               <p className="mt-3 text-center text-xs text-muted-foreground">Workspace live within 12 hours</p>
