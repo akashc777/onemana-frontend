@@ -9,8 +9,6 @@ import { SiteBackground } from "@/components/site/SiteBackground";
 import { ScrollProgress } from "@/components/site/ScrollProgress";
 import { VisitorTracker } from "@/components/site/VisitorTracker";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { getGithubStars } from "@/lib/github";
-
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -82,8 +80,7 @@ const jsonLd = {
   ],
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const stars = await getGithubStars();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
       <body className={`${fontSans.className} flex min-h-screen flex-col font-sans antialiased`}>
@@ -98,7 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           >
             Skip to content
           </a>
-          <Nav stars={stars} />
+          <Nav />
           <main id="main" className="flex-1 pb-20">
             {children}
           </main>

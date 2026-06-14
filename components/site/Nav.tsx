@@ -5,14 +5,13 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
-import { GitHubStars } from "@/components/site/GitHubStars";
 import { OneCampLogo } from "@/components/site/BrandMarks";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 
-const HOME_SECTIONS = ["tour", "features", "pricing", "faq"] as const;
+const HOME_SECTIONS = ["tour", "pricing"] as const;
 
-export function Nav({ stars }: { stars?: number | null }) {
+export function Nav() {
   const pathname = usePathname();
   const onHome = pathname === "/";
   const activeSection = useScrollSpy([...HOME_SECTIONS], onHome);
@@ -70,7 +69,6 @@ export function Nav({ stars }: { stars?: number | null }) {
           >
             Live Demo
           </a>
-          <GitHubStars compact stars={stars} />
           <ThemeToggle />
           <Link href="/account" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
             Sign in
@@ -115,8 +113,7 @@ export function Nav({ stars }: { stars?: number | null }) {
             >
               Live Demo
             </a>
-            <div className="flex items-center gap-2 px-2 py-2">
-              <GitHubStars stars={stars} />
+            <div className="px-2 py-2">
               <ThemeToggle />
             </div>
             <Link

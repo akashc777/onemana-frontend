@@ -29,10 +29,7 @@ export const site = {
 
 export const navLinks = [
   { label: "Tour", href: "/#tour" },
-  { label: "Features", href: "/#features" },
   { label: "Pricing", href: "/#pricing" },
-  { label: "Blog", href: "/blog" },
-  { label: "FAQ", href: "/#faq" },
   { label: "Docs", href: "/docs" },
 ];
 
@@ -41,9 +38,11 @@ export const footerLinks = {
     { label: "Product tour", href: "/#tour" },
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },
+    { label: "FAQ", href: "/#faq" },
     { label: "Blog", href: "/blog" },
     { label: "Live Demo", href: site.demoUrl, external: true },
     { label: "Setup Docs", href: "/docs" },
+    { label: "GitHub", href: site.githubUrl, external: true },
   ],
   Company: [
     { label: "About Us", href: "/about" },
