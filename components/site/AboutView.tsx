@@ -23,24 +23,29 @@ export function AboutView() {
           <div className="prose max-w-none prose-headings:tracking-[-0.02em] prose-headings:text-foreground prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-brand">
             <h2>The story</h2>
             <p>
+              One person. One mission. One slightly over-ambitious product roadmap.
+            </p>
+            <p>
               It started the way most of this did: too many tabs before the first coffee. Slack for chat. Notion for
               docs. Something else for tasks. Zoom when we needed to talk. A calendar that never quite matched the rest.
+              It was getting ridiculous.
             </p>
             <p>
-              I did not want another subscription stack. I wanted one workspace on hardware we control. So I built{" "}
-              <strong>OneCamp</strong> for <strong>OneMana</strong>, the company behind it, and we have run the business on
-              it every day since.
+              So instead of complaining about it on Twitter like a normal person, I built <strong>OneCamp</strong> — a
+              self-hosted workspace that puts chat, tasks, docs, video, calendar, and local AI in one place. Because
+              apparently, I enjoy pain.
             </p>
             <p>
-              <strong>{site.company}</strong> is a one-person company (OPC is in the name for a reason). Based in{" "}
-              <strong>Bangalore</strong>. Small team tools without enterprise pricing, without vendor lock-in, and without
-              your data sitting on someone else&apos;s machine.
+              <strong>{site.company}</strong> is a one-person company (the &quot;OPC&quot; is in the name for a reason —
+              One Person Company, it&apos;s literally right there). Headquartered in Bangalore, where the coffee is strong,
+              the traffic is stronger, and the startups are strongest. We run the entire business on the product we ship.
             </p>
 
             <h2>What we believe</h2>
             <p>
-              Teams should own their workspace the same way they own their code and their customer relationships. Pay once
-              or host with us, but the product should not hold your data hostage. The frontend is open on GitHub. The
+              Small teams and solo warriors 🥷 deserve the same powerful tools big companies get — without the
+              enterprise price tag, without the vendor lock-in, and without someone else owning your data. Pay once (or
+              let us host it), but the product should never hold your data hostage. The frontend is open on GitHub. The
               backend runs on your server. That is the deal.
             </p>
           </div>
@@ -60,9 +65,11 @@ export function AboutView() {
             <h3 className="mt-5 text-lg font-semibold text-foreground">Akash Hadagali</h3>
             <p className="mt-1 text-sm font-medium text-brand">Founder, OneMana</p>
             <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Writes the code, answers support mail, and still ships features from the same app this page is selling.
+              Founder, CEO, CTO, Designer, Intern &amp; Coffee Machine Operator. Writes the code. Fixes the bugs.
+              Deploys at 2 AM. Answers support emails. Also somehow finds time to eat.
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">The team: all 1 of us.</p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
               <ButtonLink href={site.githubUrl} external variant="ghost" size="sm">
                 GitHub
               </ButtonLink>

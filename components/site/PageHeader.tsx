@@ -24,7 +24,7 @@ export function PageHeader({
   return (
     <section className={`relative overflow-hidden pt-14 sm:pt-16 ${className}`}>
       <div aria-hidden className="cf-orange-beam pointer-events-none absolute inset-x-0 top-0 h-48 opacity-60" />
-      <div className={`container-x relative z-10 pb-10 ${centered ? "text-center" : ""}`}>
+      <div className={`container-x relative z-10 ${divider ? "pb-6" : "pb-10"} ${centered ? "text-center" : ""}`}>
         {eyebrow && (
           <Reveal>
             <p className={`eyebrow-premium ${centered ? "mx-auto w-fit" : ""}`}>{eyebrow}</p>
@@ -52,8 +52,24 @@ export function PageHeader({
         )}
       </div>
       {divider && (
-        <div className="container-x">
-          <div className="section-divider" role="separator" aria-hidden />
+        <div className="container-x mt-2 pb-8">
+          {/* 
+            Alignment fix: 
+            - For centered headers (e.g. /blog, /about), the divider line is constrained to max-w-2xl
+              (via mx-auto max-w-2xl on the line) to visually align with the subtitle + title block
+              rather than spanning the full 1200px container-x while the readable text is narrower.
+              This matches SectionHeading's max-w-2xl, the subtitle's cap, and the old content/about.md
+              Divider blocks which specified max_width:800.
+            - Left-aligned headers (docs, buy internals) keep the full container width.
+            - Vertical spacing: reduced preceding pb-6 on header text + explicit mt/pb here for 
+              consistent rhythm between header copy and the rule, before body content begins.
+            - The line is now "owned" by the header block visually.
+          */}
+          <div
+            className={`section-divider ${centered ? "mx-auto max-w-2xl" : ""}`}
+            role="separator"
+            aria-hidden
+          />
         </div>
       )}
     </section>
