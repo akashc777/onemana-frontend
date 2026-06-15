@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { site } from "@/lib/site";
 
-/** GitHub uses amber/gold for the star icon in repo badges — not foreground gray. */
+/** GitHub uses amber/gold for the star icon in repo badges - not foreground gray. */
 function StarIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" className={`h-3.5 w-3.5 ${className}`} fill="currentColor" aria-hidden>
@@ -68,7 +68,7 @@ export function GitHubStars({
       {!compact && <span>Star</span>}
       <span className="flex items-center gap-1 rounded-md border border-border/80 bg-muted/50 px-1.5 py-0.5 text-xs">
         <StarIcon className="text-[#E3B341]" />
-        <span className="tabular-nums font-medium text-foreground">{stars !== null ? formatStars(stars) : "—"}</span>
+        <span className="tabular-nums font-medium text-foreground">{stars !== null ? formatStars(stars) : "-"}</span>
       </span>
     </a>
   );

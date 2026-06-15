@@ -27,7 +27,7 @@ const POSTS: Post[] = [
     author: "Daniel Cho",
     initials: "DC",
     color: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-    text: "Reviewing now. The deploy looks clean — nice work on the rollback guardrails.",
+    text: "Reviewing now. The deploy looks clean - nice work on the rollback guardrails.",
     time: "9:42 AM",
   },
   {
@@ -63,7 +63,7 @@ const TYPE_MS = 2000;
 const THINK_MS = 1500;
 const HOLD_MS = 5500;
 
-/** Hero product preview — channel posts + AI Assistant panel, aligned with OneCamp FE. */
+/** Hero product preview - channel posts + AI Assistant panel, aligned with OneCamp FE. */
 export function HeroShowcase({ className = "" }: { className?: string }) {
   const [visiblePosts, setVisiblePosts] = useState(1);
   const [cycle, setCycle] = useState(0);
