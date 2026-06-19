@@ -21,6 +21,7 @@ import { StickyBuyCta } from "@/components/site/StickyBuyCta";
 import { SocialProof } from "@/components/site/SocialProof";
 import { SectionAmbient } from "@/components/site/SectionAmbient";
 import { HeroThreeLazy } from "@/components/site/HeroThreeLazy";
+import { ScrollParallax } from "@/components/site/ScrollParallax";
 
 export const revalidate = 300;
 
@@ -73,7 +74,9 @@ export default async function HomePage() {
           </div>
 
           <Reveal delay={200} direction="scale" className="mx-auto mt-16 w-full max-w-6xl">
-            <HeroMedia />
+            <ScrollParallax>
+              <HeroMedia />
+            </ScrollParallax>
           </Reveal>
         </div>
       </section>
