@@ -20,6 +20,7 @@ import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumV
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
 import { SocialProof } from "@/components/site/SocialProof";
 import { SectionAmbient } from "@/components/site/SectionAmbient";
+import { HeroThreeLazy } from "@/components/site/HeroThreeLazy";
 
 export const revalidate = 300;
 
@@ -34,6 +35,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden pb-8 pt-14 sm:pb-12 sm:pt-20">
         <HeroAmbient />
+        <HeroThreeLazy />
         <div className="container-x">
           <div className="mx-auto max-w-4xl text-center">
             <Reveal>
