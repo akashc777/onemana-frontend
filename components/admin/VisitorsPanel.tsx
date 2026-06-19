@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { adminApi, type VisitStats } from "@/lib/adminApi";
 import { countryName, countryFlag } from "@/lib/geo";
@@ -10,6 +10,49 @@ const VisitorMap = dynamic(() => import("./VisitorMap").then((m) => m.VisitorMap
   ssr: false,
   loading: () => <p className="py-16 text-center text-sm text-muted-foreground">Loading map…</p>,
 });
+
+type RangePreset = "today" | "week" | "month" | "custom";
+
+const PRESETS: { key: RangePreset; label: string }[] = [
+  { key: "today", label: "Today" },
+  { key: "week", label: "This week" },
+  { key: "month", label: "This month" },
+  { key: "custom", label: "Custom" },
+];
+
+/** Local calendar date as YYYY-MM-DD (matches what <input type=date> yields). */
+function toYMD(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Resolve a preset to an inclusive [from,to] date range (to-date). */
+function presetRange(preset: RangePreset): { from: string; to: string } {
+  const now = new Date();
+  const today = toYMD(now);
+  if (preset === "week") {
+    const d = new Date(now);
+    const mondayOffset = (d.getDay() + 6) % 7; // week starts Monday
+    d.setDate(d.getDate() - mondayOffset);
+    return { from: toYMD(d), to: today };
+  }
+  if (preset === "month") {
+    return { from: toYMD(new Date(now.getFullYear(), now.getMonth(), 1)), to: today };
+  }
+  // "today" (and the fallback)
+  return { from: today, to: today };
+}
+
+/** Human caption for the active range, e.g. "Mar 1 – Mar 12, 2026". */
+function rangeCaption(from: string, to: string): string {
+  if (!from && !to) return "Last 30 days";
+  const fmt = (s: string) =>
+    s ? new Date(s + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "…";
+  if (from && to && from === to) return fmt(from);
+  return `${fmt(from)} – ${fmt(to)}`;
+}
 
 const DEVICE_META: Record<string, { label: string; icon: string }> = {
   desktop: { label: "Desktop", icon: "🖥️" },
@@ -32,11 +75,17 @@ function StatCard({ label, value, hint }: { label: string; value: string; hint?:
 }
 
 export function VisitorsPanel() {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [preset, setPreset] = useState<RangePreset>("today");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
   const [data, setData] = useState<VisitStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { from, to } = useMemo(
+    () => (preset === "custom" ? { from: customFrom, to: customTo } : presetRange(preset)),
+    [preset, customFrom, customTo],
+  );
 
   const load = useCallback(() => {
     setLoading(true);
@@ -62,20 +111,39 @@ export function VisitorsPanel() {
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-end gap-3">
-        <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          From
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
-        </label>
-        <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          To
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
-        </label>
-        {(from || to) && (
-          <button onClick={() => { setFrom(""); setTo(""); }} className="rounded-lg border border-border bg-muted px-3 py-2 text-xs text-foreground/80 hover:bg-muted">
-            Reset (last 30 days)
-          </button>
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <div className="inline-flex items-center rounded-xl border border-border bg-muted/40 p-0.5">
+          {PRESETS.map((p) => (
+            <button
+              key={p.key}
+              onClick={() => setPreset(p.key)}
+              aria-pressed={preset === p.key}
+              className={
+                "rounded-[0.6rem] px-3 py-1.5 text-xs font-medium transition-colors " +
+                (preset === p.key
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground")
+              }
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {preset === "custom" && (
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              From
+              <input type="date" value={customFrom} max={customTo || undefined} onChange={(e) => setCustomFrom(e.target.value)} className={inputCls} />
+            </label>
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              To
+              <input type="date" value={customTo} min={customFrom || undefined} onChange={(e) => setCustomTo(e.target.value)} className={inputCls} />
+            </label>
+          </div>
         )}
+
+        <span className="ml-auto text-xs text-muted-foreground">{rangeCaption(from, to)}</span>
       </div>
 
       {loading && <p className="py-8 text-center text-sm text-muted-foreground">Loading…</p>}
