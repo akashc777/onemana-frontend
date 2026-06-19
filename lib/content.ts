@@ -125,12 +125,24 @@ export const whyBuilt = {
     "Most teams do not wake up wanting to map out eight modules. They wake up with Slack, Notion, and a task board already open, another renewal email in the inbox, and the sense that nothing talks to anything else. OneCamp is one workspace on a server you control. OneMana runs the company on it, and the product still changes every week.",
 };
 
-/** Builder-authentic proof (not fabricated customer quotes). */
+/** Real reviews from actual buyers. Lightly trimmed for length, not reworded. */
+export const testimonials = [
+  {
+    quote:
+      "I purchased OneCamp, tried it out, and still use it. The quick video chat works, chat between users works, I can make multiple files to share with anyone, and it's easy to invite a colleague with an email request. You can easily ask the AI box questions, which is useful. It's truly an all-in-one build. Worth it, with a responsive, friendly developer. I'm satisfied.",
+    author: "herehere4242here",
+    role: "Verified buyer · Reddit",
+  },
+  {
+    quote:
+      "Something really sweet if you like to self-host for your team. Your team's self-hosted command center: chat, tasks, docs, and video meetings, all in one workspace you own. No per-seat pricing. No vendor lock-in. Just install, invite your team, and start collaborating. A $19 no-brainer.",
+    author: "Terry Carson",
+    role: "Self-hosting community",
+  },
+];
+
+/** Trust signals shown alongside real reviews. */
 export const socialProof = {
-  quote:
-    "One payment. No renewals. It runs on your server until you decide otherwise, not until we decide to raise prices.",
-  author: "Akash",
-  role: "Founder, OneMana",
   signals: [
     { label: "Runs in production", detail: "Same app OneMana ships from" },
     { label: "Live demo", detail: "Kick the tires first" },

@@ -52,7 +52,7 @@ export default async function HomePage() {
             </Reveal>
             <Reveal delay={120}>
               <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                OneCamp puts chat, docs, tasks, video, calendar, and local AI in one Docker deploy on your server. No per-seat fees. Your data stays where you put it.
+                One workspace that remembers what your team decides and nudges you when something slips. Chat, docs, tasks, video, calendar, and a local AI assistant in one Docker deploy on your server. No per-seat fees, and your data never leaves.
               </p>
             </Reveal>
             <Reveal delay={180}>
@@ -109,6 +109,9 @@ export default async function HomePage() {
           <StackConvergence />
         </div>
         <div className="mt-14">
+          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            What buyers say
+          </p>
           <SocialProof />
         </div>
       </Section>
