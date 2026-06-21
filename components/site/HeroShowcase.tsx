@@ -46,9 +46,10 @@ const AI_ANSWER = `Here's today in #engineering:
 • Checkout is on staging, payment latency down 40%
 • Deploy review and rollback drill in progress
 
-I turned the follow-ups into tasks:`;
+Here are the follow-ups I can set up for you:`;
 
-/** The valuable bit: actions the agent actually took, with a human-confirmed check. */
+/** Proposed actions. In OneCamp the agent NEVER runs these on its own - it
+ *  proposes them and the user confirms. The animation mirrors that exactly. */
 interface AgentAction {
   verb: string;
   detail: string;
@@ -56,28 +57,38 @@ interface AgentAction {
 }
 
 const ACTIONS: AgentAction[] = [
-  { verb: "Created task", detail: "Review checkout deploy", meta: "Daniel Cho" },
-  { verb: "Created task", detail: "Post APAC recap", meta: "Aisha Khan" },
+  { verb: "Create task", detail: "Review checkout deploy", meta: "Daniel Cho" },
+  { verb: "Create task", detail: "Post APAC recap", meta: "Aisha Khan" },
   { verb: "Set reminder", detail: "Promote checkout to prod", meta: "Tomorrow, 9:00 AM" },
 ];
 
-type DemoPhase = "channel" | "cue" | "typing" | "sent" | "thinking" | "streaming" | "acting" | "done";
+type DemoPhase =
+  | "channel"
+  | "cue"
+  | "typing"
+  | "sent"
+  | "thinking"
+  | "streaming"
+  | "proposed"
+  | "confirming"
+  | "done";
 
 const POST_GAP_MS = 2400;
 const CUE_MS = 1600;
 const TYPE_MS = 2000;
 const THINK_MS = 1500;
-const ACTION_GAP_MS = 650;
-const HOLD_MS = 5200;
+const PROPOSE_HOLD_MS = 2100;
+const CONFIRM_MS = 900;
+const HOLD_MS = 4200;
 
-/** Hero product preview - channel posts + an AI agent that recaps and acts. */
+/** Hero product preview - channel posts + an AI agent that proposes actions
+ *  and only runs them after an explicit confirm (OneCamp's real flow). */
 export function HeroShowcase({ className = "" }: { className?: string }) {
   const [visiblePosts, setVisiblePosts] = useState(1);
   const [cycle, setCycle] = useState(0);
   const [phase, setPhase] = useState<DemoPhase>("channel");
   const [inputText, setInputText] = useState("");
   const [aiText, setAiText] = useState("");
-  const [visibleActions, setVisibleActions] = useState(0);
   const reduce = useRef(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -89,7 +100,6 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
       setPhase("done");
       setInputText("");
       setAiText(AI_ANSWER);
-      setVisibleActions(ACTIONS.length);
     }
   }, []);
 
@@ -110,7 +120,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
     return () => clearTimeout(t);
   }, [visiblePosts, phase, cycle]);
 
-  /* cue → typing → sent → thinking → streaming → acting → done */
+  /* cue → typing → sent → thinking → streaming → proposed → confirming → done */
   useEffect(() => {
     if (reduce.current) return;
     if (phase === "cue") {
@@ -125,13 +135,21 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
       const t = setTimeout(() => setPhase("streaming"), THINK_MS);
       return () => clearTimeout(t);
     }
+    if (phase === "proposed") {
+      // User reviews, then confirms. Nothing has run yet.
+      const t = setTimeout(() => setPhase("confirming"), PROPOSE_HOLD_MS);
+      return () => clearTimeout(t);
+    }
+    if (phase === "confirming") {
+      const t = setTimeout(() => setPhase("done"), CONFIRM_MS);
+      return () => clearTimeout(t);
+    }
     if (phase === "done") {
       const t = setTimeout(() => {
         setVisiblePosts(1);
         setPhase("channel");
         setInputText("");
         setAiText("");
-        setVisibleActions(0);
         setCycle((c) => c + 1);
       }, HOLD_MS);
       return () => clearTimeout(t);
@@ -156,7 +174,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
     return () => clearInterval(id);
   }, [phase, cycle]);
 
-  /* Stream AI reply word-by-word after thinking, then move to acting. */
+  /* Stream AI reply word-by-word after thinking, then propose actions. */
   useEffect(() => {
     if (reduce.current || phase !== "streaming") return;
 
@@ -167,35 +185,36 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
       setAiText(words.slice(0, i).join(""));
       if (i >= words.length) {
         clearInterval(id);
-        setPhase("acting");
+        setPhase("proposed");
       }
     }, 48);
     return () => clearInterval(id);
   }, [phase, cycle]);
 
-  /* Reveal the agent's actions one at a time, like they're being executed. */
-  useEffect(() => {
-    if (reduce.current || phase !== "acting") return;
-    if (visibleActions >= ACTIONS.length) {
-      const t = setTimeout(() => setPhase("done"), 600);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => setVisibleActions((n) => n + 1), ACTION_GAP_MS);
-    return () => clearTimeout(t);
-  }, [phase, visibleActions, cycle]);
-
   useEffect(() => {
     const el = chatRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
-  }, [phase, inputText, aiText, visibleActions]);
+  }, [phase, inputText, aiText]);
 
   const aiActive = phase !== "channel";
   const showUserBubble =
-    phase === "sent" || phase === "thinking" || phase === "streaming" || phase === "acting" || phase === "done";
-  const showAssistant = phase === "thinking" || phase === "streaming" || phase === "acting" || phase === "done";
+    phase === "sent" ||
+    phase === "thinking" ||
+    phase === "streaming" ||
+    phase === "proposed" ||
+    phase === "confirming" ||
+    phase === "done";
+  const showAssistant =
+    phase === "thinking" ||
+    phase === "streaming" ||
+    phase === "proposed" ||
+    phase === "confirming" ||
+    phase === "done";
   const isThinking = phase === "thinking";
   const isStreaming = phase === "streaming";
+  const showActions = phase === "proposed" || phase === "confirming" || phase === "done";
+  const isDone = phase === "done";
   const highlightCatchMeUp = phase === "cue";
 
   const aiPanel = (
@@ -233,7 +252,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
                   <TypingIndicator />
                 </span>
               )}
-              {(isStreaming || phase === "acting" || phase === "done") && (
+              {(isStreaming || showActions) && (
                 <span className="whitespace-pre-line">
                   {aiText}
                   {isStreaming && (
@@ -241,14 +260,25 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
                   )}
                 </span>
               )}
-              {visibleActions > 0 && (
+
+              {showActions && (
                 <div className="mt-2.5 space-y-1.5">
-                  {ACTIONS.slice(0, visibleActions).map((a) => (
+                  {ACTIONS.map((a) => (
                     <div
                       key={a.detail}
-                      className="flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] px-2 py-1.5 animate-fade-up"
+                      className={`flex items-center gap-2 rounded-md border px-2 py-1.5 transition-colors duration-300 ${
+                        isDone
+                          ? "border-emerald-500/30 bg-emerald-500/[0.06]"
+                          : "border-border bg-background"
+                      }`}
                     >
-                      <span className="grid h-4 w-4 flex-shrink-0 place-items-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+                      <span
+                        className={`grid h-4 w-4 flex-shrink-0 place-items-center rounded-full text-[9px] font-bold transition-colors duration-300 ${
+                          isDone
+                            ? "bg-emerald-500 text-white"
+                            : "border border-muted-foreground/40 text-transparent"
+                        }`}
+                      >
                         ✓
                       </span>
                       <span className="min-w-0 flex-1 truncate text-[10px] text-foreground">
@@ -257,6 +287,33 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
                       <span className="flex-shrink-0 text-[9px] text-muted-foreground">{a.meta}</span>
                     </div>
                   ))}
+
+                  {/* Confirmation affordance - this is the part that makes it
+                      honest: in OneCamp nothing runs until the user confirms. */}
+                  {phase === "proposed" && (
+                    <div className="flex items-center gap-2 pt-0.5">
+                      <span className="rounded-md bg-brand px-2.5 py-1 text-[10px] font-semibold text-white shadow-sm ring-2 ring-brand/30">
+                        Confirm
+                      </span>
+                      <span className="rounded-md border border-border px-2.5 py-1 text-[10px] text-muted-foreground">
+                        Dismiss
+                      </span>
+                      <span className="ml-auto text-[9px] text-muted-foreground">Needs your OK</span>
+                    </div>
+                  )}
+                  {phase === "confirming" && (
+                    <div className="flex items-center gap-2 pt-0.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-md bg-brand/80 px-2.5 py-1 text-[10px] font-semibold text-white">
+                        <span className="h-2.5 w-2.5 animate-spin rounded-full border-[1.5px] border-white/40 border-t-white" />
+                        Running…
+                      </span>
+                    </div>
+                  )}
+                  {isDone && (
+                    <p className="pt-0.5 text-[9px] font-medium text-emerald-600 dark:text-emerald-400">
+                      ✓ Confirmed by you · 3 actions done
+                    </p>
+                  )}
                 </div>
               )}
             </div>
