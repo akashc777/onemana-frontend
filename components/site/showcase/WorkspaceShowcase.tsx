@@ -5,13 +5,11 @@ import { ShowcaseShell } from "@/components/site/showcase/ShowcaseShell";
 import { CalendarShowcase } from "@/components/site/showcase/CalendarShowcase";
 import { DocShowcase } from "@/components/site/showcase/DocShowcase";
 import { TasksShowcase } from "@/components/site/showcase/TasksShowcase";
-import { AgentShowcase } from "@/components/site/showcase/AgentShowcase";
 
 const TABS = [
-  { key: "agent", label: "AI Agent", nav: "home" as const, path: "/app/home", Comp: AgentShowcase },
-  { key: "calendar", label: "Calendar", nav: "calendar" as const, path: "/app/calendar", Comp: CalendarShowcase },
-  { key: "docs", label: "Docs", nav: "home" as const, path: "/app/doc/roadmap", Comp: DocShowcase },
   { key: "tasks", label: "Tasks", nav: "tasks" as const, path: "/app/project/board", Comp: TasksShowcase },
+  { key: "docs", label: "Docs", nav: "home" as const, path: "/app/doc/roadmap", Comp: DocShowcase },
+  { key: "calendar", label: "Calendar", nav: "calendar" as const, path: "/app/calendar", Comp: CalendarShowcase },
 ] as const;
 
 export function WorkspaceShowcase() {
