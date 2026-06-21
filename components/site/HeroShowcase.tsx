@@ -27,50 +27,57 @@ const POSTS: Post[] = [
     author: "Daniel Cho",
     initials: "DC",
     color: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-    text: "Reviewing now. The deploy looks clean - nice work on the rollback guardrails.",
+    text: "I'll review the deploy and run the rollback drill before we promote to prod.",
     time: "9:42 AM",
   },
   {
     author: "Aisha Khan",
     initials: "AK",
     color: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
-    text: "Can we get a recap for the folks in APAC? I missed the morning thread.",
+    text: "Can someone post an APAC recap? I missed the morning thread.",
     time: "9:43 AM",
   },
 ];
 
-const USER_PROMPT = "Summarize #engineering today";
+const USER_PROMPT = "Recap today and turn the follow-ups into tasks";
 
-const AI_ANSWER = `Here's today's #engineering recap:
+const AI_ANSWER = `Here's today in #engineering:
 
-• Priya shipped checkout to staging (latency down 40%)
-• Daniel is reviewing the deploy
-• Aisha asked for an APAC recap
+• Checkout is on staging, payment latency down 40%
+• Deploy review and rollback drill in progress
 
-2 tasks closed today.`;
+I turned the follow-ups into tasks:`;
 
-const SOURCES = [
-  { label: "Post", ctx: "#engineering" },
-  { label: "Message", ctx: "Daniel Cho" },
-  { label: "Task", ctx: "Checkout v2" },
+/** The valuable bit: actions the agent actually took, with a human-confirmed check. */
+interface AgentAction {
+  verb: string;
+  detail: string;
+  meta: string;
+}
+
+const ACTIONS: AgentAction[] = [
+  { verb: "Created task", detail: "Review checkout deploy", meta: "Daniel Cho" },
+  { verb: "Created task", detail: "Post APAC recap", meta: "Aisha Khan" },
+  { verb: "Set reminder", detail: "Promote checkout to prod", meta: "Tomorrow, 9:00 AM" },
 ];
 
-type DemoPhase = "channel" | "cue" | "typing" | "sent" | "thinking" | "streaming" | "done";
+type DemoPhase = "channel" | "cue" | "typing" | "sent" | "thinking" | "streaming" | "acting" | "done";
 
 const POST_GAP_MS = 2400;
 const CUE_MS = 1600;
 const TYPE_MS = 2000;
 const THINK_MS = 1500;
-const HOLD_MS = 5500;
+const ACTION_GAP_MS = 650;
+const HOLD_MS = 5200;
 
-/** Hero product preview - channel posts + AI Assistant panel, aligned with OneCamp FE. */
+/** Hero product preview - channel posts + an AI agent that recaps and acts. */
 export function HeroShowcase({ className = "" }: { className?: string }) {
   const [visiblePosts, setVisiblePosts] = useState(1);
   const [cycle, setCycle] = useState(0);
   const [phase, setPhase] = useState<DemoPhase>("channel");
   const [inputText, setInputText] = useState("");
   const [aiText, setAiText] = useState("");
-  const [showSources, setShowSources] = useState(false);
+  const [visibleActions, setVisibleActions] = useState(0);
   const reduce = useRef(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -82,7 +89,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
       setPhase("done");
       setInputText("");
       setAiText(AI_ANSWER);
-      setShowSources(true);
+      setVisibleActions(ACTIONS.length);
     }
   }, []);
 
@@ -103,7 +110,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
     return () => clearTimeout(t);
   }, [visiblePosts, phase, cycle]);
 
-  /* cue → typing → sent → thinking → streaming */
+  /* cue → typing → sent → thinking → streaming → acting → done */
   useEffect(() => {
     if (reduce.current) return;
     if (phase === "cue") {
@@ -124,7 +131,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
         setPhase("channel");
         setInputText("");
         setAiText("");
-        setShowSources(false);
+        setVisibleActions(0);
         setCycle((c) => c + 1);
       }, HOLD_MS);
       return () => clearTimeout(t);
@@ -149,7 +156,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
     return () => clearInterval(id);
   }, [phase, cycle]);
 
-  /* Stream AI reply word-by-word after thinking. */
+  /* Stream AI reply word-by-word after thinking, then move to acting. */
   useEffect(() => {
     if (reduce.current || phase !== "streaming") return;
 
@@ -160,22 +167,33 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
       setAiText(words.slice(0, i).join(""));
       if (i >= words.length) {
         clearInterval(id);
-        setShowSources(true);
-        setPhase("done");
+        setPhase("acting");
       }
     }, 48);
     return () => clearInterval(id);
   }, [phase, cycle]);
 
+  /* Reveal the agent's actions one at a time, like they're being executed. */
+  useEffect(() => {
+    if (reduce.current || phase !== "acting") return;
+    if (visibleActions >= ACTIONS.length) {
+      const t = setTimeout(() => setPhase("done"), 600);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setVisibleActions((n) => n + 1), ACTION_GAP_MS);
+    return () => clearTimeout(t);
+  }, [phase, visibleActions, cycle]);
+
   useEffect(() => {
     const el = chatRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
-  }, [phase, inputText, aiText, showSources]);
+  }, [phase, inputText, aiText, visibleActions]);
 
   const aiActive = phase !== "channel";
-  const showUserBubble = phase === "sent" || phase === "thinking" || phase === "streaming" || phase === "done";
-  const showAssistant = phase === "thinking" || phase === "streaming" || phase === "done";
+  const showUserBubble =
+    phase === "sent" || phase === "thinking" || phase === "streaming" || phase === "acting" || phase === "done";
+  const showAssistant = phase === "thinking" || phase === "streaming" || phase === "acting" || phase === "done";
   const isThinking = phase === "thinking";
   const isStreaming = phase === "streaming";
   const highlightCatchMeUp = phase === "cue";
@@ -187,13 +205,13 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
           <span className="grid h-6 w-6 place-items-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-400">
             <IconSparkles className="h-3.5 w-3.5" />
           </span>
-          <span className="text-xs font-semibold text-foreground">AI Assistant</span>
+          <span className="text-xs font-semibold text-foreground">AI Agent</span>
         </div>
       </div>
 
       <div ref={chatRef} className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
         {!aiActive && (
-          <p className="py-6 text-center text-[11px] text-muted-foreground">Ask your workspace anything…</p>
+          <p className="py-6 text-center text-[11px] text-muted-foreground">Ask your workspace to do anything…</p>
         )}
 
         {showUserBubble && (
@@ -215,7 +233,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
                   <TypingIndicator />
                 </span>
               )}
-              {(isStreaming || phase === "done") && (
+              {(isStreaming || phase === "acting" || phase === "done") && (
                 <span className="whitespace-pre-line">
                   {aiText}
                   {isStreaming && (
@@ -223,17 +241,22 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
                   )}
                 </span>
               )}
-              {showSources && (
-                <div className="mt-2.5 border-t border-border/70 pt-2">
-                  <p className="mb-1.5 text-[9px] font-medium uppercase tracking-wide text-muted-foreground">Sources</p>
-                  <div className="space-y-1">
-                    {SOURCES.map((s) => (
-                      <div key={s.ctx} className="flex items-center gap-1.5 text-[10px]">
-                        <span className="font-medium text-foreground">{s.label}</span>
-                        <span className="truncate text-muted-foreground">{s.ctx}</span>
-                      </div>
-                    ))}
-                  </div>
+              {visibleActions > 0 && (
+                <div className="mt-2.5 space-y-1.5">
+                  {ACTIONS.slice(0, visibleActions).map((a) => (
+                    <div
+                      key={a.detail}
+                      className="flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] px-2 py-1.5 animate-fade-up"
+                    >
+                      <span className="grid h-4 w-4 flex-shrink-0 place-items-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+                        ✓
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-[10px] text-foreground">
+                        <span className="font-medium">{a.verb}:</span> {a.detail}
+                      </span>
+                      <span className="flex-shrink-0 text-[9px] text-muted-foreground">{a.meta}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -255,7 +278,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
               <span className="ml-px inline-block h-3.5 w-0.5 animate-pulse bg-brand align-middle" />
             </>
           ) : (
-            "Ask your workspace anything…"
+            "Ask your workspace to do anything…"
           )}
         </div>
       </div>
@@ -289,7 +312,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
                 : "border-border bg-muted/60 text-foreground"
             }`}
           >
-            Catch me up
+            Ask AI
           </span>
         </header>
 
