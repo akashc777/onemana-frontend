@@ -22,11 +22,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const title = doc.seo_title || `${doc.title} - OneCamp docs`;
   const description = doc.seo_desc || `OneCamp documentation: ${doc.title}.`;
   const url = `${site.url}/docs/${doc.slug}`;
+  // Share image is the dynamic title card from app/docs/[slug]/opengraph-image.tsx.
   return {
     title,
     description,
     alternates: { canonical: url },
     openGraph: { title, description, url, type: "article" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

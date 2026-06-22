@@ -23,7 +23,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const title = post.seo_title || post.title;
   const description = post.seo_desc || post.excerpt;
   const url = `${site.url}/blog/${post.slug}`;
-  const cover = post.cover_image ? mediaUrl(post.cover_image) : undefined;
+  // Social share image is the dynamic title card from
+  // app/blog/[slug]/opengraph-image.tsx (and twitter-image.tsx); Next wires the
+  // og:image / twitter:image meta automatically, so we don't set images here.
   return {
     title,
     description,
@@ -36,9 +38,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       publishedTime: post.published_at ?? undefined,
       modifiedTime: post.updated_at,
       authors: post.author ? [post.author] : undefined,
-      images: cover ? [{ url: cover }] : undefined,
     },
-    twitter: { card: "summary_large_image", title, description, images: cover ? [cover] : undefined },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
