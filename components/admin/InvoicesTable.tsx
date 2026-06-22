@@ -8,6 +8,7 @@ import { AsyncState, DataTable, RowDeleteButton, Td, Tr } from "./ui";
 import { FilterBar, emptyFilter, matchesQuery, withinRange, type RangeFilter } from "./filtering";
 import { GSTR1Panel } from "./GSTR1Panel";
 import { GSTR3BPanel } from "./GSTR3BPanel";
+import { GSTFilingTracker } from "./GSTFilingTracker";
 import { CreditNoteDialog, CreditNotesTable } from "./CreditNotes";
 
 export function InvoicesTable() {
@@ -65,6 +66,7 @@ export function InvoicesTable() {
 
   return (
     <div>
+      <GSTFilingTracker />
       <GSTR1Panel />
       <GSTR3BPanel />
       <div className="mb-3 flex items-center justify-between">

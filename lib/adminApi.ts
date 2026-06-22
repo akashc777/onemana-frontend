@@ -364,6 +364,36 @@ function gstr3bManualQuery(m: GSTR3BManual): string {
   return s ? `&${s}` : "";
 }
 
+// GST filing tracker: which returns are due each month and their filed status.
+export interface GSTFilingItem {
+  return_type: string;
+  description: string;
+  year: number;
+  month: number;
+  period: string; // MMYYYY
+  due_date: string; // YYYY-MM-DD
+  filed: boolean;
+  arn: string;
+  filed_on: string;
+  note: string;
+  overdue: boolean;
+  filing_id: string | null;
+}
+export interface GSTFilingMonth {
+  year: number;
+  month: number;
+  label: string;
+  returns: GSTFilingItem[];
+}
+export interface MarkFiledPayload {
+  return_type: string;
+  year: number;
+  month: number;
+  arn: string;
+  filed_on: string; // YYYY-MM-DD ("" = today)
+  note: string;
+}
+
 export const adminApi = {
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
@@ -402,6 +432,29 @@ export const adminApi = {
     ).then((d) => ({ summary: d.data, recon: d.reconciliation })),
   gstr3bJsonUrl: (year: number, month: number, manual: GSTR3BManual = {}) =>
     `${site.backendUrl}/onecamp/admin/gstr3b.json?year=${year}&month=${month}${gstr3bManualQuery(manual)}`,
+
+  // ---- GST filing tracker (due returns + filed acknowledgements) ----
+  gstFilings: (fy?: number) =>
+    adminGet<{ fy_start: number; data: GSTFilingMonth[] }>(
+      `/onecamp/admin/gst-filings${fy ? `?fy=${fy}` : ""}`,
+    ).then((d) => ({ fyStart: d.fy_start, months: d.data ?? [] })),
+  async markGSTFiled(payload: MarkFiledPayload): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/gst-filings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to mark filed");
+    return (data as { msg?: string })?.msg || "Marked filed";
+  },
+  async unmarkGSTFiled(returnType: string, year: number, month: number): Promise<void> {
+    const res = await fetch(
+      `${site.backendUrl}/onecamp/admin/gst-filings?return_type=${encodeURIComponent(returnType)}&year=${year}&month=${month}`,
+      { method: "DELETE", headers: { "X-Admin-Token": getToken() } },
+    );
+    if (!res.ok) throw new Error("Failed to unmark filing");
+  },
 
   // ---- Credit notes (GST CDN: refunds / cancellations / price revisions) ----
   creditNotes: () =>
