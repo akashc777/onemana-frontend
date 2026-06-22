@@ -5,7 +5,7 @@ import { adminApi } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { AsyncState } from "./ui";
 
-type FieldType = "text" | "password" | "number" | "select";
+type FieldType = "text" | "password" | "number" | "select" | "textarea";
 interface FieldDef {
   key: string;
   label: string;
@@ -72,6 +72,23 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "company_sac", label: "SAC Code", hint: "e.g. 997331" },
       { key: "company_email", label: "Support Email" },
       { key: "company_phone", label: "Phone" },
+      { key: "invoice_prefix", label: "Invoice number prefix", hint: "Default OM, e.g. OM/2026-27/0001. Max 3 chars (GST caps the full number at 16)." },
+      { key: "credit_note_prefix", label: "Credit note prefix", hint: "Default CN, e.g. CN/2026-27/0001. Max 3 chars." },
+    ],
+  },
+  {
+    group: "Products (catalog)",
+    fields: [
+      {
+        key: "product_catalog",
+        label: "Product catalog",
+        type: "textarea",
+        hint:
+          'Optional JSON for multi-product support, keyed by plan_code. Each field is optional and falls back to the company defaults above. ' +
+          'Example: {"onecamp_lifetime":{"description":"OneCamp Lifetime License","sac":"997331","gst_rate":18,"price_paise":200000}}. ' +
+          "Leave blank while OneCamp is the only product.",
+      },
+      { key: "gstr1_hsn_desc", label: "Default HSN/SAC label", hint: 'GSTR-1 HSN summary description for any SAC without a catalog entry. Default "Software/SaaS services".' },
     ],
   },
 ];
@@ -157,6 +174,16 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
           >
             {field.options?.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
+        ) : field.type === "textarea" ? (
+          <textarea
+            id={field.key}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={6}
+            spellCheck={false}
+            autoComplete="off"
+            className={`${inputCls} font-mono`}
+          />
         ) : (
           <input
             id={field.key}
