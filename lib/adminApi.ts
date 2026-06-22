@@ -301,6 +301,69 @@ export interface CreditNotePayload {
   ntty: "C" | "D";
 }
 
+// GSTR-3B: auto outward + admin-entered ITC/RCM/interest (all amounts shown in
+// rupees from the backend). The manual inputs are sent in paise.
+export interface GSTR3BSummary {
+  gstin: string;
+  period: string;
+  fp: string;
+  outward_taxable: number;
+  outward_igst: number;
+  outward_cgst: number;
+  outward_sgst: number;
+  zero_rated_value: number;
+  zero_rated_igst: number;
+  rcm_taxable: number;
+  rcm_igst: number;
+  rcm_cgst: number;
+  rcm_sgst: number;
+  inter_unreg_value: number;
+  inter_unreg_igst: number;
+  output_igst: number;
+  output_cgst: number;
+  output_sgst: number;
+  itc_igst: number;
+  itc_cgst: number;
+  itc_sgst: number;
+  itc_cess: number;
+  cash_igst: number;
+  cash_cgst: number;
+  cash_sgst: number;
+  interest: number;
+  late_fee: number;
+  cash_this_month: number;
+}
+export interface GSTR3BRecon {
+  gstr1_outward_taxable: number;
+  gstr3b_outward_taxable: number;
+  matches: boolean;
+  gstr1_exception_count: number;
+  note: string;
+}
+// Admin-entered figures (rupees in the UI); converted to paise for the request.
+export interface GSTR3BManual {
+  rcm_taxable?: number;
+  rcm_igst?: number;
+  rcm_cgst?: number;
+  rcm_sgst?: number;
+  itc_igst?: number;
+  itc_cgst?: number;
+  itc_sgst?: number;
+  itc_cess?: number;
+  interest?: number;
+  late_fee?: number;
+}
+
+// gstr3bManualQuery turns rupee inputs into a paise query string.
+function gstr3bManualQuery(m: GSTR3BManual): string {
+  const p = new URLSearchParams();
+  for (const [k, v] of Object.entries(m)) {
+    if (typeof v === "number" && v > 0) p.set(k, String(Math.round(v * 100)));
+  }
+  const s = p.toString();
+  return s ? `&${s}` : "";
+}
+
 export const adminApi = {
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
@@ -331,6 +394,14 @@ export const adminApi = {
     ).then((d) => ({ summary: d.data, exceptions: d.exceptions ?? [] })),
   gstr1JsonUrl: (year: number, month: number) =>
     `${site.backendUrl}/onecamp/admin/gstr1.json?year=${year}&month=${month}`,
+
+  // ---- GSTR-3B (monthly summary-and-pay; outward auto, ITC/RCM entered) ----
+  gstr3bSummary: (year: number, month: number, manual: GSTR3BManual = {}) =>
+    adminGet<{ data: GSTR3BSummary; reconciliation: GSTR3BRecon }>(
+      `/onecamp/admin/gstr3b/summary?year=${year}&month=${month}${gstr3bManualQuery(manual)}`,
+    ).then((d) => ({ summary: d.data, recon: d.reconciliation })),
+  gstr3bJsonUrl: (year: number, month: number, manual: GSTR3BManual = {}) =>
+    `${site.backendUrl}/onecamp/admin/gstr3b.json?year=${year}&month=${month}${gstr3bManualQuery(manual)}`,
 
   // ---- Credit notes (GST CDN: refunds / cancellations / price revisions) ----
   creditNotes: () =>
