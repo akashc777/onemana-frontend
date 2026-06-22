@@ -377,12 +377,16 @@ export interface GSTFilingItem {
   filed_on: string;
   note: string;
   overdue: boolean;
+  nil_eligible: boolean;
   filing_id: string | null;
 }
 export interface GSTFilingMonth {
   year: number;
   month: number;
   label: string;
+  invoice_count: number;
+  credit_note_count: number;
+  nil_eligible: boolean;
   returns: GSTFilingItem[];
 }
 export interface MarkFiledPayload {

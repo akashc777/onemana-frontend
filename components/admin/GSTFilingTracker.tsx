@@ -84,7 +84,21 @@ function MonthRow({ month, onEdit, onChanged }: { month: GSTFilingMonth; onEdit:
             : "border-border bg-background"
       }`}
     >
-      <div className="mb-2 text-xs font-semibold text-foreground">{month.label}</div>
+      <div className="mb-2 flex items-center gap-2">
+        <span className="text-xs font-semibold text-foreground">{month.label}</span>
+        {month.nil_eligible ? (
+          <span
+            className="rounded-full border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-700 dark:text-sky-300"
+            title="No invoices or credit notes this month - you can file NIL returns."
+          >
+            NIL eligible
+          </span>
+        ) : (
+          <span className="text-[10px] text-muted-foreground">
+            {month.invoice_count} invoice(s){month.credit_note_count ? `, ${month.credit_note_count} credit note(s)` : ""}
+          </span>
+        )}
+      </div>
       <div className="flex flex-wrap gap-2">
         {month.returns.map((r) => (
           <ReturnChip key={r.return_type} item={r} onEdit={onEdit} onChanged={onChanged} />
@@ -122,7 +136,9 @@ function ReturnChip({ item, onEdit, onChanged }: { item: GSTFilingItem; onEdit: 
           filed{item.filed_on ? ` ${item.filed_on}` : ""}{item.arn ? ` · ${item.arn}` : ""}
         </span>
       ) : (
-        <span>due {item.due_date}{item.overdue ? " (overdue)" : ""}</span>
+        <span>
+          due {item.due_date}{item.overdue ? " (overdue)" : ""}{item.nil_eligible ? " · can file NIL" : ""}
+        </span>
       )}
       {item.filed ? (
         <button onClick={unmark} disabled={busy} className="underline opacity-70 hover:opacity-100">
@@ -173,6 +189,7 @@ function MarkFiledDialog({ item, onClose, onDone }: { item: GSTFilingItem; onClo
         </div>
         <p className="mb-4 text-xs text-muted-foreground">
           Record that you filed this return on the GST portal. Due {item.due_date}.
+          {item.nil_eligible ? " This month has no invoices or credit notes, so it can be filed as a NIL return (GSTR-3B nil also requires no ITC or reverse charge)." : ""}
         </p>
         <div className="space-y-3">
           <label className="block text-xs text-muted-foreground">
