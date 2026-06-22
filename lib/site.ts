@@ -22,7 +22,7 @@ export const site = {
   cloudPriceUsd: 99,
   cloudPriceInr: 10000,
   cloudSeats: 30,
-  demoVideoId: "hh5gwvLsAjA",
+  demoVideoId: "t0IpX9IZcmg",
   version: "2",
   twitter: "https://twitter.com/akashc777",
 };
