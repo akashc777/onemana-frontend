@@ -7,6 +7,7 @@ import { formatINR, formatDateTime } from "@/lib/format";
 import { AsyncState, DataTable, RowDeleteButton, Td, Tr } from "./ui";
 import { FilterBar, emptyFilter, matchesQuery, withinRange, type RangeFilter } from "./filtering";
 import { GSTR1Panel } from "./GSTR1Panel";
+import { CreditNoteDialog, CreditNotesTable } from "./CreditNotes";
 
 export function InvoicesTable() {
   const { data, loading, error, reload } = useAsync<Invoice[]>(() => adminApi.invoices());
@@ -14,6 +15,8 @@ export function InvoicesTable() {
   const [downloadErr, setDownloadErr] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<RangeFilter>(emptyFilter);
+  const [creditFor, setCreditFor] = useState<Invoice | null>(null);
+  const [cnReloadKey, setCnReloadKey] = useState(0);
 
   const filtered = useMemo(
     () =>
@@ -89,6 +92,7 @@ export function InvoicesTable() {
               <Td>
                 <div className="flex items-center gap-2">
                   <button onClick={() => downloadPdf(i)} className="text-brand hover:underline">PDF</button>
+                  <button onClick={() => setCreditFor(i)} className="text-brand hover:underline">Credit</button>
                   <RowDeleteButton onClick={() => remove(i)} busy={deletingId === i.id} />
                 </div>
               </Td>
@@ -96,6 +100,16 @@ export function InvoicesTable() {
           ))
         )}
       </DataTable>
+
+      <CreditNotesTable reloadKey={cnReloadKey} />
+
+      {creditFor ? (
+        <CreditNoteDialog
+          invoice={creditFor}
+          onClose={() => setCreditFor(null)}
+          onDone={() => setCnReloadKey((k) => k + 1)}
+        />
+      ) : null}
     </div>
   );
 }

@@ -113,6 +113,11 @@ export function GSTR1Panel() {
             <Pill>B2C Large: {summary.b2cl_count}</Pill>
             <Pill>B2C Small: {summary.b2cs_count}</Pill>
             <Pill>Exports: {summary.export_count}</Pill>
+            {summary.credit_note_count > 0 ? (
+              <Pill>
+                Credit notes: {summary.credit_note_count} (CDNR {summary.cdnr_count} / CDNUR {summary.cdnur_count}) − {rupees(summary.credit_total)}
+              </Pill>
+            ) : null}
           </div>
 
           {exceptions.length > 0 ? (

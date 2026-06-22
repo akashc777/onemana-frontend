@@ -249,16 +249,56 @@ export interface GSTR1Summary {
   b2cl_count: number;
   b2cs_count: number;
   export_count: number;
+  credit_note_count: number;
+  cdnr_count: number;
+  cdnur_count: number;
   exception_count: number;
   taxable_value: number;
   cgst: number;
   sgst: number;
   igst: number;
   total: number;
+  credit_taxable: number;
+  credit_total: number;
 }
 export interface GSTR1Exception {
   invoice_no: string;
   reason: string;
+}
+
+export interface CreditNote {
+  id: string;
+  credit_note_no: string;
+  financial_year: string;
+  invoice_id: string | null;
+  order_id: string | null;
+  reason: string;
+  ntty: string; // "C" credit | "D" debit
+  buyer_name: string;
+  buyer_gstin: string;
+  buyer_state: string;
+  buyer_state_code: string;
+  buyer_country: string;
+  place_of_supply: string;
+  original_invoice_no: string;
+  original_invoice_date: string | null;
+  is_export: boolean;
+  gst_rate: number;
+  sac_code: string;
+  currency: string;
+  gross_amount: number;
+  taxable_value: number;
+  cgst_amount: number;
+  sgst_amount: number;
+  igst_amount: number;
+  note_date: string;
+  created_at: string;
+}
+export interface CreditNotePayload {
+  invoice_id: string;
+  reason: string;
+  amount_paise: number; // 0 = full remaining balance
+  ntty: "C" | "D";
 }
 
 export const adminApi = {
@@ -291,6 +331,27 @@ export const adminApi = {
     ).then((d) => ({ summary: d.data, exceptions: d.exceptions ?? [] })),
   gstr1JsonUrl: (year: number, month: number) =>
     `${site.backendUrl}/onecamp/admin/gstr1.json?year=${year}&month=${month}`,
+
+  // ---- Credit notes (GST CDN: refunds / cancellations / price revisions) ----
+  creditNotes: () =>
+    adminGet<{ data: CreditNote[] }>("/onecamp/admin/credit-notes").then((d) => d.data ?? []),
+  async createCreditNote(payload: CreditNotePayload): Promise<CreditNote> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/credit-note`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to issue credit note");
+    return (data as { data: CreditNote }).data;
+  },
+  async deleteCreditNote(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/credit-note/${id}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error("Failed to delete credit note");
+  },
 
   // ---- Delete (admin cleanup of test data) ----
   async deleteOrder(id: string): Promise<void> {
