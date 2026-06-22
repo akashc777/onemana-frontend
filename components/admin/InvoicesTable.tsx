@@ -6,6 +6,7 @@ import { useAsync } from "@/hooks/useAsync";
 import { formatINR, formatDateTime } from "@/lib/format";
 import { AsyncState, DataTable, RowDeleteButton, Td, Tr } from "./ui";
 import { FilterBar, emptyFilter, matchesQuery, withinRange, type RangeFilter } from "./filtering";
+import { GSTR1Panel } from "./GSTR1Panel";
 
 export function InvoicesTable() {
   const { data, loading, error, reload } = useAsync<Invoice[]>(() => adminApi.invoices());
@@ -60,6 +61,7 @@ export function InvoicesTable() {
 
   return (
     <div>
+      <GSTR1Panel />
       <div className="mb-3 flex items-center justify-between">
         {downloadErr ? <p className="text-sm text-red-600 dark:text-red-400">{downloadErr}</p> : <span />}
         <button onClick={exportCsv} disabled={exporting} className="btn-ghost px-4 py-2 text-sm">

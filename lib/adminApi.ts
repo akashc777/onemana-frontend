@@ -240,6 +240,27 @@ export interface GiftResult {
   months?: number;
 }
 
+export interface GSTR1Summary {
+  gstin: string;
+  period: string;
+  fp: string;
+  invoice_count: number;
+  b2b_count: number;
+  b2cl_count: number;
+  b2cs_count: number;
+  export_count: number;
+  exception_count: number;
+  taxable_value: number;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  total: number;
+}
+export interface GSTR1Exception {
+  invoice_no: string;
+  reason: string;
+}
+
 export const adminApi = {
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
@@ -262,6 +283,14 @@ export const adminApi = {
   },
   invoiceCsvUrl: () => `${site.backendUrl}/onecamp/admin/invoices.csv`,
   invoicePdfUrl: (id: string) => `${site.backendUrl}/onecamp/admin/invoice/${id}/pdf`,
+
+  // ---- GSTR-1 (Path A: GSTN offline JSON for portal upload) ----
+  gstr1Summary: (year: number, month: number) =>
+    adminGet<{ data: GSTR1Summary; exceptions: GSTR1Exception[] }>(
+      `/onecamp/admin/gstr1/summary?year=${year}&month=${month}`,
+    ).then((d) => ({ summary: d.data, exceptions: d.exceptions ?? [] })),
+  gstr1JsonUrl: (year: number, month: number) =>
+    `${site.backendUrl}/onecamp/admin/gstr1.json?year=${year}&month=${month}`,
 
   // ---- Delete (admin cleanup of test data) ----
   async deleteOrder(id: string): Promise<void> {
