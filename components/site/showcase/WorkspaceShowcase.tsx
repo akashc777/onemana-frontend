@@ -5,8 +5,10 @@ import { ShowcaseShell } from "@/components/site/showcase/ShowcaseShell";
 import { CalendarShowcase } from "@/components/site/showcase/CalendarShowcase";
 import { DocShowcase } from "@/components/site/showcase/DocShowcase";
 import { TasksShowcase } from "@/components/site/showcase/TasksShowcase";
+import { BoardShowcase } from "@/components/site/showcase/BoardShowcase";
 
 const TABS = [
+  { key: "board", label: "Whiteboard", nav: "home" as const, path: "/app/board/strategy", Comp: BoardShowcase },
   { key: "tasks", label: "Tasks", nav: "tasks" as const, path: "/app/project/board", Comp: TasksShowcase },
   { key: "docs", label: "Docs", nav: "home" as const, path: "/app/doc/roadmap", Comp: DocShowcase },
   { key: "calendar", label: "Calendar", nav: "calendar" as const, path: "/app/calendar", Comp: CalendarShowcase },

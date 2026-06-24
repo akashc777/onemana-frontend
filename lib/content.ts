@@ -1,6 +1,6 @@
 // Marketing copy — company voice, uneven on purpose.
 
-export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "video" | "calendar" | "teams" | "lock";
+export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video" | "calendar" | "teams" | "lock";
 
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
   {
@@ -22,6 +22,11 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     icon: "docs",
     title: "Docs",
     body: "Block editor, slash commands, live cursors when two people land on the same page. Good enough that we cancelled Notion.",
+  },
+  {
+    icon: "board",
+    title: "Whiteboard",
+    body: "An infinite canvas for diagrams, flows, and mind maps with live cursors. Ask the AI to draft a flowchart or UI mockup, then edit it together. Replaces Miro and FigJam.",
   },
   {
     icon: "video",
@@ -107,10 +112,10 @@ export const requirements = [
   },
 ];
 
-export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Confluence"];
+export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Miro", "Confluence"];
 
 export const stats = [
-  { value: "8-in-1", label: "things in one install" },
+  { value: "9-in-1", label: "things in one install" },
   { value: "∞", label: "people, no seat tax" },
   { value: "100%", label: "on your server" },
   { value: "<10 min", label: "to get running" },

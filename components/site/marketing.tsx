@@ -11,6 +11,7 @@ const ICON_TO_CATEGORY: Record<FeatureIconKey, keyof typeof categoryColors> = {
   chat: "channel",
   tasks: "task",
   docs: "doc",
+  board: "project",
   video: "video",
   calendar: "calendar",
   teams: "team",

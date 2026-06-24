@@ -51,6 +51,16 @@ export function FeatureIcon({ icon, className = "" }: { icon: FeatureIconKey; cl
           <path className="feat-doc-line feat-doc-line-b" d="M9 15.5h4" strokeLinecap="round" />
         </svg>
       );
+    case "board":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <rect className="feat-board-frame" x="3" y="4" width="18" height="14" rx="2" />
+          <rect className="feat-board-node" x="6" y="7.5" width="5.5" height="3.5" rx="1" />
+          <circle className="feat-board-node" cx="16.5" cy="9.25" r="1.75" />
+          <path className="feat-board-link" d="M11.5 9.25h3.25M9 11v3.5h6.5V11" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 21h6" strokeLinecap="round" />
+        </svg>
+      );
     case "video":
       return (
         <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
