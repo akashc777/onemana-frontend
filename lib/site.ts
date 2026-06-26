@@ -6,7 +6,7 @@ export const site = {
   company: "OneMana Solutions (OPC) Private Limited",
   tagline: "One workspace. Your server.",
   description:
-    "OneCamp puts chat, docs, tasks, video, calendar, and local AI in one Docker deploy on your server. Pay once, unlimited users. No per-seat fees.",
+    "OneCamp puts chat, docs, tasks, tables, whiteboards, video, calendar, and local AI (agents and automations included) in one Docker deploy on your server. Pay once, unlimited users. No per-seat fees.",
   url: "https://onemana.dev",
   backendUrl:
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "https://backend.onemana.dev",

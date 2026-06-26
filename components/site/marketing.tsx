@@ -16,6 +16,9 @@ const ICON_TO_CATEGORY: Record<FeatureIconKey, keyof typeof categoryColors> = {
   calendar: "calendar",
   teams: "team",
   lock: "lock",
+  table: "project",
+  agent: "ai",
+  automation: "team",
 };
 
 export function FeatureCard({

@@ -95,6 +95,29 @@ export function FeatureIcon({ icon, className = "" }: { icon: FeatureIconKey; cl
           <circle className="feat-lock-key" cx="12" cy="15.5" r="1" fill="currentColor" stroke="none" />
         </svg>
       );
+    case "table":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <rect className="feat-table-frame" x="3.5" y="4.5" width="17" height="15" rx="2" />
+          <path d="M3.5 9h17M9 9v10.5M3.5 14.5h17" strokeLinecap="round" />
+          <path className="feat-table-cell" d="M5.5 6.7h2" strokeLinecap="round" />
+        </svg>
+      );
+    case "agent":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <rect className="feat-agent-head" x="5" y="8" width="14" height="10" rx="3" />
+          <path d="M12 5.5V8M9.5 13h.01M14.5 13h.01" strokeLinecap="round" />
+          <circle cx="12" cy="4.5" r="1.2" />
+          <path className="feat-agent-ear" d="M5 12H3.5M19 12h1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case "automation":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <path className="feat-auto-bolt" d="M13 3L5 13h5l-1 8 8-10h-5l1-8z" strokeLinejoin="round" strokeLinecap="round" />
+        </svg>
+      );
     default:
       return null;
   }

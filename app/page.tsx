@@ -52,7 +52,7 @@ export default async function HomePage() {
             </Reveal>
             <Reveal delay={120}>
               <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                One workspace that remembers what your team decides and nudges you when something slips. Chat, docs, tasks, whiteboards, video, calendar, and a local AI assistant in one Docker deploy on your server. No per-seat fees, and your data never leaves.
+                One workspace that remembers what your team decides and nudges you when something slips. Chat, docs, tasks, tables, whiteboards, video, calendar, plus AI agents and automations, in one Docker deploy on your server. No per-seat fees, and your data never leaves.
               </p>
             </Reveal>
             <Reveal delay={180}>
@@ -124,7 +124,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="What's inside"
           title="The modules, briefly"
-          subtitle="Nine things we got tired of paying for separately. They share one login and one server."
+          subtitle="A dozen things we got tired of paying for separately. They share one login and one server."
         />
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
@@ -138,7 +138,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Inside the product"
           title="What it actually looks like"
-          subtitle="Ask the AI to brainstorm a mind map on the whiteboard. Calendars with a live now-line. Docs with someone else's cursor in them. The same UI we use at OneMana."
+          subtitle="Ask the AI to brainstorm a mind map on the whiteboard, or build a table from a sentence. Calendars with a live now-line. Docs with someone else's cursor in them. The same UI we use at OneMana."
         />
         <Reveal direction="left" className="mt-12">
           <WorkspaceShowcase />

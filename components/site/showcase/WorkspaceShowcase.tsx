@@ -6,9 +6,11 @@ import { CalendarShowcase } from "@/components/site/showcase/CalendarShowcase";
 import { DocShowcase } from "@/components/site/showcase/DocShowcase";
 import { TasksShowcase } from "@/components/site/showcase/TasksShowcase";
 import { BoardShowcase } from "@/components/site/showcase/BoardShowcase";
+import { TablesShowcase } from "@/components/site/showcase/TablesShowcase";
 
 const TABS = [
   { key: "board", label: "Whiteboard", nav: "home" as const, path: "/app/board/strategy", Comp: BoardShowcase },
+  { key: "tables", label: "Tables", nav: "home" as const, path: "/app/tables/content-calendar", Comp: TablesShowcase },
   { key: "tasks", label: "Tasks", nav: "tasks" as const, path: "/app/project/board", Comp: TasksShowcase },
   { key: "docs", label: "Docs", nav: "home" as const, path: "/app/doc/roadmap", Comp: DocShowcase },
   { key: "calendar", label: "Calendar", nav: "calendar" as const, path: "/app/calendar", Comp: CalendarShowcase },

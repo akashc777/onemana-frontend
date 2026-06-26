@@ -1,12 +1,27 @@
 // Marketing copy — company voice, uneven on purpose.
 
-export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video" | "calendar" | "teams" | "lock";
+export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video" | "calendar" | "teams" | "lock" | "table" | "agent" | "automation";
 
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
   {
     icon: "ai",
     title: "Local AI",
-    body: "Ollama on your box, not someone else's API. Recap a channel, catch up on a thread, nudge about a stale task. Chats and docs stay on your server.",
+    body: "Ollama on your box, not someone else's API. Recap a channel, catch up on a thread, draft a doc. Chats and docs never leave your server, and you can put a daily token budget on the whole thing.",
+  },
+  {
+    icon: "agent",
+    title: "AI agents",
+    body: "Build a teammate, not just a chatbot. Give it instructions and a set of tools, and it works on its own: triages a channel, files tasks, posts a recap. It only ever does what its owner could do by hand.",
+  },
+  {
+    icon: "table",
+    title: "Tables",
+    body: "Notion-style databases with grid, board, and calendar views. Typed columns, rows that link to real tasks and projects, and an AI that builds the whole table from one sentence. Replaces Airtable.",
+  },
+  {
+    icon: "automation",
+    title: "Automations",
+    body: "Slack-class \"when this, do that\" without the bot zoo. New message with 'bug:' in #support, auto-file a triage task. Describe the rule in plain English and it runs on your server, forever.",
   },
   {
     icon: "chat",
@@ -46,7 +61,7 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   {
     icon: "lock",
     title: "Your server",
-    body: "One Docker command, SSL included, open-source frontend on GitHub. No phone home. No per-seat invoice.",
+    body: "One Docker command, SSL included, open-source frontend on GitHub. No phone home. No per-seat invoice. There's even a scoped API, an SDK, and MCP support if you want to wire it into your own tools.",
   },
 ];
 
@@ -112,10 +127,10 @@ export const requirements = [
   },
 ];
 
-export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Miro", "Confluence"];
+export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Miro", "Airtable", "Confluence"];
 
 export const stats = [
-  { value: "9-in-1", label: "things in one install" },
+  { value: "12-in-1", label: "tools in one install" },
   { value: "∞", label: "people, no seat tax" },
   { value: "100%", label: "on your server" },
   { value: "<10 min", label: "to get running" },
@@ -164,8 +179,8 @@ export const trustPoints = [
 
 export const savingsPitch = {
   eyebrow: "The math",
-  title: "One payment beats five subscriptions",
-  body: "A 20-person team often spends $3,000 to $8,000 per year on Slack, Notion, Asana, Zoom, and calendar tools. OneCamp replaces the stack with a single install and unlimited users.",
+  title: "One payment beats six subscriptions",
+  body: "A 20-person team often spends $3,000 to $8,000 per year on Slack, Notion, Asana, Zoom, Airtable, and calendar tools. OneCamp replaces the stack, plus AI agents and automations, with a single install and unlimited users.",
   highlight: "Pay once. Own it forever.",
 };
 
@@ -184,7 +199,7 @@ export const pricingComparison = {
     eyebrow: "With OneCamp",
     title: "One workspace, flat pricing",
     rows: [
-      { label: "Stack", value: "Chat, docs, tasks, video, calendar, AI" },
+      { label: "Stack", value: "Chat, docs, tasks, tables, video, calendar, AI" },
       { label: "Billing", value: "Unlimited users, no per-seat fees" },
       { label: "Choice", value: "Lifetime self-host or managed cloud" },
     ],
