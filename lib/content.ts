@@ -1,22 +1,22 @@
 // Marketing copy - company voice, uneven on purpose.
 
-export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video" | "calendar" | "teams" | "lock" | "table" | "agent" | "automation";
+export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video" | "calendar" | "teams" | "lock" | "table" | "agent" | "automation" | "api";
 
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
   {
     icon: "ai",
     title: "Local AI",
-    body: "Ollama on your box, not someone else's API. Recap a channel, catch up on a thread, draft a doc. Chats and docs never leave your server, and you can put a daily token budget on the whole thing.",
+    body: "Runs locally via Ollama by default, so chats and docs never leave your box. Point it at OpenAI, Anthropic, or your own endpoint when you want; a local-only mode and built-in PII redaction keep you in control. Ask once and get a cited answer from your channels, docs, tasks, and connected Gmail or GitHub. Daily token budgets included.",
   },
   {
     icon: "agent",
     title: "AI agents",
-    body: "Build a teammate, not just a chatbot. @mention it in a channel or DM and it answers in-thread as its own badged member, or let it run on a schedule to triage, file tasks, and post recaps. You decide whether it acts on its own or proposes and waits for your OK, and it only ever does what its owner could do by hand.",
+    body: "Build a teammate, not just a chatbot. @mention it in a channel or DM and it answers in-thread as its own badged member, or let it run on a schedule to triage, file tasks, and post recaps. You choose whether it acts on its own or proposes and waits for your OK; it only ever does what its owner could, and every action is audited.",
   },
   {
     icon: "table",
     title: "Tables",
-    body: "Notion-style databases with grid, board, and calendar views. Typed columns, rows that link to real tasks and projects, and an AI that builds the whole table from one sentence. Replaces Airtable.",
+    body: "Notion-style databases with grid, board, and calendar views. Typed columns, rows that link to real tasks and projects, and an AI that builds the whole table from one sentence or fills a column row by row. Replaces Airtable.",
   },
   {
     icon: "automation",
@@ -46,12 +46,12 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   {
     icon: "video",
     title: "Video",
-    body: "LiveKit runs on your hardware. Calls, screen share, recordings. Transcription stays local too.",
+    body: "LiveKit runs on your hardware. Calls, screen share, recordings, and an AI recap posted to the channel after the call. Transcription stays local too.",
   },
   {
     icon: "calendar",
     title: "Calendar",
-    body: "Google sync works both ways. Task due dates can show up on the team calendar without another tool.",
+    body: "Google sync works both ways. Task due dates show on the team calendar, and the AI finds a meeting time and preps you before it. Without another tool.",
   },
   {
     icon: "teams",
@@ -59,9 +59,14 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     body: "Roles, projects, the usual permission model. The AI only sees what the logged-in user can see.",
   },
   {
+    icon: "api",
+    title: "Programmable",
+    body: "A scoped public API, an official TypeScript SDK, and an MCP server so any AI client can drive your workspace, plus shareable templates for agents, automations, and tables. Wire OneCamp into your own tools, with tokens that never exceed what their owner could do by hand.",
+  },
+  {
     icon: "lock",
     title: "Your server",
-    body: "One Docker command, SSL included, open-source frontend on GitHub. No phone home. No per-seat invoice. There's even a scoped API, an SDK, and MCP support if you want to wire it into your own tools.",
+    body: "One Docker command, SSL included, open-source frontend on GitHub. No phone home, no per-seat invoice, no vendor lock-in. Share a doc, board, or table as a read-only link with people outside your org when you need to.",
   },
 ];
 
@@ -78,7 +83,11 @@ export const faqs = [
   },
   {
     q: "Where does the AI run?",
-    a: "On your server via Ollama. Not our cloud, not OpenAI. It can only read what the logged-in user already has access to.",
+    a: "On your server via Ollama by default, not our cloud. You can point it at OpenAI, Anthropic, or your own endpoint if you prefer, and even then a local-only mode and built-in PII redaction keep you in control. It can only read what the logged-in user already has access to.",
+  },
+  {
+    q: "Can I share a doc/board with someone outside the org?",
+    a: "Yes. Share a doc, board, or table as a read-only link with people outside your team, and create guest links for calls. Guests see only what you shared, nothing else, and every open is audited for you.",
   },
   {
     q: "Do I need a GPU?",

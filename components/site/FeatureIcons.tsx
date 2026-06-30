@@ -118,6 +118,14 @@ export function FeatureIcon({ icon, className = "" }: { icon: FeatureIconKey; cl
           <path className="feat-auto-bolt" d="M13 3L5 13h5l-1 8 8-10h-5l1-8z" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
       );
+    case "api":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <path className="feat-api-l" d="M8.5 8.5 5 12l3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path className="feat-api-r" d="M15.5 8.5 19 12l-3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M13.25 6l-2.5 12" strokeLinecap="round" />
+        </svg>
+      );
     default:
       return null;
   }

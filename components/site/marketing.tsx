@@ -19,6 +19,7 @@ const ICON_TO_CATEGORY: Record<FeatureIconKey, keyof typeof categoryColors> = {
   table: "project",
   agent: "ai",
   automation: "team",
+  api: "doc",
 };
 
 export function FeatureCard({

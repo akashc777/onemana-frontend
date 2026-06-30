@@ -36,6 +36,24 @@ function useTimeline(enabled: boolean, steps: { at: number; run: () => void }[])
   }, [enabled]);
 }
 
+/** How long a completed scene rests on its final state before the cycler advances. */
+const HOLD_MS = 3400;
+
+/**
+ * useHoldThenDone fires onDone HOLD_MS after `active` first becomes true, so the
+ * cycler advances only AFTER a scene has fully finished (not on a fixed offset
+ * that could cut a slow stream short), with a consistent pause on the result.
+ */
+function useHoldThenDone(active: boolean, onDone: () => void, hold = HOLD_MS) {
+  const cb = useRef(onDone);
+  cb.current = onDone;
+  useEffect(() => {
+    if (!active) return;
+    const t = setTimeout(() => cb.current(), hold);
+    return () => clearTimeout(t);
+  }, [active, hold]);
+}
+
 // --- shared bits -----------------------------------------------------------
 
 function BotAvatar({ initials = "RC", tint = "bg-violet-500/15 text-violet-600 dark:text-violet-400" }: { initials?: string; tint?: string }) {
@@ -113,10 +131,10 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
   );
   const [typed, setTyped] = useState("");
 
-  useTimeline(!reduced, [
-    { at: 1500, run: () => setPhase("typing") },
-    { at: 7200, run: () => onDone() },
-  ]);
+  useTimeline(!reduced, [{ at: 1500, run: () => setPhase("typing") }]);
+  // Advance only after the reply has fully landed (approve chip shown), holding
+  // on the result so the @mention scene doesn't cut straight to the next.
+  useHoldThenDone(!reduced && phase === "approve", onDone);
 
   // type the mention prompt
   useEffect(() => {
@@ -281,7 +299,7 @@ export function ActScene({ reduced, onDone }: SceneProps) {
   );
   const [typed, setTyped] = useState(reduced ? "" : "");
 
-  useTimeline(!reduced, [{ at: 9000, run: () => onDone() }]);
+  useHoldThenDone(!reduced && phase === "done", onDone);
 
   useEffect(() => {
     if (reduced || phase !== "typing") return;
@@ -460,7 +478,7 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
   );
   const [typed, setTyped] = useState("");
 
-  useTimeline(!reduced, [{ at: 8500, run: () => onDone() }]);
+  useHoldThenDone(!reduced && phase === "done", onDone);
 
   useEffect(() => {
     if (reduced || phase !== "typing") return;
