@@ -615,3 +615,202 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
     </ShowcaseShell>
   );
 }
+
+// ===========================================================================
+// Scene 4 - Hand it real work, and trust it to finish (durable task hand-off)
+//   Assign a task to an AI teammate and walk away: it posts ONE evolving status
+//   comment ("On it" -> live "Working… (used: …)") with the tools it is using,
+//   SURVIVES a mid-run server restart and resumes the same work, then delivers
+//   the result and moves the task forward - while juggling other tasks too.
+// ===========================================================================
+
+const HANDOFF_TOOLS = ["search_workspace", "read_recent_changes", "create_task", "schedule"] as const;
+
+const HANDOFF_RESULT_LEAD = "Done - here's what I shipped for v2.4:";
+const HANDOFF_DID = [
+  { detail: "Drafted release notes from 18 merged PRs", meta: "doc created" },
+  { detail: "Filed “Run the rollback drill”", meta: "→ @Daniel" },
+  { detail: "Scheduled “Promote to prod”", meta: "tomorrow 9:00 AM" },
+];
+
+type HandoffPhase = "assign" | "onit" | "work1" | "work2" | "resume" | "result" | "wrap" | "done";
+
+function ToolChip({ label, live = false }: { label: string; live?: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-px text-[9px] font-medium transition-colors ${
+        live
+          ? "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-300"
+          : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+      }`}
+    >
+      {live ? <span className="h-1 w-1 animate-pulse rounded-full bg-violet-500" /> : <span className="text-[8px]">✓</span>}
+      {label}
+    </span>
+  );
+}
+
+export function HandoffScene({ reduced, onDone }: SceneProps) {
+  const [phase, setPhase] = useState<HandoffPhase>(reduced ? "done" : "assign");
+
+  useTimeline(!reduced, [
+    { at: 900, run: () => setPhase("onit") },
+    { at: 2200, run: () => setPhase("work1") },
+    { at: 3500, run: () => setPhase("work2") },
+    { at: 4900, run: () => setPhase("resume") },
+    { at: 6100, run: () => setPhase("result") },
+  ]);
+
+  const resultText = useStream(phase === "result", HANDOFF_RESULT_LEAD, 40, () => setPhase("wrap"));
+
+  useEffect(() => {
+    if (reduced || phase !== "wrap") return;
+    const t = setTimeout(() => setPhase("done"), 700);
+    return () => clearTimeout(t);
+  }, [phase, reduced]);
+
+  useHoldThenDone(!reduced && phase === "done", onDone);
+
+  const reached = (p: HandoffPhase) => {
+    const order: HandoffPhase[] = ["assign", "onit", "work1", "work2", "resume", "result", "wrap", "done"];
+    return order.indexOf(phase) >= order.indexOf(p);
+  };
+
+  const status =
+    phase === "assign"
+      ? { label: "To do", cls: "border-border bg-muted/60 text-muted-foreground" }
+      : reached("wrap")
+      ? { label: "In review", cls: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400" }
+      : { label: "In progress", cls: "border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400" };
+
+  const showComment = reached("onit");
+  const working = phase === "work1" || phase === "work2" || phase === "resume";
+  const liveTools = phase === "work1" ? HANDOFF_TOOLS.slice(0, 1) : working ? HANDOFF_TOOLS.slice(0, 3) : [];
+  const showResult = reached("result");
+  const showDid = reached("wrap");
+  const isDone = phase === "done";
+
+  return (
+    <ShowcaseShell activeNav="tasks" path="/app/task/v2-4-release" heightClass="h-[min(480px,74vh)] sm:h-[480px]">
+      {/* Task header: title, durable status, multitasking hint */}
+      <header className="flex flex-shrink-0 items-start justify-between gap-2 border-b border-border/60 px-3 py-2.5 sm:px-4">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-foreground">Draft v2.4 release notes &amp; file the follow-ups</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span className={`rounded border px-1.5 py-px font-medium transition-colors duration-500 ${status.cls}`}>{status.label}</span>
+            <span aria-hidden>·</span>
+            <span className="truncate">#engineering</span>
+          </p>
+        </div>
+        <span className="flex-shrink-0 rounded-md border border-violet-500/30 bg-violet-500/[0.07] px-2 py-1 text-[10px] font-medium text-violet-600 dark:text-violet-400">
+          ⚡ Durable · survives restarts
+        </span>
+      </header>
+
+      <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3 sm:p-4">
+        {/* Assignee row: the AI teammate is the assignee, badged */}
+        <div className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 px-3 py-2">
+          <span className="text-[11px] font-medium text-muted-foreground">Assignee</span>
+          <span className="flex items-center gap-1.5">
+            <BotAvatar />
+            <span className="text-xs font-semibold text-foreground">Release Captain</span>
+            <AiBadge />
+          </span>
+          <span className="ml-auto text-[10px] text-muted-foreground">also on 2 other tasks</span>
+        </div>
+
+        {/* Activity: you handed the work off */}
+        <p className="text-center text-[10px] text-muted-foreground animate-fade-up">
+          You assigned this to <span className="font-medium text-foreground">Release Captain</span> · 9:39 PM
+        </p>
+
+        {/* The single evolving status comment */}
+        {showComment && (
+          <article className="flex gap-2.5 animate-fade-up">
+            <BotAvatar />
+            <div className="min-w-0 flex-1">
+              <p className="flex items-baseline gap-1.5">
+                <span className="text-xs font-semibold text-foreground">Release Captain</span>
+                <AiBadge />
+                <span className="text-[10px] text-muted-foreground">now · updating live</span>
+              </p>
+
+              <div className="mt-1 rounded-lg rounded-tl-sm border border-border bg-muted/50 px-3 py-2.5">
+                {/* On it / working header line */}
+                {!showResult && (
+                  <div className="flex items-center gap-2">
+                    {working ? (
+                      <span className="h-3 w-3 flex-shrink-0 animate-spin rounded-full border-[1.5px] border-violet-500/40 border-t-violet-500" />
+                    ) : (
+                      <span className="grid h-3.5 w-3.5 flex-shrink-0 place-items-center rounded-full bg-violet-500/15 text-[8px] text-violet-600 dark:text-violet-400">
+                        <IconSparkles className="h-2 w-2" />
+                      </span>
+                    )}
+                    <span className="text-[11px] font-medium text-foreground">
+                      {working ? "Working…" : "On it — I'll post back here when it's done."}
+                    </span>
+                  </div>
+                )}
+
+                {/* Live tool chips while working */}
+                {working && liveTools.length > 0 && (
+                  <div className="mt-2 flex flex-wrap items-center gap-1">
+                    <span className="text-[9px] text-muted-foreground">using</span>
+                    {liveTools.map((t) => (
+                      <ToolChip key={t} label={t} live />
+                    ))}
+                  </div>
+                )}
+
+                {/* Streamed result */}
+                {showResult && (
+                  <p className="text-[11px] font-medium leading-snug text-foreground">
+                    {resultText}
+                    {phase === "result" && <Caret />}
+                  </p>
+                )}
+
+                {/* What it actually did */}
+                {showDid && (
+                  <div className="mt-2 space-y-1">
+                    {HANDOFF_DID.map((d) => (
+                      <div key={d.detail} className="flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] px-2 py-1.5">
+                        <span className="grid h-4 w-4 flex-shrink-0 place-items-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">✓</span>
+                        <span className="min-w-0 flex-1 truncate text-[10px] text-foreground">{d.detail}</span>
+                        <span className="flex-shrink-0 text-[9px] text-muted-foreground">{d.meta}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Tools-used footer on completion */}
+                {isDone && (
+                  <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-border/70 pt-2">
+                    <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground">Used</span>
+                    {HANDOFF_TOOLS.map((t) => (
+                      <ToolChip key={t} label={t} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </article>
+        )}
+
+        {/* The wow beat: it survived a restart and kept going */}
+        {phase === "resume" && (
+          <div className="pointer-events-none absolute inset-x-0 top-1.5 z-10 flex justify-center animate-fade-up">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-1 text-[10px] font-medium text-amber-700 shadow-sm dark:text-amber-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />
+              Server restarted — resumed exactly where it left off
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex-shrink-0 border-t border-border p-2.5 sm:p-3">
+        <div className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">Comment on this task…</div>
+      </div>
+    </ShowcaseShell>
+  );
+}

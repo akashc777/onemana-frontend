@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { HeroFrame } from "@/components/site/HeroFrame";
 import {
   ActScene,
+  HandoffScene,
   KnowledgeScene,
   MentionAgentScene,
   type SceneProps,
@@ -15,6 +16,7 @@ import {
  *   1. AI teammates you @mention in a channel (reply in-thread, badged)
  *   2. Ask AI to do the work - recap + propose tasks, run only on your confirm
  *   3. Answers from everything, cited (workspace + connected apps)
+ *   4. Hand it a task and walk away - durable, live progress, survives restarts
  *
  * Each scene runs its own timeline and calls onDone() to advance. Scenes are
  * remounted per cycle (keyed), so timers reset cleanly and never overlap.
@@ -23,6 +25,7 @@ import {
 const SCENES: { key: string; label: string; Scene: (p: SceneProps) => JSX.Element }[] = [
   { key: "mention", label: "@mention an AI teammate", Scene: MentionAgentScene },
   { key: "act", label: "Ask AI - it acts, you approve", Scene: ActScene },
+  { key: "handoff", label: "Hand it a task, walk away", Scene: HandoffScene },
   { key: "knowledge", label: "Answers from everything, cited", Scene: KnowledgeScene },
 ];
 
