@@ -185,7 +185,7 @@ function MarkFiledDialog({ item, onClose, onDone }: { item: GSTFilingItem; onClo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div className="w-full max-w-md rounded-xl border border-border bg-background p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-1 text-sm font-semibold">
-          Mark {item.return_type} filed — {item.period}
+          Mark {item.return_type} filed - {item.period}
         </div>
         <p className="mb-4 text-xs text-muted-foreground">
           Record that you filed this return on the GST portal. Due {item.due_date}.

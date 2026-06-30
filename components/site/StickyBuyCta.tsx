@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 
-/** Persistent CTA while scrolling — demo + buy. Hides near pricing and page footer. */
+/** Persistent CTA while scrolling - demo + buy. Hides near pricing and page footer. */
 export function StickyBuyCta() {
   const [visible, setVisible] = useState(false);
   const [compact, setCompact] = useState(false);

@@ -15,7 +15,7 @@ export function SlackMark({ className = "" }: { className?: string }) {
   );
 }
 
-/** Slack hash with a periodic "organize" motion — pieces drift, then snap into place. */
+/** Slack hash with a periodic "organize" motion - pieces drift, then snap into place. */
 export function SlackMarkAnimated({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>

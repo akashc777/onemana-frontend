@@ -75,7 +75,7 @@ function ToolTile({ tool, index }: { tool: Tool; index: number }) {
 /**
  * StackConvergence: tools OneCamp replaces orbit a glowing core. Beams carry
  * light particles inward, rings rotate, tiles float, and the Slack hash
- * periodically organizes — all theme-aware and reduced-motion safe.
+ * periodically organizes - all theme-aware and reduced-motion safe.
  */
 export function StackConvergence() {
   const rootRef = useRef<HTMLDivElement>(null);

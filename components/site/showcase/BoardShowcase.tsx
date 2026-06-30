@@ -20,7 +20,7 @@ const PROMPT = "Onboarding flow for a new SaaS user";
 // The pills the real composer shows (Auto is the default selection).
 const PILLS = ["Auto", "Flowchart", "Roadmap", "Mind map", "Org chart"];
 
-// Generated-shape palette — kept in sync with the backend (business/AI
+// Generated-shape palette - kept in sync with the backend (business/AI
 // boardAgent.go bgForShape): ellipse=green start/end, diamond=yellow decision,
 // rectangle=blue step. Stroke is Excalidraw's near-black.
 const FILL = { rect: "#e7f5ff", diamond: "#fff9db", ellipse: "#ebfbee" };
@@ -177,7 +177,7 @@ export function BoardShowcase({ embedded = false }: { embedded?: boolean }) {
           </Shape>
         </svg>
 
-        {/* "Ask AI" composer — open while generating, then closes (like the app) */}
+        {/* "Ask AI" composer - open while generating, then closes (like the app) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center px-3">
           {composerOpen ? (
             <div className="w-[min(92%,22rem)] rounded-xl border border-border bg-popover/95 p-2.5 shadow-xl backdrop-blur-sm">

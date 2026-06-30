@@ -19,7 +19,7 @@ function rupees(n: number): string {
   return "₹" + (n ?? 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// GSTR1Panel — generate the GSTN-schema GSTR-1 JSON for a filing month, preview
+// GSTR1Panel - generate the GSTN-schema GSTR-1 JSON for a filing month, preview
 // the section roll-up + any exceptions, then download the JSON to upload on the
 // GST portal (or the Returns Offline Tool).
 export function GSTR1Panel() {
@@ -123,7 +123,7 @@ export function GSTR1Panel() {
           {exceptions.length > 0 ? (
             <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3">
               <div className="mb-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
-                {exceptions.length} invoice(s) excluded — fix before filing
+                {exceptions.length} invoice(s) excluded - fix before filing
               </div>
               <ul className="space-y-1 text-xs text-muted-foreground">
                 {exceptions.map((ex) => (
@@ -134,7 +134,7 @@ export function GSTR1Panel() {
               </ul>
             </div>
           ) : (
-            <p className="text-xs text-green-700 dark:text-green-400">All invoices classified cleanly — no exceptions.</p>
+            <p className="text-xs text-green-700 dark:text-green-400">All invoices classified cleanly - no exceptions.</p>
           )}
         </div>
       ) : null}

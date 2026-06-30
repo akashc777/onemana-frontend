@@ -33,7 +33,7 @@ const CARD_BG = {
   color: "#222222",
 };
 
-/** Minimal light OG card — headline and one line only. */
+/** Minimal light OG card - headline and one line only. */
 export function OgCard() {
   return (
     <div style={CARD_BG}>

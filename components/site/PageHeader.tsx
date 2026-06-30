@@ -10,7 +10,7 @@ interface PageHeaderProps {
   className?: string;
 }
 
-/** Consistent inner-page hero — matches home SectionHeading rhythm. */
+/** Consistent inner-page hero - matches home SectionHeading rhythm. */
 export function PageHeader({
   eyebrow,
   title,

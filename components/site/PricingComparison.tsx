@@ -19,7 +19,7 @@ function CheckIcon() {
 
 /**
  * Static cost comparison for the pricing section.
- * Stack convergence is already shown earlier on the page — here we only explain the billing math.
+ * Stack convergence is already shown earlier on the page - here we only explain the billing math.
  */
 export function PricingComparison() {
   const { typical, onecamp } = pricingComparison;

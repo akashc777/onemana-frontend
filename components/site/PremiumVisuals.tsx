@@ -34,7 +34,7 @@ export function FrameBrackets({ className = "" }: { className?: string }) {
   );
 }
 
-/** Static brand emphasis — CF uses orange ink, not animated shimmer. */
+/** Static brand emphasis - CF uses orange ink, not animated shimmer. */
 export function ShimmerText({ children }: { children: ReactNode }) {
   return <span className="text-brand">{children}</span>;
 }
@@ -65,7 +65,7 @@ const TRUST_ICONS: Record<string, ReactNode> = {
   ),
 };
 
-/** Compact trust row — no pricing, icon-led. */
+/** Compact trust row - no pricing, icon-led. */
 export function TrustStrip({ points }: { points: { label: string; detail: string }[] }) {
   return (
     <div className="mt-10 grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-8 sm:gap-y-4">

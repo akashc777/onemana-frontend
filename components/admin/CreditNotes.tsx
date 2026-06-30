@@ -176,8 +176,8 @@ export function CreditNotesTable({ reloadKey = 0 }: { reloadKey?: number }) {
               <Td>{formatDateTime(cn.note_date)}</Td>
               <Td>{cn.ntty === "D" ? "Debit" : "Credit"}</Td>
               <Td mono>{cn.original_invoice_no}</Td>
-              <Td>{cn.buyer_name || cn.buyer_gstin || "—"}</Td>
-              <Td>{cn.reason || "—"}</Td>
+              <Td>{cn.buyer_name || cn.buyer_gstin || "-"}</Td>
+              <Td>{cn.reason || "-"}</Td>
               <Td>{formatINR(cn.taxable_value)}</Td>
               <Td>{formatINR(cn.cgst_amount + cn.sgst_amount + cn.igst_amount)}</Td>
               <Td>{formatINR(cn.gross_amount)}</Td>

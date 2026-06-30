@@ -14,7 +14,7 @@ function Check() {
 }
 
 /**
- * Pricing section — the only place on the landing page that shows dollar amounts.
+ * Pricing section - the only place on the landing page that shows dollar amounts.
  */
 export function Pricing({ pricing }: { pricing: PricingData }) {
   return (

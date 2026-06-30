@@ -1,6 +1,6 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
 
-/** Primary UI typeface — loaded once via next/font, exposed as CSS variable + class. */
+/** Primary UI typeface - loaded once via next/font, exposed as CSS variable + class. */
 export const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",

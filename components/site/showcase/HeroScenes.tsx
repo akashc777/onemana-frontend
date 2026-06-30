@@ -96,14 +96,14 @@ const AI_HEADER = (
 );
 
 // ===========================================================================
-// Scene 1 — AI teammates you @mention (in-channel, badged, replies in-thread)
+// Scene 1 - AI teammates you @mention (in-channel, badged, replies in-thread)
 // ===========================================================================
 
 const MENTION_PROMPT = "@Release Captain are we clear to ship v2.4 tonight?";
 const MENTION_REPLY = `Checked the v2.4 release checklist:
 ✓ Migrations applied on staging
 ✓ Payment latency down 40%
-⚠ Rollback drill still open — owner @Daniel
+⚠ Rollback drill still open - owner @Daniel
 
 I'd hold for Daniel's sign-off, then ship. Want me to remind him?`;
 
@@ -254,7 +254,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
 }
 
 // ===========================================================================
-// Scene 2 — Ask AI to do the work: recap + propose tasks, run only on confirm
+// Scene 2 - Ask AI to do the work: recap + propose tasks, run only on confirm
 // ===========================================================================
 
 const CTX_POSTS = [
@@ -265,7 +265,7 @@ const CTX_POSTS = [
 
 const ACT_PROMPT = "Recap today and turn the follow-ups into tasks";
 const ACT_ANSWER = `Today in #engineering:
-• Checkout on staging, payment latency −40%
+• Checkout on staging, payment latency -40%
 • Rollback drill in progress before prod
 
 Follow-ups I can set up for you:`;
@@ -325,12 +325,18 @@ export function ActScene({ reduced, onDone }: SceneProps) {
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {AI_HEADER}
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
-        <div className="flex justify-end">
-          <div className="max-w-[92%] rounded-lg rounded-br-sm bg-foreground px-3 py-2 text-[11px] leading-snug text-background">
-            {ACT_PROMPT}
+        {phase === "typing" && (
+          <p className="py-6 text-center text-[11px] text-muted-foreground">Ask your workspace to do anything…</p>
+        )}
+        {phase !== "typing" && (
+          <div className="flex justify-end animate-fade-up">
+            <div className="max-w-[92%] rounded-lg rounded-br-sm bg-foreground px-3 py-2 text-[11px] leading-snug text-background">
+              {ACT_PROMPT}
+            </div>
           </div>
-        </div>
-        <div className="flex gap-2">
+        )}
+        {phase !== "typing" && (
+        <div className="flex gap-2 animate-fade-up">
           <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
             <IconSparkles className="h-3.5 w-3.5" />
           </span>
@@ -386,6 +392,7 @@ export function ActScene({ reduced, onDone }: SceneProps) {
             )}
           </div>
         </div>
+        )}
       </div>
       <div className="flex-shrink-0 border-t border-border p-2.5">
         <div
@@ -436,13 +443,13 @@ export function ActScene({ reduced, onDone }: SceneProps) {
 }
 
 // ===========================================================================
-// Scene 3 — Answers from everything, cited (workspace + connected apps)
+// Scene 3 - Answers from everything, cited (workspace + connected apps)
 // ===========================================================================
 
 const ASK_PROMPT = "What did we promise customers about refund timing?";
 const ASK_ANSWER = `The refund SLA is 5 business days (updated last week). Support communicates this and the policy doc matches.`;
 const ASK_SOURCES = [
-  { tag: "#support", tint: "text-emerald-600 dark:text-emerald-400", note: "“we tell customers 5 business days” — Priya" },
+  { tag: "#support", tint: "text-emerald-600 dark:text-emerald-400", note: "“we tell customers 5 business days” - Priya" },
   { tag: "Refund Policy", tint: "text-sky-600 dark:text-sky-400", note: "doc · §3 Refunds" },
   { tag: "Gmail", tint: "text-rose-600 dark:text-rose-400", note: "“Re: Refund SLA” thread" },
 ];
@@ -492,10 +499,16 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {AI_HEADER}
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
-        <div className="flex justify-end">
-          <div className="max-w-[92%] rounded-lg rounded-br-sm bg-foreground px-3 py-2 text-[11px] leading-snug text-background">{ASK_PROMPT}</div>
-        </div>
-        <div className="flex gap-2">
+        {phase === "typing" && (
+          <p className="py-6 text-center text-[11px] text-muted-foreground">Ask your workspace anything…</p>
+        )}
+        {phase !== "typing" && (
+          <div className="flex justify-end animate-fade-up">
+            <div className="max-w-[92%] rounded-lg rounded-br-sm bg-foreground px-3 py-2 text-[11px] leading-snug text-background">{ASK_PROMPT}</div>
+          </div>
+        )}
+        {phase !== "typing" && (
+        <div className="flex gap-2 animate-fade-up">
           <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
             <IconSparkles className="h-3.5 w-3.5" />
           </span>
@@ -527,6 +540,7 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
             )}
           </div>
         </div>
+        )}
       </div>
       <div className="flex-shrink-0 border-t border-border p-2.5">
         <div

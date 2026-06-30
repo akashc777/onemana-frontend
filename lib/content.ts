@@ -1,4 +1,4 @@
-// Marketing copy — company voice, uneven on purpose.
+// Marketing copy - company voice, uneven on purpose.
 
 export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video" | "calendar" | "teams" | "lock" | "table" | "agent" | "automation";
 
@@ -11,7 +11,7 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   {
     icon: "agent",
     title: "AI agents",
-    body: "Build a teammate, not just a chatbot. Give it instructions and a set of tools, and it works on its own: triages a channel, files tasks, posts a recap. It only ever does what its owner could do by hand.",
+    body: "Build a teammate, not just a chatbot. @mention it in a channel or DM and it answers in-thread as its own badged member, or let it run on a schedule to triage, file tasks, and post recaps. You decide whether it acts on its own or proposes and waits for your OK, and it only ever does what its owner could do by hand.",
   },
   {
     icon: "table",
@@ -184,7 +184,7 @@ export const savingsPitch = {
   highlight: "Pay once. Own it forever.",
 };
 
-/** Side-by-side billing comparison — static, no animation. Shown once in #pricing. */
+/** Side-by-side billing comparison - static, no animation. Shown once in #pricing. */
 export const pricingComparison = {
   typical: {
     eyebrow: "What teams pay today",

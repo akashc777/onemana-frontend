@@ -33,7 +33,7 @@ export function HeroThree() {
     try {
       renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
     } catch {
-      return; // No WebGL — CSS ambient remains the backdrop.
+      return; // No WebGL - CSS ambient remains the backdrop.
     }
 
     const width = mount.clientWidth || window.innerWidth;
