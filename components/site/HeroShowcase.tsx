@@ -1,414 +1,86 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ShowcaseShell } from "@/components/site/showcase/ShowcaseShell";
-import { IconSparkles } from "@/components/site/showcase/ShowcaseIcons";
-import { TypingIndicator } from "@/components/site/TypingIndicator";
+import { HeroFrame } from "@/components/site/HeroFrame";
+import {
+  ActScene,
+  KnowledgeScene,
+  MentionAgentScene,
+  type SceneProps,
+} from "@/components/site/showcase/HeroScenes";
 
-interface Post {
-  author: string;
-  initials: string;
-  color: string;
-  text: string;
-  time: string;
-  reaction?: string;
-}
-
-const POSTS: Post[] = [
-  {
-    author: "Priya Nair",
-    initials: "PN",
-    color: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
-    text: "Shipped the new checkout flow to staging. Latency is down 40% on the payment path.",
-    time: "9:41 AM",
-    reaction: "🎉",
-  },
-  {
-    author: "Daniel Cho",
-    initials: "DC",
-    color: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-    text: "I'll review the deploy and run the rollback drill before we promote to prod.",
-    time: "9:42 AM",
-  },
-  {
-    author: "Aisha Khan",
-    initials: "AK",
-    color: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
-    text: "Can someone post an APAC recap? I missed the morning thread.",
-    time: "9:43 AM",
-  },
+/**
+ * HeroShowcase — a cycler that rotates through short, self-contained demos of
+ * what OneCamp's AI actually does, each mirroring the real app UI:
+ *   1. AI teammates you @mention in a channel (reply in-thread, badged)
+ *   2. Ask AI to do the work — recap + propose tasks, run only on your confirm
+ *   3. Answers from everything, cited (workspace + connected apps)
+ *
+ * Each scene runs its own timeline and calls onDone() to advance. Scenes are
+ * remounted per cycle (keyed), so timers reset cleanly and never overlap.
+ * Reduced motion: the first scene renders its final state and we don't rotate.
+ */
+const SCENES: { key: string; label: string; Scene: (p: SceneProps) => JSX.Element }[] = [
+  { key: "mention", label: "@mention an AI teammate", Scene: MentionAgentScene },
+  { key: "act", label: "Ask AI — it acts, you approve", Scene: ActScene },
+  { key: "knowledge", label: "Answers from everything, cited", Scene: KnowledgeScene },
 ];
 
-const USER_PROMPT = "Recap today and turn the follow-ups into tasks";
-
-const AI_ANSWER = `Here's today in #engineering:
-
-• Checkout is on staging, payment latency down 40%
-• Deploy review and rollback drill in progress
-
-Here are the follow-ups I can set up for you:`;
-
-/** Proposed actions. In OneCamp the agent NEVER runs these on its own - it
- *  proposes them and the user confirms. The animation mirrors that exactly. */
-interface AgentAction {
-  verb: string;
-  detail: string;
-  meta: string;
-}
-
-const ACTIONS: AgentAction[] = [
-  { verb: "Create task", detail: "Review checkout deploy", meta: "Daniel Cho" },
-  { verb: "Create task", detail: "Post APAC recap", meta: "Aisha Khan" },
-  { verb: "Set reminder", detail: "Promote checkout to prod", meta: "Tomorrow, 9:00 AM" },
-];
-
-type DemoPhase =
-  | "channel"
-  | "cue"
-  | "typing"
-  | "sent"
-  | "thinking"
-  | "streaming"
-  | "proposed"
-  | "confirming"
-  | "done";
-
-const POST_GAP_MS = 2400;
-const CUE_MS = 1600;
-const TYPE_MS = 2000;
-const THINK_MS = 1500;
-const PROPOSE_HOLD_MS = 2100;
-const CONFIRM_MS = 900;
-const HOLD_MS = 4200;
-
-/** Hero product preview - channel posts + an AI agent that proposes actions
- *  and only runs them after an explicit confirm (OneCamp's real flow). */
 export function HeroShowcase({ className = "" }: { className?: string }) {
-  const [visiblePosts, setVisiblePosts] = useState(1);
-  const [cycle, setCycle] = useState(0);
-  const [phase, setPhase] = useState<DemoPhase>("channel");
-  const [inputText, setInputText] = useState("");
-  const [aiText, setAiText] = useState("");
-  const reduce = useRef(false);
-  const chatRef = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
+  const [reduced, setReduced] = useState(false);
+  const reducedRef = useRef(false);
 
   useEffect(() => {
-    reduce.current =
+    const r =
       typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce.current) {
-      setVisiblePosts(POSTS.length);
-      setPhase("done");
-      setInputText("");
-      setAiText(AI_ANSWER);
-    }
+    reducedRef.current = r;
+    setReduced(r);
   }, []);
 
-  /* Channel: reveal posts one at a time (only rendered posts take space). */
-  useEffect(() => {
-    if (reduce.current || phase !== "channel") return;
-    if (visiblePosts >= POSTS.length) return;
+  const advance = () => {
+    if (reducedRef.current) return;
+    setIndex((i) => (i + 1) % SCENES.length);
+  };
 
-    const t = setTimeout(() => setVisiblePosts((n) => n + 1), POST_GAP_MS);
-    return () => clearTimeout(t);
-  }, [visiblePosts, phase, cycle]);
-
-  /* After last post lands, start the AI sequence. */
-  useEffect(() => {
-    if (reduce.current || visiblePosts < POSTS.length || phase !== "channel") return;
-
-    const t = setTimeout(() => setPhase("cue"), CUE_MS);
-    return () => clearTimeout(t);
-  }, [visiblePosts, phase, cycle]);
-
-  /* cue → typing → sent → thinking → streaming → proposed → confirming → done */
-  useEffect(() => {
-    if (reduce.current) return;
-    if (phase === "cue") {
-      const t = setTimeout(() => setPhase("typing"), 900);
-      return () => clearTimeout(t);
-    }
-    if (phase === "sent") {
-      const t = setTimeout(() => setPhase("thinking"), 400);
-      return () => clearTimeout(t);
-    }
-    if (phase === "thinking") {
-      const t = setTimeout(() => setPhase("streaming"), THINK_MS);
-      return () => clearTimeout(t);
-    }
-    if (phase === "proposed") {
-      // User reviews, then confirms. Nothing has run yet.
-      const t = setTimeout(() => setPhase("confirming"), PROPOSE_HOLD_MS);
-      return () => clearTimeout(t);
-    }
-    if (phase === "confirming") {
-      const t = setTimeout(() => setPhase("done"), CONFIRM_MS);
-      return () => clearTimeout(t);
-    }
-    if (phase === "done") {
-      const t = setTimeout(() => {
-        setVisiblePosts(1);
-        setPhase("channel");
-        setInputText("");
-        setAiText("");
-        setCycle((c) => c + 1);
-      }, HOLD_MS);
-      return () => clearTimeout(t);
-    }
-  }, [phase, cycle]);
-
-  /* Type prompt into the input field before send. */
-  useEffect(() => {
-    if (reduce.current || phase !== "typing") return;
-
-    let i = 0;
-    const step = Math.max(1, Math.ceil(USER_PROMPT.length / (TYPE_MS / 55)));
-    const id = setInterval(() => {
-      i = Math.min(USER_PROMPT.length, i + step);
-      setInputText(USER_PROMPT.slice(0, i));
-      if (i >= USER_PROMPT.length) {
-        clearInterval(id);
-        setInputText("");
-        setPhase("sent");
-      }
-    }, 55);
-    return () => clearInterval(id);
-  }, [phase, cycle]);
-
-  /* Stream AI reply word-by-word after thinking, then propose actions. */
-  useEffect(() => {
-    if (reduce.current || phase !== "streaming") return;
-
-    const words = AI_ANSWER.split(/(\s+)/);
-    let i = 0;
-    const id = setInterval(() => {
-      i += 1;
-      setAiText(words.slice(0, i).join(""));
-      if (i >= words.length) {
-        clearInterval(id);
-        setPhase("proposed");
-      }
-    }, 48);
-    return () => clearInterval(id);
-  }, [phase, cycle]);
-
-  useEffect(() => {
-    const el = chatRef.current;
-    if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [phase, inputText, aiText]);
-
-  const aiActive = phase !== "channel";
-  const showUserBubble =
-    phase === "sent" ||
-    phase === "thinking" ||
-    phase === "streaming" ||
-    phase === "proposed" ||
-    phase === "confirming" ||
-    phase === "done";
-  const showAssistant =
-    phase === "thinking" ||
-    phase === "streaming" ||
-    phase === "proposed" ||
-    phase === "confirming" ||
-    phase === "done";
-  const isThinking = phase === "thinking";
-  const isStreaming = phase === "streaming";
-  const showActions = phase === "proposed" || phase === "confirming" || phase === "done";
-  const isDone = phase === "done";
-  const highlightCatchMeUp = phase === "cue";
-
-  const aiPanel = (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="flex h-10 flex-shrink-0 items-center justify-between border-b border-border/60 bg-card/40 px-3">
-        <div className="flex items-center gap-2">
-          <span className="grid h-6 w-6 place-items-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-400">
-            <IconSparkles className="h-3.5 w-3.5" />
-          </span>
-          <span className="text-xs font-semibold text-foreground">AI Agent</span>
-        </div>
-      </div>
-
-      <div ref={chatRef} className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
-        {!aiActive && (
-          <p className="py-6 text-center text-[11px] text-muted-foreground">Ask your workspace to do anything…</p>
-        )}
-
-        {showUserBubble && (
-          <div className="flex justify-end animate-fade-up">
-            <div className="max-w-[92%] rounded-lg rounded-br-sm bg-foreground px-3 py-2 text-[11px] leading-snug text-background">
-              {USER_PROMPT}
-            </div>
-          </div>
-        )}
-
-        {showAssistant && (
-          <div className="flex gap-2 animate-fade-up">
-            <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
-              <IconSparkles className="h-3.5 w-3.5" />
-            </span>
-            <div className="min-w-0 max-w-[calc(100%-2rem)] flex-1 rounded-lg rounded-bl-sm border border-border bg-muted px-3 py-2.5 text-[11px] leading-[1.55] text-foreground">
-              {isThinking && (
-                <span className="inline-flex items-center py-0.5">
-                  <TypingIndicator />
-                </span>
-              )}
-              {(isStreaming || showActions) && (
-                <span className="whitespace-pre-line">
-                  {aiText}
-                  {isStreaming && (
-                    <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-brand align-middle" />
-                  )}
-                </span>
-              )}
-
-              {showActions && (
-                <div className="mt-2.5 space-y-1.5">
-                  {ACTIONS.map((a) => (
-                    <div
-                      key={a.detail}
-                      className={`flex items-center gap-2 rounded-md border px-2 py-1.5 transition-colors duration-300 ${
-                        isDone
-                          ? "border-emerald-500/30 bg-emerald-500/[0.06]"
-                          : "border-border bg-background"
-                      }`}
-                    >
-                      <span
-                        className={`grid h-4 w-4 flex-shrink-0 place-items-center rounded-full text-[9px] font-bold transition-colors duration-300 ${
-                          isDone
-                            ? "bg-emerald-500 text-white"
-                            : "border border-muted-foreground/40 text-transparent"
-                        }`}
-                      >
-                        ✓
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-[10px] text-foreground">
-                        <span className="font-medium">{a.verb}:</span> {a.detail}
-                      </span>
-                      <span className="flex-shrink-0 text-[9px] text-muted-foreground">{a.meta}</span>
-                    </div>
-                  ))}
-
-                  {/* Confirmation affordance - this is the part that makes it
-                      honest: in OneCamp nothing runs until the user confirms. */}
-                  {phase === "proposed" && (
-                    <div className="flex items-center gap-2 pt-0.5">
-                      <span className="rounded-md bg-brand px-2.5 py-1 text-[10px] font-semibold text-white shadow-sm ring-2 ring-brand/30">
-                        Confirm
-                      </span>
-                      <span className="rounded-md border border-border px-2.5 py-1 text-[10px] text-muted-foreground">
-                        Dismiss
-                      </span>
-                      <span className="ml-auto text-[9px] text-muted-foreground">Needs your OK</span>
-                    </div>
-                  )}
-                  {phase === "confirming" && (
-                    <div className="flex items-center gap-2 pt-0.5">
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-brand/80 px-2.5 py-1 text-[10px] font-semibold text-white">
-                        <span className="h-2.5 w-2.5 animate-spin rounded-full border-[1.5px] border-white/40 border-t-white" />
-                        Running…
-                      </span>
-                    </div>
-                  )}
-                  {isDone && (
-                    <p className="pt-0.5 text-[9px] font-medium text-emerald-600 dark:text-emerald-400">
-                      ✓ Confirmed by you · 3 actions done
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="flex-shrink-0 border-t border-border p-2.5">
-        <div
-          className={`rounded-lg border px-3 py-2 text-[11px] transition-colors ${
-            phase === "typing"
-              ? "border-brand/40 bg-background text-foreground"
-              : "border-border bg-muted/50 text-muted-foreground"
-          }`}
-        >
-          {phase === "typing" ? (
-            <>
-              {inputText}
-              <span className="ml-px inline-block h-3.5 w-0.5 animate-pulse bg-brand align-middle" />
-            </>
-          ) : (
-            "Ask your workspace to do anything…"
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  const Active = SCENES[index].Scene;
 
   return (
     <div className={className}>
-      <ShowcaseShell
-        activeNav="channels"
-        aiPanel={aiPanel}
-        aiActive={aiActive}
-        heightClass="h-[min(480px,74vh)] sm:h-[480px]"
-      >
-        <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-foreground"># engineering</p>
-            <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <span>12 members</span>
-              <span aria-hidden>·</span>
-              <span className="inline-flex items-center gap-1">
-                <span className="status-pulse h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-                3 online
-              </span>
-            </p>
-          </div>
-          <span
-            className={`flex-shrink-0 rounded-md border px-2 py-1 text-[11px] font-medium transition-all duration-300 ${
-              highlightCatchMeUp
-                ? "border-brand/50 bg-brand/[0.08] text-brand shadow-sm"
-                : "border-border bg-muted/60 text-foreground"
-            }`}
-          >
-            Ask AI
-          </span>
-        </header>
+      <HeroFrame>
+        <Active key={SCENES[index].key} reduced={reduced} onDone={advance} />
+      </HeroFrame>
 
-        <div className="relative min-h-0 flex-1 overflow-hidden">
-          <div className="absolute inset-0 flex flex-col justify-end gap-3 overflow-hidden p-3 sm:gap-3.5 sm:p-4">
-            {POSTS.slice(0, visiblePosts).map((post, i) => (
-              <article
-                key={`${post.author}-${cycle}`}
-                className="flex gap-2.5 animate-fade-up sm:gap-3"
-                style={{ animationDelay: i === visiblePosts - 1 ? "0ms" : undefined }}
-              >
-                <span
-                  className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-[10px] font-semibold sm:h-9 sm:w-9 ${post.color}`}
-                >
-                  {post.initials}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
-                    <span className="text-xs font-semibold text-foreground">{post.author}</span>
-                    <span className="text-[10px] text-muted-foreground">{post.time}</span>
-                  </p>
-                  <p className="mt-1 text-sm leading-relaxed text-foreground">{post.text}</p>
-                  {post.reaction && (
-                    <span className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
-                      {post.reaction} <span className="text-foreground">4</span>
-                    </span>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex-shrink-0 border-t border-border p-2.5 sm:p-3">
-          <div className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
-            Message #engineering…
-          </div>
-        </div>
-      </ShowcaseShell>
+      {/* Scene rail (outside the frame so it stays interactive): tells the
+          viewer this is a rotating tour and lets them jump between capabilities,
+          with the active one highlighted. */}
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5">
+        {SCENES.map((s, i) => {
+          const active = i === index;
+          return (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setIndex(i)}
+              className={`group flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                active
+                  ? "border-brand/50 bg-brand/[0.08] text-brand"
+                  : "border-border bg-muted/40 text-muted-foreground hover:text-foreground"
+              }`}
+              aria-label={`Show: ${s.label}`}
+              aria-current={active}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                  active ? "bg-brand" : "bg-muted-foreground/40 group-hover:bg-muted-foreground"
+                }`}
+                aria-hidden
+              />
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

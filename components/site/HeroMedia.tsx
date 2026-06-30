@@ -1,11 +1,6 @@
-import { HeroFrame } from "@/components/site/HeroFrame";
 import { HeroShowcase } from "@/components/site/HeroShowcase";
 
-/** Interactive hero product preview. */
+/** Interactive hero product preview: a rotating tour of OneCamp's AI. */
 export function HeroMedia() {
-  return (
-    <HeroFrame>
-      <HeroShowcase />
-    </HeroFrame>
-  );
+  return <HeroShowcase />;
 }
