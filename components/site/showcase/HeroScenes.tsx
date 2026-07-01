@@ -86,12 +86,25 @@ function useStream(active: boolean, full: string, stepMs: number, onComplete?: (
   cb.current = onComplete;
   useEffect(() => {
     if (!active) return;
-    const words = full.split(/(\s+)/);
+    // Build chunks of "word + its trailing whitespace" so each tick reveals a
+    // visible word. Splitting on whitespace alone wastes a tick rendering each
+    // space, which reads as a stutter; merging the space into the preceding
+    // word keeps the cadence even and smooth.
+    const parts = full.split(/(\s+)/);
+    const chunks: string[] = [];
+    for (const p of parts) {
+      if (p === "") continue;
+      if (/^\s+$/.test(p) && chunks.length > 0) {
+        chunks[chunks.length - 1] += p; // attach whitespace to the previous word
+      } else {
+        chunks.push(p);
+      }
+    }
     let i = 0;
     const id = setInterval(() => {
       i += 1;
-      setText(words.slice(0, i).join(""));
-      if (i >= words.length) {
+      setText(chunks.slice(0, i).join(""));
+      if (i >= chunks.length) {
         clearInterval(id);
         cb.current?.();
       }
@@ -161,9 +174,16 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
       const t = setTimeout(() => setPhase("reply"), 1300);
       return () => clearTimeout(t);
     }
+    // A named custom agent posts its answer as ONE completed in-thread comment
+    // (it does not stream token-by-token — only the built-in coworker streams),
+    // so we show the full reply, then a beat later reveal the approval
+    // disclosure.
+    if (phase === "reply") {
+      const t = setTimeout(() => setPhase("approve"), 1100);
+      return () => clearTimeout(t);
+    }
   }, [phase, reduced]);
 
-  const replyText = useStream(phase === "reply", MENTION_REPLY, 42, () => setPhase("approve"));
   const showReply = phase === "reply" || phase === "approve" || phase === "done";
   const showApprove = phase === "approve" || phase === "done";
   const sentPost = phase === "sent" || phase === "thinking" || showReply;
@@ -216,7 +236,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
           </article>
         )}
 
-        {/* the AI teammate reply, in-thread, badged */}
+        {/* the AI teammate reply — a completed comment in the post's thread, badged */}
         {(phase === "thinking" || showReply) && (
           <article className="flex gap-2.5 animate-fade-up">
             <BotAvatar />
@@ -224,26 +244,25 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
               <p className="flex items-baseline gap-1.5">
                 <span className="text-xs font-semibold text-foreground">Release Captain</span>
                 <AiBadge />
-                <span className="text-[10px] text-muted-foreground">now</span>
+                <span className="text-[10px] text-muted-foreground">now · replied in thread</span>
               </p>
               {phase === "thinking" ? (
                 <span className="mt-1 inline-flex items-center py-0.5">
                   <TypingIndicator />
                 </span>
               ) : (
-                <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-foreground">
-                  {replyText}
-                  {phase === "reply" && <Caret />}
+                <p className="mt-1 whitespace-pre-line border-l-2 border-violet-500/25 pl-2.5 text-sm leading-relaxed text-foreground">
+                  {MENTION_REPLY}
                 </p>
               )}
               {showApprove && (
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1 text-[10px] text-foreground">
-                    <span className="grid h-3.5 w-3.5 place-items-center rounded-full border border-muted-foreground/40 text-transparent">✓</span>
-                    Set reminder: <span className="font-medium">nudge @Daniel</span>
+                <div className="mt-2 flex items-start gap-1.5 rounded-md border border-border bg-muted/40 px-2 py-1.5 text-[10px] leading-snug text-muted-foreground">
+                  <span className="mt-px grid h-3.5 w-3.5 flex-shrink-0 place-items-center rounded bg-violet-500/15 text-violet-600 dark:text-violet-400">
+                    <IconSparkles className="h-2 w-2" />
                   </span>
-                  <span className="rounded-md bg-brand px-2 py-1 text-[10px] font-semibold text-white ring-2 ring-brand/30">Confirm</span>
-                  <span className="ml-auto text-[9px] text-muted-foreground">needs your OK</span>
+                  <span>
+                    Heads up: I proposed 1 change — <span className="font-medium text-foreground">set a reminder to nudge @Daniel</span>. Approve it from your actions tray to run it.
+                  </span>
                 </div>
               )}
             </div>
@@ -624,7 +643,7 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
 //   the result and moves the task forward - while juggling other tasks too.
 // ===========================================================================
 
-const HANDOFF_TOOLS = ["search_workspace", "read_recent_changes", "create_task", "schedule"] as const;
+const HANDOFF_TOOLS = ["search_workspace", "list_recent_changes", "create_task", "set_reminder"] as const;
 
 const HANDOFF_RESULT_LEAD = "Done - here's what I shipped for v2.4:";
 const HANDOFF_DID = [

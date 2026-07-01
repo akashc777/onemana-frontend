@@ -59,6 +59,10 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "scene-in": {
+          "0%": { opacity: "0", transform: "translateY(8px) scale(0.995)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
         marquee: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
@@ -71,6 +75,7 @@ const config: Config = {
       },
       animation: {
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
+        "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",
         "icon-pop": "icon-pop 0.35s ease-out",
       },

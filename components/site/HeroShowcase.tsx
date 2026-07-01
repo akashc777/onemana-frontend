@@ -33,6 +33,12 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
   const [index, setIndex] = useState(0);
   const [reduced, setReduced] = useState(false);
   const reducedRef = useRef(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  // Visibility gate: pause rotation while the hero is scrolled offscreen so we
+  // don't burn CPU/battery cycling demos nobody is watching, and resume cleanly
+  // when it returns into view.
+  const visibleRef = useRef(true);
+  const pendingAdvanceRef = useRef(false);
 
   useEffect(() => {
     const r =
@@ -41,17 +47,47 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
     setReduced(r);
   }, []);
 
+  useEffect(() => {
+    if (reducedRef.current) return; // reduced motion never rotates, nothing to gate
+    const el = rootRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+        // If a scene finished while we were offscreen, advance now that we're back.
+        if (entry.isIntersecting && pendingAdvanceRef.current) {
+          pendingAdvanceRef.current = false;
+          setIndex((i) => (i + 1) % SCENES.length);
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const advance = () => {
     if (reducedRef.current) return;
+    // Offscreen: defer the advance until the hero is visible again, so the
+    // rotation resumes exactly where it paused instead of churning unseen.
+    if (!visibleRef.current) {
+      pendingAdvanceRef.current = true;
+      return;
+    }
     setIndex((i) => (i + 1) % SCENES.length);
   };
 
   const Active = SCENES[index].Scene;
 
   return (
-    <div className={className}>
+    <div className={className} ref={rootRef}>
       <HeroFrame>
-        <Active key={SCENES[index].key} reduced={reduced} onDone={advance} />
+        {/* Keyed wrapper: remounts per scene so the timeline resets AND the
+            scene-in animation replays, giving a smooth fade/rise between scenes
+            instead of a hard cut. */}
+        <div key={SCENES[index].key} className="h-full animate-scene-in">
+          <Active reduced={reduced} onDone={advance} />
+        </div>
       </HeroFrame>
 
       {/* Scene rail (outside the frame so it stays interactive): tells the
