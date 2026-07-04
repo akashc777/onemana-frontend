@@ -16,7 +16,7 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   {
     icon: "table",
     title: "Tables",
-    body: "Notion-style databases with grid, board, and calendar views. Typed columns, rows that link to real tasks and projects, and an AI that builds the whole table from one sentence or fills a column row by row. Replaces Airtable.",
+    body: "Notion-style databases with grid, board, calendar, and chart views. Typed columns, rows that link to real tasks and projects, and an AI that builds the whole table from one sentence, fills a column row by row, or answers a question straight from your data with a chart. Replaces Airtable.",
   },
   {
     icon: "automation",

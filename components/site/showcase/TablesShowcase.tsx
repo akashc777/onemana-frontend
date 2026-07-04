@@ -27,7 +27,33 @@ const STATUS_STYLE: Record<Row["status"], string> = {
   Published: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
 };
 
-type Phase = "idle" | "working" | "done";
+// Chart-view data: "posts by status", a real aggregation of the rows above
+// (count grouped by status), so the chart reads as data, not decoration.
+const STATUS_COUNTS: { label: string; count: number }[] = [
+  { label: "Published", count: 1 },
+  { label: "Drafting", count: 2 },
+  { label: "Idea", count: 1 },
+];
+const CHART_MAX = 2; // y-axis top; ticks at 0..CHART_MAX
+
+const VIEWS = ["Grid", "Board", "Calendar", "Chart"] as const;
+
+// SVG geometry mirrors the product's real AgentChart renderer (fixed viewBox,
+// padded plot, y gridlines + ticks, rounded bars) so the marketing preview
+// looks exactly like the chart a user gets in-app.
+const CH = {
+  vbW: 520,
+  vbH: 232,
+  padT: 14,
+  padR: 16,
+  padB: 30,
+  padL: 30,
+};
+const PLOT_W = CH.vbW - CH.padL - CH.padR;
+const PLOT_H = CH.vbH - CH.padT - CH.padB;
+const BAR_COLOR = "#FF4D00"; // brand orange — onemana's chart accent
+
+type Phase = "idle" | "working" | "done" | "chart";
 
 /** Tables preview: the AI generates a typed table from a natural-language prompt. */
 export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
@@ -41,9 +67,10 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
       return;
     }
     const seq: [Phase, number][] = [
-      ["idle", 1100],
-      ["working", 1600],
-      ["done", 4600],
+      ["idle", 900],
+      ["working", 1500],
+      ["done", 2800],
+      ["chart", 3800],
     ];
     let i = 0;
     let timer: ReturnType<typeof setTimeout>;
@@ -60,21 +87,138 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
   }, []);
 
   const showRows = phase === "working" || phase === "done";
+  const isChart = phase === "chart";
+
+  // Drive the bar grow-in: bars start at scaleY(0) and animate up once the
+  // chart view is shown, staggered per bar (like the app's charts feel alive).
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    if (!isChart) {
+      setGrown(false);
+      return;
+    }
+    if (reduce.current) {
+      setGrown(true);
+      return;
+    }
+    const id = requestAnimationFrame(() => setGrown(true));
+    return () => cancelAnimationFrame(id);
+  }, [isChart]);
 
   return (
     <div className={`relative flex flex-col ${embedded ? "h-full min-h-0" : "h-[420px]"}`}>
       <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2.5 sm:px-4">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-foreground">📅 Content calendar</p>
-          <p className="text-[11px] text-muted-foreground">Table · Grid view · 5 fields</p>
+          <p className="text-[11px] text-muted-foreground">Table · {isChart ? "Chart view" : "Grid view · 5 fields"}</p>
         </div>
         <div className="hidden items-center gap-1 rounded-md border border-border/70 bg-muted/40 px-2 py-1 text-[10px] text-muted-foreground sm:flex">
-          <span className="rounded bg-background px-1.5 py-0.5 font-medium text-foreground">Grid</span>
-          <span className="px-1">Board</span>
-          <span className="px-1">Calendar</span>
+          {VIEWS.map((v) => {
+            const active = isChart ? v === "Chart" : v === "Grid";
+            return (
+              <span
+                key={v}
+                className={active ? "rounded bg-background px-1.5 py-0.5 font-medium text-foreground transition-colors" : "px-1 transition-colors"}
+              >
+                {v}
+              </span>
+            );
+          })}
         </div>
       </header>
 
+      {isChart ? (
+        <div className="min-h-0 flex-1 overflow-auto p-3 sm:p-4">
+          <figure className="rounded-lg border border-border/60 bg-foreground/[0.03] p-3">
+            <figcaption className="mb-1.5 text-[12px] font-semibold text-foreground">Posts by status</figcaption>
+            <svg
+              viewBox={`0 0 ${CH.vbW} ${CH.vbH}`}
+              className="h-auto w-full"
+              role="img"
+              aria-label="Bar chart: posts by status"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              {/* Y gridlines + tick labels (0..max) */}
+              {Array.from({ length: CHART_MAX + 1 }, (_, t) => {
+                const y = CH.padT + PLOT_H - (t / CHART_MAX) * PLOT_H;
+                return (
+                  <g key={`yt-${t}`}>
+                    <line
+                      x1={CH.padL}
+                      y1={y}
+                      x2={CH.padL + PLOT_W}
+                      y2={y}
+                      stroke="rgb(var(--border))"
+                      strokeWidth={1}
+                      opacity={0.6}
+                    />
+                    <text
+                      x={CH.padL - 7}
+                      y={y}
+                      textAnchor="end"
+                      dominantBaseline="middle"
+                      fontSize={10}
+                      fill="rgb(var(--muted-foreground))"
+                    >
+                      {t}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Bars + value + category labels */}
+              {STATUS_COUNTS.map((s, i) => {
+                const slotW = PLOT_W / STATUS_COUNTS.length;
+                const barW = slotW * 0.46;
+                const cx = CH.padL + slotW * (i + 0.5);
+                const baselineY = CH.padT + PLOT_H;
+                const topY = CH.padT + PLOT_H - (s.count / CHART_MAX) * PLOT_H;
+                const h = baselineY - topY;
+                return (
+                  <g key={s.label}>
+                    <rect
+                      x={cx - barW / 2}
+                      y={topY}
+                      width={barW}
+                      height={h}
+                      rx={3}
+                      fill={BAR_COLOR}
+                      style={{
+                        transformBox: "fill-box",
+                        transformOrigin: "bottom",
+                        transform: grown ? "scaleY(1)" : "scaleY(0)",
+                        transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+                        transitionDelay: `${i * 130}ms`,
+                      }}
+                    />
+                    <text
+                      x={cx}
+                      y={topY - 6}
+                      textAnchor="middle"
+                      fontSize={11}
+                      fontWeight={600}
+                      fill="rgb(var(--foreground))"
+                      className="transition-opacity duration-300"
+                      style={{ opacity: grown ? 1 : 0, transitionDelay: `${i * 130 + 400}ms` }}
+                    >
+                      {s.count}
+                    </text>
+                    <text
+                      x={cx}
+                      y={baselineY + 16}
+                      textAnchor="middle"
+                      fontSize={10}
+                      fill="rgb(var(--muted-foreground))"
+                    >
+                      {s.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </figure>
+        </div>
+      ) : (
       <div className="min-h-0 flex-1 overflow-auto p-2 sm:p-3">
         <div className="overflow-hidden rounded-lg border border-border/60">
           {/* Column header */}
@@ -109,6 +253,7 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
           ))}
         </div>
       </div>
+      )}
 
       {/* AI toast: the table was generated from a prompt. */}
       {!reduce.current && (
@@ -128,6 +273,8 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
             <span className="whitespace-nowrap text-[10px] font-medium text-foreground sm:text-[11px]">
               {phase === "working"
                 ? "AI · building a table from “a content calendar with status, channel, owner”"
+                : phase === "chart"
+                ? "AI · “chart posts by status” — answered straight from your data"
                 : "Typed columns and starter rows created · edit anything"}
             </span>
           </div>
