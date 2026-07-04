@@ -29,12 +29,15 @@ const STATUS_STYLE: Record<Row["status"], string> = {
 
 // Chart-view data: "posts by status", a real aggregation of the rows above
 // (count grouped by status), so the chart reads as data, not decoration.
-const STATUS_COUNTS: { label: string; count: number }[] = [
-  { label: "Published", count: 1 },
-  { label: "Drafting", count: 2 },
-  { label: "Idea", count: 1 },
+// Each bar carries the same status hue as its grid pill, so the chart ties
+// visually back to the table the viewer just saw.
+const STATUS_COUNTS: { label: string; count: number; color: string }[] = [
+  { label: "Published", count: 1, color: "#10b981" }, // emerald-500
+  { label: "Drafting", count: 2, color: "#f59e0b" }, // amber-500
+  { label: "Idea", count: 1, color: "#94a3b8" }, // slate-400
 ];
-const CHART_MAX = 2; // y-axis top; ticks at 0..CHART_MAX
+const CHART_MAX = 2; // integer ticks at 0..CHART_MAX
+const CHART_SCALE = 2.4; // positioning scale with headroom so the tallest bar + its value label never touch the top edge
 
 const VIEWS = ["Grid", "Board", "Calendar", "Chart"] as const;
 
@@ -42,16 +45,32 @@ const VIEWS = ["Grid", "Board", "Calendar", "Chart"] as const;
 // padded plot, y gridlines + ticks, rounded bars) so the marketing preview
 // looks exactly like the chart a user gets in-app.
 const CH = {
-  vbW: 520,
-  vbH: 232,
-  padT: 14,
-  padR: 16,
+  vbW: 560,
+  vbH: 200,
+  padT: 16,
+  padR: 18,
   padB: 30,
   padL: 30,
 };
 const PLOT_W = CH.vbW - CH.padL - CH.padR;
 const PLOT_H = CH.vbH - CH.padT - CH.padB;
-const BAR_COLOR = "#FF4D00"; // brand orange — onemana's chart accent
+
+// roundedTopBarPath builds a bar with rounded TOP corners and a flat base —
+// the polished look real chart libraries use, rather than uniformly rounded
+// rects. r is clamped to the bar's height and half-width so short/thin bars
+// stay well-formed.
+function roundedTopBarPath(x: number, y: number, w: number, h: number, radius: number): string {
+  const r = Math.max(0, Math.min(radius, h, w / 2));
+  return [
+    `M${x},${y + h}`,
+    `L${x},${y + r}`,
+    `Q${x},${y} ${x + r},${y}`,
+    `L${x + w - r},${y}`,
+    `Q${x + w},${y} ${x + w},${y + r}`,
+    `L${x + w},${y + h}`,
+    "Z",
+  ].join(" ");
+}
 
 type Phase = "idle" | "working" | "done" | "chart";
 
@@ -128,8 +147,8 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
       </header>
 
       {isChart ? (
-        <div className="min-h-0 flex-1 overflow-auto p-3 sm:p-4">
-          <figure className="rounded-lg border border-border/60 bg-foreground/[0.03] p-3">
+        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-3 sm:p-4">
+          <figure className="mx-auto w-full max-w-lg rounded-lg border border-border/60 bg-foreground/[0.03] p-3 sm:p-4">
             <figcaption className="mb-1.5 text-[12px] font-semibold text-foreground">Posts by status</figcaption>
             <svg
               viewBox={`0 0 ${CH.vbW} ${CH.vbH}`}
@@ -138,9 +157,11 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
               aria-label="Bar chart: posts by status"
               preserveAspectRatio="xMidYMid meet"
             >
-              {/* Y gridlines + tick labels (0..max) */}
+              {/* Y gridlines + tick labels (0..max). t=0 is the crisp baseline
+                  axis; upper lines are subtle + dashed so bars read clearly. */}
               {Array.from({ length: CHART_MAX + 1 }, (_, t) => {
-                const y = CH.padT + PLOT_H - (t / CHART_MAX) * PLOT_H;
+                const y = CH.padT + PLOT_H - (t / CHART_SCALE) * PLOT_H;
+                const isBaseline = t === 0;
                 return (
                   <g key={`yt-${t}`}>
                     <line
@@ -149,15 +170,16 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
                       x2={CH.padL + PLOT_W}
                       y2={y}
                       stroke="rgb(var(--border))"
-                      strokeWidth={1}
-                      opacity={0.6}
+                      strokeWidth={isBaseline ? 1.5 : 1}
+                      strokeDasharray={isBaseline ? undefined : "2 4"}
+                      opacity={isBaseline ? 0.9 : 0.5}
                     />
                     <text
-                      x={CH.padL - 7}
+                      x={CH.padL - 8}
                       y={y}
                       textAnchor="end"
                       dominantBaseline="middle"
-                      fontSize={10}
+                      fontSize={12}
                       fill="rgb(var(--muted-foreground))"
                     >
                       {t}
@@ -169,33 +191,29 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
               {/* Bars + value + category labels */}
               {STATUS_COUNTS.map((s, i) => {
                 const slotW = PLOT_W / STATUS_COUNTS.length;
-                const barW = slotW * 0.46;
+                const barW = Math.min(slotW * 0.34, 64);
                 const cx = CH.padL + slotW * (i + 0.5);
                 const baselineY = CH.padT + PLOT_H;
-                const topY = CH.padT + PLOT_H - (s.count / CHART_MAX) * PLOT_H;
+                const topY = CH.padT + PLOT_H - (s.count / CHART_SCALE) * PLOT_H;
                 const h = baselineY - topY;
                 return (
                   <g key={s.label}>
-                    <rect
-                      x={cx - barW / 2}
-                      y={topY}
-                      width={barW}
-                      height={h}
-                      rx={3}
-                      fill={BAR_COLOR}
+                    <path
+                      d={roundedTopBarPath(cx - barW / 2, topY, barW, h, 4)}
+                      fill={s.color}
                       style={{
                         transformBox: "fill-box",
                         transformOrigin: "bottom",
                         transform: grown ? "scaleY(1)" : "scaleY(0)",
-                        transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+                        transition: "transform 720ms cubic-bezier(0.22, 1, 0.36, 1)",
                         transitionDelay: `${i * 130}ms`,
                       }}
                     />
                     <text
                       x={cx}
-                      y={topY - 6}
+                      y={topY - 7}
                       textAnchor="middle"
-                      fontSize={11}
+                      fontSize={14}
                       fontWeight={600}
                       fill="rgb(var(--foreground))"
                       className="transition-opacity duration-300"
@@ -205,9 +223,9 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
                     </text>
                     <text
                       x={cx}
-                      y={baselineY + 16}
+                      y={baselineY + 17}
                       textAnchor="middle"
-                      fontSize={10}
+                      fontSize={13}
                       fill="rgb(var(--muted-foreground))"
                     >
                       {s.label}
