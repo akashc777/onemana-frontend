@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { HeroFrame } from "@/components/site/HeroFrame";
 import {
   ActScene,
+  CodePRScene,
   HandoffScene,
-  KnowledgeScene,
   MentionAgentScene,
   type SceneProps,
 } from "@/components/site/showcase/HeroScenes";
@@ -15,8 +15,8 @@ import {
  * what OneCamp's AI actually does, each mirroring the real app UI:
  *   1. AI teammates you @mention in a channel (reply in-thread, badged)
  *   2. Ask AI to do the work - recap + propose tasks, run only on your confirm
- *   3. Answers from everything, cited (workspace + connected apps)
- *   4. Hand it a task and walk away - durable, live progress, survives restarts
+ *   3. Hand it a task and walk away - durable, live progress, survives restarts
+ *   4. Tag it to code - it opens a verified, reviewable PR on your own infra
  *
  * Each scene runs its own timeline and calls onDone() to advance. Scenes are
  * remounted per cycle (keyed), so timers reset cleanly and never overlap.
@@ -26,7 +26,7 @@ const SCENES: { key: string; label: string; Scene: (p: SceneProps) => JSX.Elemen
   { key: "mention", label: "@mention an AI teammate", Scene: MentionAgentScene },
   { key: "act", label: "Ask AI - it acts, you approve", Scene: ActScene },
   { key: "handoff", label: "Hand it a task, walk away", Scene: HandoffScene },
-  { key: "knowledge", label: "Answers from everything, cited", Scene: KnowledgeScene },
+  { key: "codepr", label: "Tag it to code - get a PR", Scene: CodePRScene },
 ];
 
 export function HeroShowcase({ className = "" }: { className?: string }) {

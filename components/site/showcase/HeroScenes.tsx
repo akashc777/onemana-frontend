@@ -833,3 +833,290 @@ export function HandoffScene({ reduced, onDone }: SceneProps) {
     </ShowcaseShell>
   );
 }
+
+// ===========================================================================
+// Scene 5 - Tag an AI teammate to CODE, and it opens a reviewable PR
+//   The OneCamp code-PR journey, 1:1 with the real app: you @mention a coding
+//   agent in a channel; it acknowledges in-thread ("On it — isolated sandbox,
+//   verified against the repo's build/tests, opened as a PR"), works through
+//   clone → edit → build → test with live tool chips, then posts the result as
+//   a clean PR result card (the same AgentResultCards chrome the product renders
+//   in-thread). Human-review-only: it never merges. Agent copy matches the real
+//   executeCodePRTool ack + prSuccessMessage output verbatim.
+// ===========================================================================
+
+// Minimal inline icons for the PR result card (the showcase icon set has no VCS
+// glyphs). Stroke-only, currentColor — matches ShowcaseIcons' style.
+function IconGitPR({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <circle cx="6" cy="6" r="2.4" />
+      <circle cx="6" cy="18" r="2.4" />
+      <path d="M6 8.4v7.2" />
+      <circle cx="18" cy="18" r="2.4" />
+      <path d="M18 15.6V11a4 4 0 0 0-4-4h-3" />
+      <path d="M13 4.5 10.5 7 13 9.5" />
+    </svg>
+  );
+}
+function IconExternal({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+  );
+}
+
+const CODEPR_REPO = "acme/backend";
+const CODEPR_PR_NUM = "482";
+const CODEPR_PROMPT = "@Builder add a --dry-run flag to the import CLI so it prints what it would do without writing anything. Open a PR.";
+// Verbatim from executeCodePRTool's acknowledgement.
+const CODEPR_ACK =
+  "On it — I'll make the change in an isolated sandbox, verify it against the repo's build and tests, and open a pull request here for you to review. I'll post the link when it's ready.";
+// Verbatim shape from prSuccessMessage (Opened a pull request: <url> — build and tests pass.)
+const CODEPR_RESULT = "Opened a pull request — build and tests pass.";
+// The clone → edit → build → test stages the runner works through, revealed one
+// at a time (done ✓ / active spinner / pending) for a legible live pipeline.
+const CODEPR_STAGES = ["clone", "edit", "build", "test"] as const;
+const CODEPR_STAGE_LABEL: Record<(typeof CODEPR_STAGES)[number], string> = {
+  clone: "clone repo",
+  edit: "edit files",
+  build: "build",
+  test: "run tests",
+};
+
+type CodePRPhase = "context" | "typing" | "sent" | "ack" | "working" | "result" | "card" | "done";
+
+export function CodePRScene({ reduced, onDone }: SceneProps) {
+  const [phase, setPhase] = useState<CodePRPhase>(reduced ? "done" : "context");
+  const [typed, setTyped] = useState("");
+  // How many pipeline stages have completed (clone → edit → build → test).
+  const [stageIdx, setStageIdx] = useState(reduced ? CODEPR_STAGES.length : 0);
+
+  useTimeline(!reduced, [{ at: 1400, run: () => setPhase("typing") }]);
+
+  // type the mention prompt, then send
+  useEffect(() => {
+    if (reduced || phase !== "typing") return;
+    let i = 0;
+    const id = setInterval(() => {
+      i = Math.min(CODEPR_PROMPT.length, i + 3);
+      setTyped(CODEPR_PROMPT.slice(0, i));
+      if (i >= CODEPR_PROMPT.length) {
+        clearInterval(id);
+        setTimeout(() => setPhase("sent"), 350);
+      }
+    }, 26);
+    return () => clearInterval(id);
+  }, [phase, reduced]);
+
+  useEffect(() => {
+    if (reduced) return;
+    if (phase === "sent") {
+      const t = setTimeout(() => setPhase("ack"), 650);
+      return () => clearTimeout(t);
+    }
+    if (phase === "ack") {
+      const t = setTimeout(() => setPhase("working"), 1600);
+      return () => clearTimeout(t);
+    }
+    if (phase === "card") {
+      const t = setTimeout(() => setPhase("done"), 500);
+      return () => clearTimeout(t);
+    }
+  }, [phase, reduced]);
+
+  // Progressive pipeline: while working, complete one stage at a time, then
+  // advance to the streamed result — a live "watch it build & test" beat.
+  useEffect(() => {
+    if (reduced || phase !== "working") return;
+    if (stageIdx >= CODEPR_STAGES.length) {
+      const t = setTimeout(() => setPhase("result"), 520);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setStageIdx((i) => i + 1), 720);
+    return () => clearTimeout(t);
+  }, [phase, stageIdx, reduced]);
+
+  const resultText = useStream(phase === "result", CODEPR_RESULT, 42, () => setPhase("card"));
+  useHoldThenDone(!reduced && phase === "done", onDone);
+
+  const reached = (p: CodePRPhase) => {
+    const order: CodePRPhase[] = ["context", "typing", "sent", "ack", "working", "result", "card", "done"];
+    return order.indexOf(phase) >= order.indexOf(p);
+  };
+
+  const sentPost = reached("sent");
+  const showAgent = reached("ack");
+  const working = phase === "working";
+  const showResult = reached("result");
+  const showCard = reached("card");
+
+  return (
+    <ShowcaseShell activeNav="channels" heightClass="h-[min(480px,74vh)] sm:h-[480px]">
+      <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1 truncate text-sm font-medium text-foreground">
+            <IconHash className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> engineering
+          </p>
+          <p className="text-[11px] text-muted-foreground">Builder · AI teammate · opens PRs on your own infra</p>
+        </div>
+        <span className="flex-shrink-0 rounded-md border border-border bg-muted/60 px-2 py-1 text-[11px] font-medium text-foreground">Ask AI</span>
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-hidden p-3 sm:p-4">
+        {/* context post */}
+        <article className="flex gap-2.5">
+          <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-rose-500/15 text-[10px] font-semibold text-rose-700 dark:text-rose-300 sm:h-9 sm:w-9">
+            PN
+          </span>
+          <div className="min-w-0">
+            <p className="flex items-baseline gap-2">
+              <span className="text-xs font-semibold text-foreground">Priya Nair</span>
+              <span className="text-[10px] text-muted-foreground">10:12 AM</span>
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-foreground">The import CLI writes immediately — scary to run against prod. Can we add a dry-run?</p>
+          </div>
+        </article>
+
+        {/* the @mention post */}
+        {sentPost && (
+          <article className="flex gap-2.5 animate-fade-up">
+            <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-indigo-500/15 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300 sm:h-9 sm:w-9">
+              You
+            </span>
+            <div className="min-w-0">
+              <p className="flex items-baseline gap-2">
+                <span className="text-xs font-semibold text-foreground">You</span>
+                <span className="text-[10px] text-muted-foreground">10:13 AM</span>
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-foreground">
+                <span className="rounded bg-violet-500/15 px-1 font-medium text-violet-700 dark:text-violet-300">@Builder</span>{" "}
+                add a <code className="rounded bg-foreground/10 px-1 font-mono text-[12px]">--dry-run</code> flag to the import CLI so it prints what it would do without writing anything. Open a PR.
+              </p>
+            </div>
+          </article>
+        )}
+
+        {/* the AI teammate reply — ack, live work, then the PR result card */}
+        {showAgent && (
+          <article className="flex gap-2.5 animate-fade-up">
+            <BotAvatar initials="BD" />
+            <div className="min-w-0 flex-1">
+              <p className="flex items-baseline gap-1.5">
+                <span className="text-xs font-semibold text-foreground">Builder</span>
+                <AiBadge />
+                <span className="text-[10px] text-muted-foreground">now · replied in thread</span>
+              </p>
+
+              {/* Acknowledgement (verbatim executeCodePRTool copy) */}
+              {!showResult && (
+                <p className="mt-1 whitespace-pre-line border-l-2 border-violet-500/25 pl-2.5 text-sm leading-relaxed text-foreground">
+                  {CODEPR_ACK}
+                </p>
+              )}
+
+              {/* Live pipeline: clone → edit → build → test, one stage at a time */}
+              {working && (
+                <div className="mt-2 pl-2.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-foreground">
+                    <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-violet-500/40 border-t-violet-500" />
+                    Working in an isolated sandbox
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    {CODEPR_STAGES.map((s, i) => {
+                      const stageDone = i < stageIdx;
+                      const stageActive = i === stageIdx;
+                      return (
+                        <span
+                          key={s}
+                          className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-px text-[9px] font-medium transition-all duration-300 ${
+                            stageDone
+                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                              : stageActive
+                              ? "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-300"
+                              : "border-border bg-muted/40 text-muted-foreground/50"
+                          }`}
+                        >
+                          {stageDone ? (
+                            <span className="text-[8px]">✓</span>
+                          ) : stageActive ? (
+                            <span className="h-2 w-2 animate-spin rounded-full border-[1.5px] border-violet-500/40 border-t-violet-500" />
+                          ) : (
+                            <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+                          )}
+                          {CODEPR_STAGE_LABEL[s]}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Streamed result line (verbatim prSuccessMessage shape) */}
+              {showResult && (
+                <p className="mt-1 border-l-2 border-emerald-500/30 pl-2.5 text-sm font-medium leading-relaxed text-foreground">
+                  {resultText}
+                  {phase === "result" && <Caret />}
+                </p>
+              )}
+
+              {/* The PR result card — same AgentResultCards chrome the app renders */}
+              {showCard && (
+                <div className="mt-2 animate-fade-up">
+                  <a
+                    className="group/rc flex items-center gap-2.5 rounded-lg border border-border/70 bg-card/40 px-3 py-2 transition-colors hover:border-border hover:bg-accent/40"
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <span className="flex h-7 w-7 flex-shrink-0 place-items-center items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                      <IconGitPR className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[13px] font-medium leading-tight text-foreground">Pull request</span>
+                      <span className="block truncate font-mono text-[11px] leading-tight text-muted-foreground">
+                        {CODEPR_REPO}#{CODEPR_PR_NUM}
+                      </span>
+                    </span>
+                    <span className="flex flex-shrink-0 items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors group-hover/rc:text-foreground">
+                      <span className="hidden sm:inline">View PR</span>
+                      <IconExternal className="h-3.5 w-3.5" />
+                    </span>
+                  </a>
+                  {/* Governance beat: verified, bounded, human-review-only */}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-px text-[9px] font-medium text-emerald-600 dark:text-emerald-400">
+                      <span className="text-[8px]">✓</span> build &amp; tests pass
+                    </span>
+                    <span className="rounded-full border border-border bg-muted/50 px-1.5 py-px text-[9px] font-medium text-muted-foreground">3 files changed</span>
+                    <span className="rounded-full border border-border bg-muted/50 px-1.5 py-px text-[9px] font-medium text-muted-foreground">draft · awaiting your review</span>
+                    <span className="rounded-full border border-violet-500/30 bg-violet-500/[0.07] px-1.5 py-px text-[9px] font-medium text-violet-600 dark:text-violet-400">never merges on its own</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </article>
+        )}
+      </div>
+
+      <div className="flex-shrink-0 border-t border-border p-2.5 sm:p-3">
+        <div
+          className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
+            phase === "typing" ? "border-brand/40 bg-background text-foreground" : "border-border bg-muted/50 text-muted-foreground"
+          }`}
+        >
+          {phase === "typing" ? (
+            <>
+              {typed}
+              <Caret />
+            </>
+          ) : (
+            "Message #engineering…"
+          )}
+        </div>
+      </div>
+    </ShowcaseShell>
+  );
+}
