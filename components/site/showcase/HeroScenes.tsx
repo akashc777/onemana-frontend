@@ -1063,38 +1063,31 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
                 </p>
               )}
 
-              {/* The PR result card — same AgentResultCards chrome the app renders */}
+              {/* The PR result card — 1:1 with the product's AgentResultCards
+                  chrome (icon square + title + mono repo#num + View PR). The
+                  app renders ONLY this card under the message; the "build and
+                  tests pass" line above mirrors the real prSuccessMessage text,
+                  so this matches the OneCamp FE exactly (no invented badges). */}
               {showCard && (
-                <div className="mt-2 animate-fade-up">
-                  <a
-                    className="group/rc flex items-center gap-2.5 rounded-lg border border-border/70 bg-card/40 px-3 py-2 transition-colors hover:border-border hover:bg-accent/40"
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <span className="flex h-7 w-7 flex-shrink-0 place-items-center items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                      <IconGitPR className="h-4 w-4" />
+                <a
+                  className="group/rc mt-2 flex items-center gap-2.5 rounded-lg border border-border/70 bg-card/40 px-3 py-2 transition-colors hover:border-border hover:bg-accent/40 animate-fade-up"
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <IconGitPR className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[13px] font-medium leading-tight text-foreground">Pull request</span>
+                    <span className="block truncate font-mono text-[11px] leading-tight text-muted-foreground">
+                      {CODEPR_REPO}#{CODEPR_PR_NUM}
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[13px] font-medium leading-tight text-foreground">Pull request</span>
-                      <span className="block truncate font-mono text-[11px] leading-tight text-muted-foreground">
-                        {CODEPR_REPO}#{CODEPR_PR_NUM}
-                      </span>
-                    </span>
-                    <span className="flex flex-shrink-0 items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors group-hover/rc:text-foreground">
-                      <span className="hidden sm:inline">View PR</span>
-                      <IconExternal className="h-3.5 w-3.5" />
-                    </span>
-                  </a>
-                  {/* Governance beat: verified, bounded, human-review-only */}
-                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-px text-[9px] font-medium text-emerald-600 dark:text-emerald-400">
-                      <span className="text-[8px]">✓</span> build &amp; tests pass
-                    </span>
-                    <span className="rounded-full border border-border bg-muted/50 px-1.5 py-px text-[9px] font-medium text-muted-foreground">3 files changed</span>
-                    <span className="rounded-full border border-border bg-muted/50 px-1.5 py-px text-[9px] font-medium text-muted-foreground">draft · awaiting your review</span>
-                    <span className="rounded-full border border-violet-500/30 bg-violet-500/[0.07] px-1.5 py-px text-[9px] font-medium text-violet-600 dark:text-violet-400">never merges on its own</span>
-                  </div>
-                </div>
+                  </span>
+                  <span className="flex flex-shrink-0 items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors group-hover/rc:text-foreground">
+                    <span className="hidden sm:inline">View PR</span>
+                    <IconExternal className="h-3.5 w-3.5" />
+                  </span>
+                </a>
               )}
             </div>
           </article>
