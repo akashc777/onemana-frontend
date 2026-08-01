@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPost, listPublishedPosts, mediaUrl } from "@/lib/blog";
 import { renderMarkdown, readingTime } from "@/lib/markdown";
+import { jsonLdScript } from "@/lib/jsonLd";
 import { formatDate } from "@/lib/format";
 import { site } from "@/lib/site";
 
@@ -66,7 +67,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   return (
     <article>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <div className="container-x max-w-prose pt-12 sm:pt-16">
         <Link href="/blog" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">

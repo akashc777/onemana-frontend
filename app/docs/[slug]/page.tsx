@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDoc, listPublishedDocs, groupDocs } from "@/lib/docs";
 import { renderMarkdown } from "@/lib/markdown";
+import { jsonLdScript } from "@/lib/jsonLd";
 import { site } from "@/lib/site";
 import { DocsShell } from "@/components/docs/DocsShell";
 
@@ -59,7 +60,7 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <DocsShell groups={groups} activeSlug={doc.slug}>
         <div
