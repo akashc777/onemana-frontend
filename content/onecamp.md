@@ -35,7 +35,7 @@ Get OneCamp - $19 One-Time
 
 **primary_action:**
 
-/onecamp-product
+/buy
 
 **secondary_action_label:**
 
@@ -337,7 +337,7 @@ Get OneCamp →
 
 **cta_url:**
 
-/onecamp-product
+/buy
 
 **cta_description:**
 

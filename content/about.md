@@ -258,7 +258,7 @@ Get OneCamp
 
 **link:**
 
-/onecamp-product
+/buy
 
 **align:**
 

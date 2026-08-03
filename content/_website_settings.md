@@ -16,4 +16,4 @@
 - Refund policy -> /refund-policy
 
 ## Top Bar Items
-- Get OneCamp -> https://onemana.dev/onecamp-product
+- Get OneCamp -> https://onemana.dev/buy
