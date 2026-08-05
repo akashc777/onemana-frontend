@@ -1,0 +1,58 @@
+name: CI
+
+# Tests that nobody runs protect nothing.
+#
+# This repo had no CI and no test framework. It now has tests covering the two HTML
+# injection sinks that render with dangerouslySetInnerHTML — the Markdown sanitiser and the
+# JSON-LD serialiser — and those are only worth having if a pull request cannot merge past
+# them.
+#
+# Shaped after onecamp-fe's workflow so the two repos behave the same way, minus the
+# Playwright job: there are no e2e tests here yet. npm rather than pnpm, matching this
+# repo's package-lock.json.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-build-unit:
+    name: Lint / Build / Unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install
+        # ci, not install: fails on a lockfile that does not match package.json rather
+        # than quietly resolving something else, which is the point of having the lockfile.
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        # next build does typecheck, but running tsc separately means a type error is
+        # reported as a type error rather than as a build failure several minutes in.
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Build
+        # Builds as production would, catching anything the editor and tsc let past.
+        run: npm run build
