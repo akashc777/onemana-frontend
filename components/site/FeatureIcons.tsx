@@ -126,6 +126,25 @@ export function FeatureIcon({ icon, className = "" }: { icon: FeatureIconKey; cl
           <path d="M13.25 6l-2.5 12" strokeLinecap="round" />
         </svg>
       );
+    // Governance pair. A shield for "bounded by permissions" and a checked document for the audit
+    // trail — distinct silhouettes rather than two shields, because they carry the two halves of the
+    // positioning and a reader scanning the grid should not have to read the label to tell them apart.
+    case "shield":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <path className="feat-shield-body" d="M12 3.5l6.5 2.6v5.2c0 4-2.7 7.1-6.5 8.2-3.8-1.1-6.5-4.2-6.5-8.2V6.1L12 3.5z" strokeLinejoin="round" />
+          <path className="feat-shield-tick" d="M9.2 11.9l2.1 2.1 3.5-3.9" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "audit":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} aria-hidden>
+          <path className="feat-audit-page" d="M6 3.5h7.5L18 8v12.5H6z" strokeLinejoin="round" />
+          <path d="M13.3 3.7V8H18" strokeLinejoin="round" />
+          {/* Three entries and a chain link between them: the hash chain, not a generic list. */}
+          <path className="feat-audit-rows" d="M8.6 11.4h6.8M8.6 14.1h6.8M8.6 16.8h4.2" strokeLinecap="round" />
+        </svg>
+      );
     default:
       return null;
   }

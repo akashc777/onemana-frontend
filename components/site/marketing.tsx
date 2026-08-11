@@ -20,7 +20,62 @@ const ICON_TO_CATEGORY: Record<FeatureIconKey, keyof typeof categoryColors> = {
   agent: "ai",
   automation: "team",
   api: "doc",
+  // Governance pair, both mapped to the neutral `lock` set rather than a hue. Everything else on the
+  // page uses colour to say WHICH module a card belongs to; these two are not modules, they are the
+  // property that holds across all of them, and giving them a module colour would file them as one.
+  shield: "lock",
+  audit: "lock",
 };
+
+/**
+ * One column of the enterprise-controls grid.
+ *
+ * A plain list, deliberately. Procurement reads this section looking for specific words — SAML, SCIM,
+ * MFA — and a card with an icon and a paragraph makes them hunt. Nothing here needs persuading; it needs
+ * to be findable.
+ */
+export function ControlGroup({
+  label,
+  items,
+  index = 0,
+}: {
+  label: string;
+  items: readonly string[];
+  index?: number;
+}) {
+  return (
+    <Reveal delay={(index % 4) * 60}>
+      <div className="card-premium card relative h-full bg-card/90 backdrop-blur-sm">
+        <span className="card-shine" aria-hidden />
+        <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{label}</h3>
+        <ul className="mt-3 space-y-2">
+          {items.map((item) => (
+            <li key={item} className="flex gap-2 text-sm leading-relaxed text-foreground">
+              <CheckMark />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Reveal>
+  );
+}
+
+/** Small inline tick. aria-hidden because the list semantics already convey membership. */
+function CheckMark() {
+  return (
+    <svg
+      className="mt-[0.3rem] h-3.5 w-3.5 shrink-0 text-brand"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.2}
+      aria-hidden
+    >
+      <path d="M5 12.5l4.5 4.5L19 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 export function FeatureCard({
   icon,

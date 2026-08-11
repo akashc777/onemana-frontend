@@ -2,13 +2,19 @@ import { site } from "@/lib/site";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-/** Bump when the card design changes so social caches refetch. */
-export const OG_IMAGE_VERSION = "3";
+/**
+ * Bump when the card design changes so social caches refetch.
+ *
+ * 4: repositioned on governed AI. This bump is load-bearing rather than housekeeping — the image URL is
+ * otherwise identical, and Slack, LinkedIn and X all cache OG images hard, so a reworded card at an
+ * unchanged URL keeps showing the old headline to exactly the audience the rewording was for.
+ */
+export const OG_IMAGE_VERSION = "4";
 
-export const OG_TITLE = `${site.name} · The workspace for the AI era`;
+export const OG_TITLE = `${site.name} · Governed AI on your own server`;
 export const OG_DESCRIPTION =
-  "Chat, docs, tasks, video, calendar, and local AI in one Docker deploy on your server. Pay once, unlimited users.";
-export const OG_ALT = "OneCamp: one workspace on your server. Pay once.";
+  "AI agents bounded by the live permissions of whoever authorised them, and audited before they act. Self-hosted, with SSO, SCIM, and MFA. Pay once, unlimited users.";
+export const OG_ALT = "OneCamp: AI with permissions, not promises. On your own server.";
 
 export const defaultOgImages = [
   {
@@ -101,9 +107,14 @@ export function OgCard() {
             maxWidth: 900,
           }}
         >
-          <span style={{ display: "flex" }}>The workspace for the</span>
-          <span style={{ display: "flex", color: "#FF4D00" }}>AI era.</span>
-          <span style={{ display: "flex", marginTop: 10, fontSize: 52, color: "#222222" }}>Yours forever.</span>
+          {/*
+            Mirrors the hero h1. Line lengths checked against the 900px cap at these sizes rather than
+            eyeballed: satori does not wrap-and-shrink, it just overflows the card, so a headline that is
+            two characters too long ships as a cropped image nobody notices until it is in a tweet.
+          */}
+          <span style={{ display: "flex" }}>AI with permissions,</span>
+          <span style={{ display: "flex", color: "#FF4D00" }}>not promises.</span>
+          <span style={{ display: "flex", marginTop: 10, fontSize: 52, color: "#222222" }}>On your own server.</span>
         </div>
 
         <div style={{ display: "flex", marginTop: 32, fontSize: 26, fontWeight: 500, color: "#5f6368" }}>

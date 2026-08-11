@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { features, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt } from "@/lib/content";
+import { features, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt, governance, enterpriseControls } from "@/lib/content";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { getGithubStars } from "@/lib/github";
@@ -14,7 +14,7 @@ import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { StackConvergence } from "@/components/site/StackConvergence";
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
-import { FeatureCard, StepCard, StatStrip, FaqItem } from "@/components/site/marketing";
+import { FeatureCard, StepCard, StatStrip, FaqItem, ControlGroup } from "@/components/site/marketing";
 import { StepsConnector } from "@/components/site/StepsConnector";
 import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
@@ -45,14 +45,17 @@ export default async function HomePage() {
             <Reveal delay={60}>
               <h1 className="mt-7 text-4xl font-semibold leading-[1.04] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.5rem]">
                 <span className="block">
-                  The workspace for the <ShimmerText>AI era</ShimmerText>.
+                  AI with <ShimmerText>permissions</ShimmerText>, not promises.
                 </span>
-                <span className="hero-line-2 mt-1 block tracking-[-0.04em]">Yours forever.</span>
+                <span className="hero-line-2 mt-1 block tracking-[-0.04em]">On your own server.</span>
               </h1>
             </Reveal>
             <Reveal delay={120}>
               <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                One workspace that remembers what your team decides and nudges you when something slips. Chat, docs, tasks, tables, whiteboards, video, calendar, plus AI agents and automations, in one Docker deploy on your server. No per-seat fees, and your data never leaves.
+                An agent here can only do what the person who authorised it could do, checked live on every
+                call — and it cannot act at all unless the action is recorded first. Chat, docs, tasks,
+                tables, whiteboards, video, and calendar come with it, in one Docker deploy. No per-seat
+                fees, and nothing leaves your network.
               </p>
             </Reveal>
             <Reveal delay={180}>
@@ -95,6 +98,40 @@ export default async function HomePage() {
         </Reveal>
       </Section>
 
+      {/*
+        The lead argument, placed directly after the tour and BEFORE the module grid.
+        Ordering is the reposition: a visitor who scrolls the modules first is being invited to compare
+        each one against the category leader they already use, which is a comparison OneCamp loses nine
+        times out of twelve and does not need to win. This section is the one thing no competitor here
+        offers, so it goes where the modules used to be.
+      */}
+      <Section id="governance" divider className="overflow-hidden">
+        <SectionAmbient variant="features" />
+        <SectionHeading
+          eyebrow={governance.eyebrow}
+          title={governance.title}
+          subtitle={governance.subtitle}
+        />
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {governance.points.map((p, i) => (
+            <FeatureCard key={p.title} icon={p.icon} title={p.title} body={p.body} index={i} />
+          ))}
+        </div>
+      </Section>
+
+      <Section id="enterprise" divider>
+        <SectionHeading
+          eyebrow={enterpriseControls.eyebrow}
+          title={enterpriseControls.title}
+          subtitle={enterpriseControls.subtitle}
+        />
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {enterpriseControls.groups.map((g, i) => (
+            <ControlGroup key={g.label} label={g.label} items={g.items} index={i} />
+          ))}
+        </div>
+      </Section>
+
       <Section divider className="overflow-hidden">
         <SectionAmbient variant="features" />
         <SectionHeading
@@ -123,8 +160,8 @@ export default async function HomePage() {
       <Section id="features" divider className="overflow-hidden">
         <SectionHeading
           eyebrow="What's inside"
-          title="The modules, briefly"
-          subtitle="A dozen things we got tired of paying for separately. They share one login and one server."
+          title="The work the AI is governed over"
+          subtitle="Governance is only worth something if there is real work behind it. This is the surface the agents operate on, under one login on one server."
         />
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
@@ -217,10 +254,10 @@ export default async function HomePage() {
           <div className="premium-cta px-8 py-16 text-center sm:px-12">
             <div className="premium-cta-mesh" aria-hidden />
             <h2 className="relative text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-              If your tab bar is full of subscriptions, this is for you.
+              If you can&apos;t say what your AI is allowed to do, this is for you.
             </h2>
             <p className="relative mx-auto mt-4 max-w-md text-muted-foreground">
-              One workspace on your server. No renting it forever.
+              Bounded by your permissions. Audited before it acts. On hardware you own.
             </p>
             <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <ButtonLink href="/buy" variant="brandPremium" size="lg">

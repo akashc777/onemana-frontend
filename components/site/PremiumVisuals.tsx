@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { TrustIconKey } from "@/lib/content";
 
 /** Cloudflare-style hero atmosphere: line grid + top orange beam. */
 export function HeroAmbient() {
@@ -39,40 +40,55 @@ export function ShimmerText({ children }: { children: ReactNode }) {
   return <span className="text-brand">{children}</span>;
 }
 
-const TRUST_ICONS: Record<string, ReactNode> = {
-  "No per-seat fees": (
+/**
+ * Keyed on a CLOSED UNION, not on the label prose.
+ *
+ * It was `Record<string, ReactNode>` keyed by label, which accepts any key and therefore checks nothing:
+ * rewording the trust points left three of four icon boxes empty, and tsc, eslint and next build were all
+ * green. A Record over a union stops compiling instead — see the note on TrustIconKey in lib/content.ts.
+ */
+const TRUST_ICONS: Record<TrustIconKey, ReactNode> = {
+  // Shield with a tick: bounded by permissions. Matches the governance card icon so the hero strip and
+  // the section below it read as the same claim.
+  bounded: (
     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-      <circle cx="10" cy="10" r="7" />
-      <path d="M6.5 10l2.2 2.2L13.5 7.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 2.6l5.4 2.2v4.3c0 3.3-2.2 5.9-5.4 6.8-3.2-.9-5.4-3.5-5.4-6.8V4.8L10 2.6z" strokeLinejoin="round" />
+      <path d="M7.7 9.9l1.7 1.7 2.9-3.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
-  "Data stays yours": (
+  // Document with entry lines: the audit trail.
+  audited: (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+      <path d="M5 2.8h6.2L15 6.5v10.7H5z" strokeLinejoin="round" />
+      <path d="M11.1 3V6.5H15" strokeLinejoin="round" />
+      <path d="M7.2 9.4h5.6M7.2 11.7h5.6M7.2 14h3.4" strokeLinecap="round" />
+    </svg>
+  ),
+  server: (
     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
       <rect x="4" y="9" width="12" height="8" rx="1.5" />
       <path d="M7 9V6.5a3 3 0 0 1 6 0V9" strokeLinecap="round" />
     </svg>
   ),
-  "License in minutes": (
+  // Person plus a key: identity and provisioning.
+  identity: (
     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-      <path d="M10 2v4M10 14v4M2 10h4M14 10h4" strokeLinecap="round" />
-      <circle cx="10" cy="10" r="3" />
-    </svg>
-  ),
-  "Open-source frontend": (
-    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-      <path d="M10 3c-4 0-7 2.5-7 6.5 0 2.8 1.8 5.2 4.5 6.2L5 18l3.8-2.1c.4.05.8.1 1.2.1 4 0 7-2.5 7-6.5S14 3 10 3z" strokeLinejoin="round" />
+      <circle cx="8.2" cy="7" r="2.6" />
+      <path d="M3.6 16.4c.5-2.5 2.4-4 4.6-4 1 0 1.9.3 2.7.9" strokeLinecap="round" />
+      <circle cx="14.6" cy="13.4" r="2" />
+      <path d="M16 14.8l1.9 1.9" strokeLinecap="round" />
     </svg>
   ),
 };
 
 /** Compact trust row - no pricing, icon-led. */
-export function TrustStrip({ points }: { points: { label: string; detail: string }[] }) {
+export function TrustStrip({ points }: { points: { icon: TrustIconKey; label: string; detail: string }[] }) {
   return (
     <div className="mt-10 grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-8 sm:gap-y-4">
       {points.map((p) => (
         <div key={p.label} className="trust-item flex items-center gap-2.5 text-left">
           <span className="grid h-8 w-8 place-items-center rounded-md border border-border bg-card text-brand">
-            {TRUST_ICONS[p.label]}
+            {TRUST_ICONS[p.icon]}
           </span>
           <span>
             <p className="text-xs font-semibold text-foreground">{p.label}</p>

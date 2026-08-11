@@ -13,19 +13,27 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} · The workspace for the AI era`,
+    default: `${site.name} · Governed AI on your own server`,
     template: `%s · ${site.name}`,
   },
   description: site.description,
+  // Keywords lead with what this is now sold on. The alternative-to terms stay, because they are how
+  // people still search and they cost nothing, but they are no longer the front of the list — a page
+  // that presents itself as a Slack alternative gets compared to Slack, which is the comparison this
+  // repositioning exists to stop inviting.
   keywords: [
+    "governed AI",
+    "AI agent permissions",
+    "AI audit log",
+    "self-hosted AI workspace",
+    "SCIM provisioning",
+    "SAML SSO self-hosted",
+    "AI data residency",
     "self-hosted workspace",
     "Slack alternative",
     "Notion alternative",
     "open source team chat",
-    "self-hosted AI",
     "OneCamp",
-    "team collaboration",
-    "managed hosting",
   ],
   applicationName: site.name,
   authors: [{ name: site.company }],
