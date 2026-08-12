@@ -148,6 +148,9 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
                     <code className="min-w-0 flex-1 truncate rounded-lg bg-muted px-3 py-2 font-mono text-[11px] text-foreground/80">{l.install_cmd}</code>
                     <CopyButton value={l.install_cmd} label="Copy" />
                   </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Includes both editions. The installer asks which to set up: v2 with AI teammates, or v1 with no AI at all. Moving from v1 to v2 later uses this same key.
+                  </p>
                 </div>
               </div>
             ))}
