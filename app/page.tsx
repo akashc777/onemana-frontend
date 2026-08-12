@@ -53,7 +53,7 @@ export default async function HomePage() {
             <Reveal delay={120}>
               <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
                 An agent here can only do what the person who authorised it could do, checked live on every
-                call — and it cannot act at all unless the action is recorded first. Chat, docs, tasks,
+                call. It cannot act at all unless the action is recorded first. Chat, docs, tasks,
                 tables, whiteboards, video, and calendar come with it, in one Docker deploy. No per-seat
                 fees, and nothing leaves your network.
               </p>

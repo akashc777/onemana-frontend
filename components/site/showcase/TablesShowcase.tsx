@@ -292,7 +292,7 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
               {phase === "working"
                 ? "AI · building a table from “a content calendar with status, channel, owner”"
                 : phase === "chart"
-                ? "AI · “chart posts by status” — answered straight from your data"
+                ? "AI · “chart posts by status”, answered straight from your data"
                 : "Typed columns and starter rows created · edit anything"}
             </span>
           </div>

@@ -261,7 +261,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
                     <IconSparkles className="h-2 w-2" />
                   </span>
                   <span>
-                    Heads up: I proposed 1 change — <span className="font-medium text-foreground">set a reminder to nudge @Daniel</span>. Approve it from your actions tray to run it.
+                    Heads up: I proposed 1 change: <span className="font-medium text-foreground">set a reminder to nudge @Daniel</span>. Approve it from your actions tray to run it.
                   </span>
                 </div>
               )}
@@ -766,7 +766,7 @@ export function HandoffScene({ reduced, onDone }: SceneProps) {
                       </span>
                     )}
                     <span className="text-[11px] font-medium text-foreground">
-                      {working ? "Working…" : "On it — I'll post back here when it's done."}
+                      {working ? "Working…" : "On it. I'll post back here when it's done."}
                     </span>
                   </div>
                 )}
@@ -821,7 +821,7 @@ export function HandoffScene({ reduced, onDone }: SceneProps) {
           <div className="pointer-events-none absolute inset-x-0 top-1.5 z-10 flex justify-center animate-fade-up">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-1 text-[10px] font-medium text-amber-700 shadow-sm dark:text-amber-300">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />
-              Server restarted — resumed exactly where it left off
+              Server restarted, and resumed exactly where it left off
             </span>
           </div>
         )}
@@ -874,9 +874,9 @@ const CODEPR_PR_NUM = "482";
 const CODEPR_PROMPT = "@Builder add a --dry-run flag to the import CLI so it prints what it would do without writing anything. Open a PR.";
 // Verbatim from executeCodePRTool's acknowledgement.
 const CODEPR_ACK =
-  "On it — I'll make the change in an isolated sandbox, verify it against the repo's build and tests, and open a pull request here for you to review. I'll post the link when it's ready.";
+  "On it. I'll make the change in an isolated sandbox, verify it against the repo's build and tests, and open a pull request here for you to review. I'll post the link when it's ready.";
 // Verbatim shape from prSuccessMessage (Opened a pull request: <url> — build and tests pass.)
-const CODEPR_RESULT = "Opened a pull request — build and tests pass.";
+const CODEPR_RESULT = "Opened a pull request. Build and tests pass.";
 // The clone → edit → build → test stages the runner works through, revealed one
 // at a time (done ✓ / active spinner / pending) for a legible live pipeline.
 const CODEPR_STAGES = ["clone", "edit", "build", "test"] as const;
@@ -977,7 +977,7 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
               <span className="text-xs font-semibold text-foreground">Priya Nair</span>
               <span className="text-[10px] text-muted-foreground">10:12 AM</span>
             </p>
-            <p className="mt-1 text-sm leading-relaxed text-foreground">The import CLI writes immediately — scary to run against prod. Can we add a dry-run?</p>
+            <p className="mt-1 text-sm leading-relaxed text-foreground">The import CLI writes immediately, which is scary to run against prod. Can we add a dry-run?</p>
           </div>
         </article>
 

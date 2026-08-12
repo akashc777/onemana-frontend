@@ -39,7 +39,7 @@ export const governance = {
     {
       icon: "shield" as FeatureIconKey,
       title: "An agent can only do what its author could",
-      body: "Every action is checked against the live permission graph of the human who authorised it — channel, project, and document membership, read at the moment of the call rather than cached at setup. Remove someone from a channel and the agents acting on their behalf lose it on the next request, not at the next token rotation.",
+      body: "Every action is checked against the live permission graph of the human who authorised it: channel, project, and document membership, read at the moment of the call rather than cached at setup. Remove someone from a channel and the agents acting on their behalf lose it on the next request, not at the next token rotation.",
     },
     {
       icon: "audit" as FeatureIconKey,
@@ -204,7 +204,7 @@ export const steps = [
 export const faqs = [
   {
     q: "Can the AI see things it shouldn't?",
-    a: "It resolves your permissions at the moment of the call — channel, project, and document membership — so it can only read what you can already open. The same check governs anything acting on your behalf: an agent, an API token, an external MCP client. Nothing is cached at setup time, so a permission you lose is a permission it loses on the next request.",
+    a: "It checks your channel, project, and document membership at the moment of the call, so it can only read what you can already open. The same check governs anything acting on your behalf: an agent, an API token, an external MCP client. Nothing is cached at setup time, so a permission you lose is a permission it loses on the next request.",
   },
   {
     q: "Is there an audit trail for what the AI did?",
@@ -216,7 +216,7 @@ export const faqs = [
   },
   {
     q: "Do you support SSO and SCIM?",
-    a: "SAML 2.0, OIDC, and LDAP for sign-in; SCIM 2.0 for provisioning and deprovisioning; TOTP two-factor with recovery codes for accounts that sign in with a password. Accounts your directory creates must authenticate at your directory — they can't be given a local password that bypasses it.",
+    a: "SAML 2.0, OIDC, and LDAP for sign-in; SCIM 2.0 for provisioning and deprovisioning; TOTP two-factor with recovery codes for accounts that sign in with a password. Accounts your directory creates must authenticate at your directory, so nobody can give them a local password that bypasses it.",
   },
   {
     q: "Where does the AI run?",
@@ -224,7 +224,7 @@ export const faqs = [
   },
   {
     q: "I pay once and that's it?",
-    a: "Yes. One license key, unlimited users, no annual renewal. The AI, the agents, the SSO, and the audit log are all included — none of it is an enterprise tier you unlock later.",
+    a: "Yes. One license key, unlimited users, no annual renewal. The AI, the agents, the SSO, and the audit log are all included. None of it is an enterprise tier you unlock later.",
   },
   {
     q: "Can I share a doc/board with someone outside the org?",
@@ -352,7 +352,7 @@ export const trustPoints: { icon: TrustIconKey; label: string; detail: string }[
 export const savingsPitch = {
   eyebrow: "The math",
   title: "One payment beats six subscriptions",
-  body: "A 20-person team often spends $3,000 to $8,000 per year on Slack, Notion, Asana, Zoom, Airtable, and calendar tools — and the AI in those is usually a per-seat add-on on top. OneCamp includes the agents, the local AI, the SSO, and the audit log in one install with unlimited users.",
+  body: "A 20-person team often spends $3,000 to $8,000 per year on Slack, Notion, Asana, Zoom, Airtable, and calendar tools, and the AI in those is usually a per-seat add-on on top. OneCamp includes the agents, the local AI, the SSO, and the audit log in one install with unlimited users.",
   highlight: "Pay once. Own it forever.",
 };
 
