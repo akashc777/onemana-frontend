@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { adminApi, type AdminInstance, type AdminInstanceEvent } from "@/lib/adminApi";
 import { AsyncState } from "./ui";
+import { stateBadgeClass, isWorkingState } from "@/lib/instanceState";
+import { timeAgo } from "@/lib/format";
+import { usePoll } from "@/hooks/usePoll";
 
 // What the operator can see about managed workspaces.
 //
@@ -13,22 +16,7 @@ import { AsyncState } from "./ui";
 
 const POLL_MS = 20000;
 
-function badge(state: string) {
-  if (state === "live") return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
-  if (state === "failed") return "bg-rose-500/15 text-rose-700 dark:text-rose-300";
-  if (state === "awaiting_hardware") return "bg-amber-500/15 text-amber-700 dark:text-amber-300";
-  if (state === "terminated" || state === "exporting") return "bg-slate-500/20 text-foreground/80";
-  return "bg-sky-500/15 text-sky-700 dark:text-sky-300";
-}
 
-function ago(iso?: string | null) {
-  if (!iso) return "";
-  const secs = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (secs < 60) return `${secs}s ago`;
-  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
-  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
-  return `${Math.floor(secs / 86400)}d ago`;
-}
 
 export function WorkspacesPanel() {
   const [rows, setRows] = useState<AdminInstance[] | null>(null);
@@ -50,15 +38,9 @@ export function WorkspacesPanel() {
     void load();
   }, [load]);
 
-  // Polls only while something is mid-flight, so an idle admin page is idle.
-  const working = (rows ?? []).some((r) =>
-    ["adopting", "provisioning", "verifying", "migrating"].includes(r.state),
-  );
-  useEffect(() => {
-    if (!working) return;
-    const t = setInterval(() => void load(), POLL_MS);
-    return () => clearInterval(t);
-  }, [working, load]);
+  // Which states count as mid-flight is one definition now, shared with the
+  // customer's view; the list used to be spelled out here and could drift.
+  usePoll((rows ?? []).some((r) => isWorkingState(r.state)), POLL_MS, load);
 
   async function run(label: string, fn: () => Promise<unknown>) {
     setBusy(label);
@@ -102,7 +84,7 @@ export function WorkspacesPanel() {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium text-foreground">{r.custom_domain || r.slug}</span>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(r.state)}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${stateBadgeClass(r.state)}`}>
                       {r.state}
                     </span>
                     {r.attempts > 0 && (
@@ -125,8 +107,8 @@ export function WorkspacesPanel() {
                     {" · "}
                     {r.tier}
                     {" · updated "}
-                    {ago(r.updated_at)}
-                    {r.next_action_at ? ` · next action ${ago(r.next_action_at)}` : ""}
+                    {timeAgo(r.updated_at)}
+                    {r.next_action_at ? ` · next action ${timeAgo(r.next_action_at)}` : ""}
                   </p>
                 </div>
 
@@ -180,7 +162,7 @@ function Timeline({ id }: { id: string }) {
           <span className="text-foreground/80">
             {e.from_state} → {e.to_state}
           </span>
-          <span className="ml-2 text-xs text-muted-foreground">{ago(e.created_at)}</span>
+          <span className="ml-2 text-xs text-muted-foreground">{timeAgo(e.created_at)}</span>
           {e.detail && (
             <p className="mt-0.5 break-words text-xs text-muted-foreground">
               {e.step && <span className="font-medium">{e.step}: </span>}

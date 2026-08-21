@@ -32,3 +32,19 @@ export function formatDate(iso?: string | null): string {
     timeZone: "UTC",
   }).format(d);
 }
+
+/** "3m ago". For timelines, where the gap matters more than the clock time.
+ *
+ *  Beside the other formatters rather than inside a component, because the second
+ *  view that needed it wrote its own and they had already begun to differ. */
+export function timeAgo(iso?: string | null): string {
+  if (!iso) return "";
+  const secs = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (!Number.isFinite(secs)) return "";
+  // A clock a little behind the server should not read as the future.
+  if (secs < 0) return "just now";
+  if (secs < 60) return `${secs}s ago`;
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+  return `${Math.floor(secs / 86400)}d ago`;
+}

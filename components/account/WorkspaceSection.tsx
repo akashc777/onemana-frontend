@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { portalApi, type PortalInstance, type PortalEdition } from "@/lib/portalApi";
+import {
+  portalApi,
+  type PortalInstance,
+  type PortalEdition,
+  type PortalDomainPlan,
+} from "@/lib/portalApi";
+import { stateBadgeClass } from "@/lib/instanceState";
+import { usePoll } from "@/hooks/usePoll";
 
 // The customer's view of the workspace their subscription bought.
 //
@@ -12,12 +19,6 @@ import { portalApi, type PortalInstance, type PortalEdition } from "@/lib/portal
 
 const POLL_MS = 15000;
 
-function badge(state: string) {
-  if (state === "live") return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
-  if (state === "failed") return "bg-rose-500/15 text-rose-700 dark:text-rose-300";
-  if (state === "terminated" || state === "exporting") return "bg-slate-500/20 text-foreground/80";
-  return "bg-sky-500/15 text-sky-700 dark:text-sky-300";
-}
 
 export function WorkspaceSection({ onReload }: { onReload: () => void }) {
   const [instances, setInstances] = useState<PortalInstance[] | null>(null);
@@ -36,15 +37,8 @@ export function WorkspaceSection({ onReload }: { onReload: () => void }) {
     void load();
   }, [load]);
 
-  // Polling only while something is actually happening. A live workspace does not
-  // change on its own, and a page that keeps asking is a page that keeps costing
-  // somebody's battery for no news.
-  const anyWorking = (instances ?? []).some((i) => i.working);
-  useEffect(() => {
-    if (!anyWorking) return;
-    const t = setInterval(() => void load(), POLL_MS);
-    return () => clearInterval(t);
-  }, [anyWorking, load]);
+  // The backend says which instances are still moving, so this never has to guess.
+  usePoll((instances ?? []).some((i) => i.working), POLL_MS, load);
 
   if (err) return <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>;
   if (!instances) return <p className="text-sm text-muted-foreground">Loading your workspace…</p>;
@@ -76,7 +70,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge(inst.state)}`}>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${stateBadgeClass(inst.state)}`}>
           {inst.status}
         </span>
         {inst.edition && (
@@ -116,6 +110,166 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
           Something went wrong and we have been alerted. We retry automatically, and will
           email you when it is sorted.
         </p>
+      )}
+
+      {inst.state === "live" && <UseOwnDomain inst={inst} onChanged={onChanged} />}
+    </div>
+  );
+}
+
+// Moving a live workspace to a domain the customer already owns.
+//
+// SHOWN ONLY ONCE LIVE, because the move reconfigures a running workspace and
+// there is nothing to move until there is one. Nothing here is started by opening
+// it: the first step describes what the change would involve, so somebody can see
+// the seven records they would have to create before committing a working
+// workspace to a change they may not finish.
+function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [domain, setDomain] = useState("");
+  const [plan, setPlan] = useState<PortalDomainPlan | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [note, setNote] = useState("");
+
+  async function preview(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    setNote("");
+    try {
+      setPlan(await portalApi.planDomain(inst.id, "custom", domain.trim(), true));
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : "Could not check that domain.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function start() {
+    setBusy(true);
+    setErr("");
+    try {
+      await portalApi.planDomain(inst.id, "custom", domain.trim(), false);
+      setNote("Started. Add the records below, then use Check records.");
+      onChanged();
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : "Could not start that change.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function check() {
+    setBusy(true);
+    setErr("");
+    try {
+      const r = await portalApi.checkDomain(inst.id);
+      setNote(r.msg);
+      onChanged();
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : "Could not check those records.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <button onClick={() => setOpen(true)} className="text-sm text-brand underline underline-offset-4">
+        Use my own domain
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-2 space-y-4 rounded-xl border border-border bg-muted/30 p-4">
+      <form onSubmit={preview} className="space-y-2">
+        <label htmlFor="domain" className="block text-sm font-medium text-foreground/80">
+          Your domain
+        </label>
+        <div className="flex flex-wrap gap-2">
+          <input
+            id="domain"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value.toLowerCase())}
+            placeholder="acme.com"
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full max-w-xs rounded-lg border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/30"
+          />
+          <button
+            type="submit"
+            disabled={busy || domain.trim().length < 3}
+            className="btn-ghost px-3 py-2 text-sm disabled:opacity-40"
+          >
+            {busy ? "…" : "Show me what is involved"}
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Nothing changes until you say so. Your current address keeps working either way.
+        </p>
+      </form>
+
+      {err && <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>}
+      {note && <p className="text-sm text-emerald-700 dark:text-emerald-300">{note}</p>}
+
+      {plan?.dns_records && plan.dns_records.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-sm text-foreground/80">
+            Create these records with whoever runs your DNS. Your workspace will be at{" "}
+            <span className="font-medium">{plan.to_domain}</span>.
+          </p>
+          {plan.verify_token && (
+            <div className="overflow-x-auto rounded-lg border border-border">
+              <table className="w-full text-left text-xs">
+                <tbody>
+                  <tr className="border-b border-border">
+                    <td className="px-3 py-2 font-medium">TXT</td>
+                    <td className="px-3 py-2 font-mono">_onecamp-verify.{plan.to_domain.split(".").slice(-2).join(".")}</td>
+                    <td className="px-3 py-2 font-mono break-all">{plan.verify_token}</td>
+                    <td className="px-3 py-2 text-muted-foreground">proves it is yours</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="overflow-x-auto rounded-lg border border-border">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Type</th>
+                  <th className="px-3 py-2 font-medium">Host</th>
+                  <th className="px-3 py-2 font-medium">Value</th>
+                  <th className="px-3 py-2 font-medium">Proxy</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plan.dns_records.map((r) => (
+                  <tr key={r.host} className="border-t border-border">
+                    <td className="px-3 py-2 font-mono">{r.type}</td>
+                    <td className="px-3 py-2 font-mono break-all">{r.host}</td>
+                    <td className="px-3 py-2 font-mono break-all">{r.value}</td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {r.proxied ? "either" : "DNS only"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            The rows marked DNS only must not be proxied. Calls will not connect if they are.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={start} disabled={busy} className="btn-ghost px-3 py-2 text-sm disabled:opacity-40">
+              I have added them, start the move
+            </button>
+            <button onClick={check} disabled={busy} className="btn-ghost px-3 py-2 text-sm disabled:opacity-40">
+              Check records
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
