@@ -130,7 +130,10 @@ export function WorkspacesPanel() {
                   <ResetPasswordButton
                     id={r.id}
                     address={r.custom_domain || r.slug}
-                    hasServer={Boolean(r.server_ip)}
+                    /* Terminated keeps its server_ip, and that machine was wiped
+                       and released — it may be running somebody else's workspace
+                       now. The backend refuses it too; this stops the click. */
+                    hasServer={Boolean(r.server_ip) && r.state !== "terminated"}
                   />
                   <button
                     onClick={() => setOpen(open === r.id ? null : r.id)}
@@ -194,7 +197,7 @@ function ResetPasswordButton({
       <button
         onClick={() => void issue()}
         disabled={busy || !hasServer}
-        title={hasServer ? "" : "This workspace has no machine yet"}
+        title={hasServer ? "" : "No machine to act on: not built yet, or terminated and released"}
         className="btn-ghost px-3 py-2 text-xs disabled:opacity-40"
       >
         {busy ? "…" : "Reset password"}
