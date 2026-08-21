@@ -77,7 +77,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "ovh_app_secret", label: "Application secret", type: "password" },
       { key: "ovh_consumer_key", label: "Consumer key", type: "password" },
       { key: "ovh_ssh_key_name", label: "SSH key name", hint: "The NAME of a key OVH already holds on the account - not the key itself. OVH installs it during reinstall, which is why no root password is ever needed." },
-      { key: "ovh_endpoint", label: "API endpoint", hint: "Default https://eu.api.ovh.com/1.0" },
+      { key: "ovh_endpoint", label: "API endpoint", hint: "MUST match the region you created the token in, or every call returns 403 with no hint why. EU: https://eu.api.ovh.com/1.0 (the default) · Canada: https://ca.api.ovh.com/1.0 · US: https://api.us.ovhcloud.com/1.0. If you signed in at auth.ca.ovhcloud.com, you need the Canada one." },
       { key: "ovh_os_template", label: "OS template", hint: "The image reinstalled onto each machine. Leave blank for the default." },
       {
         key: "ovh_pool_servers",
