@@ -211,15 +211,67 @@ function ResetPasswordButton({
               their workspace may be locked out of their mail as well. */}
           <p className="break-all font-mono text-[11px] text-muted-foreground">{result.link}</p>
           {result.needs_second_factor && (
-            <p className="text-amber-700 dark:text-amber-300">
-              This account has two-factor turned on, so the link alone will not sign them in. They need a
-              recovery code, or someone must clear the second factor on the server.
-            </p>
+            <div className="space-y-1 text-amber-700 dark:text-amber-300">
+              <p>
+                This account has two-factor turned on, so the link alone will not sign them in. They need a
+                recovery code first.
+              </p>
+              {/* Offered only once a reset has reported it, so the destructive option
+                  appears at the moment it is the answer rather than sitting next to
+                  every workspace waiting to be clicked. */}
+              <ClearTwoFactorButton id={id} address={address} />
+            </div>
           )}
           {result.notes && <p className="text-muted-foreground">{result.notes}</p>}
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * The last resort, for when the authenticator AND every recovery code are gone.
+ *
+ * Never a side effect of the reset above. "I lost my phone, please turn off my
+ * second factor" is the oldest pretext in support, and folding this into a password
+ * reset would make every recovery a full account takeover for anyone who asked.
+ */
+function ClearTwoFactorButton({ id, address }: { id: string; address: string }) {
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState("");
+  const [error, setError] = useState("");
+
+  async function clear() {
+    if (
+      !window.confirm(
+        `Turn OFF two-factor for the admin of ${address}?\n\nOnly do this if they have lost their authenticator AND all recovery codes, and you are sure who you are talking to.`,
+      )
+    )
+      return;
+    setBusy(true);
+    setError("");
+    try {
+      setDone(await adminApi.clearWorkspace2FA(id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not clear two-factor");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (done) return <p className="text-emerald-700 dark:text-emerald-300">{done}</p>;
+
+  return (
+    <>
+      <button
+        onClick={() => void clear()}
+        disabled={busy}
+        className="btn-ghost px-2 py-1 text-[11px] disabled:opacity-40"
+      >
+        {busy ? "…" : "Clear two-factor"}
+      </button>
+      {error && <p className="text-rose-600">{error}</p>}
+    </>
   );
 }
 

@@ -80,6 +80,18 @@ export interface WorkspaceResetResult {
   notes: string;
 }
 
+/** What an address change moved, mirroring business.EmailChangeResult. */
+export interface EmailChangeResult {
+  customer_id: string;
+  old_email: string;
+  new_email: string;
+  workspaces_updated: string[];
+  /** Named rather than swallowed: billing already moved, so these need finishing. */
+  workspaces_failed: string[];
+  old_notified: boolean;
+  new_notified: boolean;
+}
+
 async function adminGet<T>(path: string): Promise<T> {
   const res = await fetch(`${site.backendUrl}${path}`, {
     headers: { "X-Admin-Token": getToken() },
@@ -501,6 +513,22 @@ export const adminApi = {
     return data.data;
   },
 
+  /**
+   * Turn off two-factor on a workspace admin account.
+   *
+   * Separate from the reset on purpose: a reset that also stripped 2FA would make
+   * every password recovery a full account takeover for anyone who could ask for one.
+   */
+  async clearWorkspace2FA(id: string): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/clear-2fa`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string };
+    if (!res.ok) throw new Error(data?.msg || "Could not clear two-factor");
+    return data?.msg || "Two-factor cleared";
+  },
+
   /** Move one workspace forward by a step, rather than waiting for the timer. */
   async stepInstance(id: string): Promise<void> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/step`, {
@@ -649,6 +677,25 @@ export const adminApi = {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update customer");
     return (data as { data: Customer }).data;
+  },
+
+  /**
+   * Move a customer, and every workspace they own, to a new address.
+   *
+   * The case no reset can reach: on a managed workspace the customer's address is
+   * also their admin login, so a lost mailbox loses both at once. `confirmCurrent`
+   * is the current address typed out, which guards against acting on the wrong row.
+   */
+  async changeCustomerEmail(id: string, newEmail: string, confirmCurrent: string): Promise<EmailChangeResult> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}/email`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify({ new_email: newEmail, confirm_current: confirmCurrent }),
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: EmailChangeResult };
+    if (!res.ok) throw new Error(data?.msg || "Could not change the address");
+    if (!data?.data) throw new Error("The address changed but the server returned nothing to show");
+    return data.data;
   },
 
   // ---- Analytics + earnings ----
