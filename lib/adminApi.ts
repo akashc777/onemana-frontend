@@ -46,6 +46,17 @@ export interface AdminInstance {
   live_at?: string | null;
 }
 
+/** Where our record and the OVH account disagree. */
+export interface ServerReconciliation {
+  /** Pooled here, gone at OVH. Removed from the pool automatically. */
+  vanished: string[];
+  /** A workspace's machine, gone at OVH. Never touched automatically. */
+  lost: string[];
+  /** At OVH, unused by OneMana. NOT a list of things to cancel: it includes the
+   *  machine this service runs on and anything else the account hosts. */
+  unused: string[];
+}
+
 /** One thing that happened to a workspace. */
 export interface AdminInstanceEvent {
   id: string;
@@ -441,6 +452,12 @@ export const adminApi = {
   async instanceEvents(id: string): Promise<AdminInstanceEvent[]> {
     const data = await adminGet<{ data?: AdminInstanceEvent[] }>(`/onecamp/admin/instance/${id}/events`);
     return data?.data ?? [];
+  },
+
+  /** Compare the OVH account with what this system thinks it has. */
+  async reconcileServers(): Promise<ServerReconciliation> {
+    const data = await adminGet<{ data?: ServerReconciliation }>("/onecamp/admin/servers/reconcile");
+    return data?.data ?? { vanished: [], lost: [], unused: [] };
   },
 
   /** Look for a delivered machine for whoever is waiting. */

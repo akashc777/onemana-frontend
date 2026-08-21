@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { adminApi, type AdminInstance, type AdminInstanceEvent } from "@/lib/adminApi";
+import {
+  adminApi,
+  type AdminInstance,
+  type AdminInstanceEvent,
+  type ServerReconciliation,
+} from "@/lib/adminApi";
 import { AsyncState } from "./ui";
 import { stateBadgeClass, isWorkingState } from "@/lib/instanceState";
 import { timeAgo } from "@/lib/format";
@@ -71,6 +76,7 @@ export function WorkspacesPanel() {
         <button onClick={() => void load()} className="btn-ghost px-3 py-2 text-xs">
           Refresh
         </button>
+        <ReconcileButton />
         {note && <span className="text-xs text-muted-foreground">{note}</span>}
       </div>
 
@@ -172,5 +178,74 @@ function Timeline({ id }: { id: string }) {
         </li>
       ))}
     </ol>
+  );
+}
+
+
+// Where our record and the OVH account disagree.
+//
+// On demand rather than always on screen: it costs an API call, and the answer is
+// only interesting when something looks wrong or when somebody is wondering what
+// they are paying for.
+function ReconcileButton() {
+  const [res, setRes] = useState<ServerReconciliation | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function run() {
+    setBusy(true);
+    setErr("");
+    try {
+      setRes(await adminApi.reconcileServers());
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not reach OVH");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <button onClick={run} disabled={busy} className="btn-ghost px-3 py-2 text-xs disabled:opacity-40">
+        {busy ? "…" : "Check OVH account"}
+      </button>
+      {err && <span className="text-xs text-rose-600 dark:text-rose-400">{err}</span>}
+      {res && (
+        <div className="mt-3 w-full space-y-3 rounded-xl border border-border bg-muted/30 p-4 text-sm">
+          {res.lost.length > 0 && (
+            <div>
+              <p className="font-medium text-rose-700 dark:text-rose-300">
+                A workspace machine is missing at OVH
+              </p>
+              <p className="text-xs text-muted-foreground">
+                The workspace still reads as running here, so nothing else will notice. Its
+                data was on that machine.
+              </p>
+              <p className="mt-1 font-mono text-xs">{res.lost.join(", ")}</p>
+            </div>
+          )}
+          {res.vanished.length > 0 && (
+            <div>
+              <p className="font-medium text-foreground/80">Removed from the pool: gone at OVH</p>
+              <p className="mt-1 font-mono text-xs">{res.vanished.join(", ")}</p>
+            </div>
+          )}
+          {res.unused.length > 0 && (
+            <div>
+              <p className="font-medium text-foreground/80">Not used by OneMana</p>
+              <p className="mt-1 font-mono text-xs">{res.unused.join(", ")}</p>
+              <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
+                Read this, do not act on it blindly. It includes the machine this service
+                runs on, anything else your account hosts, and anything you bought but have
+                not added to the pool. Check each one before cancelling.
+              </p>
+            </div>
+          )}
+          {res.lost.length === 0 && res.vanished.length === 0 && res.unused.length === 0 && (
+            <p className="text-muted-foreground">Your OVH account and OneMana agree.</p>
+          )}
+        </div>
+      )}
+    </>
   );
 }
