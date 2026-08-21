@@ -68,6 +68,18 @@ export interface AdminInstanceEvent {
   created_at: string;
 }
 
+/** What issuing a reset link produced, mirroring business.ResetLinkResult. */
+export interface WorkspaceResetResult {
+  email: string;
+  address: string;
+  link: string;
+  /** False when the link was minted but our email did not go: a partial success. */
+  emailed: boolean;
+  /** True when a password alone will not sign them in, because 2FA is on. */
+  needs_second_factor: boolean;
+  notes: string;
+}
+
 async function adminGet<T>(path: string): Promise<T> {
   const res = await fetch(`${site.backendUrl}${path}`, {
     headers: { "X-Admin-Token": getToken() },
@@ -469,6 +481,24 @@ export const adminApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: Record<string, unknown> };
     if (!res.ok) throw new Error(data?.msg || "Sweep failed");
     return data?.data ?? {};
+  },
+
+  /**
+   * Issue a fresh password reset link for a locked-out workspace admin.
+   *
+   * NOT a resend. The workspace password is delivered once and never stored, so
+   * there is no copy to send again; this mints a new one-time link on the
+   * customer's own machine and mails it to the address that pays for it.
+   */
+  async resetWorkspacePassword(id: string): Promise<WorkspaceResetResult> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/reset-password`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: WorkspaceResetResult };
+    if (!res.ok) throw new Error(data?.msg || "Could not issue a reset link");
+    if (!data?.data) throw new Error("The reset succeeded but returned nothing to show");
+    return data.data;
   },
 
   /** Move one workspace forward by a step, rather than waiting for the timer. */

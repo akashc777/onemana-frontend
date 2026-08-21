@@ -6,6 +6,7 @@ import {
   type AdminInstance,
   type AdminInstanceEvent,
   type ServerReconciliation,
+  type WorkspaceResetResult,
 } from "@/lib/adminApi";
 import { AsyncState } from "./ui";
 import { stateBadgeClass, isWorkingState } from "@/lib/instanceState";
@@ -126,6 +127,11 @@ export function WorkspacesPanel() {
                   >
                     Step now
                   </button>
+                  <ResetPasswordButton
+                    id={r.id}
+                    address={r.custom_domain || r.slug}
+                    hasServer={Boolean(r.server_ip)}
+                  />
                   <button
                     onClick={() => setOpen(open === r.id ? null : r.id)}
                     className="btn-ghost px-3 py-2 text-xs"
@@ -138,6 +144,79 @@ export function WorkspacesPanel() {
               {open === r.id && <Timeline id={r.id} />}
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The support answer to "I have lost my workspace login".
+ *
+ * IT IS NOT A RESEND, and the wording says so, because that is what an operator
+ * will be asked for and it is the one thing that cannot be done: the workspace
+ * password is delivered once and never stored anywhere we can read. This mints a
+ * new one-time link on the customer's machine and mails it to them.
+ *
+ * CONFIRMED FIRST. It sends mail to a customer, and an outward-facing action one
+ * misclick away from a row of Step buttons is one that will eventually be clicked
+ * by accident.
+ */
+function ResetPasswordButton({
+  id,
+  address,
+  hasServer,
+}: {
+  id: string;
+  address: string;
+  hasServer: boolean;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<WorkspaceResetResult | null>(null);
+  const [error, setError] = useState("");
+
+  async function issue() {
+    if (!window.confirm(`Email a password reset link to the owner of ${address}?`)) return;
+    setBusy(true);
+    setError("");
+    setResult(null);
+    try {
+      setResult(await adminApi.resetWorkspacePassword(id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not issue a reset link");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <button
+        onClick={() => void issue()}
+        disabled={busy || !hasServer}
+        title={hasServer ? "" : "This workspace has no machine yet"}
+        className="btn-ghost px-3 py-2 text-xs disabled:opacity-40"
+      >
+        {busy ? "…" : "Reset password"}
+      </button>
+
+      {error && <span className="max-w-xs text-right text-xs text-rose-600">{error}</span>}
+
+      {result && (
+        <div className="max-w-xs space-y-1 text-right text-xs">
+          <p className={result.emailed ? "text-emerald-700 dark:text-emerald-300" : "text-amber-700 dark:text-amber-300"}>
+            {result.emailed ? `Link emailed to ${result.email}` : `Link created but NOT emailed to ${result.email}`}
+          </p>
+          {/* Shown whether or not the mail went, because a customer locked out of
+              their workspace may be locked out of their mail as well. */}
+          <p className="break-all font-mono text-[11px] text-muted-foreground">{result.link}</p>
+          {result.needs_second_factor && (
+            <p className="text-amber-700 dark:text-amber-300">
+              This account has two-factor turned on, so the link alone will not sign them in. They need a
+              recovery code, or someone must clear the second factor on the server.
+            </p>
+          )}
+          {result.notes && <p className="text-muted-foreground">{result.notes}</p>}
         </div>
       )}
     </div>
