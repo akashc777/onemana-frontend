@@ -14,8 +14,9 @@ import { VisitorsPanel } from "@/components/admin/VisitorsPanel";
 import { EarningsPanel } from "@/components/admin/EarningsPanel";
 import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 import { GiftForm } from "@/components/admin/GiftForm";
+import { WorkspacesPanel } from "@/components/admin/WorkspacesPanel";
 
-const TABS = ["orders", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
+const TABS = ["orders", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -54,6 +55,7 @@ export default function AdminPage() {
       </nav>
 
       {tab === "orders" && <OrdersTable />}
+      {tab === "workspaces" && <WorkspacesPanel />}
       {tab === "earnings" && <EarningsPanel />}
       {tab === "subscriptions" && <SubscriptionsTable />}
       {tab === "customers" && (

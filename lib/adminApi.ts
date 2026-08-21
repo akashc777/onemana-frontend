@@ -26,6 +26,37 @@ function rangeQuery(from?: string, to?: string): string {
   return s ? `?${s}` : "";
 }
 
+/** A managed workspace as the operator sees it: everything, including the
+ *  infrastructure and the failure reason the customer is not shown. */
+export interface AdminInstance {
+  id: string;
+  slug: string;
+  custom_domain: string;
+  state: string;
+  state_detail: string;
+  failed_check: string;
+  provider: string;
+  provider_ref: string;
+  server_ip: string;
+  tier: string;
+  attempts: number;
+  next_action_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  live_at?: string | null;
+}
+
+/** One thing that happened to a workspace. */
+export interface AdminInstanceEvent {
+  id: string;
+  instance_id: string;
+  from_state: string;
+  to_state: string;
+  detail: string;
+  step: string;
+  created_at: string;
+}
+
 async function adminGet<T>(path: string): Promise<T> {
   const res = await fetch(`${site.backendUrl}${path}`, {
     headers: { "X-Admin-Token": getToken() },
@@ -399,6 +430,40 @@ export interface MarkFiledPayload {
 }
 
 export const adminApi = {
+  /** Every workspace being provisioned, live, or stuck. */
+  async instances(states?: string[]): Promise<AdminInstance[]> {
+    const q = (states ?? []).map((s) => `state=${encodeURIComponent(s)}`).join("&");
+    const data = await adminGet<{ data?: AdminInstance[] }>(`/onecamp/admin/instances${q ? `?${q}` : ""}`);
+    return data?.data ?? [];
+  },
+
+  /** What a workspace actually did, newest first. */
+  async instanceEvents(id: string): Promise<AdminInstanceEvent[]> {
+    const data = await adminGet<{ data?: AdminInstanceEvent[] }>(`/onecamp/admin/instance/${id}/events`);
+    return data?.data ?? [];
+  },
+
+  /** Look for a delivered machine for whoever is waiting. */
+  async sweepServers(): Promise<Record<string, unknown>> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/sweep`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: Record<string, unknown> };
+    if (!res.ok) throw new Error(data?.msg || "Sweep failed");
+    return data?.data ?? {};
+  },
+
+  /** Move one workspace forward by a step, rather than waiting for the timer. */
+  async stepInstance(id: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/step`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string };
+    if (!res.ok) throw new Error(data?.msg || "Step failed");
+  },
+
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
       headers: { "X-Admin-Token": token },
