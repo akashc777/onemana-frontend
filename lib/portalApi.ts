@@ -150,15 +150,15 @@ export const portalApi = {
 
   /** The managed workspaces behind this customer's subscriptions. */
   async instances(): Promise<PortalInstance[]> {
-    const data = await req<{ data?: { instances?: PortalInstance[] } }>("/instances");
-    return data?.data?.instances ?? [];
+    const data = await req<{ data?: PortalInstance[] }>("/instances");
+    return data?.data ?? [];
   },
 
   /** The editions a workspace can be built as. Served from the same table the
    *  provisioner builds from, so the choice can never be one that cannot be made. */
   async editions(): Promise<PortalEdition[]> {
-    const data = await req<{ data?: { editions?: PortalEdition[] } }>("/editions");
-    return data?.data?.editions ?? [];
+    const data = await req<{ data?: PortalEdition[] }>("/editions");
+    return data?.data ?? [];
   },
 
   /** Name a workspace and choose its edition. The single action that turns a paid
@@ -185,9 +185,9 @@ export const portalApi = {
       body: JSON.stringify({ kind, domain, preview }),
     });
     if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { plan?: PortalDomainPlan } };
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalDomainPlan };
     if (!res.ok) throw new Error(data?.msg || "Could not plan that change.");
-    return (data?.data?.plan ?? {}) as PortalDomainPlan;
+    return (data?.data ?? {}) as PortalDomainPlan;
   },
 
   /** "I have added the records, look now". A customer cannot otherwise tell us. */
