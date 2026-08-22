@@ -95,6 +95,17 @@ export interface EmailChangeResult {
   new_notified: boolean;
 }
 
+/** One pass of payment reconciliation, mirroring business.PaymentReconciliation. */
+export interface PaymentReconciliation {
+  checked: number;
+  /** Orders that were paid and had not been fulfilled. Each is a waiting customer. */
+  recovered: string[];
+  /** Opened checkout and did not pay. The ordinary case, counted not listed. */
+  abandoned: number;
+  /** Razorpay would not answer. Retried on the next pass. */
+  failed: string[];
+}
+
 async function adminGet<T>(path: string): Promise<T> {
   const res = await fetch(`${site.backendUrl}${path}`, {
     headers: { "X-Admin-Token": getToken() },
@@ -479,6 +490,21 @@ export const adminApi = {
   async instanceEvents(id: string): Promise<AdminInstanceEvent[]> {
     const data = await adminGet<{ data?: AdminInstanceEvent[] }>(`/onecamp/admin/instance/${id}/events`);
     return data?.data ?? [];
+  },
+
+  /**
+   * Ask Razorpay about orders that never reached paid, and fulfil the ones that
+   * were. Runs on a timer too; this is for when a customer is asking now.
+   */
+  async reconcilePayments(): Promise<PaymentReconciliation> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/payments/reconcile`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PaymentReconciliation };
+    if (!res.ok) throw new Error(data?.msg || "Could not reconcile payments");
+    if (!data?.data) throw new Error("Reconciliation ran but returned nothing to show");
+    return data.data;
   },
 
   /** Compare the OVH account with what this system thinks it has. */

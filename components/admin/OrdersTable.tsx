@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { adminApi, type Order } from "@/lib/adminApi";
+import { adminApi, type Order, type PaymentReconciliation } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { formatINR, formatDateTime } from "@/lib/format";
 import { AsyncState, DataTable, RowDeleteButton, StatusPill, Td, Tr } from "./ui";
@@ -67,6 +67,7 @@ export function OrdersTable() {
   return (
     <div>
       <FilterBar value={filter} onChange={setFilter} placeholder="Search email, plan, payment id…" count={filtered.length} />
+      <ReconcilePaymentsButton onDone={reload} />
       <DataTable head={["Date", "Email", "Amount", "Status", "Plan", "Payment ID", ""]}>
         {filtered.length === 0 ? (
           <Tr>
@@ -108,6 +109,77 @@ export function OrdersTable() {
           ))
         )}
       </DataTable>
+    </div>
+  );
+}
+
+/**
+ * Ask Razorpay about orders that never reached paid, and fulfil the ones that were.
+ *
+ * WHY A BUTTON AND NOT JUST THE TIMER. The moment this answers is a customer
+ * writing "I paid and nothing happened", and telling them to wait up to fifteen
+ * minutes for a scheduled sweep is not an answer. It also settles which half is
+ * broken: if this fulfils the order, the money was always there and only the
+ * delivery failed.
+ */
+function ReconcilePaymentsButton({ onDone }: { onDone: () => void }) {
+  const [res, setRes] = useState<PaymentReconciliation | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function run() {
+    setBusy(true);
+    setErr("");
+    setRes(null);
+    try {
+      const out = await adminApi.reconcilePayments();
+      setRes(out);
+      if (out.recovered.length > 0) onDone();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not reconcile payments");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mb-3 space-y-1.5">
+      <button onClick={() => void run()} disabled={busy} className="btn-ghost px-3 py-2 text-xs disabled:opacity-40">
+        {busy ? "Asking Razorpay…" : "Check for payments the webhook missed"}
+      </button>
+
+      {err && <p className="text-xs text-rose-600">{err}</p>}
+
+      {res && (
+        <div className="space-y-1 text-xs">
+          {res.recovered.length > 0 ? (
+            <>
+              <p className="text-emerald-700 dark:text-emerald-300">
+                Fulfilled {res.recovered.length} paid order
+                {res.recovered.length === 1 ? "" : "s"} the webhook never delivered.
+              </p>
+              <p className="break-all font-mono text-[11px] text-muted-foreground">{res.recovered.join(", ")}</p>
+              {res.recovered.length > 2 && (
+                <p className="text-amber-700 dark:text-amber-300">
+                  More than a couple at once points at the webhook itself. Razorpay disables a webhook
+                  after 24 hours of failed deliveries; check it is still enabled in their dashboard.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-muted-foreground">
+              Nothing to fulfil. Checked {res.checked} unfulfilled order{res.checked === 1 ? "" : "s"};{" "}
+              {res.abandoned} {res.abandoned === 1 ? "was an" : "were"} abandoned checkout
+              {res.abandoned === 1 ? "" : "s"}.
+            </p>
+          )}
+          {res.failed.length > 0 && (
+            <p className="text-amber-700 dark:text-amber-300">
+              Razorpay would not answer for {res.failed.join(", ")}. These are retried automatically.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
