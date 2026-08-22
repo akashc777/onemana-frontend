@@ -486,7 +486,64 @@ export interface MarkFiledPayload {
   note: string;
 }
 
+/** The whole business in one object. Paid and comped are never added together:
+ *  a "customers" number that counts gifts is the easiest way to mislead an
+ *  investor, or yourself. */
+export interface AdminMetrics {
+  revenue: {
+    gross_paise: number;
+    paid_orders: number;
+    comped_orders: number;
+    invoices: number;
+    invoiced_paise: number;
+    mrr_paise: number;
+    arr_paise: number;
+    avg_order_paise: number;
+    first_paid_at: string | null;
+    latest_paid_at: string | null;
+    active_subscriptions: number;
+    cancelling_subscriptions: number;
+  };
+  customers: { paying: number; comped: number; total: number };
+  funnel: {
+    unique_visitors: number;
+    pageviews: number;
+    buy_page_visitors: number;
+    orders_created: number;
+    orders_paid: number;
+    licences_issued: number;
+    /** A floor, not a census: an install that never reached us looks the same
+     *  as one that never happened. */
+    licences_installed: number;
+    paid_licences: number;
+    paid_licences_installed: number;
+  };
+  workspaces: {
+    total: number;
+    live: number;
+    terminated: number;
+    seats_total: number;
+    seats_active_30d: number;
+    bots_total: number;
+    workspaces_counted: number;
+  };
+  months: {
+    month: string;
+    visitors: number;
+    orders: number;
+    gross_paise: number;
+    new_paying_customers: number;
+  }[];
+  generated_at: string;
+}
+
 export const adminApi = {
+  /** Money, people, and the funnel between them. */
+  async metrics(): Promise<AdminMetrics | null> {
+    const data = await adminGet<{ data?: AdminMetrics }>("/onecamp/admin/metrics");
+    return data?.data ?? null;
+  },
+
   /** Every workspace being provisioned, live, or stuck. */
   async instances(states?: string[]): Promise<AdminInstance[]> {
     const q = (states ?? []).map((s) => `state=${encodeURIComponent(s)}`).join("&");

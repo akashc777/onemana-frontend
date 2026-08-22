@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { AdminLogin } from "@/components/admin/AdminLogin";
+import { MetricsPanel } from "@/components/admin/MetricsPanel";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { CustomersTable } from "@/components/admin/CustomersTable";
 import { InvoicesTable } from "@/components/admin/InvoicesTable";
@@ -16,12 +17,12 @@ import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 import { GiftForm } from "@/components/admin/GiftForm";
 import { WorkspacesPanel } from "@/components/admin/WorkspacesPanel";
 
-const TABS = ["orders", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
+const TABS = ["metrics", "orders", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
   const { status, signIn, signOut } = useAdminAuth();
-  const [tab, setTab] = useState<Tab>("orders");
+  const [tab, setTab] = useState<Tab>("metrics");
 
   if (status === "checking") {
     return <div className="grid min-h-[70vh] place-items-center text-sm text-muted-foreground">Loading…</div>;
@@ -54,6 +55,7 @@ export default function AdminPage() {
         ))}
       </nav>
 
+      {tab === "metrics" && <MetricsPanel />}
       {tab === "orders" && <OrdersTable />}
       {tab === "workspaces" && <WorkspacesPanel />}
       {tab === "earnings" && <EarningsPanel />}
