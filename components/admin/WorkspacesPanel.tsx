@@ -109,6 +109,24 @@ export function WorkspacesPanel() {
                     </p>
                   )}
 
+                  {/* Seats, and only for workspaces we run. Never counted reads
+                      differently from counted and empty, so an uncounted
+                      workspace says nothing rather than showing a zero. */}
+                  {typeof r.seats_total === "number" && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground">{r.seats_total}</span>
+                      {r.seats_total === 1 ? " person" : " people"}
+                      {typeof r.seats_active_30d === "number" && (
+                        <>
+                          {", "}
+                          <span className="font-medium text-foreground">{r.seats_active_30d}</span>
+                          {" active in 30 days"}
+                        </>
+                      )}
+                      {r.seats_counted_at ? ` · counted ${timeAgo(r.seats_counted_at)}` : ""}
+                    </p>
+                  )}
+
                   <p className="mt-1 text-xs text-muted-foreground">
                     {r.server_ip ? `${r.provider} ${r.provider_ref} (${r.server_ip})` : "no machine yet"}
                     {" · "}

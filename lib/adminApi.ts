@@ -44,6 +44,11 @@ export interface AdminInstance {
   created_at: string;
   updated_at: string;
   live_at?: string | null;
+  /** Seats found by the daily sweep. null means never counted, which is not the
+   *  same as zero, so both states have to survive the trip to the screen. */
+  seats_total?: number | null;
+  seats_active_30d?: number | null;
+  seats_counted_at?: string | null;
 }
 
 /** Where our record and the OVH account disagree. */
