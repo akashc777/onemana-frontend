@@ -152,7 +152,15 @@ function ReconcilePaymentsButton({ onDone }: { onDone: () => void }) {
 
       {res && (
         <div className="space-y-1 text-xs">
-          {res.recovered.length > 0 ? (
+          {/* Said first, because an operator who believes they are covered and is
+              not is worse off than one who knows they are not. */}
+          {!res.configured && (
+            <p className="text-amber-700 dark:text-amber-300">
+              No Razorpay keys are configured, so nothing was checked and the automatic sweep is not
+              running either. Set them in Settings.
+            </p>
+          )}
+          {res.configured && res.recovered.length > 0 ? (
             <>
               <p className="text-emerald-700 dark:text-emerald-300">
                 Fulfilled {res.recovered.length} paid order
@@ -166,13 +174,13 @@ function ReconcilePaymentsButton({ onDone }: { onDone: () => void }) {
                 </p>
               )}
             </>
-          ) : (
+          ) : res.configured ? (
             <p className="text-muted-foreground">
               Nothing to fulfil. Checked {res.checked} unfulfilled order{res.checked === 1 ? "" : "s"};{" "}
               {res.abandoned} {res.abandoned === 1 ? "was an" : "were"} abandoned checkout
               {res.abandoned === 1 ? "" : "s"}.
             </p>
-          )}
+          ) : null}
           {res.failed.length > 0 && (
             <p className="text-amber-700 dark:text-amber-300">
               Razorpay would not answer for {res.failed.join(", ")}. These are retried automatically.

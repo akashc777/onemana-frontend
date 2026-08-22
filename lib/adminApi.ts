@@ -97,6 +97,9 @@ export interface EmailChangeResult {
 
 /** One pass of payment reconciliation, mirroring business.PaymentReconciliation. */
 export interface PaymentReconciliation {
+  /** False means no payment keys are set, so the sweep is not running at all —
+   *  which looks identical to "nothing to do" unless it is said out loud. */
+  configured: boolean;
   checked: number;
   /** Orders that were paid and had not been fulfilled. Each is a waiting customer. */
   recovered: string[];
