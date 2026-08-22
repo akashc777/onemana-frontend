@@ -220,7 +220,11 @@ export const faqs = [
   },
   {
     q: "Where does the AI run?",
-    a: "On your server via Ollama by default, not our cloud. You can point it at OpenAI, Anthropic, or your own endpoint if you prefer. Turn on local-only mode and the server refuses to activate a cloud provider at all rather than warning you and letting it through, and PII redaction runs before anything outbound.",
+    a: "On infrastructure you choose, never ours. Point it at OpenAI, Anthropic, or any OpenAI-compatible endpoint, which covers vLLM, LM Studio, OpenRouter, Groq, and a gateway you run yourself. Local models through Ollama are a switch you turn on, so nothing pulls a model down unless you ask for it. Turn on local-only mode and the server refuses to activate a cloud provider at all rather than warning you and letting it through, and PII redaction runs before anything outbound.",
+  },
+  {
+    q: "Does OneCamp Cloud include AI?",
+    a: "The AI edition is what gets provisioned, so the agents and the teammates are all there waiting. The model is the part you bring: add a key from OpenAI or Anthropic, or point it at any OpenAI-compatible endpoint. I do not resell inference and I never see your prompts, so you pay your provider directly at their price. Until you add a key the AI surfaces sit idle, and everything else in the workspace works exactly the same.",
   },
   {
     q: "I pay once and that's it?",
@@ -232,7 +236,7 @@ export const faqs = [
   },
   {
     q: "Do I need a GPU?",
-    a: "No for getting started. The default small model is fine on CPU with 16 GB RAM. A GPU just makes replies faster if you want bigger models.",
+    a: "No. Most people point OneCamp at a provider key, and then the model runs on the provider's hardware rather than yours. If you switch on local models, the small default is fine on CPU with 16 GB RAM, and a GPU is what makes the bigger ones practical.",
   },
   {
     q: "Can we import Slack history?",
@@ -382,8 +386,9 @@ export const pricingComparison = {
 
 export const cloudBenefits = [
   "Fully managed hosting on your own subdomain",
-  "Automatic backups, updates & monitoring",
-  "We handle SSL, scaling, and uptime",
+  "Your own server. No database shared with anyone",
+  "We handle SSL, monitoring, and uptime",
+  "AI teammates included. Bring your own model key",
   "Includes a self-host license. Switch anytime",
   "We set everything up within 12 hours",
 ];
