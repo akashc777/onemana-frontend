@@ -527,6 +527,13 @@ export interface AdminMetrics {
     bots_total: number;
     workspaces_counted: number;
   };
+  /** Where visitors came from. Channels for the mix, sources for who actually
+   *  sent them. Our own domains are excluded: self-referral is navigation, not
+   *  acquisition. */
+  acquisition: {
+    channels: { name: string; visitors: number; views: number }[];
+    sources: { name: string; visitors: number; views: number }[];
+  };
   months: {
     month: string;
     visitors: number;

@@ -52,6 +52,8 @@ export function MetricsPanel() {
 
   const f = m.funnel;
   const peak = Math.max(1, ...m.months.map((x) => x.visitors));
+  // Channel shares are of everyone we can attribute, which is every visitor.
+  const reach = Math.max(1, f.unique_visitors);
 
   return (
     <div className="space-y-8">
@@ -133,6 +135,36 @@ export function MetricsPanel() {
         <p className="mt-2 text-xs text-muted-foreground">
           Installs are a floor, not a census: an install that never reached us looks the same as one that never
           happened.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Where they came from
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-muted/30 px-5 py-2">
+            <p className="py-2 text-xs uppercase tracking-wider text-muted-foreground">Channel</p>
+            {m.acquisition.channels.map((c) => (
+              <Step key={c.name} label={c.name} value={c.visitors} of={reach} />
+            ))}
+            {m.acquisition.channels.length === 0 && (
+              <p className="py-3 text-sm text-muted-foreground">No traffic recorded yet.</p>
+            )}
+          </div>
+          <div className="rounded-2xl border border-border bg-muted/30 px-5 py-2">
+            <p className="py-2 text-xs uppercase tracking-wider text-muted-foreground">Source</p>
+            {m.acquisition.sources.map((c) => (
+              <Step key={c.name} label={c.name} value={c.visitors} of={reach} />
+            ))}
+            {m.acquisition.sources.length === 0 && (
+              <p className="py-3 text-sm text-muted-foreground">Nobody has arrived from a link yet.</p>
+            )}
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Links from our own sites are excluded: that is navigation, not acquisition. Shortened links are grouped by
+          the network that issued them, so one campaign reads as one source.
         </p>
       </section>
 
