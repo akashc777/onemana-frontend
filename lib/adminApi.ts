@@ -516,6 +516,10 @@ export interface AdminMetrics {
      *  as one that never happened. */
     licences_installed: number;
     paid_licences: number;
+    /** Rows issued or installed before the timestamps existed. A range excludes
+     *  them because their date is unknown, not because they did not happen. */
+    undated_licences: number;
+    undated_installs: number;
     paid_licences_installed: number;
   };
   workspaces: {

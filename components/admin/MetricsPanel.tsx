@@ -168,12 +168,12 @@ export function MetricsPanel() {
             accent
           />
           <Stat
-            label="Comped"
+            label={m.range.applied ? "New comped" : "Comped"}
             value={String(m.customers.comped)}
             hint="gifted licences, counted separately on purpose"
           />
           <Stat
-            label="End users in workspaces"
+            label={m.range.applied ? "End users in workspaces (today)" : "End users in workspaces"}
             value={m.workspaces.workspaces_counted > 0 ? String(m.workspaces.seats_total) : "—"}
             hint={
               m.workspaces.workspaces_counted > 0
@@ -207,9 +207,18 @@ export function MetricsPanel() {
           <Step
             label="Licences issued"
             value={f.licences_issued}
-            note={m.range.applied ? "all time, licences carry no date" : "incl. gifts and tests"}
+            note={
+              m.range.applied && f.undated_licences > 0
+                ? `${f.undated_licences} undated, excluded`
+                : "incl. gifts and tests"
+            }
           />
-          <Step label="Reported an install" value={f.licences_installed} of={f.licences_issued} />
+          <Step
+            label="Reported an install"
+            value={f.licences_installed}
+            of={f.licences_issued}
+            note={m.range.applied && f.undated_installs > 0 ? `${f.undated_installs} undated, excluded` : undefined}
+          />
           <Step
             label="Paying customers who installed"
             value={f.paid_licences_installed}
@@ -220,8 +229,13 @@ export function MetricsPanel() {
         <p className="mt-2 text-xs text-muted-foreground">
           Installs are a floor, not a census: an install that never reached us looks the same as one that never
           happened.
-          {m.range.applied &&
-            " Licence and install counts ignore the date range, because that table carries no timestamp to filter on."}
+          {m.range.applied && (f.undated_licences > 0 || f.undated_installs > 0) && (
+            <>
+              {" "}
+              Licences and installs recorded before we started stamping dates have no date to filter on, so a range
+              leaves them out. They are counted in the all-time view.
+            </>
+          )}
         </p>
       </section>
 
