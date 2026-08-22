@@ -366,17 +366,31 @@ function ReconcileButton() {
           )}
           {res.unused.length > 0 && (
             <div>
-              <p className="font-medium text-foreground/80">Not used by OneMana</p>
+              <p className="font-medium text-foreground/80">Provisioned by OneMana, no longer used</p>
               <p className="mt-1 font-mono text-xs">{res.unused.join(", ")}</p>
               <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
-                Read this, do not act on it blindly. It includes the machine this service
-                runs on, anything else your account hosts, and anything you bought but have
-                not added to the pool. Check each one before cancelling.
+                Each of these ran a workspace that has since been terminated, and is still
+                billing. Check before cancelling: a machine also looks like this in the
+                minutes between buying it and adding it to the pool.
+              </p>
+            </div>
+          )}
+          {/* Shown, never alerted on. These are the operator's own machines, and
+              naming them in an email every month is what made that alert ignorable. */}
+          {res.foreign.length > 0 && (
+            <div>
+              <p className="font-medium text-foreground/80">Other machines on this account</p>
+              <p className="mt-1 font-mono text-xs">{res.foreign.join(", ")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                OneMana has never provisioned these, so they are yours to manage. Listed for
+                completeness only; you will not be emailed about them.
               </p>
             </div>
           )}
           {res.lost.length === 0 && res.vanished.length === 0 && res.unused.length === 0 && (
-            <p className="text-muted-foreground">Your OVH account and OneMana agree.</p>
+            <p className="text-muted-foreground">
+              Nothing to act on. Your OVH account and OneMana agree.
+            </p>
           )}
         </div>
       )}

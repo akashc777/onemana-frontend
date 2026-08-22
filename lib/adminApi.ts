@@ -52,9 +52,12 @@ export interface ServerReconciliation {
   vanished: string[];
   /** A workspace's machine, gone at OVH. Never touched automatically. */
   lost: string[];
-  /** At OVH, unused by OneMana. NOT a list of things to cancel: it includes the
-   *  machine this service runs on and anything else the account hosts. */
+  /** OneMana provisioned it, the workspace was terminated, and it is still billing.
+   *  Worth reading. Still not a list to cancel blindly. */
   unused: string[];
+  /** At OVH and nothing to do with OneMana: your other work, including the machine
+   *  this service runs on. Shown so the account can be seen whole; never alerted on. */
+  foreign: string[];
 }
 
 /** One thing that happened to a workspace. */
@@ -481,7 +484,7 @@ export const adminApi = {
   /** Compare the OVH account with what this system thinks it has. */
   async reconcileServers(): Promise<ServerReconciliation> {
     const data = await adminGet<{ data?: ServerReconciliation }>("/onecamp/admin/servers/reconcile");
-    return data?.data ?? { vanished: [], lost: [], unused: [] };
+    return data?.data ?? { vanished: [], lost: [], unused: [], foreign: [] };
   },
 
   /** Look for a delivered machine for whoever is waiting. */
