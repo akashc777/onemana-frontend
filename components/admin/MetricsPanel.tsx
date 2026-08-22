@@ -36,19 +36,87 @@ function Step({ label, value, of, note }: { label: string; value: number; of?: n
   );
 }
 
+/** Ranges people actually ask for, so the common case is one click rather than
+ *  two date pickers. */
+const PRESETS: { label: string; days: number | null }[] = [
+  { label: "All time", days: null },
+  { label: "30 days", days: 30 },
+  { label: "90 days", days: 90 },
+  { label: "12 months", days: 365 },
+];
+
+function isoDaysAgo(days: number): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
 export function MetricsPanel() {
   const [m, setM] = useState<AdminMetrics | null>(null);
   const [err, setErr] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let live = true;
+    setLoading(true);
     adminApi
-      .metrics()
-      .then(setM)
-      .catch((e) => setErr(e instanceof Error ? e.message : "could not load metrics"));
-  }, []);
+      .metrics(from || undefined, to || undefined)
+      .then((d) => {
+        if (live) setM(d);
+      })
+      .catch((e) => live && setErr(e instanceof Error ? e.message : "could not load metrics"))
+      .finally(() => live && setLoading(false));
+    // Ignoring a stale response matters here: switching presets quickly can land
+    // an older, slower request after a newer one and show the wrong period.
+    return () => {
+      live = false;
+    };
+  }, [from, to]);
 
   if (err) return <p className="text-sm text-danger">{err}</p>;
   if (!m) return <p className="text-sm text-muted-foreground">Loading…</p>;
+
+  const picker = (
+    <div className="mb-6 flex flex-wrap items-center gap-2">
+      {PRESETS.map((p) => {
+        const active = p.days === null ? !from && !to : from === isoDaysAgo(p.days) && !to;
+        return (
+          <button
+            key={p.label}
+            onClick={() => {
+              setTo("");
+              setFrom(p.days === null ? "" : isoDaysAgo(p.days));
+            }}
+            className={`rounded-lg px-3 py-1.5 text-sm ${
+              active ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {p.label}
+          </button>
+        );
+      })}
+      <span className="ml-2 flex items-center gap-2 text-sm text-muted-foreground">
+        <input
+          type="date"
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
+          aria-label="From date"
+          className="rounded-lg border border-border bg-muted px-2 py-1 text-sm text-foreground"
+        />
+        to
+        <input
+          type="date"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+          aria-label="To date"
+          className="rounded-lg border border-border bg-muted px-2 py-1 text-sm text-foreground"
+        />
+      </span>
+      {loading && <span className="text-xs text-muted-foreground">updating…</span>}
+    </div>
+  );
 
   const f = m.funnel;
   const peak = Math.max(1, ...m.months.map((x) => x.visitors));
@@ -57,8 +125,12 @@ export function MetricsPanel() {
 
   return (
     <div className="space-y-8">
+      {picker}
+
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Money</h2>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Money{m.range.applied ? " in this period" : ", all time"}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat
             label="Revenue to date"
@@ -67,13 +139,17 @@ export function MetricsPanel() {
             accent
           />
           <Stat
-            label="MRR"
+            label={m.range.applied ? "MRR (today)" : "MRR"}
             value={formatINR(m.revenue.mrr_paise)}
             hint={`${m.revenue.active_subscriptions} active ${
               m.revenue.active_subscriptions === 1 ? "subscription" : "subscriptions"
             }${m.revenue.cancelling_subscriptions > 0 ? `, ${m.revenue.cancelling_subscriptions} cancelling` : ""}`}
           />
-          <Stat label="ARR run rate" value={formatINR(m.revenue.arr_paise)} hint="MRR × 12" />
+          <Stat
+            label={m.range.applied ? "ARR run rate (today)" : "ARR run rate"}
+            value={formatINR(m.revenue.arr_paise)}
+            hint="MRR × 12"
+          />
           <Stat
             label="Average order"
             value={m.revenue.paid_orders > 0 ? formatINR(m.revenue.avg_order_paise) : "—"}
@@ -85,7 +161,12 @@ export function MetricsPanel() {
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">People</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label="Paying customers" value={String(m.customers.paying)} hint="orders that took money" accent />
+          <Stat
+            label={m.range.applied ? "New paying customers" : "Paying customers"}
+            value={String(m.customers.paying)}
+            hint="orders that took money"
+            accent
+          />
           <Stat
             label="Comped"
             value={String(m.customers.comped)}
@@ -103,7 +184,7 @@ export function MetricsPanel() {
           <Stat
             label="AI agents"
             value={m.workspaces.workspaces_counted > 0 ? String(m.workspaces.bots_total) : "—"}
-            hint="never billed as seats"
+            hint={m.range.applied ? "today, not for this period" : "never billed as seats"}
           />
         </div>
         {m.workspaces.workspaces_counted === 0 && (
@@ -116,14 +197,18 @@ export function MetricsPanel() {
 
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Funnel, all time
+          Funnel{m.range.applied ? " in this period" : ", all time"}
         </h2>
         <div className="rounded-2xl border border-border bg-muted/30 px-5 py-2">
           <Step label="Unique visitors" value={f.unique_visitors} note={`${f.pageviews.toLocaleString()} views`} />
           <Step label="Reached the buy page" value={f.buy_page_visitors} of={f.unique_visitors} />
           <Step label="Started checkout" value={f.orders_created} of={f.buy_page_visitors} />
           <Step label="Paid something" value={m.revenue.paid_orders} of={f.orders_created} />
-          <Step label="Licences issued" value={f.licences_issued} note="incl. gifts and tests" />
+          <Step
+            label="Licences issued"
+            value={f.licences_issued}
+            note={m.range.applied ? "all time, licences carry no date" : "incl. gifts and tests"}
+          />
           <Step label="Reported an install" value={f.licences_installed} of={f.licences_issued} />
           <Step
             label="Paying customers who installed"
@@ -135,6 +220,8 @@ export function MetricsPanel() {
         <p className="mt-2 text-xs text-muted-foreground">
           Installs are a floor, not a census: an install that never reached us looks the same as one that never
           happened.
+          {m.range.applied &&
+            " Licence and install counts ignore the date range, because that table carries no timestamp to filter on."}
         </p>
       </section>
 

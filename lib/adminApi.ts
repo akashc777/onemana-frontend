@@ -530,6 +530,8 @@ export interface AdminMetrics {
   /** Where visitors came from. Channels for the mix, sources for who actually
    *  sent them. Our own domains are excluded: self-referral is navigation, not
    *  acquisition. */
+  /** What the caller asked for, echoed back. Absent means all time. */
+  range: { from: string | null; to: string | null; applied: boolean };
   acquisition: {
     channels: { name: string; visitors: number; views: number }[];
     sources: { name: string; visitors: number; views: number }[];
@@ -546,8 +548,8 @@ export interface AdminMetrics {
 
 export const adminApi = {
   /** Money, people, and the funnel between them. */
-  async metrics(): Promise<AdminMetrics | null> {
-    const data = await adminGet<{ data?: AdminMetrics }>("/onecamp/admin/metrics");
+  async metrics(from?: string, to?: string): Promise<AdminMetrics | null> {
+    const data = await adminGet<{ data?: AdminMetrics }>(`/onecamp/admin/metrics${rangeQuery(from, to)}`);
     return data?.data ?? null;
   },
 
