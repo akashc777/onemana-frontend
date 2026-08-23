@@ -504,7 +504,14 @@ export interface AdminMetrics {
     active_subscriptions: number;
     cancelling_subscriptions: number;
   };
-  customers: { paying: number; comped: number; total: number };
+  customers: {
+    paying: number;
+    comped: number;
+    total: number;
+    /** Asked to hear more, has not bought. Never added to customers. */
+    leads: number;
+    leads_reachable: number;
+  };
   funnel: {
     unique_visitors: number;
     pageviews: number;

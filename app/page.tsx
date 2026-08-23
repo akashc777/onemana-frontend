@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { features, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt, governance, enterpriseControls } from "@/lib/content";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
@@ -209,6 +210,13 @@ export default async function HomePage() {
           subtitle="One lifetime license for self-hosting, or fully managed OneCamp Cloud. Cloud includes a self-host license if you ever want to move."
         />
         <Pricing pricing={pricing} />
+
+        {/* Right after the price, where somebody who just decided not to buy
+            today is still on the page. That is the whole audience this list
+            is for: interested, not yet convinced. */}
+        <div className="container-x mt-10 max-w-xl">
+          <SubscribeForm source="pricing" />
+        </div>
       </Section>
 
       <Section divider>

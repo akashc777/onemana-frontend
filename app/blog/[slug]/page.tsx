@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SubscribeForm } from "@/components/site/SubscribeForm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPost, listPublishedPosts, mediaUrl } from "@/lib/blog";
@@ -115,6 +116,18 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             prose-img:rounded-xl prose-img:border prose-img:border-border"
           dangerouslySetInnerHTML={{ __html: html }}
         />
+
+          {/* AT THE END OF A POST, not in front of it. Somebody who has read to
+              the bottom of a technical write-up is the warmest reader this site
+              gets, and organic search sends more people here than to any other
+              page. Until now they left with no way to hear from us again. */}
+          <div className="mb-20 rounded-2xl border border-border bg-muted/30 p-6">
+            <p className="text-sm font-medium text-foreground">Get the next one</p>
+            <p className="mb-3 mt-1 text-sm text-muted-foreground">
+              I write these as I build OneCamp: what broke, what it cost, and what I changed.
+            </p>
+            <SubscribeForm source="blog-post" />
+          </div>
       </div>
     </article>
   );

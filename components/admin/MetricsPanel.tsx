@@ -75,7 +75,7 @@ export function MetricsPanel() {
     };
   }, [from, to]);
 
-  if (err) return <p className="text-sm text-danger">{err}</p>;
+  if (err) return <p className="text-sm text-red-600 dark:text-red-400">{err}</p>;
   if (!m) return <p className="text-sm text-muted-foreground">Loading…</p>;
 
   const picker = (
@@ -171,6 +171,11 @@ export function MetricsPanel() {
             label={m.range.applied ? "New comped" : "Comped"}
             value={String(m.customers.comped)}
             hint="gifted licences, counted separately on purpose"
+          />
+          <Stat
+            label="Mailing list"
+            value={String(m.customers.leads)}
+            hint={`${m.customers.leads_reachable} reachable, gets announcements`}
           />
           <Stat
             label={m.range.applied ? "End users in workspaces (today)" : "End users in workspaces"}
