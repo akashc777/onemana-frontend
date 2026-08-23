@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminApi, type AdminMetrics } from "@/lib/adminApi";
+import { adminApi, type AdminMetrics, type AdminOptOut } from "@/lib/adminApi";
 import { formatINR } from "@/lib/format";
 
 function Stat({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
@@ -54,9 +54,19 @@ function isoDaysAgo(days: number): string {
 export function MetricsPanel() {
   const [m, setM] = useState<AdminMetrics | null>(null);
   const [err, setErr] = useState("");
+  const [optOuts, setOptOuts] = useState<AdminOptOut[]>([]);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [loading, setLoading] = useState(true);
+
+  // Opt-outs are current state, not a period, so they do not move with the range
+  // and are fetched once.
+  useEffect(() => {
+    adminApi
+      .unsubscribed()
+      .then(setOptOuts)
+      .catch(() => setOptOuts([]));
+  }, []);
 
   useEffect(() => {
     let live = true;
@@ -176,6 +186,15 @@ export function MetricsPanel() {
             label="Mailing list"
             value={String(m.customers.leads)}
             hint={`${m.customers.leads_reachable} reachable, gets announcements`}
+          />
+          <Stat
+            label="Opted out"
+            value={String(optOuts.length)}
+            hint={
+              optOuts.length === 0
+                ? "nobody has unsubscribed"
+                : `most recent ${optOuts[0]?.unsubscribed_at?.slice(0, 10) ?? "unknown"}`
+            }
           />
           <Stat
             label={m.range.applied ? "End users in workspaces (today)" : "End users in workspaces"}

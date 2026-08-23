@@ -559,7 +559,20 @@ export interface AdminMetrics {
   generated_at: string;
 }
 
+/** One person's decision to stop hearing from us. */
+export interface AdminOptOut {
+  email: string;
+  unsubscribed_at?: string | null;
+  source?: string;
+}
+
 export const adminApi = {
+  /** Who asked to stop receiving announcements, newest first. */
+  async unsubscribed(): Promise<AdminOptOut[]> {
+    const data = await adminGet<{ data?: AdminOptOut[] }>("/onecamp/admin/unsubscribed");
+    return data?.data ?? [];
+  },
+
   /** Money, people, and the funnel between them. */
   async metrics(from?: string, to?: string): Promise<AdminMetrics | null> {
     const data = await adminGet<{ data?: AdminMetrics }>(`/onecamp/admin/metrics${rangeQuery(from, to)}`);
