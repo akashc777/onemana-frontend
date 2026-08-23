@@ -202,6 +202,12 @@ export function MetricsPanel() {
         <div className="rounded-2xl border border-border bg-muted/30 px-5 py-2">
           <Step label="Unique visitors" value={f.unique_visitors} note={`${f.pageviews.toLocaleString()} views`} />
           <Step label="Reached the buy page" value={f.buy_page_visitors} of={f.unique_visitors} />
+          <Step
+            label="Clicked through to the demo"
+            value={f.demo_clicks}
+            of={f.unique_visitors}
+            note="tried it before buying"
+          />
           <Step label="Started checkout" value={f.orders_created} of={f.buy_page_visitors} />
           <Step label="Paid something" value={m.revenue.paid_orders} of={f.orders_created} />
           <Step

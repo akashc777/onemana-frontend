@@ -520,6 +520,8 @@ export interface AdminMetrics {
      *  them because their date is unknown, not because they did not happen. */
     undated_licences: number;
     undated_installs: number;
+    /** Visitors who clicked through to the live demo. */
+    demo_clicks: number;
     paid_licences_installed: number;
   };
   workspaces: {
