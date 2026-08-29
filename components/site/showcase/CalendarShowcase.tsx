@@ -43,7 +43,7 @@ const EVENTS: Ev[] = [
 ];
 
 // The event the agent books into a free slot.
-const NEW_EVENT: Ev = { day: 2, start: 12.25, end: 13, title: "Customer call · Acme", color: "#34e3e3", byAI: true };
+const NEW_EVENT: Ev = { day: 2, start: 12.25, end: 13, title: "Customer call · Lindqvist", color: "#34e3e3", byAI: true };
 
 const NOW = 9.3;
 

@@ -22,13 +22,16 @@ const config: Config = {
         },
         card: "rgb(var(--card) / <alpha-value>)",
         ring: "rgb(var(--ring) / <alpha-value>)",
+        // Same orange, calmed. It was #FF4D00 at 100% saturation, which is the
+        // maximum a screen can produce and reads as a warning light rather than a
+        // brand. Held at hue 17 so it is still recognisably the same colour.
         brand: {
-          DEFAULT: "#FF4D00",
-          dark: "#E04400",
-          light: "#FF6B2E",
-          subtle: "#FFF4EE",
+          DEFAULT: "#F04F0F",
+          dark: "#C5410D",
+          light: "#EF7443",
+          subtle: "#FCF2EE",
         },
-        ink: "#191919",
+        ink: "#24211E",
         canvas: {
           DEFAULT: "rgb(var(--background) / <alpha-value>)",
           soft: "rgb(var(--muted) / <alpha-value>)",
@@ -37,6 +40,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       maxWidth: {

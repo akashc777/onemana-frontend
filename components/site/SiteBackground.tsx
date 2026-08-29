@@ -4,7 +4,7 @@
 export function SiteBackground() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div className="cf-orange-beam absolute inset-0" />
+      <div className="brand-beam absolute inset-0" />
       <div
         className="cf-line-grid absolute inset-0 opacity-[0.45] dark:opacity-[0.22] [mask-image:radial-gradient(ellipse_90%_70%_at_50%_0%,black,transparent_75%)]"
       />
