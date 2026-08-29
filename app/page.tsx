@@ -282,11 +282,14 @@ export default async function HomePage() {
               {" "}
               for lifetime and cloud plans
             </p>
+            {/* No refund claim here. This line used to advertise a "30-day refund
+                policy" and link to /refund-policy, which says in its first
+                sentence that we do not provide refunds. A promise on the page a
+                buyer decides from, contradicted by the page it links to, is worse
+                than no promise. Unlimited users is true and is the thing that
+                actually distinguishes this from per-seat pricing. */}
             <p className="relative mt-5 text-xs text-muted-foreground">
-              Instant license key · GST invoice ·{" "}
-              <Link href="/refund-policy" className="underline-offset-2 hover:text-foreground hover:underline">
-                30-day refund policy
-              </Link>
+              Instant license key · GST invoice · Unlimited users
             </p>
           </div>
         </Reveal>
