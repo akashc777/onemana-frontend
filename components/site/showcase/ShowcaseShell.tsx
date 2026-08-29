@@ -61,7 +61,7 @@ export function ShowcaseShell({
         <div className="flex min-w-0 items-center gap-2">
           <OneCampLogo className="h-5 w-5 flex-shrink-0 rounded" />
           <span className="status-pulse h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" aria-hidden />
-          <span className="truncate text-xs font-semibold text-foreground sm:text-sm">Kestrel Systems</span>
+          <span className="truncate text-xs font-semibold text-foreground sm:text-sm">Acme Inc</span>
         </div>
         <div className="hidden max-w-[12rem] flex-1 items-center gap-2 rounded-md border border-border/70 bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground sm:flex lg:max-w-xs">
           <IconSearch className="h-3.5 w-3.5 flex-shrink-0" />
