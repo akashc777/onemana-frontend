@@ -113,7 +113,7 @@ export default async function HomePage() {
           title={governance.title}
           subtitle={governance.subtitle}
         />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
           {governance.points.map((p, i) => (
             <FeatureCard key={p.title} icon={p.icon} title={p.title} body={p.body} index={i} />
           ))}
@@ -164,7 +164,7 @@ export default async function HomePage() {
           title="The work the AI is governed over"
           subtitle="Governance is only worth something if there is real work behind it. This is the surface the agents operate on, under one login on one server."
         />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
           {features.map((f, i) => (
             <FeatureCard key={f.title} icon={f.icon} title={f.title} body={f.body} index={i} />
           ))}

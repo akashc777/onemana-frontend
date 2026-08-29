@@ -90,16 +90,24 @@ export function FeatureCard({
 }) {
   const color = categoryColors[ICON_TO_CATEGORY[icon]];
   return (
-    <Reveal delay={(index % 3) * 60}>
-      <div className="card-premium feature-module-card group card card-hover relative h-full bg-card/90 backdrop-blur-sm">
-        <span className="card-shine" aria-hidden />
-        <span className={`feature-halo absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100 ${color.bg}`} aria-hidden />
-        <div className={`feature-icon-wrap grid h-10 w-10 place-items-center rounded-lg ${color.bg} ${color.text}`}>
-          <FeatureIcon icon={icon} className="h-5 w-5" />
+    <Reveal delay={(index % 2) * 70}>
+      {/* NO CARD. This was a bordered, shadowed, backdrop-blurred box carrying a
+          shine sweep and a blurred halo on hover: five decorative layers around
+          two paragraphs of text. A card should exist when elevation says
+          something about hierarchy, and here every item is a peer of every other,
+          so the box was saying nothing and adding noise.
+          What is left is what a reader needs: an icon to anchor the eye, a title,
+          and the text. The hairline rule marks where one item ends and the next
+          begins, which is the only job the border was really doing. */}
+      <article className="group relative h-full border-t border-border pt-6">
+        <div className={`grid h-9 w-9 place-items-center rounded-md ${color.bg} ${color.text}`}>
+          <FeatureIcon icon={icon} className="h-[18px] w-[18px]" />
         </div>
-        <h3 className="mt-4 text-sm font-semibold text-foreground">{title}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{body}</p>
-      </div>
+        <h3 className="mt-5 text-[0.9375rem] font-semibold tracking-[-0.01em] text-foreground">
+          {title}
+        </h3>
+        <p className="mt-2 max-w-prose text-sm leading-[1.7] text-muted-foreground">{body}</p>
+      </article>
     </Reveal>
   );
 }
