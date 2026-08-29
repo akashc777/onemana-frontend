@@ -566,6 +566,24 @@ export interface AdminOptOut {
   source?: string;
 }
 
+/** pending: never accepted yet. sent: a provider took it. dead: attempts exhausted, needs a person. */
+export type OutboxStatus = "pending" | "sent" | "dead";
+
+export interface OutboxEmail {
+  id: string;
+  to_email: string;
+  to_name: string;
+  subject: string;
+  /** Body and attachments are deliberately not returned: a licence key lives in the HTML. */
+  kind: string;
+  status: OutboxStatus;
+  attempts: number;
+  last_error: string;
+  next_attempt_at: string;
+  created_at: string;
+  sent_at?: string | null;
+}
+
 export const adminApi = {
   /** Who asked to stop receiving announcements, newest first. */
   async unsubscribed(): Promise<AdminOptOut[]> {
@@ -757,6 +775,28 @@ export const adminApi = {
       headers: { "X-Admin-Token": getToken() },
     });
     if (!res.ok) throw new Error("Failed to delete order");
+  },
+  // Transactional email that has been attempted, with what happened. Answers
+  // "did that customer get their licence key", which before the outbox could
+  // only be answered by grepping a log.
+  async listEmails(status?: OutboxStatus): Promise<{ emails: OutboxEmail[]; counts: Record<string, number> }> {
+    const q = status ? `?status=${encodeURIComponent(status)}` : "";
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/emails${q}`, {
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to load emails");
+    const d = (data as { data?: { emails?: OutboxEmail[]; counts?: Record<string, number> } })?.data;
+    return { emails: d?.emails || [], counts: d?.counts || {} };
+  },
+  async resendEmail(id: string): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/emails/${id}/resend`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to queue the resend");
+    return (data as { msg?: string })?.msg || "Queued";
   },
   async refundOrder(id: string): Promise<string> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}/refund`, {

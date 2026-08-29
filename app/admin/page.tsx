@@ -5,6 +5,7 @@ import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { MetricsPanel } from "@/components/admin/MetricsPanel";
 import { OrdersTable } from "@/components/admin/OrdersTable";
+import { EmailsTable } from "@/components/admin/EmailsTable";
 import { CustomersTable } from "@/components/admin/CustomersTable";
 import { InvoicesTable } from "@/components/admin/InvoicesTable";
 import { SubscriptionsTable } from "@/components/admin/SubscriptionsTable";
@@ -17,7 +18,9 @@ import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 import { GiftForm } from "@/components/admin/GiftForm";
 import { WorkspacesPanel } from "@/components/admin/WorkspacesPanel";
 
-const TABS = ["metrics", "orders", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
+// "emails" sits next to orders because that is the pairing that matters: an
+// order is only fulfilled once its email actually left the building.
+const TABS = ["metrics", "orders", "emails", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -57,6 +60,7 @@ export default function AdminPage() {
 
       {tab === "metrics" && <MetricsPanel />}
       {tab === "orders" && <OrdersTable />}
+      {tab === "emails" && <EmailsTable />}
       {tab === "workspaces" && <WorkspacesPanel />}
       {tab === "earnings" && <EarningsPanel />}
       {tab === "subscriptions" && <SubscriptionsTable />}
