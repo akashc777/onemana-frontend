@@ -44,7 +44,7 @@ export const governance = {
     {
       icon: "audit" as FeatureIconKey,
       title: "If it can't be recorded, it doesn't happen",
-      body: "The audit entry is written before the action runs, and a failure to write it aborts the call. That ordering is the point: a decision that was made and never recorded is worse than one recorded and abandoned, because only the second is discoverable afterwards.",
+      body: "When an agent calls a tool, the audit entry is written before the call and a failure to write it refuses the call. That ordering is the point: a decision that was made and never recorded is worse than one recorded and abandoned, because only the second is discoverable afterwards. Administrative changes are logged too, off the request path, so a slow write never blocks an admin.",
     },
     {
       icon: "lock" as FeatureIconKey,
@@ -294,7 +294,10 @@ export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", 
  * The lead stat used to be "12-in-1 tools in one install", which argued the case this positioning
  * abandons — and invited the comparison OneCamp loses, module against category leader. "0 agent actions
  * that run unaudited" argues the case it wins, and it is a literal description of the code path: the
- * audit write precedes the action and a failure to write it aborts the call.
+ * audit write precedes the action and a failure to write it refuses the call.
+ * That holds for an agent's tool calls. Administrative changes are logged
+ * best-effort on a detached goroutine, so the copy says which is which rather
+ * than claiming the strong guarantee for both.
  */
 export const stats = [
   { value: "0", label: "agent actions that run unaudited" },
