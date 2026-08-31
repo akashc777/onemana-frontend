@@ -62,6 +62,11 @@ export const governance = {
       body: "Local inference through Ollama by default. Turn on local-only mode and the server refuses to activate a cloud provider at all, rather than warning you and allowing it. Point it at OpenAI or Anthropic when you want to, with PII redaction on the way out.",
     },
     {
+      icon: "ai" as FeatureIconKey,
+      title: "So can the meeting audio",
+      body: "Speech to text runs on your server too, from a Whisper model in your own compose stack, so a recorded call is never uploaded to a transcription vendor and nothing is billed per minute. Deepgram and Google are still there if you prefer them. The difference is that the settings page tells you which option sends your meetings where, instead of leaving you to work it out from a vendor's name.",
+    },
+    {
       icon: "teams" as FeatureIconKey,
       title: "Offboarding reaches the agents",
       body: "Deactivating someone is re-evaluated live at every authorisation surface, so their agents and API tokens stop working immediately without anyone hunting for credentials to revoke. Bots and attribution-only identities can never be the authority for a call in the first place.",
@@ -369,6 +374,7 @@ export const pricingComparison = {
       { label: "Stack", value: "Slack, Notion, Asana, Zoom, calendar" },
       { label: "Annual spend", value: "$3,000–8,000 for ~20 people" },
       { label: "AI", value: "Per-seat add-on, in someone else's cloud" },
+      { label: "Meetings", value: "Transcribed by a vendor, billed per minute" },
       { label: "Billing", value: "Per seat, per tool, every year" },
     ],
   },
@@ -378,6 +384,7 @@ export const pricingComparison = {
     rows: [
       { label: "Stack", value: "Chat, docs, tasks, tables, video, calendar, AI" },
       { label: "AI", value: "Included, governed, runs on your hardware" },
+      { label: "Meetings", value: "Transcribed on your server, no per-minute bill" },
       { label: "Billing", value: "Unlimited users, no per-seat fees" },
       { label: "Choice", value: "Lifetime self-host or managed cloud" },
     ],
