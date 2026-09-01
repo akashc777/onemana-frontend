@@ -87,7 +87,7 @@ export function HeroThree() {
       transparent: true,
       depthWrite: false,
       blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
-      color: new THREE.Color("#FF4D00"),
+      color: new THREE.Color("#c84f00"),
       opacity: isDark ? 0.95 : 0.55,
       sizeAttenuation: true,
     });
@@ -97,7 +97,7 @@ export function HeroThree() {
     group.add(points);
     // A faint inner core of cooler dots for depth.
     const coreMat = material.clone();
-    coreMat.color = new THREE.Color(isDark ? "#FF8A4C" : "#FF6B2E");
+    coreMat.color = new THREE.Color(isDark ? "#FF8A4C" : "#e97c48");
     coreMat.size = 0.32;
     coreMat.opacity = isDark ? 0.5 : 0.3;
     const core = new THREE.Points(geometry, coreMat);

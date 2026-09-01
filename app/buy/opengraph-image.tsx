@@ -44,11 +44,11 @@ export default async function BuyOpenGraphImage() {
             right: 0,
             height: 4,
             display: "flex",
-            background: "#FF4D00",
+            background: "#c84f00",
           }}
         />
 
-        <div style={{ display: "flex", fontSize: 18, fontWeight: 600, color: "#FF4D00", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        <div style={{ display: "flex", fontSize: 18, fontWeight: 600, color: "#c84f00", letterSpacing: "0.08em", textTransform: "uppercase" }}>
           Get OneCamp
         </div>
         <div style={{ display: "flex", marginTop: 28, fontSize: 60, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
@@ -63,7 +63,7 @@ export default async function BuyOpenGraphImage() {
               display: "flex",
               padding: "12px 22px",
               borderRadius: 8,
-              background: "#FF4D00",
+              background: "#c84f00",
               fontSize: 24,
               fontWeight: 600,
               color: "#ffffff",
@@ -85,7 +85,7 @@ export default async function BuyOpenGraphImage() {
             ${site.cloudPriceUsd}/mo cloud
           </div>
         </div>
-        <div style={{ display: "flex", marginTop: 40, fontSize: 20, fontWeight: 600, color: "#FF4D00" }}>
+        <div style={{ display: "flex", marginTop: 40, fontSize: 20, fontWeight: 600, color: "#c84f00" }}>
           onemana.dev/buy
         </div>
       </div>

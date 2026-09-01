@@ -63,8 +63,8 @@ export function StepsConnector() {
       <defs>
         <linearGradient id="steps-flow" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#FF8A00" />
-          <stop offset="0.5" stopColor="#FF4D00" />
-          <stop offset="1" stopColor="#E04400" />
+          <stop offset="0.5" stopColor="#c84f00" />
+          <stop offset="1" stopColor="#9b3500" />
         </linearGradient>
       </defs>
 

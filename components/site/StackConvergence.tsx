@@ -124,7 +124,7 @@ export function StackConvergence() {
       <div
         className="core-halo pointer-events-none absolute left-1/2 top-1/2 h-44 w-44 rounded-full opacity-40 blur-3xl dark:opacity-25"
         style={{
-          background: "conic-gradient(from 0deg, #FF4D00, #FF8A00, #FFB347, #FF4D00)",
+          background: "conic-gradient(from 0deg, #c84f00, #FF8A00, #FFB347, #c84f00)",
         }}
         aria-hidden
       />
@@ -132,17 +132,17 @@ export function StackConvergence() {
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full text-border" aria-hidden>
         <defs>
           <linearGradient id="flow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FF4D00" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#FF4D00" stopOpacity="0.75" />
+            <stop offset="0%" stopColor="#c84f00" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#c84f00" stopOpacity="0.75" />
           </linearGradient>
           <linearGradient id="beam-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100">
             <stop offset="0%" stopColor="#FF8A00" stopOpacity="0.15" />
-            <stop offset="45%" stopColor="#FF4D00" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#FF6B2E" stopOpacity="0.35" />
+            <stop offset="45%" stopColor="#c84f00" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#e97c48" stopOpacity="0.35" />
           </linearGradient>
           <radialGradient id="core-radial" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FF4D00" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#FF4D00" stopOpacity="0" />
+            <stop offset="0%" stopColor="#c84f00" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#c84f00" stopOpacity="0" />
           </radialGradient>
           <filter id="particle-glow" x="-100%" y="-100%" width="300%" height="300%">
             <feGaussianBlur stdDeviation="0.35" result="blur" />
@@ -187,7 +187,7 @@ export function StackConvergence() {
                 className="convergence-flow"
                 style={{ animationDelay: `${i * 0.35}s` }}
               />
-              <circle r="1.1" fill="#FF6B2E" filter="url(#particle-glow)" opacity="0.95">
+              <circle r="1.1" fill="#e97c48" filter="url(#particle-glow)" opacity="0.95">
                 <animateMotion
                   dur={`${BEAM_DUR}s`}
                   begin={`${i * 0.5}s`}
@@ -212,11 +212,11 @@ export function StackConvergence() {
         })}
 
         <g transform="translate(50, 50)">
-          <circle r="14" fill="none" stroke="#FF4D00" strokeWidth="0.35" opacity="0.3">
+          <circle r="14" fill="none" stroke="#c84f00" strokeWidth="0.35" opacity="0.3">
             <animate attributeName="r" dur="3s" repeatCount="indefinite" values="13;16;13" keyTimes="0;0.7;1" />
             <animate attributeName="opacity" dur="3s" repeatCount="indefinite" values="0.4;0;0.4" keyTimes="0;0.7;1" />
           </circle>
-          <circle r="10" fill="none" stroke="#FF4D00" strokeWidth="0.2" opacity="0.2">
+          <circle r="10" fill="none" stroke="#c84f00" strokeWidth="0.2" opacity="0.2">
             <animate attributeName="r" dur="3s" repeatCount="indefinite" values="9;12;9" keyTimes="0;0.15;1" begin="0.6s" />
             <animate attributeName="opacity" dur="3s" repeatCount="indefinite" values="0.25;0;0.25" keyTimes="0;0.7;1" begin="0.6s" />
           </circle>

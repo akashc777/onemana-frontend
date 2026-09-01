@@ -60,7 +60,7 @@ export function PostOgCard({ eyebrow, title, meta }: { eyebrow: string; title: s
           background: "radial-gradient(ellipse 80% 60% at 18% -10%, rgba(255,77,0,0.14), transparent 70%)",
         }}
       />
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, display: "flex", background: "#FF4D00" }} />
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, display: "flex", background: "#c84f00" }} />
 
       <div
         style={{
@@ -88,7 +88,7 @@ export function PostOgCard({ eyebrow, title, meta }: { eyebrow: string; title: s
               display: "flex",
               fontSize: 20,
               fontWeight: 600,
-              color: "#FF4D00",
+              color: "#c84f00",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
             }}
@@ -114,7 +114,7 @@ export function PostOgCard({ eyebrow, title, meta }: { eyebrow: string; title: s
         {/* Footer: meta + domain */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ display: "flex", fontSize: 24, fontWeight: 500, color: "#5f6368" }}>{meta || ""}</span>
-          <span style={{ display: "flex", fontSize: 22, fontWeight: 600, color: "#FF4D00" }}>onemana.dev</span>
+          <span style={{ display: "flex", fontSize: 22, fontWeight: 600, color: "#c84f00" }}>onemana.dev</span>
         </div>
       </div>
     </div>

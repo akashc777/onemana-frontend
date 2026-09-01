@@ -73,7 +73,7 @@ export function OgCard() {
           right: 0,
           height: 4,
           display: "flex",
-          background: "#FF4D00",
+          background: "#c84f00",
         }}
       />
 
@@ -113,7 +113,7 @@ export function OgCard() {
             two characters too long ships as a cropped image nobody notices until it is in a tweet.
           */}
           <span style={{ display: "flex" }}>AI with permissions,</span>
-          <span style={{ display: "flex", color: "#FF4D00" }}>not promises.</span>
+          <span style={{ display: "flex", color: "#c84f00" }}>not promises.</span>
           <span style={{ display: "flex", marginTop: 10, fontSize: 52, color: "#222222" }}>On your own server.</span>
         </div>
 
@@ -121,7 +121,7 @@ export function OgCard() {
           {site.tagline}
         </div>
 
-        <div style={{ display: "flex", marginTop: 48, fontSize: 20, fontWeight: 600, color: "#FF4D00" }}>
+        <div style={{ display: "flex", marginTop: 48, fontSize: 20, fontWeight: 600, color: "#c84f00" }}>
           onemana.dev
         </div>
       </div>

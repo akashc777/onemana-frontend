@@ -76,8 +76,8 @@ export function VisitorMap({ data }: { data: CountryCount[] }) {
               }
               onMouseLeave={() => setHover(null)}
             >
-              <circle r={r + 4} fill="#FF4D00" opacity={0.15} />
-              <circle r={r} fill="#FF4D00" opacity={0.75} stroke="#FF6B2E" strokeWidth={0.6} />
+              <circle r={r + 4} fill="#c84f00" opacity={0.15} />
+              <circle r={r} fill="#c84f00" opacity={0.75} stroke="#e97c48" strokeWidth={0.6} />
             </Marker>
           );
         })}

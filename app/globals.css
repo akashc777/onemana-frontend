@@ -235,13 +235,13 @@ body {
     --tw-prose-body: rgb(var(--foreground) / 0.92);
     --tw-prose-headings: rgb(var(--foreground));
     --tw-prose-lead: rgb(var(--muted-foreground));
-    --tw-prose-links: #ff4d00;
+    --tw-prose-links: #c84f00;
     --tw-prose-bold: rgb(var(--foreground));
     --tw-prose-counters: rgb(var(--muted-foreground));
     --tw-prose-bullets: rgb(var(--muted-foreground));
     --tw-prose-hr: rgb(var(--border));
     --tw-prose-quotes: rgb(var(--muted-foreground));
-    --tw-prose-quote-borders: #ff4d00;
+    --tw-prose-quote-borders: #c84f00;
     --tw-prose-captions: rgb(var(--muted-foreground));
     --tw-prose-code: rgb(var(--foreground));
     --tw-prose-pre-code: rgb(var(--foreground));
@@ -260,7 +260,7 @@ body {
   }
 
   .prose :where(a):not(:where([class~="not-prose"] *)) {
-    color: #ff4d00;
+    color: #c84f00;
   }
 }
 
@@ -305,7 +305,7 @@ body {
     transform-origin: 0 50%;
     transform: scaleX(var(--scroll-progress, 0));
     will-change: transform;
-    background: linear-gradient(90deg, #ff4d00, #ff8a00 55%, #ff6b2e);
+    background: linear-gradient(90deg, #c84f00, #ff8a00 55%, #e97c48);
     box-shadow: 0 0 12px rgb(var(--glow-brand) / 0.35);
   }
 
@@ -402,7 +402,7 @@ body {
 
   .premium-frame-accent {
     @apply h-0.5 w-full shrink-0;
-    background: linear-gradient(90deg, #ff4d00, #ff8a00);
+    background: linear-gradient(90deg, #c84f00, #ff8a00);
   }
 
   .premium-cta {
@@ -429,11 +429,11 @@ body {
 
   .text-shimmer-brand {
     background: linear-gradient(105deg,
-        #ff4d00 0%,
+        #c84f00 0%,
         #ff8a00 35%,
-        #ff6b2e 50%,
+        #e97c48 50%,
         #ff8a00 65%,
-        #ff4d00 100%);
+        #c84f00 100%);
     background-size: 220% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -566,7 +566,7 @@ body {
   .group:hover .feat-video-rec,
   .group:focus-within .feat-video-rec {
     animation: feat-rec-pulse 1.2s ease-in-out infinite;
-    fill: #ff4d00;
+    fill: #c84f00;
   }
 
   .group:hover .feat-video-play,
@@ -577,7 +577,7 @@ body {
   .group:hover .feat-cal-dot,
   .group:focus-within .feat-cal-dot {
     animation: feat-blink 1.4s ease-in-out infinite;
-    stroke: #ff4d00;
+    stroke: #c84f00;
   }
 
   .group:hover .feat-team-a,
@@ -603,7 +603,7 @@ body {
   }
 
   .stat-value-glow {
-    background: linear-gradient(135deg, rgb(var(--foreground)), #ff6b2e 80%);
+    background: linear-gradient(135deg, rgb(var(--foreground)), #e97c48 80%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -1296,7 +1296,7 @@ body {
     background: none;
     -webkit-background-clip: unset;
     background-clip: unset;
-    color: #ff4d00;
+    color: #c84f00;
   }
 
   .card-premium::before {
