@@ -5,7 +5,7 @@ import { OneCampLogo, OneManaLogo } from "@/components/site/BrandMarks";
 export function Footer() {
   return (
     <footer className="relative mt-4 overflow-hidden bg-muted/40 sm:mt-8">
-      <div aria-hidden className="cf-footer-grid pointer-events-none absolute inset-0" />
+      <div aria-hidden className="footer-grid pointer-events-none absolute inset-0" />
       <div className="container-x relative">
         <div className="section-divider" role="separator" aria-hidden />
         <div className="grid grid-cols-2 gap-8 py-14 md:grid-cols-5">

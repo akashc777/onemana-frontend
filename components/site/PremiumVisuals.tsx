@@ -5,9 +5,9 @@ import type { TrustIconKey } from "@/lib/content";
 export function HeroAmbient() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <div className="cf-orange-beam absolute inset-0" />
+      <div className="brand-beam absolute inset-0" />
       <div
-        className="cf-line-grid absolute inset-0 opacity-[0.5] dark:opacity-[0.28] [mask-image:linear-gradient(to_bottom,black_0%,black_45%,transparent_88%)]"
+        className="line-grid absolute inset-0 opacity-[0.5] dark:opacity-[0.28] [mask-image:linear-gradient(to_bottom,black_0%,black_45%,transparent_88%)]"
       />
       <div
         className="absolute inset-x-0 top-[42%] h-px opacity-[0.35] dark:opacity-[0.2]"

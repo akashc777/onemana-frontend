@@ -3,38 +3,61 @@
 @tailwind utilities;
 
 :root {
-  /* Cloudflare-inspired neutrals: crisp white canvas, ink text, hairline borders */
-  --background: 255 255 255;
-  --foreground: 34 34 34;
-  --muted: 245 246 248;
-  --muted-foreground: 95 99 104;
-  --border: 225 228 232;
-  --accent: 241 243 246;
-  --accent-foreground: 34 34 34;
-  --card: 255 255 255;
-  --ring: 34 34 34;
-  --grid-line: 225 228 232;
-  --dot-grid: 210 214 220;
-  --surface-raised: 250 251 252;
-  --glow-brand: 255 77 0;
-  --cf-orange: 243 128 32;
+  /* Shared with the product. This used to be described as "Cloudflare inspired"
+     and it was: the accent was Cloudflare's orange, on cool grey neutrals, while
+     the app it sells was shadcn's achromatic grey. A visitor met one company on
+     the marketing site and a different one after paying, which is the single
+     most expensive thing a small product can get wrong about its own look.
+
+     These values are the exact sRGB of the app's OKLCH tokens. Same ground, same
+     ink, same hairline, same accent. See app/globals.css in the workspace. */
+  --background: 254 253 252;
+  --foreground: 22 19 16;
+  --muted: 246 244 241;
+  --muted-foreground: 116 111 105;
+  --border: 230 227 224;
+  --accent: 246 243 240;
+  --accent-foreground: 22 19 16;
+  --card: 255 254 253;
+  --ring: 185 74 0;
+  --grid-line: 230 227 224;
+  --dot-grid: 213 208 202;
+  --surface-raised: 249 247 245;
+  /* The accent, and the only place saturation is spent. Deeper than the orange
+     it replaces, which was a borrowed neon; this one clears WCAG AA both as text
+     on the page and as a ground under white, which the old one did not. */
+  --brand: 185 74 0;
+  --glow-brand: 185 74 0;
 }
 
+
 .dark {
-  --background: 24 24 27;
-  --foreground: 245 246 248;
-  --muted: 35 36 40;
-  --muted-foreground: 156 160 166;
-  --border: 52 54 60;
-  --accent: 40 42 48;
-  --accent-foreground: 245 246 248;
-  --card: 30 31 35;
-  --ring: 245 246 248;
-  --grid-line: 52 54 60;
-  --dot-grid: 58 60 66;
-  --surface-raised: 28 29 33;
-  --glow-brand: 255 107 46;
-  --cf-orange: 243 128 32;
+  --background: 18 15 12;
+  --foreground: 248 247 244;
+  --muted: 41 38 34;
+  --muted-foreground: 168 162 155;
+  --border: 42 39 35;
+  --accent: 44 40 36;
+  --accent-foreground: 248 247 244;
+  --card: 25 22 18;
+  --ring: 242 140 92;
+  --grid-line: 42 39 35;
+  --dot-grid: 56 51 46;
+  --surface-raised: 32 28 24;
+  /* The accent lifts on a dark ground rather than reusing the light value, for
+     the same reason it does in the product: the deep orange that reads as
+     confident on paper reads as mud on near black. */
+  --brand: 242 140 92;
+  --glow-brand: 242 140 92;
+}
+
+
+/* Headings take the display face, matching the product. One typeface was doing
+   the hero, the section headings, the body copy and the fine print alike, which
+   leaves nothing to build hierarchy out of once the decoration comes off. */
+h1, h2, h3 {
+  font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.018em;
 }
 
 html {
@@ -134,26 +157,26 @@ body {
   }
 
   /* Cloudflare-style line grid */
-  .cf-line-grid {
+  .line-grid {
     background-image:
       linear-gradient(rgb(var(--grid-line) / 0.55) 1px, transparent 1px),
       linear-gradient(90deg, rgb(var(--grid-line) / 0.55) 1px, transparent 1px);
     background-size: 48px 48px;
   }
 
-  .cf-orange-beam {
+  .brand-beam {
     background: radial-gradient(ellipse 90% 70% at 50% -20%,
         rgb(var(--glow-brand) / 0.14),
         transparent 62%);
   }
 
-  .dark .cf-orange-beam {
+  .dark .brand-beam {
     background: radial-gradient(ellipse 90% 70% at 50% -20%,
         rgb(var(--glow-brand) / 0.18),
         transparent 62%);
   }
 
-  .cf-section-grid {
+  .section-grid {
     background-image:
       linear-gradient(rgb(var(--grid-line) / 0.4) 1px, transparent 1px),
       linear-gradient(90deg, rgb(var(--grid-line) / 0.4) 1px, transparent 1px);
@@ -162,11 +185,11 @@ body {
     opacity: 0.55;
   }
 
-  .dark .cf-section-grid {
+  .dark .section-grid {
     opacity: 0.3;
   }
 
-  .cf-footer-grid {
+  .footer-grid {
     background-image:
       linear-gradient(rgb(var(--grid-line) / 0.35) 1px, transparent 1px),
       linear-gradient(90deg, rgb(var(--grid-line) / 0.35) 1px, transparent 1px);
@@ -175,7 +198,7 @@ body {
     opacity: 0.4;
   }
 
-  .dark .cf-footer-grid {
+  .dark .footer-grid {
     opacity: 0.22;
   }
 
@@ -1156,19 +1179,19 @@ body {
 }
 
 /* Section ambients - localized grid patches */
-.ambient-tour .cf-section-grid {
+.ambient-tour .section-grid {
   mask-image: radial-gradient(ellipse 70% 55% at 50% 45%, black, transparent 70%);
 }
 
-.ambient-features .cf-section-grid {
+.ambient-features .section-grid {
   mask-image: radial-gradient(ellipse 75% 50% at 30% 50%, black, transparent 68%);
 }
 
-.ambient-product .cf-section-grid {
+.ambient-product .section-grid {
   mask-image: radial-gradient(ellipse 65% 55% at 70% 40%, black, transparent 72%);
 }
 
-.ambient-pricing .cf-section-grid {
+.ambient-pricing .section-grid {
   mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 75%);
   opacity: 0.35;
 }

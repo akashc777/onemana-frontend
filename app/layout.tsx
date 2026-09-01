@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { fontMono, fontSans } from "@/lib/fonts";
+import { fontDisplay, fontMono, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { jsonLdScript } from "@/lib/jsonLd";
 import { defaultOgImages, defaultTwitterImages, OG_DESCRIPTION, OG_TITLE } from "@/lib/og-card";
@@ -91,7 +91,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${fontSans.variable} ${fontMono.variable} ${fontDisplay.variable}`} suppressHydrationWarning>
       <body className={`${fontSans.className} flex min-h-screen flex-col font-sans antialiased`}>
         <ThemeProvider>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />

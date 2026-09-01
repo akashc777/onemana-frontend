@@ -23,7 +23,7 @@ export function PageHeader({
 
   return (
     <section className={`relative overflow-hidden pt-14 sm:pt-16 ${className}`}>
-      <div aria-hidden className="cf-orange-beam pointer-events-none absolute inset-x-0 top-0 h-48 opacity-60" />
+      <div aria-hidden className="brand-beam pointer-events-none absolute inset-x-0 top-0 h-48 opacity-60" />
       <div className={`container-x relative z-10 ${divider ? "pb-6" : "pb-10"} ${centered ? "text-center" : ""}`}>
         {eyebrow && (
           <Reveal>

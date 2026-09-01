@@ -22,13 +22,23 @@ const config: Config = {
         },
         card: "rgb(var(--card) / <alpha-value>)",
         ring: "rgb(var(--ring) / <alpha-value>)",
+        // Pointed at the tokens rather than hardcoded.
+        //
+        // These were four literal hexes, so every bg-brand and text-brand in the
+        // site bypassed the CSS variables entirely: changing the palette in
+        // globals.css changed nothing a visitor could see, and the two files
+        // disagreed about what the brand colour even was. One source of truth
+        // now, and it is the one the product shares.
         brand: {
-          DEFAULT: "#FF4D00",
-          dark: "#E04400",
-          light: "#FF6B2E",
-          subtle: "#FFF4EE",
+          DEFAULT: "rgb(var(--brand) / <alpha-value>)",
+          // Derived from the one value rather than picked alongside it, so the
+          // hover state cannot drift away from the thing it is a hover state
+          // for. Eight call sites still use these two.
+          dark: "color-mix(in oklab, rgb(var(--brand)) 84%, black)",
+          light: "color-mix(in oklab, rgb(var(--brand)) 76%, white)",
+          subtle: "rgb(var(--brand) / 0.10)",
         },
-        ink: "#191919",
+        ink: "rgb(var(--foreground) / <alpha-value>)",
         canvas: {
           DEFAULT: "rgb(var(--background) / <alpha-value>)",
           soft: "rgb(var(--muted) / <alpha-value>)",
@@ -37,6 +47,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-display-face)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       maxWidth: {
