@@ -16,11 +16,12 @@ import { HeroMedia } from "@/components/site/HeroMedia";
 import { HeroReceipt } from "@/components/site/HeroReceipt";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { ModuleIndex } from "@/components/site/ModuleIndex";
+import { ControlIndex } from "@/components/site/ControlIndex";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { StackConvergence } from "@/components/site/StackConvergence";
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
-import { FeatureCard, StepCard, StatStrip, FaqItem, ControlGroup } from "@/components/site/marketing";
+import { FeatureCard, StepCard, StatStrip, FaqItem } from "@/components/site/marketing";
 import { StepsConnector } from "@/components/site/StepsConnector";
 import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
@@ -145,11 +146,12 @@ export default async function HomePage() {
           title={enterpriseControls.title}
           subtitle={enterpriseControls.subtitle}
         />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {enterpriseControls.groups.map((g, i) => (
-            <ControlGroup key={g.label} label={g.label} items={g.items} index={i} />
-          ))}
-        </div>
+        {/* The heading above this is "the boxes procurement makes you tick",
+            which describes a checklist rather than four cards compressed into
+            narrow columns. The ticks are gone with the cards: in a section
+            titled "already in the box", a tick beside every line contrasts with
+            nothing. */}
+        <ControlIndex groups={enterpriseControls.groups} />
       </Section>
 
       <Section divider className="overflow-hidden">
