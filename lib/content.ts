@@ -364,7 +364,12 @@ export const trustPoints: { icon: TrustIconKey; label: string; detail: string }[
 export const savingsPitch = {
   eyebrow: "The math",
   title: "One payment beats six subscriptions",
-  body: "A 20-person team often spends $3,000 to $8,000 per year on Slack, Notion, Asana, Zoom, Airtable, and calendar tools, and the AI in those is usually a per-seat add-on on top. OneCamp includes the agents, the local AI, the SSO, and the audit log in one install with unlimited users.",
+  // The number moved to the calculator below, where the visitor supplies their
+  // own headcount. Two statements of one argument is worse than either, and the
+  // vague range was the weaker of the two: a precise figure somebody typed the
+  // input to is evidence, a range is a claim. What stays here is the part the
+  // arithmetic cannot say, which is what you get rather than what you save.
+  body: "The AI in those tools is usually a per-seat add-on on top of the seat you already bought. OneCamp includes the agents, the local AI, the SSO and the audit log in one install, with unlimited users. Put your own team size in below.",
   highlight: "Pay once. Own it forever.",
 };
 
@@ -375,7 +380,7 @@ export const pricingComparison = {
     title: "Five separate subscriptions",
     rows: [
       { label: "Stack", value: "Slack, Notion, Asana, Zoom, calendar" },
-      { label: "Annual spend", value: "$3,000–8,000 for ~20 people" },
+      { label: "Annual spend", value: "Per seat, per tool, growing with headcount" },
       { label: "AI", value: "Per-seat add-on, in someone else's cloud" },
       { label: "Meetings", value: "Transcribed by a vendor, billed per minute" },
       { label: "Billing", value: "Per seat, per tool, every year" },

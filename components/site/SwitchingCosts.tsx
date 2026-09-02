@@ -22,6 +22,13 @@ const MIGRATION = [
     "People matched to their new accounts, avatars included",
 ]
 
+/** The honest half. A buyer asks this immediately after "can you import". */
+const NOT_MIGRATED = [
+    "Microsoft Teams exports, not yet",
+    "Slack apps, workflows and integrations",
+    "Huddles, and anything Slack does not put in an export",
+]
+
 const OPERATIONS = [
     { k: "Install", v: "One command. SSL, database and models included, usually under ten minutes." },
     { k: "Updates", v: "One command, and it refuses to start against a schema it does not match rather than corrupting anything." },
@@ -45,9 +52,23 @@ export const SwitchingCosts: React.FC = () => (
                     </li>
                 ))}
             </ul>
-            <p className="mt-4 text-xs leading-relaxed text-foreground/50">
+            <p className="mt-4 text-sm text-foreground/70">
                 It shows you a plan before it writes anything, de-duplicates so a second attempt cannot double-post
-                your history, and can be rolled back. Teams is not supported yet.
+                your history, and can be rolled back if you change your mind.
+            </p>
+
+            <h4 className="mt-5 text-sm font-medium text-foreground/90">What it will not bring</h4>
+            <ul className="mt-2 space-y-1.5 text-sm text-foreground/60">
+                {NOT_MIGRATED.map((m) => (
+                    <li key={m} className="flex gap-2">
+                        <span aria-hidden className="text-foreground/30">·</span>
+                        {m}
+                    </li>
+                ))}
+            </ul>
+            <p className="mt-4 text-xs leading-relaxed text-foreground/50">
+                Said here rather than discovered afterwards. An import that oversells itself costs more trust than the
+                features it was hiding were worth.
             </p>
         </div>
 
