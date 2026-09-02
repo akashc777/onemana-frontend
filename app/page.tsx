@@ -15,6 +15,7 @@ import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroMedia } from "@/components/site/HeroMedia";
 import { HeroReceipt } from "@/components/site/HeroReceipt";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
+import { ModuleIndex } from "@/components/site/ModuleIndex";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { StackConvergence } from "@/components/site/StackConvergence";
@@ -182,11 +183,12 @@ export default async function HomePage() {
           title="The work the AI is governed over"
           subtitle="Governance is only worth something if there is real work behind it. This is the surface the agents operate on, under one login on one server."
         />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
-            <FeatureCard key={f.title} icon={f.icon} title={f.title} body={f.body} index={i} />
-          ))}
-        </div>
+        {/* An index rather than twelve cards. The differentiators are argued
+            above this, so the honest job here is "does it have all the pieces",
+            and that question wants a list somebody can scan, not a grid of
+            equally weighted boxes with twelve pastel chips in twelve colours
+            assigned by position. */}
+        <ModuleIndex items={features} />
       </Section>
 
       <Section divider className="overflow-hidden">
