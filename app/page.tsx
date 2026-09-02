@@ -14,6 +14,7 @@ import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroMedia } from "@/components/site/HeroMedia";
 import { HeroReceipt } from "@/components/site/HeroReceipt";
+import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { StackConvergence } from "@/components/site/StackConvergence";
@@ -129,11 +130,12 @@ export default async function HomePage() {
           title={governance.title}
           subtitle={governance.subtitle}
         />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {governance.points.map((p, i) => (
-            <FeatureCard key={p.title} icon={p.icon} title={p.title} body={p.body} index={i} />
-          ))}
-        </div>
+        {/* A specification, not a card grid. These are guarantees that hold
+            together and a reader can refer to one of them, so numbering is true
+            rather than decorative. The pastel icon chips carried no information:
+            a shield beside "an agent can only do what its author could" said
+            nothing the sentence had not already said. */}
+        <GuaranteeList items={governance.points} />
       </Section>
 
       <Section id="enterprise" divider>
