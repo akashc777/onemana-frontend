@@ -13,6 +13,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroMedia } from "@/components/site/HeroMedia";
+import { HeroReceipt } from "@/components/site/HeroReceipt";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { StackConvergence } from "@/components/site/StackConvergence";
@@ -41,41 +42,54 @@ export default async function HomePage() {
         <HeroAmbient />
         <HeroThreeLazy />
         <div className="container-x">
-          <div className="mx-auto max-w-4xl text-center">
-            <Reveal>
-              <Badge dot>Built by OneMana · Self-hosted · Open-source frontend</Badge>
-            </Reveal>
-            <Reveal delay={60}>
-              <h1 className="mt-7 text-4xl font-semibold leading-[1.04] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.5rem]">
-                <span className="block">
-                  AI with <ShimmerText>permissions</ShimmerText>, not promises.
-                </span>
-                <span className="hero-line-2 mt-1 block tracking-[-0.04em]">On your own server.</span>
-              </h1>
-            </Reveal>
-            <Reveal delay={120}>
-              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                An agent here can only do what the person who authorised it could do, checked live on every
-                call. It cannot act at all unless the action is recorded first. Chat, docs, tasks,
-                tables, whiteboards, video, and calendar come with it, in one Docker deploy. No per-seat
-                fees, and nothing leaves your network.
-              </p>
-            </Reveal>
-            <Reveal delay={180}>
-              <div className="mt-9 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mx-auto sm:max-w-none sm:flex-row">
-                <ButtonLink href="/buy" variant="brandPremium" size="lg" className="w-full sm:w-auto">
-                  Get OneCamp
-                </ButtonLink>
-                <ButtonLink href={site.demoUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
-                  Try live demo
-                </ButtonLink>
-              </div>
-              <p className="mt-4 flex justify-center text-xs text-muted-foreground">
-                <GitHubStars className="!py-1.5" stars={stars} />
-              </p>
-            </Reveal>
-            <Reveal delay={240}>
-              <TrustStrip points={trustPoints} />
+          {/* ASYMMETRIC ON PURPOSE.
+              What was here was the default: centred pill badge, centred headline
+              with one word in the accent colour, centred subhead, two centred
+              buttons, a star pill, four icon cards. Every element symmetrical and
+              every element identical to every other product's front page.
+
+              The claim this product makes is falsifiable, which is rare enough to
+              build on: an agent cannot exceed the person who authorised it, and
+              the action is recorded before it happens. So the right column shows
+              the record rather than a screenshot, and it shows a REFUSAL, which
+              is the one thing a competitor without real authorisation cannot put
+              on their page. */}
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+            <div className="max-w-xl">
+              <Reveal>
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
+                  Self-hosted · Open-source frontend
+                </p>
+              </Reveal>
+              <Reveal delay={60}>
+                <h1 className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.4rem]">
+                  An agent can only do what the person behind it could.
+                </h1>
+              </Reveal>
+              <Reveal delay={120}>
+                <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  Checked live on every call, and written to the log before it acts. Chat, docs, tasks,
+                  video and calendar come with it, in one Docker deploy, with no per-seat fees and
+                  nothing leaving your network.
+                </p>
+              </Reveal>
+              <Reveal delay={180}>
+                <div className="mt-8 flex w-full flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center">
+                  <ButtonLink href="/buy" variant="brandPremium" size="lg" className="w-full sm:w-auto">
+                    Get OneCamp
+                  </ButtonLink>
+                  <ButtonLink href={site.demoUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
+                    Try live demo
+                  </ButtonLink>
+                  <span className="hidden text-xs text-muted-foreground sm:ml-1 sm:inline-flex">
+                    <GitHubStars className="!py-1.5" stars={stars} />
+                  </span>
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal delay={140} className="lg:pt-2">
+              <HeroReceipt />
             </Reveal>
           </div>
 
