@@ -1,4 +1,6 @@
 import Link from "next/link";
+import CostCalculator from "@/components/site/CostCalculator";
+import SwitchingCosts from "@/components/site/SwitchingCosts";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { features, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt, governance, enterpriseControls } from "@/lib/content";
 import { site } from "@/lib/site";
@@ -202,6 +204,15 @@ export default async function HomePage() {
         </Reveal>
       </Section>
 
+      <Section id="switching" divider>
+        <SectionHeading
+          eyebrow="Switching"
+          title="The two things that actually stop teams moving"
+          subtitle="Neither of them is price. You would lose your history, and somebody has to run it. Here are both answers, including the parts that are not flattering."
+        />
+        <SwitchingCosts />
+      </Section>
+
       <Section id="pricing" divider className="overflow-hidden">
         <SectionAmbient variant="pricing" />
         <SectionHeading
@@ -210,6 +221,14 @@ export default async function HomePage() {
           subtitle="One lifetime license for self-hosting, or fully managed OneCamp Cloud. Cloud includes a self-host license if you ever want to move."
         />
         <Pricing pricing={pricing} />
+
+        {/* The comparison used to live as prose in the twelfth FAQ item. Cost at
+            scale is the first reason teams leave per-seat tools, and what
+            converts is specific arithmetic rather than adjectives, so it belongs
+            under the price with the visitor's own headcount in it. */}
+        <div className="container-x mt-10">
+          <CostCalculator lifetimeUsd={pricing.lifetime_usd} />
+        </div>
 
         {/* Right after the price, where somebody who just decided not to buy
             today is still on the page. That is the whole audience this list
