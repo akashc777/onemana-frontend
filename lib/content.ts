@@ -325,7 +325,7 @@ export const testimonials = [
   },
   {
     quote:
-      "Something really sweet if you like to self-host for your team. Your team's self-hosted command center: chat, tasks, docs, and video meetings, all in one workspace you own. No per-seat pricing. No vendor lock-in. Just install, invite your team, and start collaborating. A $19 no-brainer.",
+      "Something really sweet if you like to self-host for your team. Your team's self-hosted command center: chat, tasks, docs, and video meetings, all in one workspace you own. No per-seat pricing. No AI credits. No vendor lock-in. Just install, invite your team, and start collaborating. One payment, and it replaces four subscriptions.",
     author: "Terry Carson",
     role: "Self-hosting community",
   },

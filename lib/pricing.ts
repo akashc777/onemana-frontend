@@ -16,14 +16,19 @@ export interface Pricing {
   cloud_configured: boolean;
 }
 
+/**
+ * The licence costs exactly one month of the managed plan. That is the whole
+ * pricing story in one line, and it is why these two numbers are equal rather
+ * than merely close: one month of cloud, or own it forever.
+ */
 export const defaultPricing: Pricing = {
   currency: "INR",
-  lifetime_inr: 2000,
-  lifetime_usd: 19,
-  lifetime_paise: 200000,
-  cloud_inr: 10000,
+  lifetime_inr: 9999,
+  lifetime_usd: 99,
+  lifetime_paise: 999900,
+  cloud_inr: 9999,
   cloud_usd: 99,
-  cloud_paise: 1000000,
+  cloud_paise: 999900,
   cloud_seats: 30,
   cloud_configured: false,
 };

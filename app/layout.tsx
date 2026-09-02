@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { fontDisplay, fontMono, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
+import { getPricing } from "@/lib/pricing";
 import { jsonLdScript } from "@/lib/jsonLd";
 import { defaultOgImages, defaultTwitterImages, OG_DESCRIPTION, OG_TITLE } from "@/lib/og-card";
 import { Nav } from "@/components/site/Nav";
@@ -65,31 +66,38 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${site.url}/#organization`,
-      name: site.company,
-      url: site.url,
-      description: site.description,
-    },
-    {
-      "@type": "SoftwareApplication",
-      name: site.name,
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Docker, Linux",
-      description: site.description,
-      offers: [
-        { "@type": "Offer", price: "2000", priceCurrency: "INR", name: "Lifetime self-host license (≈ $19)" },
-        { "@type": "Offer", price: "10000", priceCurrency: "INR", name: "OneCamp Cloud - managed hosting, monthly (≈ $99)" },
-      ],
-    },
-  ],
-};
+// Built per render from the same source the page quotes, because this used to be
+// a second hardcoded copy: an admin price change updated the page and left the
+// structured data telling search engines the old number.
+function buildJsonLd(lifetimeInr: number, lifetimeUsd: number, cloudInr: number, cloudUsd: number) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${site.url}/#organization`,
+        name: site.company,
+        url: site.url,
+        description: site.description,
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: site.name,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Docker, Linux",
+        description: site.description,
+        offers: [
+          { "@type": "Offer", price: String(lifetimeInr), priceCurrency: "INR", name: `Lifetime self-host license (≈ $${lifetimeUsd})` },
+          { "@type": "Offer", price: String(cloudInr), priceCurrency: "INR", name: `OneCamp Cloud - managed hosting, monthly (≈ $${cloudUsd})` },
+        ],
+      },
+    ],
+  };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const pricing = await getPricing();
+  const jsonLd = buildJsonLd(pricing.lifetime_inr, pricing.lifetime_usd, pricing.cloud_inr, pricing.cloud_usd);
   return (
     <html lang="en" className={`${fontSans.variable} ${fontMono.variable} ${fontDisplay.variable}`} suppressHydrationWarning>
       <body className={`${fontSans.className} flex min-h-screen flex-col font-sans antialiased`}>

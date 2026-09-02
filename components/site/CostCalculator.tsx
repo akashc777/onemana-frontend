@@ -22,11 +22,24 @@
 
 import React, { useMemo, useState } from "react"
 
-/** List prices per user per month, shown so the arithmetic is checkable. */
+/**
+ * List prices per user per month, shown so the arithmetic is checkable.
+ *
+ * `ai` marks a line that only applies when the visitor wants AI, so the toggle
+ * filters this one list rather than maintaining a second set of numbers that
+ * could drift from it.
+ *
+ * The AI line is deliberately conservative. Notion sold its AI add-on at $10
+ * per user per month before folding it into higher base prices in 2026, and
+ * agent runs are now billed separately at $10 per 1,000 credits with no
+ * published per-action rate. Charging the old add-on price understates what a
+ * team running agents actually pays, which is the right direction to be wrong in.
+ */
 const SEAT_COSTS = [
-    { name: "Slack Pro", usd: 8.75 },
-    { name: "Notion Business", usd: 10 },
-    { name: "Zoom Pro", usd: 13 },
+    { name: "Slack Pro", usd: 8.75, ai: false },
+    { name: "Notion Business", usd: 10, ai: false },
+    { name: "Zoom Pro", usd: 13, ai: false },
+    { name: "Notion AI, at its old add-on price", usd: 10, ai: true },
 ] as const
 
 /** A VPS that comfortably runs a team of this size, from the hardware FAQ. */
@@ -37,15 +50,17 @@ const fmt = (n: number) =>
 
 export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd }) => {
     const [people, setPeople] = useState(20)
+    const [withAi, setWithAi] = useState(true)
 
-    const { saasYear, oneCampYear, multiple } = useMemo(() => {
+    const { saasYear, oneCampYear, multiple, lines } = useMemo(() => {
         const seats = Math.max(1, Math.min(1000, people))
-        const perSeatMonth = SEAT_COSTS.reduce((n, t) => n + t.usd, 0)
+        const lines = SEAT_COSTS.filter((t) => !t.ai || withAi)
+        const perSeatMonth = lines.reduce((n, t) => n + t.usd, 0)
         const saasYear = perSeatMonth * seats * 12
         // First year, so the licence is included rather than amortised away.
         const oneCampYear = lifetimeUsd + SERVER_USD_PER_MONTH * 12
-        return { saasYear, oneCampYear, multiple: saasYear / oneCampYear }
-    }, [people, lifetimeUsd])
+        return { saasYear, oneCampYear, multiple: saasYear / oneCampYear, lines }
+    }, [people, lifetimeUsd, withAi])
 
     return (
         <div className="mx-auto max-w-2xl rounded-lg border border-border bg-canvas-raised p-6 sm:p-8">
@@ -63,6 +78,15 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd 
                     className="w-24 rounded-md border border-border bg-canvas px-3 py-1.5 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-brand/40"
                 />
                 <span className="text-sm text-foreground/80">people.</span>
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground/80">
+                    <input
+                        type="checkbox"
+                        checked={withAi}
+                        onChange={(e) => setWithAi(e.target.checked)}
+                        className="h-4 w-4 rounded border-border accent-[var(--brand)]"
+                    />
+                    We want AI too.
+                </label>
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -73,7 +97,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd 
                     <div className="mt-1 text-3xl font-semibold tabular-nums">{fmt(saasYear)}</div>
                     <div className="text-xs text-foreground/50">per year, and it grows with the team</div>
                     <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
-                        {SEAT_COSTS.map((t) => (
+                        {lines.map((t) => (
                             <li key={t.name}>
                                 {t.name}, {fmt(t.usd)}/user/mo
                             </li>
@@ -88,6 +112,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd 
                     <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
                         <li>{fmt(lifetimeUsd)} licence, paid once, unlimited users</li>
                         <li>{fmt(SERVER_USD_PER_MONTH)}/mo server that runs it</li>
+                        {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>
                     </ul>
                 </div>
