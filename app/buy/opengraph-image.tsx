@@ -1,14 +1,23 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/lib/site";
+import { getPricing } from "@/lib/pricing";
 import { loadOgFonts } from "@/lib/og-fonts";
 
 export const runtime = "edge";
+// alt cannot be async, so it quotes the build-time fallback. That fallback is
+// pinned equal to the pricing module by lib/priceConsistency.test.ts, so it is
+// only ever stale in the window between an admin price change and the next
+// deploy. The image itself does not have that limitation and reads the live
+// value below.
 export const alt = `Get OneCamp: $${site.priceUsd} lifetime or $${site.cloudPriceUsd}/mo cloud`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function BuyOpenGraphImage() {
-  const fonts = await loadOgFonts();
+  // The price on the card is the price we charge. It used to be a build-time
+  // constant, so an admin price change updated the page and left every shared
+  // link advertising the old number until somebody happened to redeploy.
+  const [fonts, pricing] = await Promise.all([loadOgFonts(), getPricing()]);
   return new ImageResponse(
     (
       <div
@@ -69,7 +78,7 @@ export default async function BuyOpenGraphImage() {
               color: "#ffffff",
             }}
           >
-            ${site.priceUsd} lifetime
+            ${pricing.lifetime_usd} lifetime
           </div>
           <div
             style={{
@@ -82,7 +91,7 @@ export default async function BuyOpenGraphImage() {
               color: "#5f6368",
             }}
           >
-            ${site.cloudPriceUsd}/mo cloud
+            ${pricing.cloud_usd}/mo cloud
           </div>
         </div>
         <div style={{ display: "flex", marginTop: 40, fontSize: 20, fontWeight: 600, color: "#c84f00" }}>
