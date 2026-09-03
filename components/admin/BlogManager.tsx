@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+
+import { BlogImportDialog } from "@/components/admin/BlogImportDialog";
 import { adminApi, type AdminBlogPost } from "@/lib/adminApi";
 import { formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +15,7 @@ export function BlogManager() {
   const [posts, setPosts] = useState<AdminBlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -59,10 +62,19 @@ export function BlogManager() {
     <div>
       <div className="mb-5 flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{posts.length} post{posts.length === 1 ? "" : "s"}</p>
-        <Button size="sm" onClick={() => setView({ mode: "new" })}>
-          + New post
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setImporting(true)}>
+            Import
+          </Button>
+          <Button size="sm" onClick={() => setView({ mode: "new" })}>
+            + New post
+          </Button>
+        </div>
       </div>
+
+      {importing && (
+        <BlogImportDialog onClose={() => setImporting(false)} onImported={() => void load()} />
+      )}
 
       {loading && <p className="py-8 text-center text-sm text-muted-foreground">Loading…</p>}
       {error && (

@@ -584,6 +584,51 @@ export interface OutboxEmail {
   sent_at?: string | null;
 }
 
+export interface BlogImportSource {
+  repo: string;
+  branch: string;
+  dir: string;
+}
+
+/** One post in the source repository, as offered for import. */
+export interface BlogImportCandidate {
+  path: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  tags: string[] | null;
+  cover_image: string;
+  date: string;
+  /** Already present here, so importing it again would be a no-op. */
+  imported: boolean;
+  /** Why it cannot be imported, when it cannot. */
+  problem?: string;
+}
+
+export interface BlogImportRequest {
+  paths: string[];
+  publish: boolean;
+  with_images: boolean;
+}
+
+/** "deferred" means the run hit its time or request budget, not that it failed. */
+export type BlogImportStatus = "created" | "skipped" | "failed" | "deferred";
+
+export interface BlogImportOutcome {
+  path: string;
+  slug?: string;
+  status: BlogImportStatus;
+  detail?: string;
+  post_id?: string;
+  cover_ok: boolean;
+}
+
+export interface BlogImportResult {
+  results: BlogImportOutcome[];
+  summary: Partial<Record<BlogImportStatus, number>>;
+}
+
 export const adminApi = {
   /** Who asked to stop receiving announcements, newest first. */
   async unsubscribed(): Promise<AdminOptOut[]> {
@@ -893,6 +938,28 @@ export const adminApi = {
 
   // ---- Blog CMS ----
   blogList: () => adminGet<{ data: AdminBlogPost[] }>("/onecamp/admin/blog").then((d) => d.data ?? []),
+
+  /** Posts the configured Jekyll repository holds, newest first. */
+  blogImportAvailable: () =>
+    adminGet<{ data: BlogImportCandidate[]; source: BlogImportSource }>("/onecamp/admin/blog/import"),
+
+  /**
+   * Import the selected posts.
+   *
+   * Sends repository PATHS, never URLs: the server composes every outbound
+   * request against its own host allowlist, so there is no way for this call to
+   * point it somewhere else.
+   */
+  async blogImportRun(req: BlogImportRequest): Promise<BlogImportResult> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/import`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify(req),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json?.msg || "Import failed");
+    return { results: json.data ?? [], summary: json.summary ?? {} };
+  },
   blogGet: (id: string) => adminGet<{ data: AdminBlogPost }>(`/onecamp/admin/blog/${id}`).then((d) => d.data),
   async blogCreate(payload: BlogPostPayload): Promise<AdminBlogPost> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/blog`, {

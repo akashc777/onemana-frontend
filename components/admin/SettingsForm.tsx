@@ -33,10 +33,36 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
     ],
   },
   {
+    group: "Blog import",
+    fields: [
+      {
+        key: "blog_import_repo",
+        label: "Source repository",
+        hint: 'owner/name of a public Jekyll repo, e.g. "akashc777/akashc777.github.io". Posts are then imported from Blog → Import.',
+      },
+      {
+        key: "blog_import_branch",
+        label: "Branch",
+        hint: 'The branch those posts live on. GitHub Pages repos are often "master" rather than "main".',
+      },
+      {
+        key: "blog_import_dir",
+        label: "Posts directory",
+        hint: 'Where the .md files are, normally "_posts".',
+      },
+      {
+        key: "blog_import_token",
+        label: "GitHub token (optional)",
+        type: "password",
+        hint: "Not needed for access, only for headroom: unauthenticated GitHub allows 60 requests an hour, and importing an archive with images uses more. Stored encrypted.",
+      },
+    ],
+  },
+  {
     group: "Pricing (admin-editable)",
     fields: [
       { key: "onecamp_price", label: "Lifetime price (paise)", type: "number", hint: "1000000 = ₹10,000 - the amount charged in INR (GST-inclusive)" },
-      { key: "onecamp_price_usd", label: "Lifetime price (USD)", type: "number", hint: "Display only, shown prominently. e.g. 19" },
+      { key: "onecamp_price_usd", label: "Lifetime price (USD)", type: "number", hint: "Display only, shown prominently. e.g. 99" },
       { key: "cloud_price", label: "Cloud price (paise/mo)", type: "number", hint: "1000000 = ₹10,000 - invoice amount (charge follows the Razorpay plan)" },
       { key: "cloud_price_usd", label: "Cloud price (USD/mo)", type: "number", hint: "Display only. e.g. 99" },
       { key: "cloud_seats", label: "Cloud seats", type: "number", hint: "Users included in the Cloud plan, e.g. 30" },
