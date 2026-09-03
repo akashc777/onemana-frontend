@@ -610,10 +610,18 @@ export interface BlogImportRequest {
   paths: string[];
   publish: boolean;
   with_images: boolean;
+  /**
+   * Re-fetch images for posts that are already here, instead of skipping them.
+   *
+   * Touches the cover and body only. Title, tags, status and publication date
+   * are left alone, because by the time anyone needs this a person may have
+   * edited them.
+   */
+  repair_images?: boolean;
 }
 
 /** "deferred" means the run hit its time or request budget, not that it failed. */
-export type BlogImportStatus = "created" | "skipped" | "failed" | "deferred";
+export type BlogImportStatus = "created" | "repaired" | "skipped" | "failed" | "deferred";
 
 export interface BlogImportOutcome {
   path: string;

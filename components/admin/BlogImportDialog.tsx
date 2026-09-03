@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/Button";
 /** Statuses that mean "nothing more to do here", so the row can be dimmed. */
 const DONE: Record<string, string> = {
   created: "text-emerald-700 dark:text-emerald-300",
+  repaired: "text-emerald-700 dark:text-emerald-300",
   skipped: "text-muted-foreground",
   deferred: "text-amber-700 dark:text-amber-300",
   failed: "text-red-600 dark:text-red-400",
@@ -41,6 +42,7 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
   const [outcomes, setOutcomes] = useState<BlogImportOutcome[] | null>(null);
   const [publish, setPublish] = useState(false);
   const [withImages, setWithImages] = useState(true);
+  const [repairImages, setRepairImages] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -63,9 +65,12 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
   // Only rows that can actually be imported are selectable, so the count on the
   // button is the number of posts that will be attempted, not a number that
   // quietly shrinks when the run starts.
+  // Repair works ON posts that are already here, so it inverts which rows are
+  // selectable. Without that the option would be visible and every row it
+  // applies to would be disabled.
   const importable = useMemo(
-    () => candidates.filter((c) => !c.imported && !c.problem),
-    [candidates],
+    () => candidates.filter((c) => !c.problem && (repairImages ? c.imported : !c.imported)),
+    [candidates, repairImages],
   );
 
   const toggle = (path: string) =>
@@ -85,6 +90,7 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
         paths: [...selected],
         publish,
         with_images: withImages,
+        repair_images: repairImages,
       });
       setOutcomes(res.results);
       setSelected(new Set());
@@ -153,8 +159,23 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
                   className="h-4 w-4"
                   checked={publish}
                   onChange={(e) => setPublish(e.target.checked)}
+                  disabled={repairImages}
                 />
                 Publish immediately, keeping the original date
+              </label>
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={repairImages}
+                  onChange={(e) => {
+                    setRepairImages(e.target.checked);
+                    // The two modes act on opposite sets of rows, so a
+                    // selection made in one is meaningless in the other.
+                    setSelected(new Set());
+                  }}
+                />
+                Re-fetch images for posts already imported
               </label>
               <button
                 type="button"
@@ -171,7 +192,7 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
 
             <div className="max-h-[45vh] space-y-1 overflow-y-auto rounded-xl border border-border p-2">
               {candidates.map((c) => {
-                const blocked = c.imported || Boolean(c.problem);
+                const blocked = Boolean(c.problem) || (repairImages ? !c.imported : c.imported);
                 return (
                   <label
                     key={c.path}
@@ -190,7 +211,7 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
                       <span className="block truncate font-medium text-foreground">{c.slug}</span>
                       <span className="block text-xs text-muted-foreground">
                         {c.date ? new Date(c.date).toLocaleDateString() : "no date"}
-                        {c.imported && " · already imported"}
+                        {c.imported && (repairImages ? " · here, can be repaired" : " · already imported")}
                         {c.problem && ` · ${c.problem}`}
                       </span>
                     </span>
@@ -231,7 +252,11 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
             Done
           </Button>
           <Button size="sm" onClick={run} disabled={running || selected.size === 0}>
-            {running ? "Importing…" : `Import ${selected.size || ""}`.trim()}
+            {running
+              ? repairImages
+                ? "Repairing…"
+                : "Importing…"
+              : `${repairImages ? "Repair" : "Import"} ${selected.size || ""}`.trim()}
           </Button>
         </div>
       </div>
