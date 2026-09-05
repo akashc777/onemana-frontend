@@ -45,10 +45,34 @@ function SuccessInner() {
           </h1>
 
           {isCloud ? (
-            <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-              Thanks for subscribing! <span className="font-medium text-foreground">Our team will contact you within 12 hours</span> to provision your managed workspace. We&apos;ve emailed your included self-host license and GST invoice to{" "}
-              <span className="font-medium text-foreground">{email}</span>.
-            </p>
+            /* THE FLOW WAITS HERE, ON THE CUSTOMER. A subscription creates the
+               instance in awaiting_setup and nothing is provisioned until an
+               address is chosen. This page used to say only that we would contact
+               them within 12 hours, and linked to the docs and GitHub but never to
+               the one page that unblocks it, so a paying subscriber had no reason
+               to go there and no idea anything was waiting. */
+            <>
+              <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+                Thanks for subscribing! Your workspace is fully managed. One quick step from
+                you and we start building it right away.
+              </p>
+              <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
+                <p className="font-medium text-foreground">Choose your workspace address</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Free on <span className="font-medium text-foreground">onemana.dev</span>, for example{" "}
+                  <span className="font-mono text-xs">acme.onemana.dev</span>. You can move to a domain
+                  you own later, from the same page, at no extra cost.
+                </p>
+                <ButtonLink href="/account" variant="brandPremium" className="mt-4">
+                  Choose your address
+                </ButtonLink>
+              </div>
+              <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
+                We&apos;ve emailed your included self-host license and GST invoice to{" "}
+                <span className="font-medium text-foreground">{email}</span>. Prefer us to set it up with
+                you? Reply to that email and we will.
+              </p>
+            </>
           ) : pending && !key ? (
             <p className="mx-auto mt-3 max-w-md text-muted-foreground">
               Thanks for your purchase! Your license key and setup instructions are being prepared and will arrive at{" "}

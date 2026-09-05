@@ -400,7 +400,10 @@ export const pricingComparison = {
 };
 
 export const cloudBenefits = [
-  "Fully managed hosting on your own subdomain",
+  // "your own subdomain" read as though the customer had to supply one, and the
+  // custom-domain move was never mentioned anywhere before purchase even though
+  // the portal has supported it for a while. Both are things a buyer weighs.
+  "Free address on onemana.dev, or bring your own domain",
   "Your own server. No database shared with anyone",
   "We handle SSL, monitoring, and uptime",
   "AI teammates included. Bring your own model key",
