@@ -22,8 +22,22 @@ import { legalPages } from "./legalPages"
  * the promise cannot precede the policy.
  */
 
-/** Where customer-facing copy lives. Admin screens describe refunds we issue manually. */
-const COPY_ROOTS = ["app", "components/site", "content"]
+/**
+ * Where customer-facing copy lives. Admin screens describe refunds we issue manually.
+ *
+ * `lib` IS HERE BECAUSE ITS ABSENCE MADE THIS TEST DECORATIVE. The bullet points
+ * under both plans on the checkout page, and the ones on the home page, are string
+ * arrays in lib/content.ts. They are the most likely place for a refund promise to
+ * be typed, because they are the list of reasons to buy, and they were the one
+ * place this check could not see. Adding "30-day money-back guarantee" to
+ * lifetimeBenefits passed cleanly.
+ *
+ * That is the same failure the file it was written to prevent: a promise on the
+ * page a buyer decides from, contradicted by the page it links to. A guard with a
+ * hole in the shape of the thing it guards is worse than none, because it is
+ * believed.
+ */
+const COPY_ROOTS = ["app", "components/site", "content", "lib"]
 
 /** Directories of internal tooling, which legitimately talk about refunding an order. */
 const NOT_MARKETING = ["components/admin", "app/admin"]
