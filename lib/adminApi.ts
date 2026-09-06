@@ -49,9 +49,22 @@ export interface AdminInstance {
   seats_total?: number | null;
   seats_active_30d?: number | null;
   seats_counted_at?: string | null;
+  /** The release this workspace is actually running, read from its own
+   *  version.txt. null means unknown, which the updater treats as "do not act"
+   *  rather than "old", so the two must stay distinguishable here too. */
+  installed_version?: string | null;
+  version_checked_at?: string | null;
 }
 
 /** Where our record and the OVH account disagree. */
+/** What one managed-workspace update pass did. */
+export interface InstanceUpdateResult {
+  considered: number
+  updated?: string[]
+  skipped?: string[]
+  failed?: string[]
+}
+
 export interface ServerReconciliation {
   /** Pooled here, gone at OVH. Removed from the pool automatically. */
   vanished: string[];
@@ -693,6 +706,24 @@ export const adminApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: Record<string, unknown> };
     if (!res.ok) throw new Error(data?.msg || "Sweep failed");
     return data?.data ?? {};
+  },
+
+  /**
+   * Move managed workspaces onto the current release now.
+   *
+   * Also the correction path: the pass reads what is newest at the moment it
+   * runs, so deleting a bad tag and pressing this is how a rollout is walked
+   * back. It does not bypass the soak, because that exists so the self-hosted
+   * line meets a bad build before customers who chose nothing.
+   */
+  async updateWorkspaces(): Promise<InstanceUpdateResult> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/update`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: InstanceUpdateResult };
+    if (!res.ok) throw new Error(data?.msg || "Update pass failed");
+    return data?.data ?? { considered: 0 };
   },
 
   /**

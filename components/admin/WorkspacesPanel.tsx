@@ -74,6 +74,18 @@ export function WorkspacesPanel() {
         >
           {busy === "Sweep" ? "…" : "Look for a delivered server"}
         </button>
+        {/* The managed line's upgrade path. Without this a subscriber pays every
+            month for the version they were provisioned on, security fixes
+            included, because a running workspace never contacts us and nothing
+            else moves it. The hourly job does this on its own; the button is for
+            the hour after a release, and for walking one back. */}
+        <button
+          onClick={() => void run("Update", () => adminApi.updateWorkspaces())}
+          disabled={busy !== ""}
+          className="btn-ghost px-3 py-2 text-xs disabled:opacity-40"
+        >
+          {busy === "Update" ? "…" : "Update to the current release"}
+        </button>
         <button onClick={() => void load()} className="btn-ghost px-3 py-2 text-xs">
           Refresh
         </button>
@@ -91,6 +103,14 @@ export function WorkspacesPanel() {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium text-foreground">{r.custom_domain || r.slug}</span>
+                    {/* What it is RUNNING, which is the question the update pass
+                        answers and the one an operator has after a release.
+                        "unknown" is shown as itself: the updater refuses to act
+                        on an unknown version, so hiding it would hide why a
+                        workspace is being skipped. */}
+                    <span className="rounded-full bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground">
+                      {r.installed_version || "version unknown"}
+                    </span>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${stateBadgeClass(r.state)}`}>
                       {r.state}
                     </span>
