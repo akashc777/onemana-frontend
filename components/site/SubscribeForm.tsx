@@ -14,8 +14,26 @@ import { site } from "@/lib/site";
  *
  * Deliberately not a popup or an exit-intent overlay. The audience here is people
  * who self-host their own software; an overlay is the fastest way to lose them.
+ *
+ * THE OFFER IS A PROP BECAUSE ONE OFFER DOES NOT FIT EVERY PAGE. In sixty days
+ * 610 people saw this form on the home page and none of them filled it in. The
+ * ask was "Keep me posted", and a few emails a year is not a reason to hand over
+ * an address. Somebody standing on the checkout page has a different question
+ * than somebody who has just finished a blog post, so the caller says what the
+ * reason is. Defaults are the existing wording, so nothing changes where nobody
+ * has thought about it yet.
  */
-export function SubscribeForm({ source, compact = false }: { source: string; compact?: boolean }) {
+export function SubscribeForm({
+    source,
+    compact = false,
+    cta = "Keep me posted",
+    hint = "A few emails a year, when something ships. Unsubscribe in one click.",
+}: {
+    source: string
+    compact?: boolean
+    cta?: string
+    hint?: string
+}) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
@@ -64,14 +82,14 @@ export function SubscribeForm({ source, compact = false }: { source: string; com
           disabled={state === "sending"}
           className="btn-primary shrink-0 px-4 py-2 text-sm disabled:opacity-60"
         >
-          {state === "sending" ? "Adding…" : "Keep me posted"}
+          {state === "sending" ? "Adding…" : cta}
         </button>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
         {state === "error" ? (
           <span className="text-red-600 dark:text-red-400">{msg}</span>
         ) : (
-          "A few emails a year, when something ships. Unsubscribe in one click."
+          hint
         )}
       </p>
     </form>

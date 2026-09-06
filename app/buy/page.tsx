@@ -8,7 +8,9 @@ import { indianStates } from "@/lib/states";
 import { countries } from "@/lib/countries";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
 import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, type Pricing } from "@/lib/pricing";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { SubscribeForm } from "@/components/site/SubscribeForm";
+import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Select } from "@/components/ui/Select";
 
@@ -143,7 +145,43 @@ function BuyInner() {
                 ))}
               </ul>
             </div>
+            {/* THE ONE THING THIS PAGE DID NOT OFFER. Thirty people reached checkout
+                in sixty days and none of them bought, and nineteen of them opened
+                the refund policy on the way. They are looking for a way to reduce
+                the risk of paying first for software they then have to install on
+                their own server. The demo already exists and is clicked from every
+                other page; it was missing from the only page where the decision is
+                actually made. */}
+            <div className="card mt-4 border-brand/30 bg-brand/[0.04]">
+              <p className="font-medium text-foreground">Try it before you pay</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                The live demo is the real product with sample data. Nothing to install and no
+                account needed.
+              </p>
+              <ButtonLink href={site.demoUrl} external variant="ghost" className="mt-3">
+                Open the live demo
+              </ButtonLink>
+            </div>
+
             <p className="mt-4 text-xs text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>
+
+            {/* Only one of the thirty ever came back on another day, so there is no
+                consideration cycle to catch them in later. Either we can reach them
+                or they are gone. */}
+            <div className="card mt-4">
+              <p className="font-medium text-foreground">Not buying today?</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Leave your address and we will tell you when the price or the licence terms
+                change, and when something ships that you asked for.
+              </p>
+              <div className="mt-3">
+                <SubscribeForm
+                  source="buy"
+                  cta="Email me instead"
+                  hint="Only when it matters. Unsubscribe in one click."
+                />
+              </div>
+            </div>
           </aside>
 
           <form onSubmit={handleSubmit} className="card-premium card h-fit space-y-4 bg-card/90" noValidate>
