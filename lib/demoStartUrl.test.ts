@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { readFileSync } from "fs"
+import { execSync } from "child_process"
 import { join } from "path"
 
 import { site } from "./site"
@@ -29,19 +29,27 @@ describe("the demo link", () => {
     expect(derived.split("?").length).toBe(2)
   })
 
-  // Every "go to the demo" action should start it. A placement left on the bare
-  // URL sends that visitor back to the sign-in page, and it would be invisible.
-  it("is used by every call to action that sends someone to the demo", () => {
-    const actionFiles = [
-      "app/page.tsx",
-      "app/buy/page.tsx",
-      "components/site/StickyBuyCta.tsx",
-      "components/site/Nav.tsx",
-    ]
-    for (const f of actionFiles) {
-      const src = readFileSync(join(ROOT, f), "utf8")
-      if (!src.includes("demoUrl") && !src.includes("demoStartUrl")) continue
-      expect(src, `${f} still links the bare demo URL`).not.toMatch(/site\.demoUrl\b/)
-    }
+  // Every "go to the demo" link should start it. A placement left on the bare
+  // URL sends that visitor to the sign-in page this change exists to skip, and
+  // it would be invisible: the link still works, it is just the old experience.
+  //
+  // Exhaustive rather than a list of known files. The first version of this
+  // named four files and passed while the footer, the about page and the social
+  // proof block were all still on the bare URL.
+  //
+  // VisitorTracker is the one legitimate holder: it matches a demo click with
+  // startsWith(site.demoUrl), so it needs the prefix, not the start URL.
+  it("is used by every link that sends someone to the demo", () => {
+    const TRACKER = "components/site/VisitorTracker.tsx"
+    const offenders = execSync(
+      "grep -rln 'site\\.demoUrl' app components lib --include='*.ts' --include='*.tsx' || true",
+      { cwd: ROOT, encoding: "utf8" },
+    )
+      .split("\n")
+      .map((f) => f.trim())
+      .filter(Boolean)
+      .filter((f) => f !== TRACKER && !f.endsWith(".test.ts"))
+
+    expect(offenders, `these still link the bare demo URL: ${offenders.join(", ")}`).toEqual([])
   })
 })

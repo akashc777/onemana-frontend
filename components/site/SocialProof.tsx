@@ -45,7 +45,7 @@ export function SocialProof() {
               <p className="text-sm font-medium text-foreground">{s.label}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {s.label === "Live demo" ? (
-                  <a href={site.demoUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-foreground hover:underline">
+                  <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-foreground hover:underline">
                     {s.detail}
                   </a>
                 ) : s.label === "Open-source frontend" ? (

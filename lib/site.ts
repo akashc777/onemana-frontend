@@ -63,7 +63,7 @@ export const footerLinks = {
     { label: "Pricing", href: "/#pricing" },
     { label: "FAQ", href: "/#faq" },
     { label: "Blog", href: "/blog" },
-    { label: "Live Demo", href: site.demoUrl, external: true },
+    { label: "Live Demo", href: site.demoStartUrl, external: true },
     { label: "Setup Docs", href: "/docs" },
     { label: "GitHub", href: site.githubUrl, external: true },
   ],

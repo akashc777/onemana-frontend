@@ -95,7 +95,7 @@ export function AboutView() {
               Get OneCamp
             </Link>
             {" · "}
-            <Link href={site.demoUrl} className="font-medium text-foreground hover:text-brand">
+            <Link href={site.demoStartUrl} className="font-medium text-foreground hover:text-brand">
               Try the live demo
             </Link>
           </p>
