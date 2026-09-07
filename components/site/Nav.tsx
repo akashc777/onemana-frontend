@@ -62,7 +62,7 @@ export function Nav() {
             );
           })}
           <a
-            href={site.demoUrl}
+            href={site.demoStartUrl}
             target="_blank"
             rel="noreferrer"
             className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
@@ -106,7 +106,7 @@ export function Nav() {
               </Link>
             ))}
             <a
-              href={site.demoUrl}
+              href={site.demoStartUrl}
               target="_blank"
               rel="noreferrer"
               className="rounded-md px-2 py-2.5 text-sm font-medium text-foreground hover:bg-muted"

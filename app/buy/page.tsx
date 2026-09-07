@@ -158,7 +158,7 @@ function BuyInner() {
                 The live demo is the real product with sample data. Nothing to install and no
                 account needed.
               </p>
-              <ButtonLink href={site.demoUrl} external variant="ghost" className="mt-3">
+              <ButtonLink href={site.demoStartUrl} external variant="ghost" className="mt-3">
                 Open the live demo
               </ButtonLink>
             </div>

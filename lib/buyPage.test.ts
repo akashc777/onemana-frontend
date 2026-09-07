@@ -28,13 +28,18 @@ const BUY = readFileSync(join(ROOT, "app/buy/page.tsx"), "utf8")
 
 describe("the checkout page", () => {
   it("offers the live demo, so paying is not the only way to find out", () => {
-    expect(BUY).toContain("site.demoUrl")
+    // demoStartUrl, not demoUrl: the plain address lands on a sign-in page where
+    // the demo is the last option, and 13 of the 19 people who reached it never
+    // came back. Either constant satisfies "there is a demo link", so this
+    // asserts the one that actually starts the demo.
+    expect(BUY).toContain("site.demoStartUrl")
   })
 
   it("links the demo by the shared constant, so the click is tracked", () => {
-    // VisitorTracker counts a demo-click by comparing href against site.demoUrl.
-    // A hardcoded URL would still work for the visitor and would silently stop
-    // being measurable, which defeats the reason for adding it.
+    // VisitorTracker counts a demo-click by comparing href against site.demoUrl
+    // with startsWith, and demoStartUrl is that URL plus a parameter, so the
+    // match still holds. A hardcoded URL would still work for the visitor and
+    // would silently stop being measurable, which defeats the reason for it.
     expect(BUY).not.toMatch(/href="https:\/\/onecamp\./)
   })
 

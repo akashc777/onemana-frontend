@@ -48,7 +48,7 @@ export function StickyBuyCta() {
           </p>
           <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
             <ButtonLink
-              href={site.demoUrl}
+              href={site.demoStartUrl}
               external
               variant="ghost"
               size="sm"

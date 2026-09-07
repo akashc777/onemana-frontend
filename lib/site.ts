@@ -13,6 +13,22 @@ export const site = {
   backendUrl:
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "https://backend.onemana.dev",
   demoUrl: process.env.NEXT_PUBLIC_DEMO_URL || "https://onecamp.onemana.dev",
+  // Where a "try the demo" link should actually point.
+  //
+  // The demo host answers on demoUrl with a SIGN-IN page, where the demo is the
+  // last option under Google, GitHub, email and LDAP. Somebody who just clicked
+  // "try the demo" has already answered the question that page asks. This
+  // parameter tells the demo host to start the demo instead of asking again;
+  // the host ignores it unless its own server reports demo login available, so
+  // it does nothing on a customer's install.
+  //
+  // Derived rather than folded into demoUrl so the canonical address stays clean
+  // for display, an operator overriding NEXT_PUBLIC_DEMO_URL cannot drop the
+  // parameter by forgetting it, and the click tracker's startsWith(demoUrl)
+  // match keeps working.
+  get demoStartUrl() {
+    return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=1`;
+  },
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
   githubRepo: process.env.NEXT_PUBLIC_GITHUB_REPO || "OneMana-Soft/OneCamp-fe",
   docsPath: "/docs",

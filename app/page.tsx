@@ -81,7 +81,7 @@ export default async function HomePage() {
                   <ButtonLink href="/buy" variant="brandPremium" size="lg" className="w-full sm:w-auto">
                     Get OneCamp
                   </ButtonLink>
-                  <ButtonLink href={site.demoUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
+                  <ButtonLink href={site.demoStartUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
                     Try live demo
                   </ButtonLink>
                   <span className="hidden text-xs text-muted-foreground sm:ml-1 sm:inline-flex">
@@ -310,7 +310,7 @@ export default async function HomePage() {
               <ButtonLink href="/buy" variant="brandPremium" size="lg">
                 Get OneCamp
               </ButtonLink>
-              <ButtonLink href={site.demoUrl} external variant="ghost" size="lg">
+              <ButtonLink href={site.demoStartUrl} external variant="ghost" size="lg">
                 Try live demo
               </ButtonLink>
             </div>
