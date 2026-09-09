@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
-import { trackEvent, trackPageview } from "@/lib/track";
+import { trackEvent, trackPageview, withVisitorId } from "@/lib/track";
 
 /**
  * Sends an anonymous pageview on every route change (skips the admin area).
@@ -27,7 +27,14 @@ export function VisitorTracker() {
     const onClick = (e: MouseEvent) => {
       const anchor = (e.target as HTMLElement | null)?.closest?.("a");
       const href = anchor?.getAttribute("href");
-      if (href && site.demoUrl && href.startsWith(site.demoUrl)) trackEvent("demo-click");
+      if (!href || !site.demoUrl || !href.startsWith(site.demoUrl)) return;
+      trackEvent("demo-click");
+      // Carry the visitor id across the domain boundary, at click time because
+      // that is the only moment localStorage is available and every demo link on
+      // the site funnels through this one listener anyway. Rewriting here rather
+      // than in site.demoStartUrl means the links in static nav config get it too,
+      // including the ones nobody has written yet.
+      anchor?.setAttribute("href", withVisitorId(href));
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);

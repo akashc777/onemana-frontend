@@ -16,6 +16,34 @@ export function getVisitorId(): string {
   }
 }
 
+/** The demo reads this to attribute its funnel steps to the same visitor. */
+export const VISITOR_PARAM = "vid";
+
+/**
+ * Adds the anonymous visitor id to a demo link, so the journey does not end at
+ * the domain boundary.
+ *
+ * The demo is a different origin, so it cannot read the id this site stored: a
+ * visitor who clicks through becomes a new, unrelated person, and every question
+ * about what they did there has to be answered by guessing. Carrying the id over
+ * is what makes "clicked demo" and "reached the task board" the same row.
+ *
+ * Idempotent, because the same anchor can be clicked more than once and a URL
+ * with two vid parameters is a URL with none. Returns the input unchanged when
+ * there is no id to add, which is the case in a browser with storage disabled.
+ */
+export function withVisitorId(href: string): string {
+  const id = getVisitorId();
+  if (!id) return href;
+  try {
+    const url = new URL(href);
+    url.searchParams.set(VISITOR_PARAM, id);
+    return url.toString();
+  } catch {
+    return href;
+  }
+}
+
 /** Event paths live under this prefix so they can be told apart from pages.
  *  Counting them as pageviews would inflate traffic with things nobody browsed. */
 export const EVENT_PREFIX = "/event/";
