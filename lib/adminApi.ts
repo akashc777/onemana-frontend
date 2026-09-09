@@ -266,6 +266,13 @@ export interface DeviceCount {
   views: number;
   uniques: number;
 }
+/** How far one group of demo visitors got, and how many of them. */
+export interface FunnelStop {
+  /** Reads as what they did, e.g. "saw the sign-in page and left". */
+  step: string;
+  visitors: number;
+}
+
 export interface VisitStats {
   total_views: number;
   unique_visitors: number;
@@ -273,6 +280,10 @@ export interface VisitStats {
   top_paths: VisitPath[];
   by_country: CountryCount[];
   by_device: DeviceCount[];
+  /** Distinct people who clicked through to the demo in this window. */
+  demo_clicks: number;
+  /** Where each of them got to, furthest first. */
+  demo_drop_off: FunnelStop[];
 }
 
 export interface FYEarning {
