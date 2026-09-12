@@ -254,7 +254,11 @@ export default async function HomePage() {
             today is still on the page. That is the whole audience this list
             is for: interested, not yet convinced. */}
         <div className="container-x mt-10 max-w-xl">
-          <SubscribeForm source="pricing" />
+          <SubscribeForm
+            source="pricing"
+            cta="Send me the install command"
+            hint="One email: the one-line install, and what moves across from Jira, Slack or Asana. Unsubscribe in one click."
+          />
         </div>
       </Section>
 

@@ -126,7 +126,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             <p className="mb-3 mt-1 text-sm text-muted-foreground">
               I write these as I build OneCamp: what broke, what it cost, and what I changed.
             </p>
-            <SubscribeForm source="blog-post" />
+            <SubscribeForm
+              source="blog-post"
+              cta="Send me the install command"
+              hint="Try what the post describes. One email with the one-line install. Unsubscribe in one click."
+            />
           </div>
       </div>
     </article>

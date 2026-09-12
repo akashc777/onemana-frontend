@@ -177,8 +177,8 @@ function BuyInner() {
               <div className="mt-3">
                 <SubscribeForm
                   source="buy"
-                  cta="Email me instead"
-                  hint="Only when it matters. Unsubscribe in one click."
+                  cta="Send me the install command"
+                  hint="Run it on your own server first. One email, no follow-up sequence you did not ask for."
                 />
               </div>
             </div>

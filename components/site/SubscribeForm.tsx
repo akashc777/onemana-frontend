@@ -26,8 +26,8 @@ import { site } from "@/lib/site";
 export function SubscribeForm({
     source,
     compact = false,
-    cta = "Keep me posted",
-    hint = "A few emails a year, when something ships. Unsubscribe in one click.",
+    cta = "Send me the install command",
+    hint = "One email with the one-line install, and what actually moves across from Jira or Slack. Unsubscribe in one click.",
 }: {
     source: string
     compact?: boolean
