@@ -177,8 +177,8 @@ function BuyInner() {
               <div className="mt-3">
                 <SubscribeForm
                   source="buy"
-                  cta="Send me the install command"
-                  hint="Run it on your own server first. One email, no follow-up sequence you did not ask for."
+                  cta="Send me the setup guide"
+                  hint="What running your own takes, and what moves across. One email, no sequence you did not ask for."
                 />
               </div>
             </div>

@@ -128,8 +128,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </p>
             <SubscribeForm
               source="blog-post"
-              cta="Send me the install command"
-              hint="Try what the post describes. One email with the one-line install. Unsubscribe in one click."
+              cta="Send me the setup guide"
+              hint="See what the post describes. One email on running your own. Unsubscribe in one click."
             />
           </div>
       </div>
