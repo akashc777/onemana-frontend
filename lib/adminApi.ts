@@ -286,23 +286,6 @@ export interface VisitStats {
   demo_drop_off: FunnelStop[];
 }
 
-/** One captured address, as an operator needs to see it. */
-export interface AdminLead {
-  email: string;
-  source: string;
-  referrer: string;
-  created_at: string;
-  unsubscribed: boolean;
-  is_customer: boolean;
-}
-
-export interface LeadOverview {
-  leads: AdminLead[];
-  total: number;
-  reachable: number;
-  by_source: Record<string, number>;
-}
-
 export interface FYEarning {
   financial_year: string;
   gross: number;
@@ -982,8 +965,6 @@ export const adminApi = {
   // ---- Analytics + earnings ----
   visitStats: (from?: string, to?: string) =>
     adminGet<{ data: VisitStats }>(`/onecamp/admin/visits${rangeQuery(from, to)}`).then((d) => d.data),
-  leads: (limit?: number) =>
-    adminGet<{ data: LeadOverview }>(`/onecamp/admin/leads${limit ? `?limit=${limit}` : ""}`).then((d) => d.data),
   earnings: (from?: string, to?: string) =>
     adminGet<{ data: EarningsSummary }>(`/onecamp/admin/earnings${rangeQuery(from, to)}`).then((d) => d.data),
   taxPayments: () => adminGet<{ data: TaxPayment[] }>("/onecamp/admin/tax-payments").then((d) => d.data ?? []),

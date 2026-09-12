@@ -13,7 +13,6 @@ import { SettingsForm } from "@/components/admin/SettingsForm";
 import { BlogManager } from "@/components/admin/BlogManager";
 import { DocsManager } from "@/components/admin/DocsManager";
 import { VisitorsPanel } from "@/components/admin/VisitorsPanel";
-import { LeadsPanel } from "@/components/admin/LeadsPanel";
 import { EarningsPanel } from "@/components/admin/EarningsPanel";
 import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 import { GiftForm } from "@/components/admin/GiftForm";
@@ -21,7 +20,7 @@ import { WorkspacesPanel } from "@/components/admin/WorkspacesPanel";
 
 // "emails" sits next to orders because that is the pairing that matters: an
 // order is only fulfilled once its email actually left the building.
-const TABS = ["metrics", "orders", "emails", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "leads", "announcements", "blog", "docs", "settings"] as const;
+const TABS = ["metrics", "orders", "emails", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -73,7 +72,6 @@ export default function AdminPage() {
       )}
       {tab === "invoices" && <InvoicesTable />}
       {tab === "visitors" && <VisitorsPanel />}
-      {tab === "leads" && <LeadsPanel />}
       {tab === "announcements" && <AnnouncementsManager />}
       {tab === "blog" && <BlogManager />}
       {tab === "docs" && <DocsManager />}
