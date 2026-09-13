@@ -39,39 +39,24 @@ export const governance = {
     {
       icon: "shield" as FeatureIconKey,
       title: "An agent can only do what its author could",
-      body: "Every action is checked against the live permission graph of the human who authorised it: channel, project, and document membership, read at the moment of the call rather than cached at setup. Remove someone from a channel and the agents acting on their behalf lose it on the next request, not at the next token rotation.",
+      body: "Every action is checked against the live permission graph of the human who authorised it: channel, project, and document membership, read at the moment of the call. Remove someone from a channel and their agents lose it on the next request, not at the next token rotation.",
     },
     {
       icon: "audit" as FeatureIconKey,
       title: "If it can't be recorded, it doesn't happen",
-      body: "When an agent calls a tool, the audit entry is written before the call and a failure to write it refuses the call. That ordering is the point: a decision that was made and never recorded is worse than one recorded and abandoned, because only the second is discoverable afterwards. Administrative changes are logged too, off the request path, so a slow write never blocks an admin.",
+      body: "The audit entry is written before the tool call. A failed write refuses the call. A decision that was made and never recorded is worse than one recorded and abandoned, because only the second is discoverable afterwards.",
     },
     {
       icon: "lock" as FeatureIconKey,
-      title: "Refusals are logged too",
-      body: "A denied call leaves a row with the reason it was denied, the credential, the named agent, and the human behind it. An access review can therefore answer what an agent tried and was stopped from doing, which is the question that actually matters after an incident.",
-    },
-    {
-      icon: "shield" as FeatureIconKey,
-      title: "History that can't be quietly edited",
-      body: "Each audit entry hashes its own contents plus the previous entry's hash. Any later insertion, edit, or deletion breaks the chain, and a verify endpoint recomputes it and reports the first divergence. Exports carry the per-row hashes so an auditor can check them without trusting the UI.",
-    },
-    {
-      icon: "ai" as FeatureIconKey,
-      title: "The model can stay in the building",
-      body: "Local inference through Ollama by default. Turn on local-only mode and the server refuses to activate a cloud provider at all, rather than warning you and allowing it. Point it at OpenAI or Anthropic when you want to, with PII redaction on the way out.",
-    },
-    {
-      icon: "ai" as FeatureIconKey,
-      title: "So can the meeting audio",
-      body: "Speech to text runs on your server too, from a Whisper model in your own compose stack, so a recorded call is never uploaded to a transcription vendor and nothing is billed per minute. Deepgram and Google are still there if you prefer them. The difference is that the settings page tells you which option sends your meetings where, instead of leaving you to work it out from a vendor's name.",
-    },
-    {
-      icon: "teams" as FeatureIconKey,
-      title: "Offboarding reaches the agents",
-      body: "Deactivating someone is re-evaluated live at every authorisation surface, so their agents and API tokens stop working immediately without anyone hunting for credentials to revoke. Bots and attribution-only identities can never be the authority for a call in the first place.",
+      title: "Refusals are on the record",
+      body: "A denied call leaves a row with the reason, the credential, the named agent, and the human behind it. Each entry hashes the one before it, so quiet edits to history break the chain.",
     },
   ],
+  // What used to be governance points 4 through 7. One line on the homepage;
+  // the detail lives in the docs. Seven essays of equal weight flattened the
+  // three that carry the argument.
+  alsoShipped: "Local-only AI that refuses cloud providers · on-server Whisper for calls · SCIM offboarding that reaches agents. Details in the docs.",
+  alsoShippedHref: "/docs",
 };
 
 /**
@@ -208,60 +193,28 @@ export const steps = [
 
 export const faqs = [
   {
-    q: "Can the AI see things it shouldn't?",
-    a: "It checks your channel, project, and document membership at the moment of the call, so it can only read what you can already open. The same check governs anything acting on your behalf: an agent, an API token, an external MCP client. Nothing is cached at setup time, so a permission you lose is a permission it loses on the next request.",
-  },
-  {
-    q: "Is there an audit trail for what the AI did?",
-    a: "Yes, and refusals are in it too. Each row names the tool, the decision, the reason, the credential, the agent if there was one, and the human accountable. The entry is written before the action runs, and if it cannot be written the action does not happen. Entries are hash-chained so later edits to history are detectable, and you can verify the chain or export it with the hashes.",
+    q: "Where does the model run?",
+    a: "On infrastructure you choose. Ollama locally by default; OpenAI, Anthropic, or any OpenAI-compatible endpoint when you want. Local-only mode refuses cloud providers outright rather than warning and allowing them. PII redaction runs before anything outbound. OneCamp Cloud does not resell inference: you bring your own key.",
   },
   {
     q: "What happens when someone leaves?",
-    a: "Deactivate them in OneCamp, or let SCIM do it from your directory. Eligibility is re-checked at every authorisation surface on every call, so their sessions, API tokens, and any agent acting on their authority stop working immediately. You don't have to go looking for credentials to revoke.",
+    a: "Deactivate them in OneCamp, or let SCIM do it from your directory. Eligibility is re-checked on every call, so their sessions, API tokens, and agents stop immediately. You do not hunt for credentials to revoke.",
   },
   {
     q: "Do you support SSO and SCIM?",
-    a: "SAML 2.0, OIDC, and LDAP for sign-in; SCIM 2.0 for provisioning and deprovisioning; TOTP two-factor with recovery codes for accounts that sign in with a password. Accounts your directory creates must authenticate at your directory, so nobody can give them a local password that bypasses it.",
+    a: "SAML 2.0, OIDC, and LDAP for sign-in; SCIM 2.0 for provisioning; TOTP with recovery codes for password accounts. Directory-provisioned accounts authenticate at your IdP and cannot be given a local password that routes around it. No enterprise tier unlock.",
   },
   {
-    q: "Where does the AI run?",
-    a: "On infrastructure you choose, never ours. Point it at OpenAI, Anthropic, or any OpenAI-compatible endpoint, which covers vLLM, LM Studio, OpenRouter, Groq, and a gateway you run yourself. Local models through Ollama are a switch you turn on, so nothing pulls a model down unless you ask for it. Turn on local-only mode and the server refuses to activate a cloud provider at all rather than warning you and letting it through, and PII redaction runs before anything outbound.",
+    q: "I pay once. What is included?",
+    a: "One licence key, unlimited users, no annual renewal. Agents, local AI, SSO, SCIM, MFA, and the audit log are included. Cloud plans include a self-host licence so you can switch later.",
   },
   {
-    q: "Does OneCamp Cloud include AI?",
-    a: "The AI edition is what gets provisioned, so the agents and the teammates are all there waiting. The model is the part you bring: add a key from OpenAI or Anthropic, or point it at any OpenAI-compatible endpoint. I do not resell inference and I never see your prompts, so you pay your provider directly at their price. Until you add a key the AI surfaces sit idle, and everything else in the workspace works exactly the same.",
-  },
-  {
-    q: "I pay once and that's it?",
-    a: "Yes. One license key, unlimited users, no annual renewal. The AI, the agents, the SSO, and the audit log are all included. None of it is an enterprise tier you unlock later.",
-  },
-  {
-    q: "Can I share a doc/board with someone outside the org?",
-    a: "Yes. Share a doc, board, or table as a read-only link with people outside your team, and create guest links for calls. Guests see only what you shared, nothing else, and every open is audited for you.",
-  },
-  {
-    q: "Do I need a GPU?",
-    a: "No. Most people point OneCamp at a provider key, and then the model runs on the provider's hardware rather than yours. If you switch on local models, the small default is fine on CPU with 16 GB RAM, and a GPU is what makes the bigger ones practical.",
-  },
-  {
-    q: "Can we import Slack history?",
-    a: "There's a Slack import built in. Bring channels and messages over when you're ready to switch, not before.",
-  },
-  {
-    q: "Does everyone need to install something?",
-    a: "One person runs the installer on a server you control. Everyone else opens a browser or adds the PWA to their phone.",
-  },
-  {
-    q: "What about phones?",
-    a: "Mobile web and PWA work well, push included. We don't ship App Store builds. Most teams don't miss them.",
-  },
-  {
-    q: "Install broke. What now?",
-    a: "Open a GitHub issue with the log. Most installs finish in under ten minutes on a normal VPS. We'll help you untangle it.",
+    q: "Can we import Slack?",
+    a: "Yes: channels and messages via the built-in importer, with a plan shown before anything is written and a rollback afterwards. Read the switching notes on this page for what it will not bring (bots, apps, exact permissions). Plan a weekend cutover; do not expect a magic mirror.",
   },
   {
     q: "What if OneMana shuts down?",
-    a: "You already have the backend binary and an open-source frontend. Your instance does not phone home. It keeps running.",
+    a: "You already have the backend binary and an open-source frontend. Your instance does not phone home. It keeps running on your hardware.",
   },
 ];
 

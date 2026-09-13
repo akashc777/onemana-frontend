@@ -67,7 +67,7 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
           </span>
         ))}
       </div>
-      <p className="mt-3 text-center text-xs text-muted-foreground">Full product walkthrough · real app, no mockups</p>
+      <p className="mt-3 text-center text-xs text-muted-foreground">Full product walkthrough · built from the same components we ship</p>
     </div>
   );
 }

@@ -19,16 +19,13 @@ import { ModuleIndex } from "@/components/site/ModuleIndex";
 import { ControlIndex } from "@/components/site/ControlIndex";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
-import { StackConvergence } from "@/components/site/StackConvergence";
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
-import { FeatureCard, StepCard, StatStrip, FaqItem } from "@/components/site/marketing";
+import { StepCard, StatStrip, FaqItem } from "@/components/site/marketing";
 import { StepsConnector } from "@/components/site/StepsConnector";
 import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
 import { SocialProof } from "@/components/site/SocialProof";
 import { SectionAmbient } from "@/components/site/SectionAmbient";
-import { HeroThreeLazy } from "@/components/site/HeroThreeLazy";
-import { ScrollParallax } from "@/components/site/ScrollParallax";
 
 export const revalidate = 300;
 
@@ -43,7 +40,10 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden pb-8 pt-14 sm:pb-12 sm:pt-20">
         <HeroAmbient />
-        <HeroThreeLazy />
+        {/* No WebGL. The particle sphere was the one thing on the page that
+            explained nothing about the product, and it pulled three + gsap onto
+            the critical path of a site whose whole job is to load fast. The
+            audit receipt beside the headline is the hero artefact. */}
         <div className="container-x">
           {/* ASYMMETRIC ON PURPOSE.
               What was here was the default: centred pill badge, centred headline
@@ -97,9 +97,7 @@ export default async function HomePage() {
           </div>
 
           <Reveal delay={200} direction="scale" className="mx-auto mt-16 w-full max-w-6xl">
-            <ScrollParallax>
-              <HeroMedia />
-            </ScrollParallax>
+                          <HeroMedia />
           </Reveal>
         </div>
       </section>
@@ -109,7 +107,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Product tour"
           title="See it before you commit"
-          subtitle="Walk through the real app: channels, AI, docs, tasks, and more. No slick mockups."
+          subtitle="Walk through the app: channels, AI, docs, tasks, and more. Built from the same components we ship."
         />
         <Reveal direction="scale" className="mt-12">
           <div className="tour-video-glow relative">
@@ -138,6 +136,15 @@ export default async function HomePage() {
             a shield beside "an agent can only do what its author could" said
             nothing the sentence had not already said. */}
         <GuaranteeList items={governance.points} />
+        {/* What used to be four more numbered essays. One line, because the
+            three above carry the argument and seven of equal weight flattened
+            them. The detail is a click away rather than a scroll away. */}
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          {governance.alsoShipped}{" "}
+          <Link href={governance.alsoShippedHref} className="underline underline-offset-4 hover:text-foreground">
+            Read the docs
+          </Link>
+        </p>
       </Section>
 
       <Section id="enterprise" divider>
@@ -164,9 +171,10 @@ export default async function HomePage() {
         <Reveal className="mx-auto mt-8 max-w-2xl">
           <p className="text-center text-base leading-relaxed text-muted-foreground">{whyBuilt.story}</p>
         </Reveal>
-        <div className="mt-12">
-          <StackConvergence />
-        </div>
+        {/* StackConvergence ("replaces Slack, Notion, Asana, Zoom") no longer
+            mounts here. It re-opened the all-in-one fight the site had already
+            stopped fighting, in the section meant to explain why the product
+            exists. If it is wanted for search, it belongs on its own page. */}
         <div className="mt-14">
           <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             What buyers say

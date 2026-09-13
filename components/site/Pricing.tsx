@@ -1,6 +1,5 @@
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/site/Reveal";
-import { TiltCard } from "@/components/site/TiltCard";
 import { PricingComparison } from "@/components/site/PricingComparison";
 import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
 import { fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
@@ -33,7 +32,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
 
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
         <Reveal>
-          <TiltCard className="pricing-card pricing-card-featured card-premium card relative flex h-full flex-col overflow-hidden border-brand/25 bg-gradient-to-b from-brand/[0.04] to-card p-6 dark:from-brand/[0.08] sm:p-7">
+          <div className="pricing-card pricing-card-featured card relative flex h-full flex-col overflow-hidden border-brand/25 bg-gradient-to-b from-brand/[0.04] to-card p-6 dark:from-brand/[0.08] sm:p-7">
             <div className="premium-frame-accent absolute inset-x-0 top-0 h-px" aria-hidden />
             <header>
               <div className="flex items-center justify-between gap-3">
@@ -65,11 +64,11 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               </ButtonLink>
               <p className="mt-3 text-center text-xs text-muted-foreground">License key + GST invoice emailed instantly</p>
             </footer>
-          </TiltCard>
+          </div>
         </Reveal>
 
         <Reveal delay={100}>
-          <TiltCard className="pricing-card card-premium card relative flex h-full flex-col p-6 sm:p-7">
+          <div className="pricing-card card relative border border-border flex h-full flex-col p-6 sm:p-7">
             <header>
               <p className="text-sm font-medium text-muted-foreground">OneCamp Cloud · Managed</p>
               <div className="mt-5 flex items-baseline gap-2">
@@ -95,7 +94,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               </ButtonLink>
               <p className="mt-3 text-center text-xs text-muted-foreground">Workspace live within 12 hours</p>
             </footer>
-          </TiltCard>
+          </div>
         </Reveal>
       </div>
     </div>

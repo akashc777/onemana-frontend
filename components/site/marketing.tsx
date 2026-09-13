@@ -34,32 +34,6 @@ const ICON_TO_CATEGORY: Record<FeatureIconKey, keyof typeof categoryColors> = {
  * MFA — and a card with an icon and a paragraph makes them hunt. Nothing here needs persuading; it needs
  * to be findable.
  */
-export function ControlGroup({
-  label,
-  items,
-  index = 0,
-}: {
-  label: string;
-  items: readonly string[];
-  index?: number;
-}) {
-  return (
-    <Reveal delay={(index % 4) * 60}>
-      <div className="card-premium card relative h-full bg-card/90 backdrop-blur-sm">
-        <span className="card-shine" aria-hidden />
-        <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{label}</h3>
-        <ul className="mt-3 space-y-2">
-          {items.map((item) => (
-            <li key={item} className="flex gap-2 text-sm leading-relaxed text-foreground">
-              <CheckMark />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </Reveal>
-  );
-}
 
 /** Small inline tick. aria-hidden because the list semantics already convey membership. */
 function CheckMark() {
@@ -77,42 +51,11 @@ function CheckMark() {
   );
 }
 
-export function FeatureCard({
-  icon,
-  title,
-  body,
-  index = 0,
-}: {
-  icon: FeatureIconKey;
-  title: string;
-  body: string;
-  index?: number;
-}) {
-  const color = categoryColors[ICON_TO_CATEGORY[icon]];
-  return (
-    <Reveal delay={(index % 3) * 60}>
-      <div className="card-premium feature-module-card group card card-hover relative h-full bg-card/90 backdrop-blur-sm">
-        <span className="card-shine" aria-hidden />
-        <span className={`feature-halo absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100 ${color.bg}`} aria-hidden />
-        <div className={`feature-icon-wrap grid h-10 w-10 place-items-center rounded-lg ${color.bg} ${color.text}`}>
-          <FeatureIcon icon={icon} className="h-5 w-5" />
-        </div>
-        <h3 className="mt-4 text-sm font-semibold text-foreground">{title}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{body}</p>
-      </div>
-    </Reveal>
-  );
-}
 
 export function StepCard({ n, title, body, index = 0 }: { n: string; title: string; body: string; index?: number }) {
   return (
     <Reveal delay={index * 80}>
-      <div className="card-premium group card relative h-full overflow-hidden bg-card/90 backdrop-blur-sm">
-        <span className="card-shine" aria-hidden />
-        <span
-          className="absolute left-0 top-0 h-full w-0.5 bg-gradient-to-b from-brand/60 via-brand/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          aria-hidden
-        />
+      <div className="card relative h-full overflow-hidden border border-border bg-card">
         <span className="absolute -right-2 -top-3 select-none text-6xl font-semibold text-border" aria-hidden>
           {n}
         </span>
@@ -186,8 +129,7 @@ export function ReplacesMarquee() {
 
 export function FaqItem({ q, a }: { q: string; a: string }) {
   return (
-    <details className="faq-item card-premium group card card-hover">
-      <span className="card-shine" aria-hidden />
+    <details className="faq-item group card border border-border">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-foreground">
         {q}
         <span className="faq-chevron grid h-6 w-6 flex-shrink-0 place-items-center rounded-md border border-border text-muted-foreground transition duration-300 group-open:border-brand/30 group-open:bg-brand/5 group-open:text-brand">
