@@ -18,7 +18,6 @@ const TABS = [
 
 export function WorkspaceShowcase() {
   const [active, setActive] = useState(0);
-  const pausedUntil = useRef(0);
   const tabBarRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
@@ -41,20 +40,13 @@ export function WorkspaceShowcase() {
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-    const id = setInterval(() => {
-      if (Date.now() < pausedUntil.current) return;
-      setActive((a) => (a + 1) % TABS.length);
-    }, 8000);
-    return () => clearInterval(id);
-  }, []);
-
-  const select = (i: number) => {
-    setActive(i);
-    pausedUntil.current = Date.now() + 15000;
-  };
+  // NO AUTO-ROTATION. This used to advance every 8 seconds, which DESIGN.md bans
+  // as an infinite decorative loop and the reader experiences as the page
+  // changing surface while they are still reading one. A visitor who wants to see
+  // the tables view clicks "Tables"; one who does not should not have it pushed
+  // at them. Removing it also deletes the pause-on-interaction timer that only
+  // existed to work around the rotation.
+  const select = (i: number) => setActive(i);
 
   return (
     <div className="relative">
@@ -88,21 +80,17 @@ export function WorkspaceShowcase() {
       <div className="workspace-beam pointer-events-none absolute inset-x-0 top-1/2 -z-10 hidden h-px bg-gradient-to-r from-transparent via-brand/20 to-transparent lg:block" aria-hidden />
 
       <div className="relative min-h-[min(420px,72vh)] sm:min-h-[420px]">
-        {TABS.map((t, i) => (
-          <div
-            key={t.key}
-            className={`transition-all duration-500 ease-out ${
-              active === i
-                ? "relative z-10 translate-y-0 opacity-100"
-                : "pointer-events-none absolute inset-0 z-0 translate-y-2 opacity-0"
-            }`}
-            aria-hidden={active !== i}
-          >
-            <ShowcaseShell activeNav={t.nav} path={t.path} heightClass="h-[min(420px,72vh)] sm:h-[420px]">
-              <t.Comp embedded />
-            </ShowcaseShell>
-          </div>
-        ))}
+        {(() => {
+          const t = TABS[active];
+          const Comp = t.Comp;
+          return (
+            <div key={t.key} className="relative z-10">
+              <ShowcaseShell activeNav={t.nav} path={t.path} heightClass="h-[min(420px,72vh)] sm:h-[420px]">
+                <Comp embedded />
+              </ShowcaseShell>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

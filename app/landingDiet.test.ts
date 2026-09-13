@@ -61,6 +61,29 @@ describe("landing diet", () => {
     expect(sources.toLowerCase()).not.toMatch(/no (slick )?mockups/);
   });
 
+  it("does not auto-rotate the workspace showcase", () => {
+    // It advanced every 8 seconds. DESIGN.md bans infinite decorative loops and
+    // the redesign plan's motion allowlist forbids anything that runs forever;
+    // a reader also experiences it as the surface changing while they are still
+    // reading the one they chose.
+    const showcase = readFileSync(join(root, "components/site/showcase/WorkspaceShowcase.tsx"), "utf8");
+    expect(showcase, "setInterval is an auto-advancing carousel").not.toMatch(/setInterval/);
+  });
+
+  it("renders only the active showcase panel", () => {
+    // All five rendered at once with the inactive ones at opacity-0. That put
+    // five surfaces of simulated UI into the server HTML, mounted five
+    // showcases on the client, and left four invisible workspaces in the
+    // keyboard tab order.
+    const showcase = readFileSync(join(root, "components/site/showcase/WorkspaceShowcase.tsx"), "utf8");
+    const panelRegion = showcase.slice(showcase.indexOf("min-h-[min(420px"));
+    expect(
+      panelRegion,
+      "the panel region maps over every tab, so all of them render",
+    ).not.toMatch(/TABS\.map/);
+    expect(panelRegion).toMatch(/TABS\[active\]/);
+  });
+
   it("does not put shine or halo chrome on the marketing cards", () => {
     const marketing = readFileSync(join(root, "components/site/marketing.tsx"), "utf8");
     for (const cls of ["card-shine", "feature-halo", "card-premium"]) {

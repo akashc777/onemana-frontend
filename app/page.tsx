@@ -2,7 +2,7 @@ import Link from "next/link";
 import CostCalculator from "@/components/site/CostCalculator";
 import SwitchingCosts from "@/components/site/SwitchingCosts";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
-import { features, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt, governance, enterpriseControls } from "@/lib/content";
+import { features, MODULES_ON_HOMEPAGE, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt, governance, enterpriseControls } from "@/lib/content";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { getGithubStars } from "@/lib/github";
@@ -20,7 +20,7 @@ import { ControlIndex } from "@/components/site/ControlIndex";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
-import { StepCard, StatStrip, FaqItem } from "@/components/site/marketing";
+import { StepCard, FaqItem } from "@/components/site/marketing";
 import { StepsConnector } from "@/components/site/StepsConnector";
 import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
@@ -183,8 +183,14 @@ export default async function HomePage() {
         </div>
       </Section>
 
+      {/* StatStrip is gone. Four animated figures, of which "infinity people" and
+          "100% on your infrastructure" were rhetoric rather than evidence, and
+          the count-up rendered "<0 min to get running" into the HTML crawlers
+          read. One fact that is checkable beats four that are not. */}
       <Section divider spacing="compact">
-        <StatStrip />
+        <p className="text-center text-sm text-muted-foreground">
+          OneMana runs its own workspace on this: {requirements[0].spec}.
+        </p>
       </Section>
 
       <Section id="features" divider className="overflow-hidden">
@@ -198,7 +204,23 @@ export default async function HomePage() {
             and that question wants a list somebody can scan, not a grid of
             equally weighted boxes with twelve pastel chips in twelve colours
             assigned by position. */}
-        <ModuleIndex items={features} />
+        <ModuleIndex items={features.slice(0, MODULES_ON_HOMEPAGE)} />
+        {/* The remaining modules are NAMED rather than hidden. A reader scanning
+            for "does it do whiteboards" must not conclude it does not, and a
+            "+5 more" with no names invites exactly that. */}
+        <p className="mt-6 text-sm text-muted-foreground">
+          Also{" "}
+          {features.slice(MODULES_ON_HOMEPAGE).map((f, i, a) => (
+            <span key={f.title}>
+              {f.title.toLowerCase()}
+              {i < a.length - 2 ? ", " : i === a.length - 2 ? " and " : ""}
+            </span>
+          ))}
+          .{" "}
+          <Link href="/docs" className="underline underline-offset-4 hover:text-foreground">
+            All of it in the docs
+          </Link>
+        </p>
       </Section>
 
       <Section divider className="overflow-hidden">

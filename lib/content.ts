@@ -107,81 +107,89 @@ export const enterpriseControls = {
   ],
 };
 
+/** How many modules the homepage lists before deferring to the docs.
+ *
+ * The index answers "does it have X" and a reader scanning fifteen rows of
+ * prose stops reading before the price. Ten rows plus a line naming the other
+ * five is the same answer in a third of the words, and nothing appears missing
+ * because the remaining five are named rather than hidden. */
+export const MODULES_ON_HOMEPAGE = 10;
+
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
   {
     icon: "agent",
     title: "AI agents",
-    body: "Build a teammate, not just a chatbot. @mention it in a channel or DM and it answers in-thread as its own badged member, or let it run on a schedule to triage, file tasks, and post recaps. You choose whether it acts on its own or proposes and waits for your OK. It can only ever do what its owner could, every call is checked live, and every call is recorded before it runs.",
+    body: "Badged teammates that act or propose, bounded by their owner.",
   },
   {
     icon: "ai",
     title: "Local AI",
-    body: "Runs locally via Ollama by default, so chats and docs never leave your box. Point it at OpenAI, Anthropic, or your own endpoint when you want; local-only mode and built-in PII redaction keep you in control. Ask once and get a cited answer from your channels, docs, tasks, and connected Gmail or GitHub. Daily token budgets included.",
+    body: "Ollama by default. Cited answers from your own data.",
   },
   {
     icon: "audit",
     title: "Audit trail",
-    body: "Every admin change and every agent tool call, allowed or refused, with the reason and the human accountable for it. Hash-chained so edits to history are detectable, verifiable on demand, and exportable as CSV or JSON with the row hashes intact.",
+    body: "Every call, allowed or refused, hash-chained and exportable.",
   },
   {
     icon: "shield",
     title: "SSO and provisioning",
-    body: "SAML, OIDC, and LDAP for sign-in, SCIM 2.0 for joiners and leavers, TOTP two-factor with recovery codes for everyone else. Directory-provisioned accounts authenticate at your IdP and cannot be given a local password that routes around it.",
+    body: "SAML, OIDC, LDAP, SCIM 2.0, TOTP. No enterprise tier.",
   },
   {
     icon: "table",
     title: "Tables",
-    body: "Notion-style databases with grid, board, calendar, and chart views. Typed columns, rows that link to real tasks and projects, and an AI that builds the whole table from one sentence, fills a column row by row, or answers a question straight from your data with a chart. Replaces Airtable.",
+    body: "Typed databases with grid, board, calendar and chart views.",
   },
   {
     icon: "automation",
     title: "Automations",
-    body: "Slack-class \"when this, do that\" without the bot zoo. New message with 'bug:' in #support, auto-file a triage task. Describe the rule in plain English and it runs on your server, forever.",
+    body: "Plain-English rules that run on your server.",
   },
   {
     icon: "chat",
     title: "Chat",
-    body: "Channels, threads, DMs, reactions, files. Real-time over MQTT. We built this first and still dogfood it daily at OneMana.",
+    body: "Channels, threads, DMs, files. Real-time over MQTT.",
   },
   {
     icon: "tasks",
     title: "Tasks",
-    body: "Kanban in the same app as your channels. No Zapier keeping Asana in sync with Slack.",
+    body: "Kanban beside your channels. Nothing to keep in sync.",
   },
   {
     icon: "docs",
     title: "Docs",
-    body: "Block editor, slash commands, live cursors when two people land on the same page. Good enough that we cancelled Notion.",
+    body: "Block editor with live cursors. We cancelled Notion.",
   },
   {
     icon: "board",
     title: "Whiteboard",
-    body: "An infinite canvas for diagrams, flows, and mind maps with live cursors. Ask the AI to draft a flowchart or UI mockup, then edit it together. Replaces Miro and FigJam.",
+    body: "Infinite canvas with live cursors. Replaces Miro.",
   },
   {
     icon: "video",
     title: "Video",
-    body: "LiveKit runs on your hardware. Calls, screen share, recordings, and an AI recap posted to the channel after the call. Transcription stays local too.",
+    body: "LiveKit and transcription on your hardware. AI recap after.",
   },
   {
     icon: "calendar",
     title: "Calendar",
-    body: "Google sync works both ways. Task due dates show on the team calendar, and the AI finds a meeting time and preps you before it. Without another tool.",
+    body: "Two-way Google sync. Task due dates included.",
   },
   {
     icon: "teams",
     title: "Teams",
-    body: "Roles, projects, the usual permission model. The AI only sees what the logged-in user can see, and so does anything acting on their behalf.",
+    body: "Roles and projects. The AI sees only what you see.",
   },
   {
     icon: "api",
     title: "Programmable",
-    body: "A scoped public API, an official TypeScript SDK, and an MCP server so any AI client can drive your workspace, plus shareable templates for agents, automations, and tables. Tokens never exceed what their owner could do by hand, and calls made through them are audited like any other.",
+    body: "Scoped API, TypeScript SDK and an MCP server.",
   },
   {
     icon: "lock",
     title: "Your server",
-    body: "One Docker command, SSL included, open-source frontend on GitHub. No phone home, no per-seat invoice, no vendor lock-in. Share a doc, board, or table as a read-only link with people outside your org when you need to.",
+    body: "One Docker command, SSL included. No phone home.",
   },
 ];
 
