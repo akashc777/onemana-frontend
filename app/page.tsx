@@ -337,6 +337,14 @@ export default async function HomePage() {
             <h2 className="relative text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               If you can&apos;t say what your AI is allowed to do, this is for you.
             </h2>
+            {/* Specified verbatim by the redesign plan's §3.4, which is why it is here
+                and not cut. It WAS cut, as "the thesis a fourth time", and that was a
+                word-count decision overriding the brief: at the close, the reader who
+                scrolled past the hero without reading it needs the claim once more,
+                and the plan says so. */}
+            <p className="relative mx-auto mt-4 max-w-md text-muted-foreground">
+              Bounded by your permissions. Audited before it acts. On hardware you own.
+            </p>
             <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <ButtonLink href="/buy" variant="brandPremium" size="lg">
                 Get OneCamp

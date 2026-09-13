@@ -110,3 +110,32 @@ describe("landing diet", () => {
     }
   });
 });
+
+/**
+ * Copy the redesign plan specifies verbatim must survive the word budget.
+ *
+ * The diet and the brief can pull in opposite directions, and when they did, the
+ * diet won and was wrong: the final CTA's sub-line is written out in the plan's
+ * §3.4 and was cut anyway as "the thesis a fourth time". A reader who scrolled
+ * past the hero without reading it meets the claim once, at the close, which is
+ * the whole reason the plan puts it there.
+ *
+ * So the budget may take anything EXCEPT the lines the brief dictates. Those are
+ * pinned here, and shortening one is now a decision about the brief rather than a
+ * side effect of counting words.
+ */
+describe("copy the plan specifies", () => {
+  const required: [string, string][] = [
+    ["final CTA headline", "If you can&apos;t say what your AI is allowed to do, this is for you."],
+    ["final CTA sub-line", "Bounded by your permissions. Audited before it acts. On hardware you own."],
+  ];
+  for (const [what, text] of required) {
+    it(`keeps the ${what}`, () => {
+      expect(
+        page.includes(text),
+        `The ${what} is gone from app/page.tsx. It is written out in §3.4 of the ` +
+          `redesign plan, so removing it is a change to the brief, not a trim.`,
+      ).toBe(true);
+    });
+  }
+});
