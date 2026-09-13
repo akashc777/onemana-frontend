@@ -197,7 +197,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="What's inside"
           title="The work the AI is governed over"
-          subtitle="Governance is only worth something if there is real work behind it. This is the surface the agents operate on, under one login on one server."
+          subtitle="Governance is only worth something if there is real work behind it."
         />
         {/* An index rather than twelve cards. The differentiators are argued
             above this, so the honest job here is "does it have all the pieces",
@@ -239,7 +239,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Getting started"
           title="One person installs. Everyone else logs in."
-          subtitle="Most teams are up in under ten minutes. SSL, database, and AI models are handled by the installer."
+          subtitle="Most teams are up in under ten minutes."
         />
         <div className="relative mt-12 grid gap-5 md:grid-cols-3">
           <StepsConnector />
@@ -258,7 +258,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Switching"
           title="The two things that actually stop teams moving"
-          subtitle="Neither of them is price. You would lose your history, and somebody has to run it. Here are both answers, including the parts that are not flattering."
+          subtitle="Neither is price. You would lose your history, and somebody has to run it."
         />
         <SwitchingCosts />
       </Section>
@@ -268,7 +268,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Pricing"
           title="Buy once, or let us host it"
-          subtitle="One lifetime license for self-hosting, or fully managed OneCamp Cloud. Cloud includes a self-host license if you ever want to move."
+          subtitle="One lifetime license for self-hosting, or fully managed OneCamp Cloud."
         />
         <Pricing pricing={pricing} />
 
@@ -337,9 +337,6 @@ export default async function HomePage() {
             <h2 className="relative text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               If you can&apos;t say what your AI is allowed to do, this is for you.
             </h2>
-            <p className="relative mx-auto mt-4 max-w-md text-muted-foreground">
-              Bounded by your permissions. Audited before it acts. On hardware you own.
-            </p>
             <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <ButtonLink href="/buy" variant="brandPremium" size="lg">
                 Get OneCamp

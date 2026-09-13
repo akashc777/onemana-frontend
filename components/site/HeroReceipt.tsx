@@ -99,7 +99,7 @@ export const HeroReceipt: React.FC = () => (
 
         <div className="border-t border-border px-4 py-2.5">
             <p className="m-0 text-[0.72rem] leading-relaxed text-foreground/45">
-                Each entry hashes the one before it. Written before the action, so a refusal is on the record too.
+                Written before the action, so a refusal is on the record too.
             </p>
         </div>
     </figure>

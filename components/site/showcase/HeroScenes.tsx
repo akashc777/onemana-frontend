@@ -1,5 +1,8 @@
 "use client";
 
+// landing-diet: product-mock -- the text below is simulated PRODUCT UI (channel
+// posts, table rows, board cards), not marketing copy, so it is outside the
+// homepage word budget. See app/landingWordBudget.test.ts.
 // Hero scenes: short, self-contained product demos that the HeroShowcase cycler
 // rotates through. Each scene mirrors a REAL OneCamp AI capability and the real
 // app's UI (channel posts, the AI side panel, badged AI teammates, propose-then-

@@ -196,7 +196,7 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
 export const steps = [
   { n: "1", title: "Run one command", body: "SSH into any Docker-capable server and run the installer. It pulls images, wires SSL, and sets up the database." },
   { n: "2", title: "Connect your directory", body: "Point SAML, OIDC, or LDAP at it and switch on SCIM so joiners and leavers handle themselves. Or just send email invites and skip this." },
-  { n: "3", title: "Give the AI a job", body: "Build an agent, decide whether it acts or asks first, and watch what it does in the audit log. It inherits the permissions of whoever authorised it." },
+  { n: "3", title: "Give the AI a job", body: "Build an agent, decide whether it acts or asks first, and watch what it does in the audit log." },
 ];
 
 export const faqs = [
@@ -218,7 +218,7 @@ export const faqs = [
   },
   {
     q: "Can we import Slack?",
-    a: "Yes: channels and messages via the built-in importer, with a plan shown before anything is written and a rollback afterwards. Read the switching notes on this page for what it will not bring (bots, apps, exact permissions). Plan a weekend cutover; do not expect a magic mirror.",
+    a: "Yes: channels and messages via the built-in importer, with a plan shown before anything is written and a rollback afterwards. What it will not bring is listed in Switching above. Plan a weekend cutover; do not expect a magic mirror.",
   },
   {
     q: "What if OneMana shuts down?",
@@ -227,7 +227,7 @@ export const faqs = [
 ];
 
 export const requirementsIntro =
-  "Starting points from real droplets, not lab benchmarks. Your mileage varies if everyone is on video calls while the AI summarizes docs.";
+  "Starting points from real droplets, not lab benchmarks.";
 
 export const requirements = [
   {
@@ -273,20 +273,24 @@ export const whyBuilt = {
   title: "AI got access before anyone agreed to it",
   subtitle: "Not a compliance problem. A Tuesday morning problem.",
   story:
-    "An assistant gets wired into the wiki, the tickets, and the chat, and within a week it can reach more than most of the people who work there. Nobody decided that. Ask who authorised a particular action and the honest answer is usually a shrug and a log line with a token id in it. OneCamp starts from the other end: an agent inherits one person's permissions, re-checked on every call, and nothing it does happens without a record naming who stood behind it. OneMana runs the company on this, and the product still changes every week.",
+    "An assistant gets wired into the wiki, the tickets, and the chat, and within a week it can reach more than most of the people who work there. Nobody decided that. Ask who authorised a particular action and the answer is usually a shrug and a log line with a token id in it. OneCamp starts from the other end. OneMana runs the company on it.",
 };
 
-/** Real reviews from actual buyers. Lightly trimmed for length, not reworded. */
+/**
+ * Real reviews from actual buyers. Trimmed for length, NEVER reworded: clauses are
+ * dropped whole and no word is changed, because a review you have edited is not a
+ * review and a buyer who finds the original will know which it was.
+ */
 export const testimonials = [
   {
     quote:
-      "I purchased OneCamp, tried it out, and still use it. The quick video chat works, chat between users works, I can make multiple files to share with anyone, and it's easy to invite a colleague with an email request. You can easily ask the AI box questions, which is useful. It's truly an all-in-one build. Worth it, with a responsive, friendly developer. I'm satisfied.",
+      "I purchased OneCamp, tried it out, and still use it. The quick video chat works, chat between users works, and it's easy to invite a colleague with an email request. You can easily ask the AI box questions, which is useful. It's truly an all-in-one build. Worth it, with a responsive, friendly developer.",
     author: "herehere4242here",
     role: "Verified buyer · Reddit",
   },
   {
     quote:
-      "Something really sweet if you like to self-host for your team. Your team's self-hosted command center: chat, tasks, docs, and video meetings, all in one workspace you own. No per-seat pricing. No AI credits. No vendor lock-in. Just install, invite your team, and start collaborating. One payment, and it replaces four subscriptions.",
+      "Something really sweet if you like to self-host for your team. Chat, tasks, docs, and video meetings, all in one workspace you own. One payment, and it replaces four subscriptions.",
     author: "Terry Carson",
     role: "Self-hosting community",
   },
@@ -330,7 +334,7 @@ export const savingsPitch = {
   // vague range was the weaker of the two: a precise figure somebody typed the
   // input to is evidence, a range is a claim. What stays here is the part the
   // arithmetic cannot say, which is what you get rather than what you save.
-  body: "The AI in those tools is usually a per-seat add-on on top of the seat you already bought. OneCamp includes the agents, the local AI, the SSO and the audit log in one install, with unlimited users. Put your own team size in below.",
+  body: "Elsewhere the AI is a per-seat add-on on top of the seat. Here it is in the licence. Put your team size in below.",
   highlight: "Pay once. Own it forever.",
 };
 

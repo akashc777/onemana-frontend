@@ -31,10 +31,10 @@ const NOT_MIGRATED = [
 
 const OPERATIONS = [
     { k: "Install", v: "One command. SSL, database and models included, usually under ten minutes." },
-    { k: "Updates", v: "One command, and it refuses to start against a schema it does not match rather than corrupting anything." },
-    { k: "Backups", v: "Scheduled at install and watched like storage, with an honest warning that a backup on the same machine is an undo buffer, not disaster recovery." },
+    { k: "Updates", v: "One command. It refuses to start against a schema it does not match, rather than corrupting anything." },
+    { k: "Backups", v: "Scheduled at install. A backup on the same machine is an undo buffer, not disaster recovery, and it says so." },
     { k: "Restore", v: "Brings the schema forward, restarts in place, and never leaves the application stopped." },
-    { k: "Health", v: "One command tells you what a new workspace still needs, including whether it can actually send email." },
+    { k: "Health", v: "One command says what a workspace still needs, down to whether it can send email." },
 ]
 
 export const SwitchingCosts: React.FC = () => (
@@ -67,16 +67,12 @@ export const SwitchingCosts: React.FC = () => (
                 ))}
             </ul>
             <p className="mt-4 text-xs leading-relaxed text-foreground/50">
-                Said here rather than discovered afterwards. An import that oversells itself costs more trust than the
-                features it was hiding were worth.
+                Said here rather than discovered afterwards.
             </p>
         </div>
 
         <div className="rounded-lg border border-border bg-canvas-raised p-6">
             <h3 className="text-lg font-semibold">And someone has to run it</h3>
-            <p className="mt-2 text-sm text-foreground/70">
-                That is the real question about self-hosting, so here is the honest version of the answer.
-            </p>
             <dl className="mt-4 space-y-2.5">
                 {OPERATIONS.map((o) => (
                     <div key={o.k} className="text-sm">

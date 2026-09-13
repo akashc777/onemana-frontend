@@ -1,5 +1,8 @@
 "use client";
 
+// landing-diet: product-mock -- the text below is simulated PRODUCT UI (channel
+// posts, table rows, board cards), not marketing copy, so it is outside the
+// homepage word budget. See app/landingWordBudget.test.ts.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ShowcaseShell } from "@/components/site/showcase/ShowcaseShell";
 import { CalendarShowcase } from "@/components/site/showcase/CalendarShowcase";

@@ -123,7 +123,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd 
                     <>
                         At {Math.max(1, Math.min(1000, people))} people that is{" "}
                         <strong className="text-foreground">{Math.round(multiple)}× less</strong>, and the gap widens
-                        with every person you add, because one side charges per seat and the other does not.
+                        with every person you add.
                     </>
                 ) : (
                     <>
@@ -133,14 +133,13 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd 
                 )}
             </p>
 
-            {/* The objection the buyer already has. Naming it first is what makes
-                the rest credible: published guidance on this market is explicit
-                that acknowledging the operational cost helps close, because the
-                buyer knows and is checking whether you do. */}
+            {/* The objection the buyer already has, and it must be named: published
+                guidance on this market is explicit that acknowledging the operational
+                cost helps close, because the buyer knows and is checking whether you
+                do. Named in ONE line here and answered in full in Switching above,
+                rather than the same paragraph in both places. */}
             <p className="mt-3 text-xs leading-relaxed text-foreground/50">
-                What this does not count: someone has to run the server. Install is one command and updates,
-                backups and restore each have one too, but it is still your machine. If nobody on the team wants
-                that job, a subscription is the honest answer and we would rather say so here than after you have paid.
+                Not counted: someone has to run the server. What that takes is above.
             </p>
         </div>
     )

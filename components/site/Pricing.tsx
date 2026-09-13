@@ -1,6 +1,5 @@
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/site/Reveal";
-import { PricingComparison } from "@/components/site/PricingComparison";
 import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
 import { fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
 
@@ -24,10 +23,6 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">{savingsPitch.body}</p>
           <p className="mt-3 text-sm font-semibold tracking-tight text-foreground">{savingsPitch.highlight}</p>
         </div>
-      </Reveal>
-
-      <Reveal delay={80}>
-        <PricingComparison />
       </Reveal>
 
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
@@ -92,7 +87,6 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               <ButtonLink href="/buy?plan=cloud" variant="ghost" size="lg" className="w-full">
                 Start with OneCamp Cloud
               </ButtonLink>
-              <p className="mt-3 text-center text-xs text-muted-foreground">Workspace live within 12 hours</p>
             </footer>
           </div>
         </Reveal>
