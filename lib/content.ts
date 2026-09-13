@@ -137,24 +137,9 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     body: "SAML, OIDC, LDAP, SCIM 2.0, TOTP. No enterprise tier.",
   },
   {
-    icon: "table",
-    title: "Tables",
-    body: "Typed databases with grid, board, calendar and chart views.",
-  },
-  {
-    icon: "automation",
-    title: "Automations",
-    body: "Plain-English rules that run on your server.",
-  },
-  {
     icon: "chat",
     title: "Chat",
     body: "Channels, threads, DMs, files. Real-time over MQTT.",
-  },
-  {
-    icon: "tasks",
-    title: "Tasks",
-    body: "Kanban beside your channels. Nothing to keep in sync.",
   },
   {
     icon: "docs",
@@ -162,14 +147,34 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     body: "Block editor with live cursors. We cancelled Notion.",
   },
   {
-    icon: "board",
-    title: "Whiteboard",
-    body: "Infinite canvas with live cursors. Replaces Miro.",
+    icon: "tasks",
+    title: "Tasks",
+    body: "Kanban beside your channels. Nothing to keep in sync.",
+  },
+  {
+    icon: "table",
+    title: "Tables",
+    body: "Typed databases with grid, board, calendar and chart views.",
   },
   {
     icon: "video",
     title: "Video",
     body: "LiveKit and transcription on your hardware. AI recap after.",
+  },
+  {
+    icon: "lock",
+    title: "Your server",
+    body: "One Docker command, SSL included. No phone home.",
+  },
+  {
+    icon: "automation",
+    title: "Automations",
+    body: "Plain-English rules that run on your server.",
+  },
+  {
+    icon: "board",
+    title: "Whiteboard",
+    body: "Infinite canvas with live cursors. Replaces Miro.",
   },
   {
     icon: "calendar",
@@ -185,11 +190,6 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     icon: "api",
     title: "Programmable",
     body: "Scoped API, TypeScript SDK and an MCP server.",
-  },
-  {
-    icon: "lock",
-    title: "Your server",
-    body: "One Docker command, SSL included. No phone home.",
   },
 ];
 

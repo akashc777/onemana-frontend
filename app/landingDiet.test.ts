@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { governance, faqs } from "@/lib/content";
+import { governance, faqs, features, MODULES_ON_HOMEPAGE } from "@/lib/content";
 
 /**
  * The homepage may only get shorter and quieter.
@@ -59,6 +59,25 @@ describe("landing diet", () => {
       .map((f) => readFileSync(join(root, f), "utf8"))
       .join("\n");
     expect(sources.toLowerCase()).not.toMatch(/no (slick )?mockups/);
+  });
+
+  it("keeps the wedge modules above the fold, not in the overflow line", () => {
+    // The slice took the array's historical order on the first attempt, which
+    // demoted "Your server" (the entire self-host pitch) and "Video" (LiveKit on
+    // your own hardware) into the "also" line while keeping Whiteboard and
+    // Automations visible. The order of this array is now load-bearing.
+    const visible = features.slice(0, MODULES_ON_HOMEPAGE).map((f) => f.title);
+    for (const must of ["AI agents", "Local AI", "Audit trail", "Your server", "Video", "Chat"]) {
+      expect(visible, `${must} must be listed on the homepage, not deferred to the docs`).toContain(must);
+    }
+  });
+
+  it("keeps every module body to one line", () => {
+    // Fifteen bodies averaging 36 words were the bulk of this section. The index
+    // answers "does it have X"; it is not the place to argue.
+    for (const f of features) {
+      expect(f.body.split(/\s+/).length, `"${f.title}" is back to a paragraph: ${f.body}`).toBeLessThanOrEqual(10);
+    }
   });
 
   it("does not auto-rotate the workspace showcase", () => {
