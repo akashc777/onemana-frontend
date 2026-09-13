@@ -9,7 +9,16 @@ function easeOutCubic(t: number) {
 /** Animates a number once when the element enters the viewport. */
 export function useCountUp(target: number, { duration = 1400, enabled = true } = {}) {
   const ref = useRef<HTMLSpanElement | null>(null);
-  const [value, setValue] = useState(0);
+  // START AT THE TARGET, NOT ZERO. The initial state is what the server renders,
+  // and the server-rendered HTML is what every crawler, link preview and
+  // slow-connection visitor sees before hydration. Starting at zero shipped
+  // "<0 min to get running" and "0% on your infrastructure" to exactly those
+  // readers, which is worse than no statistic: it looks broken and fake.
+  //
+  // The count-up still runs for a person who scrolls to it: the first frame
+  // after intersection computes from p=0 and climbs, so the animation is
+  // unchanged. Only the resting value before it starts is now correct.
+  const [value, setValue] = useState(target);
   const ran = useRef(false);
 
   useEffect(() => {

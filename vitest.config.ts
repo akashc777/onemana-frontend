@@ -21,6 +21,12 @@ import path from "path";
  * change than carrying it now.
  */
 export default defineConfig({
+  // JSX via the automatic runtime, so a component can be rendered to a string
+  // with react-dom/server in the node environment. This is the case the note
+  // above anticipated, and it needs no jsdom and no plugin: the stat strip bug
+  // was a SERVER-render bug ("<0 min" in the HTML crawlers see), and the only
+  // honest test for it is to render on the server and read the string.
+  esbuild: { jsx: "automatic" },
   test: {
     environment: "node",
     include: ["**/*.{test,spec}.{ts,tsx}"],
