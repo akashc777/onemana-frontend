@@ -17,15 +17,24 @@ export interface Pricing {
 }
 
 /**
- * The licence costs exactly one month of the managed plan. That is the whole
- * pricing story in one line, and it is why these two numbers are equal rather
- * than merely close: one month of cloud, or own it forever.
+ * Pay once and own it, or pay monthly and we run it.
+ *
+ * The licence USED to be exactly one month of the managed plan, and the copy
+ * leaned on that equality. It stopped being true on 14 September 2026 when the
+ * licence went to $299 / Rs 24,999 and cloud stayed where it was.
+ *
+ * The line was not restated as "about three months of cloud", because the
+ * multiple is not the same in both currencies — 299/99 is almost exactly three,
+ * 24,999/9,999 is two and a half — and a claim that only holds in dollars is not
+ * a claim this page can make. So the frame is the choice itself rather than an
+ * arithmetic relationship between two numbers that are now free to move
+ * independently.
  */
 export const defaultPricing: Pricing = {
   currency: "INR",
-  lifetime_inr: 9999,
-  lifetime_usd: 99,
-  lifetime_paise: 999900,
+  lifetime_inr: 24999,
+  lifetime_usd: 299,
+  lifetime_paise: 2499900,
   cloud_inr: 9999,
   cloud_usd: 99,
   cloud_paise: 999900,

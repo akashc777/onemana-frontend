@@ -41,11 +41,28 @@ function dollarFigures(body: string): number[] {
 describe("the price on the page is the price in the module", () => {
   const { lifetime_usd, cloud_usd, lifetime_inr } = defaultPricing
 
-  it("keeps the licence at one month of the managed plan", () => {
-    // Not a coincidence to preserve for its own sake: it is the sentence the
-    // pricing rests on. If these ever diverge, the copy has to change too.
-    expect(lifetime_usd).toBe(cloud_usd)
-    expect(lifetime_inr).toBe(defaultPricing.cloud_inr)
+  // The licence USED to equal one month of the managed plan, and this test
+  // asserted it, correctly: the equality was the sentence the pricing rested on.
+  // It was deliberately broken on 14 September 2026 when the licence went to
+  // $299 / Rs 24,999 and cloud stayed put, and the copy that leaned on it was
+  // rewritten in the same change rather than restated as a multiple — 299/99 is
+  // three, 24,999/9,999 is two and a half, and a claim true only in dollars is
+  // not one this page can make.
+  //
+  // What replaces it is the invariant that is still real: the rupee figure and
+  // the paise figure are two spellings of one number, and a typo in either is a
+  // wrong charge rather than a wrong sentence.
+  it("spells the rupee price the same way twice", () => {
+    expect(defaultPricing.lifetime_paise).toBe(lifetime_inr * 100)
+    expect(defaultPricing.cloud_paise).toBe(defaultPricing.cloud_inr * 100)
+  })
+
+  // A licence that costs less than a month of the managed plan would invert the
+  // offer — buy it outright for less than renting it once — and that is a
+  // pricing mistake no amount of copy can carry.
+  it("never prices the licence below a month of the managed plan", () => {
+    expect(lifetime_usd).toBeGreaterThanOrEqual(cloud_usd)
+    expect(lifetime_inr).toBeGreaterThanOrEqual(defaultPricing.cloud_inr)
   })
 
   // site.ts held a third copy and had already drifted to Rs 2,000 against a
