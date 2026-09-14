@@ -17,6 +17,7 @@ import { HeroReceipt } from "@/components/site/HeroReceipt";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { ModuleIndex } from "@/components/site/ModuleIndex";
 import { ControlIndex } from "@/components/site/ControlIndex";
+import { GovernedDemo } from "@/components/site/GovernedDemo";
 import { HeroProductVideo } from "@/components/site/HeroProductVideo";
 
 import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
@@ -190,6 +191,33 @@ export default async function HomePage() {
       <Section divider spacing="compact">
         <p className="text-center text-sm text-muted-foreground">
           OneMana runs its own workspace on this: {requirements[0].spec}.
+        </p>
+      </Section>
+
+      {/* Section 5 of the redesign plan's IA: one path, Channel to Agent to
+          Refusal to Audit. The critique's finding was a mismatch, that the site
+          sells a refusal on the record and the demo it linked to opened on a
+          chatbot panel, so the claim was argued in prose and then not shown.
+          This is the claim itself, on the page that makes it, with the action
+          name and the refusal sentence the product actually produces. */}
+      <Section id="demo" divider>
+        <SectionHeading
+          eyebrow="The one path"
+          title="Watch an agent get stopped"
+          subtitle="Priya can't post in #finance. Neither can her agent, and the refusal is written down."
+        />
+        <Reveal className="mt-10">
+          <GovernedDemo />
+        </Reveal>
+        <p className="mt-6 text-sm text-muted-foreground">
+          The live demo runs the same check.{" "}
+          <Link
+            href={site.demoStartUrl}
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            Try it without signing up
+          </Link>
+          .
         </p>
       </Section>
 

@@ -59,8 +59,15 @@ const PRODUCT_MOCK_MARKER = "landing-diet: product-mock";
  * The proxy's high-water mark: its reading when the rendered page last measured
  * inside the plan's budget, plus room for formatting churn. See the note above
  * for why this is not 1,800.
+ *
+ * Raised from 870 to 885 on 15 September 2026 for the governed demo, which is
+ * section 5 of the redesign plan's own wireframe and budgeted there at 40-60
+ * words. The fifteen words it actually cost are its heading, its one-line
+ * subtitle and the link to the live demo; the walkthrough itself is product UI
+ * and carries the mock marker, like the receipt and the showcase. The rendered
+ * prose measurement stays inside the 1,150-1,600 aim.
  */
-const BASELINE = 870;
+const BASELINE = 885;
 /** The proxy reading that corresponded to the plan's 1,150-1,600 aim. */
 const AIM_PROXY = 860;
 /** Shortest real sentence on the page. Below this a block is a label, not prose. */
