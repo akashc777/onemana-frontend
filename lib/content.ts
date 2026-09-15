@@ -194,7 +194,12 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
 ];
 
 export const steps = [
-  { n: "1", title: "Run one command", body: "SSH into any Docker-capable server and run the installer. It pulls images, wires SSL, and sets up the database." },
+  // THE SECOND DEPLOY IS NAMED HERE, before anyone pays. The installer prints it
+  // when it finishes, which is a fine place to repeat it and the wrong place to
+  // learn it: a buyer whose model was "run one command" meets an unexpected step
+  // at the moment they expected to be done. The frontend is a separate,
+  // open-source deployment, and saying so costs less than the support thread.
+  { n: "1", title: "Run one command", body: "SSH into any Docker-capable server and run the installer. It pulls images, wires SSL, and sets up the database. The workspace people open is a second deploy, from the open-source frontend, and the installer prints that command too." },
   { n: "2", title: "Connect your directory", body: "Point SAML, OIDC, or LDAP at it and switch on SCIM so joiners and leavers handle themselves. Or just send email invites and skip this." },
   { n: "3", title: "Give the AI a job", body: "Build an agent, decide whether it acts or asks first, and watch what it does in the audit log." },
 ];

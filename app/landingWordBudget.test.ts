@@ -60,6 +60,13 @@ const PRODUCT_MOCK_MARKER = "landing-diet: product-mock";
  * inside the plan's budget, plus room for formatting churn. See the note above
  * for why this is not 1,800.
  *
+ * Raised again, 885 to 903, on 15 September 2026: step one now says the
+ * workspace is a second deploy from the open-source frontend. The page did not
+ * say so anywhere, the installer only says it after the install finishes, and a
+ * buyer whose model was "run one command" met an unexpected step at the moment
+ * they expected to be done. Eighteen words against a support thread and a
+ * stalled install is the trade this budget exists to allow.
+ *
  * Raised from 870 to 885 on 15 September 2026 for the governed demo, which is
  * section 5 of the redesign plan's own wireframe and budgeted there at 40-60
  * words. The fifteen words it actually cost are its heading, its one-line
@@ -67,7 +74,7 @@ const PRODUCT_MOCK_MARKER = "landing-diet: product-mock";
  * and carries the mock marker, like the receipt and the showcase. The rendered
  * prose measurement stays inside the 1,150-1,600 aim.
  */
-const BASELINE = 885;
+const BASELINE = 903;
 /** The proxy reading that corresponded to the plan's 1,150-1,600 aim. */
 const AIM_PROXY = 860;
 /** Shortest real sentence on the page. Below this a block is a label, not prose. */
