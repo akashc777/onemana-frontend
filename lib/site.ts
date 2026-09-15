@@ -57,6 +57,10 @@ export const navLinks = [
 export const footerLinks = {
   Product: [
     { label: "Product tour", href: "/#tour" },
+    // The homepage stopped arguing "replaces Slack, Notion, Asana, Zoom" on
+    // purpose. /compare is where that argument moved, so it has to be reachable
+    // from somewhere or it is a page only a search engine ever sees.
+    { label: "Compare", href: "/compare" },
     { label: "Governance", href: "/#governance" },
     { label: "Enterprise controls", href: "/#enterprise" },
     { label: "Features", href: "/#features" },

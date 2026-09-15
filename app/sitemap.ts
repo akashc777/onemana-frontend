@@ -6,6 +6,7 @@ import { listPublishedDocs } from "@/lib/docs";
 const STATIC_ROUTES = [
   "",
   "/buy",
+  "/compare",
   "/docs",
   "/blog",
   "/about",
