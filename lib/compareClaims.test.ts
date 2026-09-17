@@ -3,7 +3,15 @@ import { resolve } from "node:path"
 
 import { describe, expect, it } from "vitest"
 
-import { CLAIMS_CHECKED, killQuestion, onecampRow, rivals } from "@/lib/compare"
+import {
+    CLAIMS_CHECKED,
+    RECORD_KEEPING_IN_FORCE,
+    RECORD_KEEPING_SOURCE,
+    killQuestion,
+    onecampRow,
+    recordKeeping,
+    rivals,
+} from "@/lib/compare"
 
 /**
  * A page that describes other people's products is the easiest page on this site
@@ -74,5 +82,44 @@ describe("what the comparison page is allowed to claim", () => {
         // The homepage stopped arguing module against category leader. Moving the
         // section to its own page was not permission to start again.
         expect(VIEW).toContain("Not a feature-for-feature swap")
+    })
+})
+
+/**
+ * The record-keeping section is the easiest place on this site to say something
+ * that is both persuasive and false.
+ *
+ * "EU AI Act compliant" is the sentence every vendor reaches for and no vendor
+ * can deliver: compliance is a property of a deployment and its use case, not of
+ * a tool. Saying it would also be the exact failure this whole page was built to
+ * avoid, one page after conceding what four rivals do better.
+ */
+describe("what the page says about the regulation", () => {
+    it("never claims to confer compliance", () => {
+        const text = VIEW + JSON.stringify(recordKeeping)
+        for (const forbidden of [/\bmakes you compliant\b/i, /\bcompliant out of the box\b/i, /\bguarantees? compliance\b/i, /\bfully compliant\b/i]) {
+            expect(forbidden.test(text), `the page claims compliance: ${forbidden}`).toBe(false)
+        }
+        // And says the opposite, in the place a reader is most likely to assume it.
+        expect(VIEW).toContain("No software can make you compliant")
+    })
+
+    it("dates the obligation and links the article", () => {
+        // A regulatory claim with no date is one nobody can check and one that
+        // silently rots. The date is the first thing a sceptical reader looks for.
+        expect(RECORD_KEEPING_IN_FORCE).toMatch(/2026/)
+        expect(RECORD_KEEPING_SOURCE).toMatch(/^https:\/\//)
+        expect(VIEW).toContain("RECORD_KEEPING_SOURCE")
+    })
+
+    it("answers each obligation with something checkable, not an adjective", () => {
+        for (const r of recordKeeping) {
+            expect(r.asked.length, "an obligation with no wording").toBeGreaterThan(20)
+            // The right-hand column has to describe a mechanism. A row that reads
+            // "enterprise-grade auditing" is the thing this column exists instead of.
+            expect(r.produced.split(/\s+/).length, `"${r.asked}" is answered too thinly`).toBeGreaterThan(8)
+            expect(/enterprise-grade|best-in-class|robust|world-class/i.test(r.produced),
+                `"${r.asked}" is answered with an adjective`).toBe(false)
+        }
     })
 })

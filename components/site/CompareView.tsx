@@ -4,7 +4,16 @@ import { Reveal } from "@/components/site/Reveal";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { StackConvergence } from "@/components/site/StackConvergence";
 import { ButtonLink } from "@/components/ui/Button";
-import { CLAIMS_CHECKED, cancels, killQuestion, onecampRow, rivals } from "@/lib/compare";
+import {
+    CLAIMS_CHECKED,
+    RECORD_KEEPING_IN_FORCE,
+    RECORD_KEEPING_SOURCE,
+    cancels,
+    killQuestion,
+    onecampRow,
+    recordKeeping,
+    rivals,
+} from "@/lib/compare";
 import { site } from "@/lib/site";
 
 /**
@@ -140,6 +149,59 @@ export function CompareView() {
                     <ButtonLink href="/#governance" variant="ghost" size="lg">
                         How the guarantee works
                     </ButtonLink>
+                </Reveal>
+            </Section>
+
+            {/* Why the question above stopped being a matter of taste. */}
+            <Section divider>
+                <SectionHeading
+                    align="left"
+                    eyebrow="Since August"
+                    title="What a deployer is now asked to keep"
+                    subtitle={`The EU AI Act's record-keeping obligations came into full application on ${RECORD_KEEPING_IN_FORCE}. Until then "our agents are audited" was a preference you could weigh against price.`}
+                />
+                <Reveal className="mt-8">
+                    <div className="overflow-x-auto rounded-xl border border-border">
+                        <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
+                            <caption className="sr-only">
+                                Record-keeping obligations and what OneCamp produces against each
+                            </caption>
+                            <thead>
+                                <tr className="border-b border-border bg-muted/40">
+                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">Asked for</th>
+                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">What this produces</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {recordKeeping.map((r) => (
+                                    <tr key={r.asked} className="border-b border-border last:border-0">
+                                        <th scope="row" className="px-4 py-4 align-top font-normal text-muted-foreground">
+                                            {r.asked}
+                                        </th>
+                                        <td className="px-4 py-4 align-top text-foreground">{r.produced}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Reveal>
+                <Reveal className="mt-6" delay={80}>
+                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                        No software can make you compliant. Compliance is a property of your deployment
+                        and what you use it for, and anyone selling you the word is selling you
+                        something they cannot deliver. Every line in the right-hand column is a thing
+                        you can check on a running install in about a minute. Whether that satisfies
+                        an obligation is for you and your counsel.{" "}
+                        <a
+                            href={RECORD_KEEPING_SOURCE}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline underline-offset-4 decoration-border hover:decoration-foreground"
+                        >
+                            Read Article 12
+                        </a>
+                        .
+                    </p>
                 </Reveal>
             </Section>
 

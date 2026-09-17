@@ -97,6 +97,51 @@ export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never }
 export const killQuestion =
     "When an agent tries something the person it acts for is not allowed to do, is the refusal written to an exportable chain before the side effect?"
 
+/**
+ * What the law now asks a deployer to keep, and what this produces against it.
+ *
+ * WHY THIS IS ON THE COMPARISON PAGE. The market moved on 2 August 2026, when the
+ * EU AI Act's record-keeping obligations came into full application. Until then
+ * "our agents are audited" was a preference a buyer could weigh against price.
+ * For a deployer of a high-risk system it is now an obligation with a number
+ * attached, and the question on this page stopped being a matter of taste.
+ *
+ * WHAT IT DOES NOT CLAIM, and the distinction is the whole reason it can be
+ * written at all: compliance is a property of a deployment and its use case, not
+ * of a tool, and no software can confer it. Every row below is a thing this
+ * product demonstrably produces, checkable on a running install in about a
+ * minute. Whether that satisfies an obligation is for the reader and their
+ * counsel, and the page says so.
+ */
+export const RECORD_KEEPING_SOURCE = "https://artificialintelligenceact.eu/article/12/"
+export const RECORD_KEEPING_IN_FORCE = "2 August 2026"
+
+export interface RecordKeepingRow {
+    /** What the obligation asks for, in the regulation's own terms. */
+    asked: string
+    /** What the product produces against it, stated so it can be checked. */
+    produced: string
+}
+
+export const recordKeeping: RecordKeepingRow[] = [
+    {
+        asked: "Automatically recorded logs of the system's operation, over its lifetime",
+        produced: "Every agent tool call is written to the audit log before it runs. A failed write refuses the call.",
+    },
+    {
+        asked: "Traceability: the inputs, the outputs, and the decision points",
+        produced: "Each row carries the agent, the tool, the human principal it acted for, the decision, and the reason for a refusal.",
+    },
+    {
+        asked: "Logs kept under the deployer's own control for at least six months",
+        produced: "The log is a table on your server. The retention floor is 190 days and a shorter window is refused, not accepted quietly.",
+    },
+    {
+        asked: "A record an auditor can query and take away",
+        produced: "Export as JSON or CSV. Every row carries its position and the hash of the row before it, so a gap or an edit is visible.",
+    },
+]
+
 /** The subscriptions a buyer is usually cancelling, kept for the search that brings them here. */
 export const cancels = [
     { tool: "Slack", surface: "Channels, DMs, threads, and the Slack export you import from" },
