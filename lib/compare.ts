@@ -85,7 +85,7 @@ export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never }
     name: "OneCamp",
     what: "Chat, docs, tasks, tables, video, calendar and agents in one workspace",
     billing: "One licence, unlimited users, or a flat monthly cloud",
-    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action",
+    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. An agent built elsewhere, on anything that speaks AG-UI, runs under the same rules",
 }
 
 /**
