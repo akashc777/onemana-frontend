@@ -1,0 +1,65 @@
+{
+  "proof": {
+    "generated_at": "2026-09-20T08:09:20.332403371Z",
+    "subject": "demo@onemana.dev",
+    "subject_id": "c224fb1b-67ca-4919-8d60-60d5910aacf8",
+    "rows": 3,
+    "product": "OneCamp"
+  },
+  "entries": [
+    {
+      "id": "50d80f95-5e22-4d3f-99da-eea21aae7fcd",
+      "seq": 44,
+      "actor_id": "c224fb1b-67ca-4919-8d60-60d5910aacf8",
+      "actor_email": "demo@onemana.dev",
+      "actor_kind": "agent",
+      "action": "agent.drill.refused",
+      "category": "agent",
+      "summary": "Drill: post in #drill-finance refused (you are not a member of this channel)",
+      "metadata": "{\"tool\": \"send_message\", \"drill\": true, \"phase\": \"after\", \"reason\": \"you are not a member of this channel\", \"channel\": \"drill-finance\", \"refused\": true, \"initiator\": \"person\"}",
+      "created_at": "2026-09-20T08:09:20.170018Z",
+      "entry_hash": "690f37c1dd80df958b8c2621065b8771c180eaa6c71232c33e9b1b746f11575d",
+      "prev_hash": "68d9fed301af3cfea436b21d76368cab0b4e31ac48f3c9d173cd7aeae3c95ca7"
+    },
+    {
+      "id": "27865918-3515-44c1-8543-87c739c57888",
+      "seq": 43,
+      "actor_id": "c224fb1b-67ca-4919-8d60-60d5910aacf8",
+      "actor_email": "demo@onemana.dev",
+      "actor_kind": "agent",
+      "action": "agent.drill.attempt",
+      "category": "agent",
+      "summary": "Drill: an agent acting for demo@onemana.dev is about to attempt a post in #drill-finance",
+      "metadata": "{\"tool\": \"send_message\", \"drill\": true, \"phase\": \"before\", \"channel\": \"drill-finance\", \"initiator\": \"person\"}",
+      "created_at": "2026-09-20T08:09:20.149098Z",
+      "entry_hash": "68d9fed301af3cfea436b21d76368cab0b4e31ac48f3c9d173cd7aeae3c95ca7",
+      "prev_hash": "62eac449de4afa575708ed3e385857afab68a12a36fcacef20482c93abd58266"
+    },
+    {
+      "id": "2972d317-2be6-491c-aa33-a2c64d288d8f",
+      "seq": 42,
+      "actor_id": "c224fb1b-67ca-4919-8d60-60d5910aacf8",
+      "actor_email": "demo@onemana.dev",
+      "actor_kind": "agent",
+      "action": "agent.drill.refused",
+      "category": "agent",
+      "summary": "Drill: post in #drill-finance refused (you are not a member of this channel)",
+      "metadata": "{\"tool\": \"send_message\", \"drill\": true, \"phase\": \"after\", \"reason\": \"you are not a member of this channel\", \"channel\": \"drill-finance\", \"refused\": true, \"initiator\": \"person\"}",
+      "created_at": "2026-09-20T06:40:54.131555Z",
+      "entry_hash": "62eac449de4afa575708ed3e385857afab68a12a36fcacef20482c93abd58266",
+      "prev_hash": "02609261030b8884fc941db080ce91a9204e73a949290339eadc9e6f9d0f8d3f"
+    }
+  ],
+  "how_to_verify": [
+    "Recompute a row hash: SHA-256 over these fields joined by a single newline, in order: prev_hash, id, created_at, actor_id, actor_email, action, category, summary, metadata. Rows that carry an actor_kind append one more newline and that value; rows written before that column existed do not.",
+    "Format those fields as the document does: created_at is RFC 3339 in UTC with nanosecond precision and trailing zeros removed, an absent actor_id is the empty string, and metadata is the row's JSON re-serialised with object keys sorted.",
+    "Check one row at a time. Every row here carries the prev_hash it was written with, so its entry_hash can be recomputed from the row alone.",
+    "A mismatch means the document you are holding is not the one this system produced. None of the above needs our software: any SHA-256 and JSON tool will do."
+  ],
+  "limits": [
+    "These are only the rows recorded against you. They are a filter over the workspace log, so two rows next to each other here are usually not next to each other there, and the prev_hash of one will not be the entry_hash of the one above it. Walking the chain needs the whole log, which an administrator can export.",
+    "Recomputing a row's hash proves that row is exactly as it was written. It does not prove that no row was removed; integrity and completeness are different properties and no export converts one into the other.",
+    "A row marked redacted_at had its content cleared by the workspace retention policy. The row and its hashes remain so the chain is unbroken, and its hash can no longer be recomputed from its content, because the content is gone.",
+    "Rows are recorded against the person whose authority an action carried. An agent's row names you because it acted as you, not because you were there; the initiator field on the row says whether anybody was."
+  ]
+}

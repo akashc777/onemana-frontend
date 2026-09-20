@@ -141,3 +141,30 @@ describe("entriesOf", () => {
         expect(entriesOf({})).toEqual([]);
     });
 });
+
+// A file the PRODUCT produced, checked by this browser implementation.
+//
+// The recipe exists twice on purpose: once in Go, where the hash is written,
+// and once here, where a stranger checks it. Independent reimplementation is
+// the whole value, and it is also how the two quietly drift apart. This is a
+// real export from the live demo; if the Go side ever changes how a row is
+// hashed without this being updated, it fails here rather than on a customer's
+// screen in front of their auditor.
+describe("a record the product really produced", () => {
+    it("verifies with no mismatches", async () => {
+        const doc = (await import("./__fixtures__/live-record.json")).default;
+        const r = await verifyRecord(doc as never);
+        expect(r.rows.length).toBeGreaterThan(0);
+        expect(r.mismatched).toBe(0);
+        expect(r.verified).toBe(r.rows.length);
+    });
+
+    it("carries the instructions and limits a reader is shown", async () => {
+        const doc = (await import("./__fixtures__/live-record.json")).default;
+        const r = await verifyRecord(doc as never);
+        expect(r.howToVerify.length).toBeGreaterThan(0);
+        expect(r.limits.length).toBeGreaterThan(0);
+        // The one that distinguishes a member's record from the admin's pack.
+        expect(r.limits.join(" ")).toContain("only the rows recorded against you");
+    });
+});
