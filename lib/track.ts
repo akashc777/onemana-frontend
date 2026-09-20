@@ -44,6 +44,40 @@ export function withVisitorId(href: string): string {
   }
 }
 
+/**
+ * opensDemo says whether a pointer event is one that actually opens a link.
+ *
+ * A plain click is the obvious case. The middle button is the one that gets
+ * missed: it opens a link in a new tab and it does NOT fire `click`, it fires
+ * `auxclick`, so a listener bound only to `click` neither counts that visit nor
+ * carries the visitor id into it. Those visitors then arrive at the demo as
+ * strangers and every one of them widens the gap between "clicked" and
+ * "arrived" for a reason that is ours, not theirs.
+ *
+ * The right button also fires `auxclick` and opens a context menu, not the
+ * demo, so it must not be counted. It is still worth tagging the href by then,
+ * which is why tagging and counting are separate decisions in the caller.
+ */
+export function opensDemo(type: string, button: number): boolean {
+  if (type === "click") return true; // button 0, and keyboard Enter, which reports 0
+  return type === "auxclick" && button === 1;
+}
+
+/**
+ * demoClickEvent names the click by whether we can follow the visitor.
+ *
+ * A click made in a browser with site data blocked cannot be carried across the
+ * domain boundary: the link goes out untagged and the demo has no way to know
+ * the visit came from here. Recording it under the same name as a click we CAN
+ * follow puts it in the numerator of a funnel it can never appear in the
+ * denominator of, which reads as people leaving when it is really us losing
+ * them. Naming it separately keeps the loss visible and keeps it out of the
+ * conversion rate.
+ */
+export function demoClickEvent(tagged: boolean): string {
+  return tagged ? "demo-click" : "demo-click-untagged";
+}
+
 /** Event paths live under this prefix so they can be told apart from pages.
  *  Counting them as pageviews would inflate traffic with things nobody browsed. */
 export const EVENT_PREFIX = "/event/";
