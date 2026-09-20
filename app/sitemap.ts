@@ -7,6 +7,7 @@ const STATIC_ROUTES = [
   "",
   "/buy",
   "/compare",
+  "/verify",
   "/docs",
   "/blog",
   "/about",
