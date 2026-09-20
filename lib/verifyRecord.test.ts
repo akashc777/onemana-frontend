@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { canonicalJson, entriesOf, hashInput, verifyRecord, type RecordEntry } from "@/lib/verifyRecord";
 
 // A row taken from a real OneCamp export, with its real hash. If the recipe
@@ -144,6 +145,10 @@ describe("entriesOf", () => {
 
 // A file the PRODUCT produced, checked by this browser implementation.
 //
+// It is the same file the page offers as a sample, served from public/, so the
+// thing a visitor clicks is the thing this test verifies. Two copies would let
+// the offered sample rot while the test stayed green.
+//
 // The recipe exists twice on purpose: once in Go, where the hash is written,
 // and once here, where a stranger checks it. Independent reimplementation is
 // the whole value, and it is also how the two quietly drift apart. This is a
@@ -152,16 +157,16 @@ describe("entriesOf", () => {
 // screen in front of their auditor.
 describe("a record the product really produced", () => {
     it("verifies with no mismatches", async () => {
-        const doc = (await import("./__fixtures__/live-record.json")).default;
-        const r = await verifyRecord(doc as never);
+        const doc = JSON.parse(readFileSync("public/sample-record.json", "utf8"));
+        const r = await verifyRecord(doc);
         expect(r.rows.length).toBeGreaterThan(0);
         expect(r.mismatched).toBe(0);
         expect(r.verified).toBe(r.rows.length);
     });
 
     it("carries the instructions and limits a reader is shown", async () => {
-        const doc = (await import("./__fixtures__/live-record.json")).default;
-        const r = await verifyRecord(doc as never);
+        const doc = JSON.parse(readFileSync("public/sample-record.json", "utf8"));
+        const r = await verifyRecord(doc);
         expect(r.howToVerify.length).toBeGreaterThan(0);
         expect(r.limits.length).toBeGreaterThan(0);
         // The one that distinguishes a member's record from the admin's pack.

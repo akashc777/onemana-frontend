@@ -60,6 +60,26 @@ export function VerifyRecord() {
         }
     }, [])
 
+    /**
+     * Somebody who arrived without a file.
+     *
+     * A checker that needs a document the reader does not have yet is a page
+     * they leave. This is a real record the public demo produced, served from
+     * this site, so the page demonstrates itself in one click and the thing
+     * they click is the same file the tests verify.
+     */
+    const tryTheSample = React.useCallback(async () => {
+        setState({ kind: "working" })
+        try {
+            const res = await fetch("/sample-record.json")
+            if (!res.ok) throw new Error("sample unavailable")
+            const doc = await res.json()
+            setState({ kind: "done", report: await verifyRecord(doc), filename: "sample-record.json" })
+        } catch {
+            setState({ kind: "error", message: "The sample could not be loaded. Your own file still works." })
+        }
+    }, [])
+
     const onDrop = React.useCallback(
         (e: React.DragEvent) => {
             e.preventDefault()
@@ -98,6 +118,18 @@ export function VerifyRecord() {
                     It is read in your browser. Nothing is uploaded.
                 </span>
             </label>
+
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+                No file yet?{" "}
+                <button
+                    type="button"
+                    onClick={() => void tryTheSample()}
+                    className="underline underline-offset-4 hover:text-foreground"
+                >
+                    Try it with a record from the public demo
+                </button>
+                .
+            </p>
 
             {state.kind === "working" && (
                 <p className="mt-6 text-sm text-muted-foreground">Recomputing every row.</p>
