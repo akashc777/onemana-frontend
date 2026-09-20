@@ -138,7 +138,7 @@ export const recordKeeping: RecordKeepingRow[] = [
     },
     {
         asked: "A record an auditor can query and take away",
-        produced: "Export as JSON or CSV. Every row carries its position and the hash of the row before it, so a gap or an edit is visible.",
+        produced: "Export as JSON or CSV. Every row carries its position and the hash of the row before it, so a gap or an edit is visible. Anyone holding the file can recompute those hashes in a browser, without the software that wrote them.",
     },
 ]
 

@@ -142,12 +142,26 @@ export function CompareView() {
                         admin exports.
                     </p>
                 </Reveal>
+                {/* The step past "we will show you": you check it, with our
+                    software nowhere in the loop. A claim a reader can only
+                    watch is still a claim; this is the one place on the site
+                    where they can settle it themselves. */}
+                <Reveal className="mt-4" delay={110}>
+                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                        Then take it away and check it. Download the record from the demo and drop it on{" "}
+                        <a href="/verify" className="underline underline-offset-4 hover:text-foreground">
+                            the verifier
+                        </a>
+                        , which recomputes every row in your browser. It needs no account and nothing is uploaded, so
+                        what you are trusting is a page you can read the source of, not us.
+                    </p>
+                </Reveal>
                 <Reveal className="mt-8 flex flex-wrap gap-3" delay={140}>
                     <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg">
                         Run the drill in the demo
                     </ButtonLink>
-                    <ButtonLink href="/#governance" variant="ghost" size="lg">
-                        How the guarantee works
+                    <ButtonLink href="/verify" variant="ghost" size="lg">
+                        Check a record yourself
                     </ButtonLink>
                 </Reveal>
             </Section>
