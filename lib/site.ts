@@ -29,6 +29,18 @@ export const site = {
   get demoStartUrl() {
     return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=1`;
   },
+  /**
+   * A demo link that names where it is going.
+   *
+   * `start_demo=1` signs a visitor in and leaves them on the home screen. That
+   * is right for a link labelled "live demo" and wrong for one labelled "run
+   * the drill", which is what the compare page has: the button named an action
+   * and performed a login. The demo reads this value as a destination and lands
+   * on the drill, running it once.
+   */
+  demoDrillUrl(): string {
+    return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=drill`;
+  },
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
   githubRepo: process.env.NEXT_PUBLIC_GITHUB_REPO || "OneMana-Soft/OneCamp-fe",
   docsPath: "/docs",

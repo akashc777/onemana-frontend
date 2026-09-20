@@ -157,7 +157,7 @@ export function CompareView() {
                     </p>
                 </Reveal>
                 <Reveal className="mt-8 flex flex-wrap gap-3" delay={140}>
-                    <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg">
+                    <ButtonLink href={site.demoDrillUrl()} external variant="brandPremium" size="lg">
                         Run the drill in the demo
                     </ButtonLink>
                     <ButtonLink href="/verify" variant="ghost" size="lg">
