@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { execSync } from "child_process"
+import { readFileSync } from "fs"
 import { join } from "path"
 
 import { site } from "./site"
@@ -51,5 +52,33 @@ describe("the demo link", () => {
       .filter((f) => f !== TRACKER && !f.endsWith(".test.ts"))
 
     expect(offenders, `these still link the bare demo URL: ${offenders.join(", ")}`).toEqual([])
+  })
+})
+
+/**
+ * The proof path on the page people actually reach.
+ *
+ * The drill link and the record checker were both built on /compare, which four
+ * visitors opened in thirty days while 361 opened the homepage and nothing
+ * else. A proof nobody is offered is a proof nobody has, so the homepage's demo
+ * section carries the same two links, and this stops them quietly reverting to
+ * a generic demo login the next time somebody tidies that paragraph.
+ */
+describe("the homepage demo section", () => {
+  const page = readFileSync(join(ROOT, "app/page.tsx"), "utf8")
+  const section = page.slice(page.indexOf('<Section id="demo"'), page.indexOf('<Section id="features"'))
+
+  it("sends the visitor to the drill, not to a home screen", () => {
+    // start_demo=1 signs somebody in and leaves them to find the drill. The
+    // section's heading promises they will watch an agent get stopped, so the
+    // link has to land on the thing that stops it.
+    expect(section).toContain("site.demoDrillUrl()")
+    expect(section).not.toContain("site.demoStartUrl")
+  })
+
+  it("offers the record checker next to the drill", () => {
+    // Running the drill produces a record. Without this link the visitor has
+    // watched a refusal and has still only been told it is checkable.
+    expect(section).toContain('href="/verify"')
   })
 })

@@ -209,15 +209,34 @@ export default async function HomePage() {
         <Reveal className="mt-10">
           <GovernedDemo />
         </Reveal>
+        {/* THE SAME PROOF PATH THE COMPARE PAGE HAS, on the page people
+            actually see. Of the last 400 visitors, 361 opened this page and
+            nothing else, so a route that only exists on /compare is a route
+            almost nobody is offered. The drill link lands on the drill and runs
+            it, rather than signing somebody in and leaving them on a home
+            screen to find it; the second link is what makes the refusal
+            checkable by the reader instead of asserted at them.
+
+            On the word budget: these are link labels and clauses, all under the
+            twelve-word prose floor, so app/landingWordBudget.test.ts does not
+            see them and its proxy does not move. That is the systematic
+            under-count its own header describes, not headroom. The rendered
+            addition is about twenty words against a hand measurement of 1,042
+            prose words and an aim of 1,150-1,600, so the page stays inside the
+            plan's budget on the measure that counts. */}
         <p className="mt-6 text-sm text-muted-foreground">
           The live demo runs the same check.{" "}
           <Link
-            href={site.demoStartUrl}
+            href={site.demoDrillUrl()}
             className="underline underline-offset-4 hover:text-foreground"
           >
-            Try it without signing up
+            Run the drill yourself
           </Link>
-          .
+          , then{" "}
+          <Link href="/verify" className="underline underline-offset-4 hover:text-foreground">
+            check the record it wrote
+          </Link>
+          . No account, nothing to install.
         </p>
       </Section>
 
