@@ -124,6 +124,8 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "ovh_ssh_key_name", label: "SSH key name", hint: "The NAME of a key OVH already holds on the account - not the key itself. OVH installs it during reinstall, which is why no root password is ever needed." },
       { key: "ovh_endpoint", label: "API endpoint", hint: "MUST match the region you created the token in, or every call returns 403 with no hint why. EU: https://eu.api.ovh.com/1.0 (the default) · Canada: https://ca.api.ovh.com/1.0 · US: https://api.us.ovhcloud.com/1.0. If you signed in at auth.ca.ovhcloud.com, you need the Canada one." },
       { key: "ovh_os_template", label: "OS template", hint: "The image reinstalled onto each machine. Leave blank for the default." },
+      { key: "ovh_cloud_project", label: "Public Cloud project id", hint: "The Public Cloud project (its service name, a 32-character id) that holds customers' extra-storage buckets. Free to have; storage is billed per GB as used, and a bucket is created only after a customer has paid. The API token must also cover GET/POST/DELETE /cloud/project/*. Empty means extra storage is attached by hand." },
+      { key: "ovh_cloud_region", label: "Object storage region", hint: "Where buckets are made, e.g. GRA, SBG, BHS. Default GRA. The bucket's endpoint follows from it (s3.gra.io.cloud.ovh.net)." },
       { key: "ovh_min_ram_mb", label: "Smallest machine: RAM (MB)", type: "number", hint: "A pooled server below this is refused before it is wiped. Default 7500, which is what an \"8 GB\" machine reports. 0 accepts anything." },
       { key: "ovh_min_disk_gb", label: "Smallest machine: disk (GB)", type: "number", hint: "Same check for disk. Default 40." },
       {
