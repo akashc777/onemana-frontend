@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
+import { fetchPricingClient, defaultPricing, type Pricing } from "@/lib/pricing";
 import { portalApi, type PortalOverview, type PortalSubscription, type Invoice } from "@/lib/portalApi";
 import { formatINR, formatDate } from "@/lib/format";
 import { WorkspaceSection } from "./WorkspaceSection";
@@ -273,6 +275,31 @@ function InvoicesTab() {
 function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]; onChanged: () => void }) {
   const [subs, setSubs] = useState<PortalSubscription[]>(initial);
   const [busy, setBusy] = useState<string | null>(null);
+  const [note, setNote] = useState<Record<string, string>>({});
+  const [pricing, setPricing] = useState<Pricing>(defaultPricing);
+  useEffect(() => {
+    let alive = true;
+    fetchPricingClient().then((p) => { if (alive) setPricing(p); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  async function switchBilling(s: PortalSubscription) {
+    const to = s.can_switch_to;
+    if (to !== "monthly" && to !== "yearly") return;
+    if (!window.confirm(switchConfirm(to))) return;
+    setBusy(s.id);
+    try {
+      const detail = await portalApi.changeBilling(s.id, to);
+      setNote((n) => ({ ...n, [s.id]: detail }));
+      const fresh = await portalApi.subscriptions();
+      setSubs(fresh);
+      onChanged();
+    } catch (e) {
+      setNote((n) => ({ ...n, [s.id]: e instanceof Error ? e.message : "The change could not be made." }));
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function cancel(s: PortalSubscription) {
     if (!window.confirm("Cancel this subscription? It stays active until the current period ends, then will not renew.")) return;
@@ -317,6 +344,15 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
                       : "Active."}
               </p>
             </div>
+            {s.can_switch_to && s.can_cancel && (
+              <button
+                onClick={() => switchBilling(s)}
+                disabled={busy === s.id}
+                className="rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50"
+              >
+                {busy === s.id ? "Working…" : switchLabel(s.can_switch_to, pricing.cloud_yearly_free_months)}
+              </button>
+            )}
             {s.can_cancel ? (
               <button
                 onClick={() => cancel(s)}
@@ -329,8 +365,14 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               <span className="rounded-lg border border-border px-4 py-2 text-xs text-muted-foreground">Cancellation scheduled</span>
             ) : null}
           </div>
+          {s.pending_label && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Switches to {s.pending_label.toLowerCase()} on {s.next_due_date ? formatDate(s.next_due_date) : "the next renewal"}.
+            </p>
+          )}
+          {note[s.id] && <p className="mt-2 text-sm text-foreground/80">{note[s.id]}</p>}
           <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
-            Need to update your card or change plan? Reply to your billing email and we&apos;ll help.
+            Need to update your card? Reply to your billing email and we&apos;ll help.
           </p>
         </div>
       ))}

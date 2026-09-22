@@ -36,6 +36,10 @@ export interface PortalSubscription {
   label?: string;
   /** Set on an add-on: the workspace it extends. */
   instance_id?: string;
+  /** "monthly" or "yearly" when the customer may switch to it from here; see billingSwitch. */
+  can_switch_to?: string;
+  /** A switch already scheduled for the end of the cycle, in words. */
+  pending_label?: string;
   status: string;
   seats: number;
   next_due_date: string | null;
@@ -243,6 +247,20 @@ export const portalApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not check those records.");
     return { msg: data?.msg || "Checked." };
+  },
+
+  /** Switch a workspace's billing; returns the sentence about what was done. */
+  async changeBilling(id: string, to: "monthly" | "yearly"): Promise<string> {
+    const res = await fetch(`${base}/subscription/${id}/billing`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to }),
+    });
+    if (res.status === 401) throw new PortalAuthError();
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { detail?: string } };
+    if (!res.ok) throw new Error(data?.msg || "The change could not be made.");
+    return data?.data?.detail || "Billing changed.";
   },
 
   async cancelSubscription(id: string): Promise<void> {
