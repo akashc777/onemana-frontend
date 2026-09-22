@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { seatsLine } from "@/lib/seatsLine";
+import { diskLine } from "@/lib/diskLine";
 import {
   portalApi,
   type PortalInstance,
@@ -103,6 +104,10 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
         <p className="text-sm text-muted-foreground">
           {seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of)}
         </p>
+      )}
+
+      {inst.state === "live" && diskLine(inst.disk_used_pct) && (
+        <p className="text-sm text-muted-foreground">{diskLine(inst.disk_used_pct)}</p>
       )}
 
       {inst.working && (

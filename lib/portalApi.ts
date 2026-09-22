@@ -66,6 +66,8 @@ export interface PortalInstance {
   seats_included: number;
   /** When seats_used was taken. */
   seats_as_of?: string;
+  /** Disk used on the machine, 0..100, from the same daily check; absent until measured. */
+  disk_used_pct?: number;
 }
 
 export interface PortalEdition {
