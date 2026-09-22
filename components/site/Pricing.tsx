@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/Button";
+import { yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
 import { Reveal } from "@/components/site/Reveal";
 import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
 import { fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
@@ -75,6 +76,13 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               <p className="mt-1.5 text-sm text-muted-foreground">
                 {fmtINR(pricing.cloud_inr)}/mo · {pricing.cloud_seats} users included
               </p>
+              {/* Only once a yearly plan exists to charge it; the saving is the
+                  backend's arithmetic over the two prices, never a number here. */}
+              {yearlyOffered(pricing) && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  or {fmtINR(pricing.cloud_yearly_inr)} a year{yearlySaving(pricing) ? `, ${yearlySaving(pricing)}` : ""}
+                </p>
+              )}
             </header>
             <ul className="mt-8 flex-1 space-y-3 text-sm text-foreground">
               {cloudBenefits.map((b) => (
