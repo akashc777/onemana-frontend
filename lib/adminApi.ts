@@ -661,6 +661,19 @@ export interface BlogImportResult {
   summary: Partial<Record<BlogImportStatus, number>>;
 }
 
+export interface PlanCheck {
+  id: string;
+  period: string;
+  interval: number;
+  amount_paise: number;
+  currency: string;
+  name: string;
+  /** One line, e.g. "Bills yearly: 99990.00 INR". */
+  summary: string;
+  /** Mismatches between the plan and the page; empty means they agree. */
+  problems: string[];
+}
+
 export const adminApi = {
   /** Who asked to stop receiving announcements, newest first. */
   async unsubscribed(): Promise<AdminOptOut[]> {
@@ -703,6 +716,17 @@ export const adminApi = {
   },
 
   /** Compare the OVH account with what this system thinks it has. */
+  /**
+   * What the plan behind a setting bills, and whether it matches the page.
+   * The mismatch this catches otherwise reaches the first customer in the
+   * payment modal.
+   */
+  async checkPlan(setting: "cloud_plan_id" | "cloud_plan_id_yearly"): Promise<PlanCheck> {
+    const data = await adminGet<{ data?: PlanCheck }>(`/onecamp/admin/plans/check?setting=${setting}`);
+    if (!data?.data) throw new Error("no answer from the plan check");
+    return data.data;
+  },
+
   async reconcileServers(): Promise<ServerReconciliation> {
     const data = await adminGet<{ data?: ServerReconciliation }>("/onecamp/admin/servers/reconcile");
     return data?.data ?? { vanished: [], lost: [], unused: [], foreign: [] };

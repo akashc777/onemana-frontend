@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { adminApi } from "@/lib/adminApi";
+import { adminApi, type PlanCheck } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { AsyncState } from "./ui";
 
@@ -321,6 +321,9 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
         )}
         {field.hint && <p className="mt-1 text-xs text-muted-foreground">{field.hint}</p>}
         {err && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{err}</p>}
+        {(field.key === "cloud_plan_id" || field.key === "cloud_plan_id_yearly") && (
+          <PlanCheckLine setting={field.key} saved={saved || (!dirty && Boolean(stored || value))} />
+        )}
       </div>
       <button
         onClick={save}
@@ -335,3 +338,39 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
 
 const inputCls =
   "w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
+
+
+/**
+ * Asks Razorpay what a saved plan id actually bills, and says whether that is
+ * what the page describes. A plan id is an opaque string; every way it can be
+ * wrong is otherwise discovered by the first customer, in the payment modal.
+ */
+function PlanCheckLine({ setting, saved }: { setting: "cloud_plan_id" | "cloud_plan_id_yearly"; saved: boolean }) {
+  const [state, setState] = useState<{ kind: "idle" } | { kind: "busy" } | { kind: "ok"; check: PlanCheck } | { kind: "err"; msg: string }>({ kind: "idle" });
+  if (!saved) return null;
+  return (
+    <div className="mt-1 text-xs">
+      <button
+        type="button"
+        onClick={async () => {
+          setState({ kind: "busy" });
+          try {
+            setState({ kind: "ok", check: await adminApi.checkPlan(setting) });
+          } catch (e) {
+            setState({ kind: "err", msg: e instanceof Error ? e.message : "could not check the plan" });
+          }
+        }}
+        className="underline underline-offset-2 text-muted-foreground hover:text-foreground"
+      >
+        {state.kind === "busy" ? "Asking Razorpay…" : "Check this plan against the page"}
+      </button>
+      {state.kind === "ok" && (
+        <p className={`mt-1 ${state.check.problems.length ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+          {state.check.summary}
+          {state.check.problems.length ? ` · ${state.check.problems.join("; ")}` : " · matches the page"}
+        </p>
+      )}
+      {state.kind === "err" && <p className="mt-1 text-red-600 dark:text-red-400">{state.msg}</p>}
+    </div>
+  );
+}
