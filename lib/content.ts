@@ -378,7 +378,7 @@ export const cloudBenefits = [
   "We handle SSL, monitoring, and uptime",
   "AI teammates included. Bring your own model key",
   "Includes a self-host license. Switch anytime",
-  "We set everything up within 12 hours",
+  "We set everything up, usually within a day",
 ];
 
 export const lifetimeBenefits = [

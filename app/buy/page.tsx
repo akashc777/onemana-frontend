@@ -95,7 +95,7 @@ function BuyInner() {
         title="Get OneCamp"
         subtitle={
           isCloud
-            ? "Managed hosting, set up for you within 12 hours."
+            ? "Managed hosting, set up for you. Usually live within a day; we email you the moment it is."
             : "Self-hosted workspace. Lifetime license, unlimited users."
         }
         align="left"
