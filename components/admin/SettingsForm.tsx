@@ -67,8 +67,13 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "cloud_price_usd", label: "Cloud price (USD/mo)", type: "number", hint: "Display only. e.g. 99" },
       { key: "cloud_seats", label: "Cloud seats", type: "number", hint: "Users included in the Cloud plan, e.g. 30" },
       { key: "cloud_plan_id", label: "Razorpay Cloud Plan ID", hint: "plan_… created in Razorpay (INR). Required for Cloud checkout." },
+      { key: "cloud_plan_id_yearly", label: "Razorpay Cloud Plan ID (yearly)", hint: "plan_… for the yearly plan. Empty means yearly is not offered: the pricing page hides it and checkout refuses it. Set this and the option appears." },
+      { key: "cloud_price_yearly", label: "Cloud price (paise/yr)", type: "number", hint: "Invoice amount per year. Blank means ten months of the monthly price, which is the \"two months free\" the page then says. The saving shown is derived from the two prices." },
+      { key: "cloud_seats_nudge_pct", label: "Seat nudge at (%)", type: "number", hint: "Email the customer once when their people reach this share of the included seats. Default 80: 24 of 30. Monthly at most while over. Nothing is enforced." },
       { key: "owner_email", label: "Owner alert email", hint: "Where new-Cloud-order notifications are sent." },
+      { key: "support_reply_to", label: "Support reply-to", hint: "The Reply-To on every email we send a customer, e.g. support@onemana.dev. A reply to a nudge lands here." },
       { key: "gst_rate", label: "GST Rate (%)", type: "number" },
+      { key: "gst_monthly_returns", label: "GST returns filed", hint: "Comma-separated. Default GSTR-1,GSTR-3B. Drives the filing checklist." },
       {
         key: "tax_export_policy",
         label: "Foreign-sale tax",
@@ -105,6 +110,8 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "ovh_ssh_key_name", label: "SSH key name", hint: "The NAME of a key OVH already holds on the account - not the key itself. OVH installs it during reinstall, which is why no root password is ever needed." },
       { key: "ovh_endpoint", label: "API endpoint", hint: "MUST match the region you created the token in, or every call returns 403 with no hint why. EU: https://eu.api.ovh.com/1.0 (the default) · Canada: https://ca.api.ovh.com/1.0 · US: https://api.us.ovhcloud.com/1.0. If you signed in at auth.ca.ovhcloud.com, you need the Canada one." },
       { key: "ovh_os_template", label: "OS template", hint: "The image reinstalled onto each machine. Leave blank for the default." },
+      { key: "ovh_min_ram_mb", label: "Smallest machine: RAM (MB)", type: "number", hint: "A pooled server below this is refused before it is wiped. Default 7500, which is what an \"8 GB\" machine reports. 0 accepts anything." },
+      { key: "ovh_min_disk_gb", label: "Smallest machine: disk (GB)", type: "number", hint: "Same check for disk. Default 40." },
       {
         key: "ovh_pool_servers",
         label: "Server pool",
@@ -167,6 +174,8 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
           "Leave blank while OneCamp is the only product.",
       },
       { key: "gstr1_hsn_desc", label: "Default HSN/SAC label", hint: 'GSTR-1 HSN summary description for any SAC without a catalog entry. Default "Software/SaaS services".' },
+      { key: "gstr1_hsn_uqc", label: "HSN/SAC unit code", hint: "GSTR-1 Unit Quantity Code for the HSN summary. Services use OTH. Default OTH." },
+      { key: "gstr1_b2cl_threshold_paise", label: "B2C large cutoff (paise)", type: "number", hint: "GSTR-1 inter-state B2C invoices at or above this go in the B2CL table. Default 25000000 = ₹2,50,000; change only if the rule changes." },
     ],
   },
 ];
