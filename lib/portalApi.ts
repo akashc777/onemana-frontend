@@ -60,6 +60,12 @@ export interface PortalInstance {
   terminal: boolean;
   /** Safe progress text; absent unless there is something useful to say. */
   detail?: string;
+  /** People in the workspace at the last daily count; absent until counted. */
+  seats_used?: number;
+  /** What the plan is sold for. Not enforced by the product; see seatsLine. */
+  seats_included: number;
+  /** When seats_used was taken. */
+  seats_as_of?: string;
 }
 
 export interface PortalEdition {

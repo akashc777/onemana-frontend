@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { seatsLine } from "@/lib/seatsLine";
 import {
   portalApi,
   type PortalInstance,
@@ -97,6 +98,12 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
 
       {/* Only ever what the backend judged safe to show. */}
       {inst.detail && <p className="text-sm text-muted-foreground">{inst.detail}</p>}
+
+      {inst.state === "live" && seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of) && (
+        <p className="text-sm text-muted-foreground">
+          {seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of)}
+        </p>
+      )}
 
       {inst.working && (
         <p className="text-xs text-muted-foreground">
