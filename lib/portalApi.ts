@@ -68,7 +68,15 @@ export interface PortalInstance {
   seats_as_of?: string;
   /** Disk used on the machine, 0..100, from the same daily check; absent until measured. */
   disk_used_pct?: number;
+  /** True for every running managed workspace; see backupLine. */
+  backups_nightly: boolean;
+  /** Whether an off-site store is set up at all; false means no copy is promised. */
+  offsite_configured: boolean;
+  /** When the newest backup was last copied off the machine; absent until the first copy. */
+  offsite_backup_at?: string;
 }
+
+export type PortalBackupLink = { url: string; backup: string; expires_at: string };
 
 export interface PortalEdition {
   name: string;
@@ -182,6 +190,15 @@ export const portalApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not set that address.");
     return data?.msg || "Address set.";
+  },
+
+  /** A short-lived download of the newest off-site backup copy. */
+  async backupLink(id: string): Promise<PortalBackupLink> {
+    const res = await fetch(`${base}/instance/${id}/backup`, { credentials: "include" });
+    if (res.status === 401) throw new PortalAuthError();
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalBackupLink };
+    if (!res.ok || !data?.data?.url) throw new Error(data?.msg || "The download could not be prepared.");
+    return data.data;
   },
 
   /** Describe what moving to a domain would involve, without starting it. */

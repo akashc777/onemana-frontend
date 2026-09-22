@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { seatsLine } from "@/lib/seatsLine";
 import { diskLine } from "@/lib/diskLine";
+import { backupLine } from "@/lib/backupLine";
 import {
   portalApi,
   type PortalInstance,
@@ -66,6 +67,37 @@ export function WorkspaceSection({ onReload }: { onReload: () => void }) {
   );
 }
 
+/** Fetches a short-lived link on click and opens it. The link is signed per
+ *  request, so nothing about the store is in the page until the owner asks. */
+function BackupDownload({ id }: { id: string }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  return (
+    <>
+      <button
+        type="button"
+        disabled={busy}
+        className="font-medium text-brand underline underline-offset-4 disabled:opacity-60"
+        onClick={async () => {
+          setBusy(true);
+          setErr("");
+          try {
+            const link = await portalApi.backupLink(id);
+            window.location.assign(link.url);
+          } catch (e) {
+            setErr(e instanceof Error ? e.message : "The download could not be prepared.");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy ? "Preparing download…" : "Download the copy"}
+      </button>
+      {err && <span className="ml-2 text-destructive">{err}</span>}
+    </>
+  );
+}
+
 function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
   if (inst.needs_name) return <ChooseAddress inst={inst} onChanged={onChanged} />;
 
@@ -108,6 +140,18 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
 
       {inst.state === "live" && diskLine(inst.disk_used_pct) && (
         <p className="text-sm text-muted-foreground">{diskLine(inst.disk_used_pct)}</p>
+      )}
+
+      {backupLine(inst.backups_nightly, inst.offsite_configured, inst.offsite_backup_at) && (
+        <p className="text-sm text-muted-foreground">
+          {backupLine(inst.backups_nightly, inst.offsite_configured, inst.offsite_backup_at)}
+          {inst.offsite_backup_at && (
+            <>
+              {" · "}
+              <BackupDownload id={inst.id} />
+            </>
+          )}
+        </p>
       )}
 
       {inst.working && (

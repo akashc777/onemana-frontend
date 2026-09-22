@@ -102,6 +102,17 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
     ],
   },
   {
+    group: "Managed hosting - Off-site backups",
+    fields: [
+      { key: "backup_s3_endpoint", label: "S3 endpoint", hint: "Any S3-compatible store. OVH Object Storage: s3.gra.io.cloud.ovh.net (or your region). Until the four S3 fields are set, workspaces are backed up on their own machine only and the portal says so." },
+      { key: "backup_s3_region", label: "Region", hint: "As the store names it, e.g. gra. Leave blank if the endpoint does not need one." },
+      { key: "backup_s3_bucket", label: "Bucket", hint: "Created by you in the store, private. Copies live under backups/<workspace id>/. Turn on the store's at-rest encryption for the bucket (OVH: SSE-OMK)." },
+      { key: "backup_s3_access_key", label: "Access key", type: "password", hint: "An S3 user limited to this bucket. Customer machines never see these keys; copies are pulled from here." },
+      { key: "backup_s3_secret_key", label: "Secret key", type: "password" },
+      { key: "backup_offsite_keep", label: "Copies kept per workspace", type: "number", hint: "Default 30. The newest is never removed." },
+    ],
+  },
+  {
     group: "Managed hosting - Servers (OVH)",
     fields: [
       { key: "ovh_app_key", label: "Application key", hint: "Create at eu.api.ovh.com/createToken, restricted to GET/POST /dedicated/server/*." },
