@@ -14,8 +14,10 @@ describe("diskLine", () => {
   it("from the threshold on, offers removing data before a larger workspace, and never reads as a block", () => {
     const line = diskLine(DISK_ATTENTION_PCT);
     expect(line).toContain(`Disk ${DISK_ATTENTION_PCT}% used`);
-    expect(line.indexOf("Remove")).toBeGreaterThan(-1);
-    expect(line.indexOf("Remove")).toBeLessThan(line.indexOf("larger workspace"));
+    expect(line.indexOf("Archive")).toBeGreaterThan(-1);
+    expect(line.indexOf("Archive")).toBeLessThan(line.indexOf("larger workspace"));
+    // Names the control that frees bytes, not a vague "delete".
+    expect(line).toContain("Remove for good");
     expect(line.toLowerCase()).not.toMatch(/full|limit|exceeded|blocked/);
   });
 
