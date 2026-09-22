@@ -329,7 +329,7 @@ Ready to Own Your Workspace?
 
 **subtitle:**
 
-Get OneCamp for ₹10,000 ($99), once. Deploy your own self-hosted workspace in minutes. No per-seat fees. No vendor lock-in. Own your data forever.
+Get OneCamp for ₹24,999 ($299), once. Deploy your own self-hosted workspace in minutes. No per-seat fees. No vendor lock-in. Own your data forever.
 
 **cta_label:**
 
