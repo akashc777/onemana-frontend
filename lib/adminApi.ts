@@ -664,6 +664,15 @@ export interface BlogImportResult {
   summary: Partial<Record<BlogImportStatus, number>>;
 }
 
+export interface StorageCheck {
+  configured: boolean;
+  project: string;
+  region: string;
+  endpoint: string;
+  visible_projects: string[];
+  problems: string[];
+}
+
 export interface PlanCheck {
   id: string;
   period: string;
@@ -724,6 +733,14 @@ export const adminApi = {
    * The mismatch this catches otherwise reaches the first customer in the
    * payment modal.
    */
+  /** Whether the OVH token can reach the Public Cloud project that holds extra-storage buckets. */
+  async checkStorage(): Promise<StorageCheck> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/storage/check`, { headers: { "X-Admin-Token": getToken() } });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: StorageCheck };
+    if (!res.ok || !data?.data) throw new Error(data?.msg || "Could not check");
+    return data.data;
+  },
+
   async checkPlan(setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage"): Promise<PlanCheck> {
     const data = await adminGet<{ data?: PlanCheck }>(`/onecamp/admin/plans/check?setting=${setting}`);
     if (!data?.data) throw new Error("no answer from the plan check");

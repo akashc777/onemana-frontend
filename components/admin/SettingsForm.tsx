@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { adminApi, type PlanCheck } from "@/lib/adminApi";
+import { adminApi, type PlanCheck, type StorageCheck } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { AsyncState } from "./ui";
 
@@ -340,6 +340,7 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
         {(field.key === "cloud_plan_id" || field.key === "cloud_plan_id_yearly" || field.key === "cloud_plan_id_storage") && (
           <PlanCheckLine setting={field.key} saved={saved || (!dirty && Boolean(stored || value))} />
         )}
+        {field.key === "ovh_cloud_project" && <StorageCheckLine saved={saved || (!dirty && Boolean(stored || value))} />}
       </div>
       <button
         onClick={save}
@@ -361,6 +362,38 @@ const inputCls =
  * what the page describes. A plan id is an opaque string; every way it can be
  * wrong is otherwise discovered by the first customer, in the payment modal.
  */
+/** Under the Public Cloud project id: can the token see it, and where would buckets go. */
+function StorageCheckLine({ saved }: { saved: boolean }) {
+  const [state, setState] = useState<{ kind: "idle" } | { kind: "busy" } | { kind: "ok"; check: StorageCheck } | { kind: "err"; msg: string }>({ kind: "idle" });
+  if (!saved) return null;
+  return (
+    <div className="mt-1 text-xs">
+      <button
+        type="button"
+        onClick={async () => {
+          setState({ kind: "busy" });
+          try {
+            setState({ kind: "ok", check: await adminApi.checkStorage() });
+          } catch (e) {
+            setState({ kind: "err", msg: e instanceof Error ? e.message : "could not check" });
+          }
+        }}
+        className="underline underline-offset-2 text-muted-foreground hover:text-foreground"
+      >
+        {state.kind === "busy" ? "Asking OVH…" : "Check the token can reach this project"}
+      </button>
+      {state.kind === "ok" && (
+        <p className={`mt-1 ${state.check.problems.length ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+          {state.check.problems.length
+            ? state.check.problems.join("; ")
+            : `Ready: buckets will be made in ${state.check.region} (${state.check.endpoint}). Projects the token sees: ${state.check.visible_projects.join(", ") || "none"}.`}
+        </p>
+      )}
+      {state.kind === "err" && <p className="mt-1 text-red-600 dark:text-red-400">{state.msg}</p>}
+    </div>
+  );
+}
+
 function PlanCheckLine({ setting, saved }: { setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage"; saved: boolean }) {
   const [state, setState] = useState<{ kind: "idle" } | { kind: "busy" } | { kind: "ok"; check: PlanCheck } | { kind: "err"; msg: string }>({ kind: "idle" });
   if (!saved) return null;
