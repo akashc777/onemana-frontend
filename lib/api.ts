@@ -12,6 +12,8 @@ export interface CheckoutInput {
   state?: string;
   state_code?: string;
   country?: string;
+  /** Cloud only. Empty means monthly; see lib/paymentTerms.cloudPlanCode. */
+  plan_code?: string;
 }
 
 export interface CheckoutOrder {

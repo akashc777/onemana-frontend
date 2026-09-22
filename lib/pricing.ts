@@ -14,6 +14,11 @@ export interface Pricing {
   cloud_paise: number;
   cloud_seats: number;
   cloud_configured: boolean;
+  /** Yearly. Shown only when cloud_yearly_configured; the backend derives the free months from the two prices. */
+  cloud_yearly_inr: number;
+  cloud_yearly_paise: number;
+  cloud_yearly_free_months: number;
+  cloud_yearly_configured: boolean;
 }
 
 /**
@@ -40,6 +45,10 @@ export const defaultPricing: Pricing = {
   cloud_paise: 999900,
   cloud_seats: 30,
   cloud_configured: false,
+  cloud_yearly_inr: 0,
+  cloud_yearly_paise: 0,
+  cloud_yearly_free_months: 0,
+  cloud_yearly_configured: false,
 };
 
 /** Fetches live pricing from the backend (revalidated), falling back safely. */

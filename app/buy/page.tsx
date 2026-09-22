@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { cloudPlanCode, paymentTerms, yearlyOffered, yearlySaving, type Billing } from "@/lib/paymentTerms";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
@@ -32,6 +33,9 @@ function BuyInner() {
   const [scriptReady, setScriptReady] = useState(false);
   const [plan, setPlan] = useState<Plan>(initialPlan);
   const [pricing, setPricing] = useState<Pricing>(defaultPricing);
+  // Monthly unless the buyer chooses otherwise; the choice is only offered
+  // once a yearly plan exists to charge it.
+  const [billing, setBilling] = useState<Billing>("monthly");
 
   useEffect(() => {
     fetchPricingClient().then(setPricing);
@@ -46,6 +50,9 @@ function BuyInner() {
 
   const isIndia = country === "IN";
   const isCloud = plan === "cloud";
+  const showYearly = isCloud && yearlyOffered(pricing);
+  const yearly = showYearly && billing === "yearly";
+  const saving = yearlySaving(pricing);
   const stateCode = useMemo(
     () => (isIndia ? indianStates.find((s) => s.name === stateName)?.code ?? "" : ""),
     [isIndia, stateName],
@@ -70,7 +77,7 @@ function BuyInner() {
       state_code: stateCode,
       phone: phone.trim(),
     };
-    if (isCloud) await startCloud(input, phone.trim());
+    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(showYearly ? billing : "monthly") }, phone.trim());
     else await start(input, phone.trim());
   }
 
@@ -127,15 +134,37 @@ function BuyInner() {
               <div className="flex items-baseline justify-between">
                 <span className="font-medium text-foreground">{isCloud ? "OneCamp Cloud" : "OneCamp Lifetime"}</span>
                 <span className="text-2xl font-semibold text-foreground">
-                  {isCloud ? fmtUSD(pricing.cloud_usd) : fmtUSD(pricing.lifetime_usd)}
-                  {isCloud && <span className="text-sm font-normal text-muted-foreground"> /mo</span>}
+                  {isCloud ? (yearly ? fmtINR(pricing.cloud_yearly_inr) : fmtUSD(pricing.cloud_usd)) : fmtUSD(pricing.lifetime_usd)}
+                  {isCloud && <span className="text-sm font-normal text-muted-foreground">{yearly ? " /yr" : " /mo"}</span>}
                 </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 {isCloud
-                  ? `${fmtINR(pricing.cloud_inr)}/mo billed in INR · up to ${pricing.cloud_seats} users · includes a self-host license`
+                  ? yearly
+                    ? `${fmtINR(pricing.cloud_yearly_inr)}/yr billed in INR${saving ? ` · ${saving}` : ""} · ${pricing.cloud_seats} users included · includes a self-host license`
+                    : `${fmtINR(pricing.cloud_inr)}/mo billed in INR · ${pricing.cloud_seats} users included · includes a self-host license`
                   : `${fmtINR(pricing.lifetime_inr)} billed in INR · one-time · all taxes included · unlimited users`}
               </p>
+              {showYearly && (
+                <div
+                  role="radiogroup"
+                  aria-label="Billing period"
+                  className="mt-4 grid grid-cols-2 gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-xs"
+                >
+                  {(["monthly", "yearly"] as const).map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      role="radio"
+                      aria-checked={billing === b}
+                      onClick={() => setBilling(b)}
+                      className={`rounded-md px-3 py-1.5 font-medium transition ${billing === b ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                    >
+                      {b === "monthly" ? "Monthly" : saving ? `Yearly · ${saving}` : "Yearly"}
+                    </button>
+                  ))}
+                </div>
+              )}
               <ul className="mt-5 space-y-2 text-sm text-foreground">
                 {benefits.map((b) => (
                   <li key={b} className="flex items-start gap-2">
@@ -227,9 +256,16 @@ function BuyInner() {
               {busy
                 ? "Processing…"
                 : isCloud
-                  ? `Subscribe - ${fmtUSD(pricing.cloud_usd)}/mo (${fmtINR(pricing.cloud_inr)})`
+                  ? yearly
+                    ? `Subscribe - ${fmtINR(pricing.cloud_yearly_inr)}/yr`
+                    : `Subscribe - ${fmtUSD(pricing.cloud_usd)}/mo (${fmtINR(pricing.cloud_inr)})`
                   : `Pay ${fmtUSD(pricing.lifetime_usd)} (${fmtINR(pricing.lifetime_inr)}) & get your key`}
             </Button>
+            {/* The one sentence about money that has to be read before it is
+                spent. The policy says it; here is where the buyer is. */}
+            <p className="text-center text-xs text-foreground/80">
+              {paymentTerms(isCloud ? (yearly ? "yearly" : "monthly") : "lifetime")}
+            </p>
             <p className="text-center text-xs text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="underline hover:text-foreground">Terms</a> and{" "}

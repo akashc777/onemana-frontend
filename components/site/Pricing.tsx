@@ -73,7 +73,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
                 <span className="text-sm text-muted-foreground">/ month</span>
               </div>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                {fmtINR(pricing.cloud_inr)}/mo · up to {pricing.cloud_seats} users
+                {fmtINR(pricing.cloud_inr)}/mo · {pricing.cloud_seats} users included
               </p>
             </header>
             <ul className="mt-8 flex-1 space-y-3 text-sm text-foreground">

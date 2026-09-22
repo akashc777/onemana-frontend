@@ -56,3 +56,22 @@ describe("the checkout page", () => {
     expect(BUY.toLowerCase()).not.toMatch(/money.back|refund window|\d+[- ]day refund/)
   })
 })
+
+describe("the money sentence", () => {
+  const page = readFileSync(join(process.cwd(), "app/buy/page.tsx"), "utf8")
+
+  it("is rendered from paymentTerms at the pay button, for every plan", () => {
+    // The refund policy says "no refunds"; the checkout used to say only "you
+    // agree to our Refund Policy" with a link. A buyer had to click through to
+    // learn the one fact about money that matters. This holds the sentence in
+    // place next to the button.
+    expect(page).toContain("paymentTerms(isCloud ? (yearly ? \"yearly\" : \"monthly\") : \"lifetime\")")
+  })
+
+  it("offers yearly only when the pricing payload says a plan exists", () => {
+    // A toggle shown before the Razorpay plan exists would promise a price
+    // checkout then refuses; yearlyOffered reads cloud_yearly_configured.
+    expect(page).toContain("const showYearly = isCloud && yearlyOffered(pricing)")
+    expect(page).toMatch(/\{showYearly && \(/)
+  })
+})
