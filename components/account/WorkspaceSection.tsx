@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { seatsLine } from "@/lib/seatsLine";
 import { diskLine } from "@/lib/diskLine";
 import { backupLine } from "@/lib/backupLine";
+import { StorageAddon } from "@/components/account/StorageAddon";
 import {
   portalApi,
   type PortalInstance,
@@ -153,6 +154,8 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
           )}
         </p>
       )}
+
+      <StorageAddon inst={inst} onChanged={onChanged} />
 
       {inst.working && (
         <p className="text-xs text-muted-foreground">

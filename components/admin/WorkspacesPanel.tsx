@@ -155,6 +155,29 @@ export function WorkspacesPanel() {
                     {timeAgo(r.updated_at)}
                     {r.next_action_at ? ` · next action ${timeAgo(r.next_action_at)}` : ""}
                   </p>
+                  {r.storage_addon_state && (
+                    <p className="mt-1 text-xs text-foreground">
+                      Extra storage: {r.storage_addon_gb} GB, <strong>{r.storage_addon_state}</strong>
+                      {r.storage_addon_state === "paid" && (
+                        <button
+                          onClick={() => void run("Attach", () => adminApi.setStorageAddon(r.id, "attached"))}
+                          disabled={busy !== ""}
+                          className="btn-ghost ml-2 px-2 py-1 text-xs disabled:opacity-40"
+                        >
+                          Mark attached
+                        </button>
+                      )}
+                      {r.storage_addon_state === "ending" && (
+                        <button
+                          onClick={() => void run("Clear", () => adminApi.setStorageAddon(r.id, ""))}
+                          disabled={busy !== ""}
+                          className="btn-ghost ml-2 px-2 py-1 text-xs disabled:opacity-40"
+                        >
+                          Mark detached
+                        </button>
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex shrink-0 gap-2">

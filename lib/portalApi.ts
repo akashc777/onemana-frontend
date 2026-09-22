@@ -32,6 +32,10 @@ export interface PortalLicense {
 export interface PortalSubscription {
   id: string;
   plan_code: string;
+  /** The plan in words; falls back to plan_code on older backends. */
+  label?: string;
+  /** Set on an add-on: the workspace it extends. */
+  instance_id?: string;
   status: string;
   seats: number;
   next_due_date: string | null;
@@ -74,7 +78,12 @@ export interface PortalInstance {
   offsite_configured: boolean;
   /** When the newest backup was last copied off the machine; absent until the first copy. */
   offsite_backup_at?: string;
+  /** Extra storage bought for this workspace and how far attaching it has got; see storageLine. */
+  storage_addon_gb: number;
+  storage_addon_state: string;
 }
+
+export type PortalCheckout = { subscription_id: string; razorpay_key_id: string; name: string; email: string };
 
 export type PortalBackupLink = { url: string; backup: string; expires_at: string };
 
@@ -190,6 +199,15 @@ export const portalApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not set that address.");
     return data?.msg || "Address set.";
+  },
+
+  /** Start buying extra storage for a live workspace; the browser then opens checkout. */
+  async addStorage(id: string): Promise<PortalCheckout> {
+    const res = await fetch(`${base}/instance/${id}/storage`, { method: "POST", credentials: "include" });
+    if (res.status === 401) throw new PortalAuthError();
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalCheckout };
+    if (!res.ok || !data?.data?.subscription_id) throw new Error(data?.msg || "The purchase could not be started.");
+    return data.data;
   },
 
   /** A short-lived download of the newest off-site backup copy. */

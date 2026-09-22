@@ -1,5 +1,5 @@
 import { ButtonLink } from "@/components/ui/Button";
-import { yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
+import { storageOffered, yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
 import { Reveal } from "@/components/site/Reveal";
 import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
 import { fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
@@ -81,6 +81,13 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               {yearlyOffered(pricing) && (
                 <p className="mt-1 text-xs text-muted-foreground">
                   or {fmtINR(pricing.cloud_yearly_inr)} a year{yearlySaving(pricing) ? `, ${yearlySaving(pricing)}` : ""}
+                </p>
+              )}
+              {/* Extra room for files, bought later from the account page. Only
+                  once a plan exists to charge it. */}
+              {storageOffered(pricing) && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Need more room for files? Add {pricing.storage_addon_gb} GB for {fmtINR(pricing.storage_addon_inr)} a month, any time, from your account.
                 </p>
               )}
             </header>

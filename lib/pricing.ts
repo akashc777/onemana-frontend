@@ -19,6 +19,11 @@ export interface Pricing {
   cloud_yearly_paise: number;
   cloud_yearly_free_months: number;
   cloud_yearly_configured: boolean;
+  /** Extra file storage, bought from the account page for a live workspace. Shown only when configured. */
+  storage_addon_inr: number;
+  storage_addon_paise: number;
+  storage_addon_gb: number;
+  storage_addon_configured: boolean;
 }
 
 /**
@@ -49,6 +54,10 @@ export const defaultPricing: Pricing = {
   cloud_yearly_paise: 0,
   cloud_yearly_free_months: 0,
   cloud_yearly_configured: false,
+  storage_addon_inr: 2999,
+  storage_addon_paise: 299900,
+  storage_addon_gb: 500,
+  storage_addon_configured: false,
 };
 
 /** Fetches live pricing from the backend (revalidated), falling back safely. */

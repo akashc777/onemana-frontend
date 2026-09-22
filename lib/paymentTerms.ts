@@ -34,13 +34,20 @@ export function yearlySaving(p: Pricing): string {
 }
 
 /** What the buyer is agreeing to, stated once, plainly. */
-export function paymentTerms(kind: "lifetime" | Billing): string {
+export function paymentTerms(kind: "lifetime" | "addon" | Billing): string {
   switch (kind) {
     case "lifetime":
       return "Payments are final. We do not offer refunds.";
+    case "addon":
+      return "Billed monthly alongside your workspace. Cancel any time and it runs to the end of the paid month. Payments are final; we do not offer refunds.";
     case "monthly":
       return "Billed monthly. Cancel any time and the workspace runs to the end of the paid month. Payments are final; we do not offer refunds.";
     case "yearly":
       return "Billed once a year. Cancel any time and the workspace runs to the end of the paid year; the remaining months are not refunded. Payments are final; we do not offer refunds.";
   }
+}
+
+/** Whether extra storage can be bought: a plan exists and a price is set. */
+export function storageOffered(p: Pricing): boolean {
+  return Boolean(p.storage_addon_configured) && p.storage_addon_paise > 0 && p.storage_addon_gb > 0;
 }

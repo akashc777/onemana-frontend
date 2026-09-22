@@ -48,6 +48,9 @@ export interface AdminInstance {
    *  same as zero, so both states have to survive the trip to the screen. */
   seats_total?: number | null;
   seats_active_30d?: number | null;
+  /** Extra storage bought and how far attaching it has got: "", paid, attached, ending. */
+  storage_addon_gb?: number;
+  storage_addon_state?: string;
   seats_counted_at?: string | null;
   /** The release this workspace is actually running, read from its own
    *  version.txt. null means unknown, which the updater treats as "do not act"
@@ -721,7 +724,7 @@ export const adminApi = {
    * The mismatch this catches otherwise reaches the first customer in the
    * payment modal.
    */
-  async checkPlan(setting: "cloud_plan_id" | "cloud_plan_id_yearly"): Promise<PlanCheck> {
+  async checkPlan(setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage"): Promise<PlanCheck> {
     const data = await adminGet<{ data?: PlanCheck }>(`/onecamp/admin/plans/check?setting=${setting}`);
     if (!data?.data) throw new Error("no answer from the plan check");
     return data.data;
@@ -793,6 +796,17 @@ export const adminApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not clear two-factor");
     return data?.msg || "Two-factor cleared";
+  },
+
+  /** The operator's mark on a workspace's extra storage: "attached", or "" to clear an ended add-on. */
+  async setStorageAddon(id: string, state: "attached" | ""): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/${id}/storage`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken(), "Content-Type": "application/json" },
+      body: JSON.stringify({ state }),
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string };
+    if (!res.ok) throw new Error(data?.msg || "Could not update the add-on");
   },
 
   /** Move one workspace forward by a step, rather than waiting for the timer. */

@@ -69,6 +69,9 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "cloud_plan_id", label: "Razorpay Cloud Plan ID", hint: "plan_… created in Razorpay (INR). Required for Cloud checkout." },
       { key: "cloud_plan_id_yearly", label: "Razorpay Cloud Plan ID (yearly)", hint: "plan_… for the yearly plan. Empty means yearly is not offered: the pricing page hides it and checkout refuses it. Set this and the option appears." },
       { key: "cloud_price_yearly", label: "Cloud price (paise/yr)", type: "number", hint: "Invoice amount per year. Blank means ten months of the monthly price, which is the \"two months free\" the page then says. The saving shown is derived from the two prices." },
+      { key: "cloud_plan_id_storage", label: "Razorpay plan ID (extra storage)", hint: "plan_… for the monthly extra-storage add-on. Empty means storage is not offered: the pricing page hides it and the portal shows no button. Must charge exactly the price below; use the check under it." },
+      { key: "cloud_price_storage", label: "Extra storage price (paise/mo)", type: "number", hint: "299900 = ₹2,999 a month. Must equal what the Razorpay plan charges." },
+      { key: "cloud_storage_addon_gb", label: "Extra storage size (GB)", type: "number", hint: "What the add-on buys. Default 500. Priced at least five times what the object store costs us, so the margin holds." },
       { key: "cloud_seats_nudge_pct", label: "Seat nudge at (%)", type: "number", hint: "Email the customer once when their people reach this share of the included seats. Default 80: 24 of 30. Monthly at most while over. Nothing is enforced." },
       { key: "owner_email", label: "Owner alert email", hint: "Where new-Cloud-order notifications are sent." },
       { key: "support_reply_to", label: "Support reply-to", hint: "The Reply-To on every email we send a customer, e.g. support@onemana.dev. A reply to a nudge lands here." },
@@ -332,7 +335,7 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
         )}
         {field.hint && <p className="mt-1 text-xs text-muted-foreground">{field.hint}</p>}
         {err && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{err}</p>}
-        {(field.key === "cloud_plan_id" || field.key === "cloud_plan_id_yearly") && (
+        {(field.key === "cloud_plan_id" || field.key === "cloud_plan_id_yearly" || field.key === "cloud_plan_id_storage") && (
           <PlanCheckLine setting={field.key} saved={saved || (!dirty && Boolean(stored || value))} />
         )}
       </div>
@@ -356,7 +359,7 @@ const inputCls =
  * what the page describes. A plan id is an opaque string; every way it can be
  * wrong is otherwise discovered by the first customer, in the payment modal.
  */
-function PlanCheckLine({ setting, saved }: { setting: "cloud_plan_id" | "cloud_plan_id_yearly"; saved: boolean }) {
+function PlanCheckLine({ setting, saved }: { setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage"; saved: boolean }) {
   const [state, setState] = useState<{ kind: "idle" } | { kind: "busy" } | { kind: "ok"; check: PlanCheck } | { kind: "err"; msg: string }>({ kind: "idle" });
   if (!saved) return null;
   return (
