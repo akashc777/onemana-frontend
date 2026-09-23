@@ -389,6 +389,23 @@ function StorageCheckLine({ saved }: { saved: boolean }) {
             : `Ready: buckets will be made in ${state.check.region} (${state.check.endpoint}). Projects the token sees: ${state.check.visible_projects.join(", ") || "none"}.`}
         </p>
       )}
+      {state.kind === "ok" && !state.check.configured && (
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              const link = await adminApi.requestCloudAccess();
+              window.open(link, "_blank", "noopener");
+              setState({ kind: "err", msg: "Approve the request in the OVH tab that opened, then press the check again. The backend switches to the new key on its own." });
+            } catch (e) {
+              setState({ kind: "err", msg: e instanceof Error ? e.message : "could not ask OVH" });
+            }
+          }}
+          className="mt-1 block underline underline-offset-2 text-foreground"
+        >
+          Grant Public Cloud access (one click at OVH)
+        </button>
+      )}
       {state.kind === "err" && <p className="mt-1 text-red-600 dark:text-red-400">{state.msg}</p>}
     </div>
   );

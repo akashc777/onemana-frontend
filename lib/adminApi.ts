@@ -666,6 +666,7 @@ export interface BlogImportResult {
 
 export interface StorageCheck {
   configured: boolean;
+  awaiting_approval: boolean;
   project: string;
   region: string;
   endpoint: string;
@@ -733,6 +734,14 @@ export const adminApi = {
    * The mismatch this catches otherwise reaches the first customer in the
    * payment modal.
    */
+  /** Ask OVH for a key that also covers Public Cloud; returns the link to approve at OVH. */
+  async requestCloudAccess(): Promise<string> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/ovh/cloud-access`, { method: "POST", headers: { "X-Admin-Token": getToken() } });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { validation_url?: string } };
+    if (!res.ok || !data?.data?.validation_url) throw new Error(data?.msg || "Could not ask OVH for access");
+    return data.data.validation_url;
+  },
+
   /** Whether the OVH token can reach the Public Cloud project that holds extra-storage buckets. */
   async checkStorage(): Promise<StorageCheck> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/storage/check`, { headers: { "X-Admin-Token": getToken() } });
