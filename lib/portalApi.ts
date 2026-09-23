@@ -45,6 +45,10 @@ export interface PortalSubscription {
   next_due_date: string | null;
   cancel_at_period_end: boolean;
   can_cancel: boolean;
+  /** Offers "Keep my workspace": cancelled, and the workspace still exists. */
+  can_keep?: boolean;
+  /** Offers a new card or payment method for the next renewal. */
+  can_change_card?: boolean;
   created_at: string;
 }
 
@@ -283,6 +287,16 @@ export const portalApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { detail?: string; checkout?: PortalCheckout } };
     if (!res.ok) throw new Error(data?.msg || "The change could not be made.");
     return { detail: data?.data?.detail || "Plan changed.", checkout: data?.data?.checkout };
+  },
+
+  /** A payment window for a subscription that takes over this one: "keep"
+   *  takes back a cancellation, "card" moves the renewal to a new card. */
+  async replacement(id: string, kind: "keep" | "card"): Promise<PortalCheckout> {
+    const res = await fetch(`${base}/subscription/${id}/${kind}`, { method: "POST", credentials: "include" });
+    if (res.status === 401) throw new PortalAuthError();
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalCheckout };
+    if (!res.ok || !data?.data) throw new Error(data?.msg || "That did not work just now; try again in a minute.");
+    return data.data;
   },
 
   async cancelSubscription(id: string): Promise<void> {

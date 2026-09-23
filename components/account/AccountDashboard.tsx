@@ -326,8 +326,39 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
     }
   }
 
+  /** Keep a cancelled workspace, or move the renewal to a new card: both are
+   *  a new subscription the customer authorises in Razorpay's window. */
+  async function replace(s: PortalSubscription, kind: "keep" | "card") {
+    setBusy(s.id);
+    try {
+      const checkout = await portalApi.replacement(s.id, kind);
+      openSubscriptionCheckout(checkout, cloudCheckoutDescription(s.plan_code), {
+        paid: () => {
+          setBusy(null);
+          setNote((n) => ({
+            ...n,
+            [s.id]: kind === "keep"
+              ? "Thank you. Your workspace carries on; this page updates within a minute."
+              : "Thank you. The next renewal is charged to the new card; this page updates within a minute.",
+          }));
+          window.setTimeout(() => {
+            void portalApi.subscriptions().then(setSubs).then(onChanged).catch(() => {});
+          }, 8000);
+        },
+        closed: () => setBusy(null),
+        failed: (msg) => {
+          setBusy(null);
+          setNote((n) => ({ ...n, [s.id]: msg }));
+        },
+      });
+    } catch (e) {
+      setNote((n) => ({ ...n, [s.id]: e instanceof Error ? e.message : "That did not work just now." }));
+      setBusy(null);
+    }
+  }
+
   async function cancel(s: PortalSubscription) {
-    if (!window.confirm("Cancel this subscription? It stays active until the current period ends, then will not renew.")) return;
+    if (!window.confirm("Cancel this subscription? It stays active until the current period ends, then will not renew. You can keep it from this page until then.")) return;
     setBusy(s.id);
     try {
       await portalApi.cancelSubscription(s.id);
@@ -363,6 +394,12 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               <p className="mt-2 text-sm text-foreground/80">
                 {s.status === "paused"
                   ? "Paused - no charges will be made while paused."
+                  : s.status === "cancelled" || s.status === "completed" || s.status === "expired"
+                    ? s.can_keep
+                      ? "Ended. Your workspace is still online for you to export or keep."
+                      : "Ended. No further charges."
+                  : s.status === "halted"
+                    ? "A payment did not go through. Once it ends you can keep your workspace from here with another card."
                   : s.cancel_at_period_end
                     ? `Cancels on ${s.next_due_date ? formatDate(s.next_due_date) : "period end"} - no further charges.`
                     : s.next_due_date
@@ -389,6 +426,14 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               >
                 {busy === s.id ? "Cancelling…" : "Cancel subscription"}
               </button>
+            ) : s.can_keep ? (
+              <button
+                onClick={() => replace(s, "keep")}
+                disabled={busy === s.id}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background hover:opacity-90 disabled:opacity-50"
+              >
+                {busy === s.id ? "Working…" : "Keep my workspace"}
+              </button>
             ) : s.cancel_at_period_end ? (
               <span className="rounded-lg border border-border px-4 py-2 text-xs text-muted-foreground">Cancellation scheduled</span>
             ) : null}
@@ -399,9 +444,24 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
             </p>
           )}
           {note[s.id] && <p className="mt-2 text-sm text-foreground/80">{note[s.id]}</p>}
-          <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
-            Need to update your card? Reply to your billing email and we&apos;ll help.
-          </p>
+          {s.can_keep && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Changed your mind? Keeping it starts a new subscription on the same plan
+              {s.status === "cancelled" || s.status === "completed" ? " today" : " when this one ends, so no day is charged twice"}.
+            </p>
+          )}
+          {s.can_change_card && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
+              <span>The next renewal is charged to the card or UPI mandate you paid with.</span>
+              <button
+                onClick={() => replace(s, "card")}
+                disabled={busy === s.id}
+                className="rounded-lg border border-border px-3 py-1.5 text-xs text-foreground hover:bg-muted disabled:opacity-50"
+              >
+                Use a different card
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>
