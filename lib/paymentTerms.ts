@@ -38,10 +38,10 @@ export function cloudChoices(p: Pricing): Billing[] {
 }
 
 /** A choice's price and period, as the header shows it. */
-export function choicePrice(b: Billing, p: Pricing): { inr: number; per: "/mo" | "/yr" } {
-  if (b === "yearly") return { inr: p.cloud_yearly_inr, per: "/yr" };
-  if (b === "business") return { inr: p.business_inr, per: "/mo" };
-  return { inr: p.cloud_inr, per: "/mo" };
+export function choicePrice(b: Billing, p: Pricing): { inr: number; usd: number; per: "/mo" | "/yr" } {
+  if (b === "yearly") return { inr: p.cloud_yearly_inr, usd: p.cloud_yearly_usd, per: "/yr" };
+  if (b === "business") return { inr: p.business_inr, usd: p.business_usd, per: "/mo" };
+  return { inr: p.cloud_inr, usd: p.cloud_usd, per: "/mo" };
 }
 
 /** A choice's name on its button. */

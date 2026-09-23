@@ -8,7 +8,7 @@ import { useCheckout } from "@/hooks/useCheckout";
 import { indianStates } from "@/lib/states";
 import { countries } from "@/lib/countries";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, type Pricing } from "@/lib/pricing";
+import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, dual, currencyNote, type Pricing } from "@/lib/pricing";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -142,11 +142,13 @@ function BuyInner() {
               <div className="flex items-baseline justify-between">
                 <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp Lifetime"}</span>
                 <span className="text-2xl font-semibold text-foreground">
-                  {isCloud ? (choice === "monthly" ? fmtUSD(pricing.cloud_usd) : fmtINR(price.inr)) : fmtUSD(pricing.lifetime_usd)}
+                  {fmtUSD(isCloud ? price.usd : pricing.lifetime_usd)}
                   {isCloud && <span className="text-sm font-normal text-muted-foreground">{" " + price.per}</span>}
                 </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
+                {/* The charge itself, beside the dollars above; currencyNote
+                    below the pay button says why the two can differ. */}
                 {isCloud
                   ? business
                     ? `${fmtINR(pricing.business_inr)}/mo billed in INR · ${pricing.business_seats} users included · a larger machine · includes a self-host license`
@@ -266,16 +268,16 @@ function BuyInner() {
               {busy
                 ? "Processing…"
                 : isCloud
-                  ? yearly
-                    ? `Subscribe - ${fmtINR(pricing.cloud_yearly_inr)}/yr`
-                    : `Subscribe - ${fmtUSD(pricing.cloud_usd)}/mo (${fmtINR(pricing.cloud_inr)})`
-                  : `Pay ${fmtUSD(pricing.lifetime_usd)} (${fmtINR(pricing.lifetime_inr)}) & get your key`}
+                  ? // The chosen plan's own price: Business once read Team's here.
+                    `Subscribe - ${dual(price.usd, price.inr, price.per)}`
+                  : `Pay ${dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
             </Button>
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
             <p className="text-center text-xs text-foreground/80">
               {paymentTerms(isCloud ? choice : "lifetime")}
             </p>
+            <p className="text-center text-xs text-muted-foreground">{currencyNote(pricing)}</p>
             <p className="text-center text-xs text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="underline hover:text-foreground">Terms</a> and{" "}

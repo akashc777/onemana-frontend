@@ -23,7 +23,10 @@ const CONSTS = /\b(Cfg[A-Za-z0-9]+)\s*=\s*"([a-z0-9_]+)"/g
 
 /** Keys the backend reads that are deliberately NOT operator-editable. Each one says why. */
 const NOT_IN_FORM = new Set<string>([
-  // (none yet: everything the backend reads today is an operator's decision)
+  // Written by the backend's daily exchange-rate refresh, never by hand; an
+  // operator pins a rate with usd_inr_rate_override instead. See usdRate.go.
+  "usd_inr_rate",
+  "usd_inr_rate_at",
 ])
 
 function goFiles(dir: string, out: string[] = []): string[] {

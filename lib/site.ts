@@ -44,12 +44,10 @@ export const site = {
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
   githubRepo: process.env.NEXT_PUBLIC_GITHUB_REPO || "OneMana-Soft/OneCamp-fe",
   docsPath: "/docs",
-  // Static display fallbacks (live values come from /onecamp/pricing, which is
-  // admin-editable). Charges are always enforced server-side in INR.
+  // Rupee fallbacks for anything rendered without the backend. There are no
+  // dollar constants: dollars are the rupee price at the day's rate, from
+  // /onecamp/pricing (see lib/pricing.ts). Charges are always in INR.
   priceInr: 24999,
-  priceUsd: 299,
-  // OneCamp Cloud - managed hosting, monthly subscription (charged in INR).
-  cloudPriceUsd: 99,
   cloudPriceInr: 9999,
   cloudSeats: 30,
   demoVideoId: "t0IpX9IZcmg",

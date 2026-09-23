@@ -3,7 +3,7 @@ import { resolve } from "node:path"
 
 import { describe, expect, it } from "vitest"
 
-import { defaultPricing } from "./pricing"
+import { DEFAULT_USD_RATE, defaultPricing, usdAt } from "./pricing"
 import { site } from "./site"
 
 /**
@@ -27,9 +27,7 @@ const files = {
 
 /** Every module that holds its own copy of the price, and the fields to check. */
 const mirrors: Array<[string, () => number, () => number]> = [
-  ["lib/site.ts priceUsd", () => site.priceUsd, () => defaultPricing.lifetime_usd],
   ["lib/site.ts priceInr", () => site.priceInr, () => defaultPricing.lifetime_inr],
-  ["lib/site.ts cloudPriceUsd", () => site.cloudPriceUsd, () => defaultPricing.cloud_usd],
   ["lib/site.ts cloudPriceInr", () => site.cloudPriceInr, () => defaultPricing.cloud_inr],
 ]
 
@@ -88,6 +86,29 @@ describe("the price on the page is the price in the module", () => {
 
   it("states the licence price somewhere a buyer will read it", () => {
     const body = readFileSync(files["content/onecamp.md"], "utf8")
-    expect(dollarFigures(body)).toContain(lifetime_usd)
+    expect(body).toContain(`₹${lifetime_inr.toLocaleString("en-IN")}`)
   })
+
+  // Dollars are the rupee price at the day's rate, worked out by the backend.
+  // A dollar price typed anywhere is wrong the next day: the $299 and $99 that
+  // were typed in were 14% high and 5% low against what a US card was charged.
+  it("derives every dollar default from the rupee price", () => {
+    const p = defaultPricing
+    expect(p.usd_rate).toBe(DEFAULT_USD_RATE)
+    expect(p.lifetime_usd).toBe(usdAt(p.lifetime_paise, p.usd_rate))
+    expect(p.cloud_usd).toBe(usdAt(p.cloud_paise, p.usd_rate))
+    expect(p.business_usd).toBe(usdAt(p.business_paise, p.usd_rate))
+    expect(p.storage_addon_usd).toBe(usdAt(p.storage_addon_paise, p.usd_rate))
+  })
+
+  for (const [name, path] of Object.entries(files)) {
+    it(`types no dollar price of ours into ${name}`, () => {
+      const body = readFileSync(path, "utf8")
+      // Our prices, in dollars, as prose: "$99 One-Time", "₹24,999 ($299)",
+      // "$299 lifetime". Other people's dollar prices (a $12 droplet, a $10
+      // seat) are theirs and stay.
+      expect(body.match(/\$\d[\d,]*\s*(?:once|one-time|lifetime|licen[cs]e)/gi) ?? []).toEqual([])
+      expect(body.match(/₹[\d,]+\s*\(\s*\$\d/g) ?? []).toEqual([])
+    })
+  }
 })

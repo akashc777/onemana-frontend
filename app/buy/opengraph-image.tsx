@@ -1,15 +1,12 @@
 import { ImageResponse } from "next/og";
-import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { loadOgFonts } from "@/lib/og-fonts";
 
 export const runtime = "edge";
-// alt cannot be async, so it quotes the build-time fallback. That fallback is
-// pinned equal to the pricing module by lib/priceConsistency.test.ts, so it is
-// only ever stale in the window between an admin price change and the next
-// deploy. The image itself does not have that limitation and reads the live
-// value below.
-export const alt = `Get OneCamp: $${site.priceUsd} lifetime or $${site.cloudPriceUsd}/mo cloud`;
+// alt cannot be async, and a price in it would be a constant that outlives
+// the price: dollars move with the exchange rate every day. So it names the
+// choice, and the image below carries the live figures.
+export const alt = "Get OneCamp: buy once, or let us host it";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

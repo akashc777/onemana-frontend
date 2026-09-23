@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { businessOffered, choiceLabel, choicePrice, cloudCheckoutDescription, cloudChoices, cloudPlanCode, paymentTerms } from "./paymentTerms";
-import { defaultPricing } from "./pricing";
+import { defaultPricing, usdAt } from "./pricing";
 
-const on = { ...defaultPricing, cloud_yearly_configured: true, cloud_yearly_paise: 9999000, cloud_yearly_inr: 99990, cloud_yearly_free_months: 2, business_configured: true };
+const on = { ...defaultPricing, cloud_yearly_configured: true, cloud_yearly_paise: 9999000, cloud_yearly_inr: 99990, cloud_yearly_usd: usdAt(9999000, defaultPricing.usd_rate), cloud_yearly_free_months: 2, business_configured: true };
 
 describe("Cloud plan choices", () => {
   it("offers only what is on sale, Team monthly first", () => {
@@ -21,8 +21,8 @@ describe("Cloud plan choices", () => {
   it("names and prices each choice", () => {
     expect(choiceLabel("business", on)).toBe("Business · 100 users");
     expect(choiceLabel("yearly", on)).toBe("Team yearly · 2 months free");
-    expect(choicePrice("business", on)).toEqual({ inr: 24999, per: "/mo" });
-    expect(choicePrice("yearly", on)).toEqual({ inr: 99990, per: "/yr" });
+    expect(choicePrice("business", on)).toEqual({ inr: 24999, usd: usdAt(2499900, on.usd_rate), per: "/mo" });
+    expect(choicePrice("yearly", on)).toEqual({ inr: 99990, usd: usdAt(9999000, on.usd_rate), per: "/yr" });
   });
 
   it("says no refunds for Business too, and the checkout window names the plan", () => {

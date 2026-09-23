@@ -79,3 +79,19 @@ describe("the money sentence", () => {
     expect(page).toMatch(/\{showChoices && \(/)
   })
 })
+
+// The pay button once read Team's "$99/mo (₹9,999)" with Business selected,
+// while the checkout charged ₹24,999. It now takes the chosen plan's price,
+// and every price on the page is dollars beside the rupee charge.
+describe("the buy page quotes the price it charges", () => {
+  const page = readFileSync(join(__dirname, "..", "app", "buy", "page.tsx"), "utf8")
+
+  it("prices the pay button from the chosen plan", () => {
+    expect(page).toContain("Subscribe - ${dual(price.usd, price.inr, price.per)}")
+    expect(page).not.toMatch(/Subscribe - \$\{fmtUSD\(pricing\.cloud_usd\)/)
+  })
+
+  it("says the charge is in rupees where the money is paid", () => {
+    expect(page).toContain("currencyNote(pricing)")
+  })
+})

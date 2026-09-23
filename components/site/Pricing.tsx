@@ -2,7 +2,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { businessOffered, storageOffered, yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
 import { Reveal } from "@/components/site/Reveal";
 import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
-import { fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
+import { currencyNote, dual, fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
 
 function Check() {
   return (
@@ -44,7 +44,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
                 <span className="text-sm text-muted-foreground">once</span>
               </div>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                {fmtINR(pricing.lifetime_inr)} · INR · taxes included
+                {fmtINR(pricing.lifetime_inr)} billed in INR · taxes included
               </p>
             </header>
             <ul className="mt-8 flex-1 space-y-3 text-sm text-foreground">
@@ -74,13 +74,13 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
                 <span className="text-sm text-muted-foreground">/ month</span>
               </div>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                {fmtINR(pricing.cloud_inr)}/mo · {pricing.cloud_seats} users included
+                {fmtINR(pricing.cloud_inr)}/mo billed in INR · {pricing.cloud_seats} users included
               </p>
               {/* Only once a yearly plan exists to charge it; the saving is the
                   backend's arithmetic over the two prices, never a number here. */}
               {yearlyOffered(pricing) && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  or {fmtINR(pricing.cloud_yearly_inr)} a year{yearlySaving(pricing) ? `, ${yearlySaving(pricing)}` : ""}
+                  or {dual(pricing.cloud_yearly_usd, pricing.cloud_yearly_inr)} a year{yearlySaving(pricing) ? `, ${yearlySaving(pricing)}` : ""}
                 </p>
               )}
               {/* Extra room for files, bought later from the account page. Only
@@ -93,12 +93,12 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
                   <a href="/buy?plan=cloud&size=business" className="font-medium text-brand underline underline-offset-2">
                     Business
                   </a>{" "}
-                  is {fmtINR(pricing.business_inr)}/mo for {pricing.business_seats} users on a larger machine, and you can move between them any time.
+                  is {dual(pricing.business_usd, pricing.business_inr, "/mo")} for {pricing.business_seats} users on a larger machine, and you can move between them any time.
                 </p>
               )}
               {storageOffered(pricing) && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Need more room for files? Add {pricing.storage_addon_gb} GB for {fmtINR(pricing.storage_addon_inr)} a month, any time, from your account.
+                  Need more room for files? Add {pricing.storage_addon_gb} GB for {dual(pricing.storage_addon_usd, pricing.storage_addon_inr)} a month, any time, from your account.
                 </p>
               )}
             </header>
@@ -117,6 +117,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
           </div>
         </Reveal>
       </div>
+      <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">{currencyNote(pricing)}</p>
     </div>
   );
 }

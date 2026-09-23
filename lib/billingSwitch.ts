@@ -1,5 +1,5 @@
 import type { Pricing } from "./pricing";
-import { fmtINR } from "./pricing";
+import { dual } from "./pricing";
 
 /**
  * The words around changing plan: Team monthly, Team yearly, Business.
@@ -36,7 +36,7 @@ export function switchConfirm(to: string, fromPlanCode: string, p: Pricing): str
   if (changesNow(to, fromPlanCode)) {
     const what =
       to === "business"
-        ? `Business is ${fmtINR(p.business_inr)} a month for ${p.business_seats} users on a larger machine. Your workspace moves to it in the next quiet hours, or at once if you choose Move now.`
+        ? `Business is ${dual(p.business_usd, p.business_inr)} a month for ${p.business_seats} users on a larger machine. Your workspace moves to it in the next quiet hours, or at once if you choose Move now.`
         : "The yearly price applies from your next renewal.";
     return `Razorpay charges the difference for the rest of this month now. ${what} Payments are final; we do not offer refunds. Go ahead?`;
   }
