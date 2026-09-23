@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { adminApi, type VisitStats } from "@/lib/adminApi";
+import { adminApi, type VisitStats, type FunnelStop } from "@/lib/adminApi";
 import { countryName, countryFlag } from "@/lib/geo";
 
 // Map is client-only (react-simple-maps fetches its topojson at runtime).
@@ -108,6 +108,7 @@ export function VisitorsPanel() {
   // Furthest first, so the card reads as a funnel top to bottom rather than by volume.
   const demoFunnel = [...(data?.demo_drop_off ?? [])].reverse();
   const demoClicks = data?.demo_clicks ?? 0;
+  const checkoutFunnel = data?.checkout_funnel ?? [];
   const maxDay = daily.reduce((m, d) => Math.max(m, d.views), 0) || 1;
   const countryTotal = byCountry.reduce((s, c) => s + c.views, 0) || 1;
   const deviceTotal = byDevice.reduce((s, d) => s + d.views, 0) || 1;
@@ -212,43 +213,26 @@ export function VisitorsPanel() {
               stop at this domain, so for a long time the only thing anybody could
               say about a demo visitor was that they clicked and did not come back.
               These rows are the same people, followed across. */}
-          <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
-            <div className="mb-1 flex items-baseline justify-between gap-3">
-              <p className="text-sm font-semibold text-foreground">How far demo visitors got</p>
-              <span className="text-xs text-muted-foreground">
-                {demoClicks} clicked through
-              </span>
-            </div>
-            <p className="mb-3 text-[11px] text-muted-foreground">
-              Everyone who clicked a demo link in this window, counted once, at the furthest point
-              they reached.
-            </p>
-            {demoFunnel.length === 0 ? (
-              <p className="py-4 text-center text-sm text-muted-foreground">
-                Nobody clicked through to the demo in this range.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {demoFunnel.map((stop) => {
-                  const pct = demoClicks > 0 ? Math.round((stop.visitors / demoClicks) * 100) : 0;
-                  return (
-                    <div key={stop.step} className="flex items-center gap-3 text-sm">
-                      <span className="w-56 flex-shrink-0 text-foreground/80">{stop.step}</span>
-                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-foreground/30"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <span className="w-20 flex-shrink-0 text-right tabular-nums text-muted-foreground">
-                        {stop.visitors} · {pct}%
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <FunnelCard
+            title="How far demo visitors got"
+            total={demoClicks}
+            totalLabel={`${demoClicks} clicked through`}
+            caption="Everyone who clicked a demo link in this window, counted once, at the furthest point they reached."
+            empty="Nobody clicked through to the demo in this range."
+            stops={demoFunnel}
+          />
+
+          {/* The step after the demo: where buyers stop between the buy page
+              and paying. Each step counts distinct visitors, so a visitor who
+              closed the window and then paid appears in both. */}
+          <FunnelCard
+            title="How far buyers got"
+            total={checkoutFunnel[0]?.visitors ?? 0}
+            totalLabel={`${checkoutFunnel[0]?.visitors ?? 0} reached the buy page`}
+            caption="Distinct visitors at each step of the checkout in this window."
+            empty="Nobody reached the buy page in this range."
+            stops={checkoutFunnel}
+          />
 
           {/* Devices */}
           <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
@@ -315,6 +299,46 @@ export function VisitorsPanel() {
             </div>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+/** One funnel: each step with its share of the total, as a bar. */
+function FunnelCard({ title, total, totalLabel, caption, empty, stops }: {
+  title: string;
+  total: number;
+  totalLabel: string;
+  caption: string;
+  empty: string;
+  stops: FunnelStop[];
+}) {
+  return (
+    <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
+      <div className="mb-1 flex items-baseline justify-between gap-3">
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <span className="text-xs text-muted-foreground">{totalLabel}</span>
+      </div>
+      <p className="mb-3 text-[11px] text-muted-foreground">{caption}</p>
+      {total === 0 ? (
+        <p className="py-4 text-center text-sm text-muted-foreground">{empty}</p>
+      ) : (
+        <div className="space-y-2">
+          {stops.map((stop) => {
+            const pct = total > 0 ? Math.round((stop.visitors / total) * 100) : 0;
+            return (
+              <div key={stop.step} className="flex items-center gap-3 text-sm">
+                <span className="w-56 flex-shrink-0 text-foreground/80">{stop.step}</span>
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-foreground/30" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="w-20 flex-shrink-0 text-right tabular-nums text-muted-foreground">
+                  {stop.visitors} · {pct}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

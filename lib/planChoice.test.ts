@@ -44,3 +44,12 @@ describe("checkout links for each Cloud plan", () => {
     expect(billingFromParams(null, "weekly")).toBe("monthly");
   });
 });
+
+describe("checkout funnel events", () => {
+  it("name the plan being bought, so the stats say which plan buyers stop on", async () => {
+    const { checkoutKind } = await import("@/hooks/useCheckout");
+    expect(checkoutKind(undefined)).toBe("cloud");
+    expect(checkoutKind("onecamp_cloud_team_yearly")).toBe("cloud-yearly");
+    expect(checkoutKind("onecamp_cloud_business")).toBe("business");
+  });
+});

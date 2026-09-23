@@ -24,10 +24,13 @@ export function openSubscriptionCheckout(
     name: "OneCamp Cloud",
     description,
     prefill: { email: c.email, name: c.name },
-    theme: { color: "#6d5efc" },
+    theme: { color: CHECKOUT_THEME },
     handler: on.paid,
     modal: { ondismiss: on.closed },
   });
   rzp.on("payment.failed", () => on.failed("Payment failed or was cancelled. You have not been charged."));
   rzp.open();
 }
+/** The brand orange (DESIGN.md), so every payment window looks like ours. */
+export const CHECKOUT_THEME = "#b94a00";
+

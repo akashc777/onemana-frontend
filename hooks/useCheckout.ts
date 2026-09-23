@@ -1,5 +1,7 @@
 "use client";
 
+import { trackEvent } from "@/lib/track";
+import { CHECKOUT_THEME } from "@/lib/razorpayCheckout";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cloudCheckoutDescription } from "@/lib/paymentTerms";
@@ -39,6 +41,17 @@ export interface CheckoutController {
  * instant UX; the backend webhook remains the authoritative fulfillment, so a
  * verify failure still routes to a reassuring "pending" success page.
  */
+/**
+ * The checkout's steps as funnel events, per plan, so the admin stats show
+ * where buyers stop after the pricing page: opened, then paid, closed or
+ * failed. Anonymous like every other event.
+ */
+export function checkoutKind(planCode?: string): string {
+  if (planCode === "onecamp_cloud_business") return "business";
+  if (planCode === "onecamp_cloud_team_yearly") return "cloud-yearly";
+  return "cloud";
+}
+
 export function useCheckout(): CheckoutController {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -62,8 +75,9 @@ export function useCheckout(): CheckoutController {
           name: "OneCamp",
           description: "Self-Hosted Unified Workspace, Lifetime License",
           prefill: { email: order.email, name: order.name, contact: contact ?? "" },
-          theme: { color: "#6d5efc" },
+          theme: { color: CHECKOUT_THEME },
           handler: async (resp: unknown) => {
+            trackEvent("checkout-paid-lifetime");
             const r = resp as RazorpaySuccess;
             const params = new URLSearchParams({ email: input.email });
             try {
@@ -79,13 +93,15 @@ export function useCheckout(): CheckoutController {
             }
             router.push(`/buy/success?${params.toString()}`);
           },
-          modal: { ondismiss: () => setBusy(false) },
+          modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },
         });
         rzp.on("payment.failed", () => {
+          trackEvent("checkout-failed");
           setBusy(false);
           setError("Payment failed or was cancelled. You have not been charged.");
         });
         rzp.open();
+        trackEvent("checkout-opened-lifetime");
       } catch (err) {
         setBusy(false);
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -110,20 +126,23 @@ export function useCheckout(): CheckoutController {
           name: "OneCamp Cloud",
           description: cloudCheckoutDescription(input.plan_code),
           prefill: { email: sub.email, name: sub.name, contact: contact ?? "" },
-          theme: { color: "#6d5efc" },
+          theme: { color: CHECKOUT_THEME },
           handler: () => {
+            trackEvent(`checkout-paid-${checkoutKind(input.plan_code)}`);
             // Subscription activation + fulfillment is webhook-driven. Route to
             // a reassuring success page; the welcome email carries the license.
             const params = new URLSearchParams({ email: input.email, cloud: "1" });
             router.push(`/buy/success?${params.toString()}`);
           },
-          modal: { ondismiss: () => setBusy(false) },
+          modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },
         });
         rzp.on("payment.failed", () => {
+          trackEvent("checkout-failed");
           setBusy(false);
           setError("Payment failed or was cancelled. You have not been charged.");
         });
         rzp.open();
+        trackEvent(`checkout-opened-${checkoutKind(input.plan_code)}`);
       } catch (err) {
         setBusy(false);
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");

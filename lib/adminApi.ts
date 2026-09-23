@@ -291,6 +291,8 @@ export interface VisitStats {
   demo_clicks: number;
   /** Where each of them got to, furthest first. */
   demo_drop_off: FunnelStop[];
+  /** Buy page, payment window, and how it ended; distinct visitors per step. */
+  checkout_funnel?: FunnelStop[];
 }
 
 export interface FYEarning {
