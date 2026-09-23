@@ -85,6 +85,10 @@ export interface PortalInstance {
   /** Extra storage bought for this workspace and how far attaching it has got; see storageLine. */
   storage_addon_gb: number;
   storage_addon_state: string;
+  /** From the daily reading; see capacityLine. Absent until the first reading. */
+  mem_used_pct?: number;
+  capacity_verdict?: string;
+  capacity_reason?: string;
 }
 
 export type PortalCheckout = { subscription_id: string; razorpay_key_id: string; name: string; email: string };

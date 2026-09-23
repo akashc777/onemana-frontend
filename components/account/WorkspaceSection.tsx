@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { seatsLine } from "@/lib/seatsLine";
 import { diskLine } from "@/lib/diskLine";
 import { backupLine } from "@/lib/backupLine";
+import { capacityLine } from "@/lib/capacityLine";
 import { StorageAddon } from "@/components/account/StorageAddon";
 import {
   portalApi,
@@ -153,6 +154,10 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
             </>
           )}
         </p>
+      )}
+
+      {inst.state === "live" && capacityLine(inst.capacity_verdict, inst.capacity_reason) && (
+        <p className="text-sm text-amber-700 dark:text-amber-400">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
       )}
 
       <StorageAddon inst={inst} onChanged={onChanged} />

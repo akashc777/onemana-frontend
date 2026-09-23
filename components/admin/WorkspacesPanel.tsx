@@ -11,6 +11,7 @@ import {
 import { AsyncState } from "./ui";
 import { stateBadgeClass, isWorkingState } from "@/lib/instanceState";
 import { timeAgo } from "@/lib/format";
+import { capacitySummary } from "@/lib/capacityLine";
 import { usePoll } from "@/hooks/usePoll";
 
 // What the operator can see about managed workspaces.
@@ -155,6 +156,9 @@ export function WorkspacesPanel() {
                     {timeAgo(r.updated_at)}
                     {r.next_action_at ? ` · next action ${timeAgo(r.next_action_at)}` : ""}
                   </p>
+                  {capacitySummary(r.capacity_json) && (
+                    <p className="mt-1 text-xs text-muted-foreground">Machine: {capacitySummary(r.capacity_json)}</p>
+                  )}
                   {r.storage_addon_state && (
                     <p className="mt-1 text-xs text-foreground">
                       Extra storage: {r.storage_addon_gb} GB, <strong>{r.storage_addon_state}</strong>

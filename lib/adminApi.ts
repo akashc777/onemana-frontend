@@ -48,6 +48,8 @@ export interface AdminInstance {
    *  same as zero, so both states have to survive the trip to the screen. */
   seats_total?: number | null;
   seats_active_30d?: number | null;
+  /** The daily capacity reading as stored (JSON); see capacitySummary. */
+  capacity_json?: string | null;
   /** Extra storage bought and how far attaching it has got: "", paid, attached, ending. */
   storage_addon_gb?: number;
   storage_addon_state?: string;
