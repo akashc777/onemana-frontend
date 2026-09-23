@@ -1,5 +1,6 @@
 "use client";
 
+import { guessCountry } from "@/lib/guessCountry";
 import Script from "next/script";
 import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing } from "@/lib/paymentTerms";
 import { Suspense, useEffect, useMemo, useState } from "react";
@@ -45,7 +46,17 @@ function BuyInner() {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [country, setCountry] = useState("IN");
+  // A first guess from the browser, replaced on mount; see lib/guessCountry.
+  const [country, setCountry] = useState("US");
+  useEffect(() => {
+    setCountry(
+      guessCountry(
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        navigator.languages ?? [navigator.language],
+        new Set(countries.map((c) => c.code)),
+      ),
+    );
+  }, []);
   const [gstin, setGstin] = useState("");
   const [stateName, setStateName] = useState("");
   const [phone, setPhone] = useState("");
@@ -257,7 +268,7 @@ function BuyInner() {
               </>
             )}
             <Field label="Phone (optional)">
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="+91 …" autoComplete="tel" />
+              <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="With country code, e.g. +1 415 555 0100" autoComplete="tel" />
             </Field>
 
             {error && (
