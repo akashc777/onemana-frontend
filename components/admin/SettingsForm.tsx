@@ -69,6 +69,12 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "cloud_plan_id", label: "Razorpay Cloud Plan ID", hint: "plan_… created in Razorpay (INR). Required for Cloud checkout." },
       { key: "cloud_plan_id_yearly", label: "Razorpay Cloud Plan ID (yearly)", hint: "plan_… for the yearly plan. Empty means yearly is not offered: the pricing page hides it and checkout refuses it. Set this and the option appears." },
       { key: "cloud_price_yearly", label: "Cloud price (paise/yr)", type: "number", hint: "Invoice amount per year. Blank means ten months of the monthly price, which is the \"two months free\" the page then says. The saving shown is derived from the two prices." },
+      { key: "cloud_plan_id_business", label: "Razorpay plan ID (Business)", hint: "plan_… for Business, monthly. Empty means Business is not offered: the pricing page, the buy page and the account page hide it and checkout refuses it. Must charge exactly the Business price below; use the check under it." },
+      { key: "cloud_price_business", label: "Business price (paise/mo)", type: "number", hint: "2499900 = ₹24,999 a month. Must equal what the Razorpay plan charges. Keep it at least five times what a Business machine costs, so the margin holds." },
+      { key: "cloud_business_seats", label: "Business users included", type: "number", hint: "Default 100. Shown on the pricing page and the account page; nothing counts people at the door." },
+      { key: "cloud_business_min_ram_mb", label: "Business machine: RAM at least (MB)", type: "number", hint: "Default 60000, what a \"64 GB\" machine reports. A spare smaller than this is never given to a Business workspace." },
+      { key: "cloud_business_min_disk_gb", label: "Business machine: disk at least (GB)", type: "number", hint: "Default 400." },
+      { key: "cloud_move_window_utc", label: "Move window (UTC hours)", hint: "When workspaces move between machines unless the owner presses Move now, e.g. 20-24 (the default) is 01:30 to 05:30 in India. A move pauses the workspace for the copy, usually 10 to 30 minutes." },
       { key: "cloud_plan_id_storage", label: "Razorpay plan ID (extra storage)", hint: "plan_… for the monthly extra-storage add-on. Empty means storage is not offered: the pricing page hides it and the portal shows no button. Must charge exactly the price below; use the check under it." },
       { key: "cloud_price_storage", label: "Extra storage price (paise/mo)", type: "number", hint: "299900 = ₹2,999 a month. Must equal what the Razorpay plan charges." },
       { key: "cloud_storage_addon_gb", label: "Extra storage size (GB)", type: "number", hint: "What the add-on buys. Default 500. Priced at least five times what the object store costs us, so the margin holds." },
@@ -337,7 +343,7 @@ function SettingField({ field, initial }: { field: FieldDef; initial: string }) 
         )}
         {field.hint && <p className="mt-1 text-xs text-muted-foreground">{field.hint}</p>}
         {err && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{err}</p>}
-        {(field.key === "cloud_plan_id" || field.key === "cloud_plan_id_yearly" || field.key === "cloud_plan_id_storage") && (
+        {(field.key === "cloud_plan_id" || field.key === "cloud_plan_id_yearly" || field.key === "cloud_plan_id_storage" || field.key === "cloud_plan_id_business") && (
           <PlanCheckLine setting={field.key} saved={saved || (!dirty && Boolean(stored || value))} />
         )}
         {field.key === "ovh_cloud_project" && <StorageCheckLine saved={saved || (!dirty && Boolean(stored || value))} />}
@@ -411,7 +417,7 @@ function StorageCheckLine({ saved }: { saved: boolean }) {
   );
 }
 
-function PlanCheckLine({ setting, saved }: { setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage"; saved: boolean }) {
+function PlanCheckLine({ setting, saved }: { setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage" | "cloud_plan_id_business"; saved: boolean }) {
   const [state, setState] = useState<{ kind: "idle" } | { kind: "busy" } | { kind: "ok"; check: PlanCheck } | { kind: "err"; msg: string }>({ kind: "idle" });
   if (!saved) return null;
   return (

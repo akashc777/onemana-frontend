@@ -65,13 +65,17 @@ describe("the money sentence", () => {
     // agree to our Refund Policy" with a link. A buyer had to click through to
     // learn the one fact about money that matters. This holds the sentence in
     // place next to the button.
-    expect(page).toContain("paymentTerms(isCloud ? (yearly ? \"yearly\" : \"monthly\") : \"lifetime\")")
+    // The sentence follows the plan chosen: Team monthly, Team yearly or Business.
+    expect(page).toContain("paymentTerms(isCloud ? choice : \"lifetime\")")
   })
 
-  it("offers yearly only when the pricing payload says a plan exists", () => {
+  it("offers yearly and Business only when the pricing payload says a plan exists", () => {
     // A toggle shown before the Razorpay plan exists would promise a price
     // checkout then refuses; yearlyOffered reads cloud_yearly_configured.
-    expect(page).toContain("const showYearly = isCloud && yearlyOffered(pricing)")
-    expect(page).toMatch(/\{showYearly && \(/)
+    // Choices come from what the pricing payload says is on sale, and a choice
+    // not on sale falls back to Team monthly rather than a refused plan code.
+    expect(page).toContain("const choices = cloudChoices(pricing)")
+    expect(page).toContain("choices.includes(billing) ? billing : \"monthly\"")
+    expect(page).toMatch(/\{showChoices && \(/)
   })
 })

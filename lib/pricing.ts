@@ -24,6 +24,11 @@ export interface Pricing {
   storage_addon_paise: number;
   storage_addon_gb: number;
   storage_addon_configured: boolean;
+  /** Business: a larger machine for up to business_seats people. Shown only when business_configured. */
+  business_inr: number;
+  business_paise: number;
+  business_seats: number;
+  business_configured: boolean;
 }
 
 /**
@@ -58,6 +63,10 @@ export const defaultPricing: Pricing = {
   storage_addon_paise: 299900,
   storage_addon_gb: 500,
   storage_addon_configured: false,
+  business_inr: 24999,
+  business_paise: 2499900,
+  business_seats: 100,
+  business_configured: false,
 };
 
 /** Fetches live pricing from the backend (revalidated), falling back safely. */

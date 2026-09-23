@@ -5,6 +5,7 @@ import { seatsLine } from "@/lib/seatsLine";
 import { diskLine } from "@/lib/diskLine";
 import { backupLine } from "@/lib/backupLine";
 import { capacityLine } from "@/lib/capacityLine";
+import { moveLine, sizeLabel } from "@/lib/moveLine";
 import { StorageAddon } from "@/components/account/StorageAddon";
 import {
   portalApi,
@@ -100,6 +101,37 @@ function BackupDownload({ id }: { id: string }) {
   );
 }
 
+/** Starts a ready move at once. The workspace pauses for the copy, so the
+ *  owner confirms first. */
+function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  return (
+    <>
+      <button
+        type="button"
+        disabled={busy}
+        className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-60"
+        onClick={async () => {
+          if (!window.confirm("Move now? Your workspace pauses while the last backup is copied and restored, usually 10 to 30 minutes, then carries on at the same address.")) return;
+          setBusy(true);
+          try {
+            setMsg(await portalApi.moveNow(id));
+            window.setTimeout(onChanged, 3000);
+          } catch (e) {
+            setMsg(e instanceof Error ? e.message : "The move could not be started.");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy ? "Starting…" : "Move now"}
+      </button>
+      {msg && <span className="text-sm text-muted-foreground">{msg}</span>}
+    </>
+  );
+}
+
 function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
   if (inst.needs_name) return <ChooseAddress inst={inst} onChanged={onChanged} />;
 
@@ -111,7 +143,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
         </span>
         {inst.edition && (
           <span className="text-xs text-muted-foreground">
-            {inst.edition} · {inst.has_ai ? "with AI" : "without AI"}
+            {sizeLabel(inst.size)} · {inst.edition} · {inst.has_ai ? "with AI" : "without AI"}
           </span>
         )}
       </div>
@@ -158,6 +190,13 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
 
       {inst.state === "live" && capacityLine(inst.capacity_verdict, inst.capacity_reason) && (
         <p className="text-sm text-amber-700 dark:text-amber-400">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
+      )}
+
+      {moveLine(inst.move) && (
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-sm text-foreground">{moveLine(inst.move)}</p>
+          {inst.move?.can_move_now && <MoveNowButton id={inst.id} onChanged={onChanged} />}
+        </div>
       )}
 
       <StorageAddon inst={inst} onChanged={onChanged} />

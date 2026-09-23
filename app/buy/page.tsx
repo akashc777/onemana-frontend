@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { cloudPlanCode, paymentTerms, yearlyOffered, yearlySaving, type Billing } from "@/lib/paymentTerms";
+import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing } from "@/lib/paymentTerms";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
@@ -35,7 +35,9 @@ function BuyInner() {
   const [pricing, setPricing] = useState<Pricing>(defaultPricing);
   // Monthly unless the buyer chooses otherwise; the choice is only offered
   // once a yearly plan exists to charge it.
-  const [billing, setBilling] = useState<Billing>("monthly");
+  // ?size=business opens on Business (the pricing page and the "outgrowing
+  // its machine" email link here); it only sticks once Business is on sale.
+  const [billing, setBilling] = useState<Billing>(params.get("size") === "business" ? "business" : "monthly");
 
   useEffect(() => {
     fetchPricingClient().then(setPricing);
@@ -50,9 +52,15 @@ function BuyInner() {
 
   const isIndia = country === "IN";
   const isCloud = plan === "cloud";
-  const showYearly = isCloud && yearlyOffered(pricing);
-  const yearly = showYearly && billing === "yearly";
+  const choices = cloudChoices(pricing);
+  // A choice that is not on sale (a stale link, a plan removed) falls back to
+  // Team monthly rather than sending a plan code checkout would refuse.
+  const choice: Billing = isCloud && choices.includes(billing) ? billing : "monthly";
+  const showChoices = isCloud && choices.length > 1;
+  const yearly = choice === "yearly";
+  const business = choice === "business";
   const saving = yearlySaving(pricing);
+  const price = choicePrice(choice, pricing);
   const stateCode = useMemo(
     () => (isIndia ? indianStates.find((s) => s.name === stateName)?.code ?? "" : ""),
     [isIndia, stateName],
@@ -77,7 +85,7 @@ function BuyInner() {
       state_code: stateCode,
       phone: phone.trim(),
     };
-    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(showYearly ? billing : "monthly") }, phone.trim());
+    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice) }, phone.trim());
     else await start(input, phone.trim());
   }
 
@@ -132,35 +140,37 @@ function BuyInner() {
 
             <div className="card-premium card mt-6 bg-card/90">
               <div className="flex items-baseline justify-between">
-                <span className="font-medium text-foreground">{isCloud ? "OneCamp Cloud" : "OneCamp Lifetime"}</span>
+                <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp Lifetime"}</span>
                 <span className="text-2xl font-semibold text-foreground">
-                  {isCloud ? (yearly ? fmtINR(pricing.cloud_yearly_inr) : fmtUSD(pricing.cloud_usd)) : fmtUSD(pricing.lifetime_usd)}
-                  {isCloud && <span className="text-sm font-normal text-muted-foreground">{yearly ? " /yr" : " /mo"}</span>}
+                  {isCloud ? (choice === "monthly" ? fmtUSD(pricing.cloud_usd) : fmtINR(price.inr)) : fmtUSD(pricing.lifetime_usd)}
+                  {isCloud && <span className="text-sm font-normal text-muted-foreground">{" " + price.per}</span>}
                 </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 {isCloud
-                  ? yearly
-                    ? `${fmtINR(pricing.cloud_yearly_inr)}/yr billed in INR${saving ? ` · ${saving}` : ""} · ${pricing.cloud_seats} users included · includes a self-host license`
-                    : `${fmtINR(pricing.cloud_inr)}/mo billed in INR · ${pricing.cloud_seats} users included · includes a self-host license`
+                  ? business
+                    ? `${fmtINR(pricing.business_inr)}/mo billed in INR · ${pricing.business_seats} users included · a larger machine · includes a self-host license`
+                    : yearly
+                      ? `${fmtINR(pricing.cloud_yearly_inr)}/yr billed in INR${saving ? ` · ${saving}` : ""} · ${pricing.cloud_seats} users included · includes a self-host license`
+                      : `${fmtINR(pricing.cloud_inr)}/mo billed in INR · ${pricing.cloud_seats} users included · includes a self-host license`
                   : `${fmtINR(pricing.lifetime_inr)} billed in INR · one-time · all taxes included · unlimited users`}
               </p>
-              {showYearly && (
+              {showChoices && (
                 <div
                   role="radiogroup"
-                  aria-label="Billing period"
-                  className="mt-4 grid grid-cols-2 gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-xs"
+                  aria-label="Plan"
+                  className={`mt-4 grid gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-xs ${choices.length === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2"}`}
                 >
-                  {(["monthly", "yearly"] as const).map((b) => (
+                  {choices.map((b) => (
                     <button
                       key={b}
                       type="button"
                       role="radio"
-                      aria-checked={billing === b}
+                      aria-checked={choice === b}
                       onClick={() => setBilling(b)}
-                      className={`rounded-md px-3 py-1.5 font-medium transition ${billing === b ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      className={`rounded-md px-3 py-1.5 font-medium transition ${choice === b ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                     >
-                      {b === "monthly" ? "Monthly" : saving ? `Yearly · ${saving}` : "Yearly"}
+                      {choiceLabel(b, pricing)}
                     </button>
                   ))}
                 </div>
@@ -264,7 +274,7 @@ function BuyInner() {
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
             <p className="text-center text-xs text-foreground/80">
-              {paymentTerms(isCloud ? (yearly ? "yearly" : "monthly") : "lifetime")}
+              {paymentTerms(isCloud ? choice : "lifetime")}
             </p>
             <p className="text-center text-xs text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}

@@ -48,6 +48,8 @@ export interface AdminInstance {
    *  same as zero, so both states have to survive the trip to the screen. */
   seats_total?: number | null;
   seats_active_30d?: number | null;
+  /** "team" or "business". */
+  size?: string;
   /** The daily capacity reading as stored (JSON); see capacitySummary. */
   capacity_json?: string | null;
   /** Extra storage bought and how far attaching it has got: "", paid, attached, ending. */
@@ -752,7 +754,7 @@ export const adminApi = {
     return data.data;
   },
 
-  async checkPlan(setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage"): Promise<PlanCheck> {
+  async checkPlan(setting: "cloud_plan_id" | "cloud_plan_id_yearly" | "cloud_plan_id_storage" | "cloud_plan_id_business"): Promise<PlanCheck> {
     const data = await adminGet<{ data?: PlanCheck }>(`/onecamp/admin/plans/check?setting=${setting}`);
     if (!data?.data) throw new Error("no answer from the plan check");
     return data.data;
@@ -824,6 +826,17 @@ export const adminApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not clear two-factor");
     return data?.msg || "Two-factor cleared";
+  },
+
+  /** Move a workspace to another machine: same size (off a failing machine) or another size. */
+  async startMove(id: string, size: string, reason: string): Promise<void> {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/${id}/move`, {
+      method: "POST",
+      headers: { "X-Admin-Token": getToken(), "Content-Type": "application/json" },
+      body: JSON.stringify({ size, reason }),
+    });
+    const data = (await res.json().catch(() => ({}))) as { msg?: string };
+    if (!res.ok) throw new Error(data?.msg || "Could not start the move");
   },
 
   /** The operator's mark on a workspace's extra storage: "attached", or "" to clear an ended add-on. */

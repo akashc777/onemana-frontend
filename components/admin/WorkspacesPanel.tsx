@@ -156,6 +156,32 @@ export function WorkspacesPanel() {
                     {timeAgo(r.updated_at)}
                     {r.next_action_at ? ` · next action ${timeAgo(r.next_action_at)}` : ""}
                   </p>
+                  {r.state === "live" && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Size: <strong className="text-foreground">{r.size === "business" ? "Business" : "Team"}</strong>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Move ${r.slug} to a new machine of the same size? It pauses for the copy in the next quiet hours.`))
+                            void run("Move", () => adminApi.startMove(r.id, r.size || "team", "moved off its machine by the operator"));
+                        }}
+                        disabled={busy !== ""}
+                        className="btn-ghost ml-2 px-2 py-1 text-xs disabled:opacity-40"
+                      >
+                        Move to a new machine
+                      </button>
+                      <button
+                        onClick={() => {
+                          const to = r.size === "business" ? "team" : "business";
+                          if (window.confirm(`Move ${r.slug} to ${to}? This changes the machine, not the bill; change the plan in Razorpay too.`))
+                            void run("Move", () => adminApi.startMove(r.id, to, "resized by the operator"));
+                        }}
+                        disabled={busy !== ""}
+                        className="btn-ghost ml-1 px-2 py-1 text-xs disabled:opacity-40"
+                      >
+                        {r.size === "business" ? "Move to Team" : "Move to Business"}
+                      </button>
+                    </p>
+                  )}
                   {capacitySummary(r.capacity_json) && (
                     <p className="mt-1 text-xs text-muted-foreground">Machine: {capacitySummary(r.capacity_json)}</p>
                   )}

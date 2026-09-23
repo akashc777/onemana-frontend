@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Script from "next/script";
 import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
+import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
+import { cloudCheckoutDescription, cloudPlanCode } from "@/lib/paymentTerms";
 import { fetchPricingClient, defaultPricing, type Pricing } from "@/lib/pricing";
 import { portalApi, type PortalOverview, type PortalSubscription, type Invoice } from "@/lib/portalApi";
 import { formatINR, formatDate } from "@/lib/format";
@@ -272,6 +275,11 @@ function InvoicesTab() {
   );
 }
 
+/** The plan code behind a change target, for the checkout window's words. */
+function planCodeFor(to: string): string | undefined {
+  return cloudPlanCode(to === "business" ? "business" : to === "yearly" ? "yearly" : "monthly");
+}
+
 function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]; onChanged: () => void }) {
   const [subs, setSubs] = useState<PortalSubscription[]>(initial);
   const [busy, setBusy] = useState<string | null>(null);
@@ -283,20 +291,37 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
     return () => { alive = false; };
   }, []);
 
-  async function switchBilling(s: PortalSubscription) {
-    const to = s.can_switch_to;
-    if (to !== "monthly" && to !== "yearly") return;
-    if (!window.confirm(switchConfirm(to))) return;
+  async function changePlan(s: PortalSubscription, to: string) {
+    if (!window.confirm(switchConfirm(to, s.plan_code, pricing))) return;
     setBusy(s.id);
-    try {
-      const detail = await portalApi.changeBilling(s.id, to);
+    const done = async (detail: string) => {
       setNote((n) => ({ ...n, [s.id]: detail }));
-      const fresh = await portalApi.subscriptions();
-      setSubs(fresh);
+      setSubs(await portalApi.subscriptions());
       onChanged();
+    };
+    try {
+      const res = await portalApi.changePlan(s.id, to);
+      if (!res.checkout) {
+        await done(res.detail);
+        setBusy(null);
+        return;
+      }
+      // A UPI or eMandate subscription cannot change in place: the customer
+      // confirms the new plan in Razorpay's window.
+      setNote((n) => ({ ...n, [s.id]: res.detail }));
+      openSubscriptionCheckout(res.checkout, cloudCheckoutDescription(planCodeFor(to)), {
+        paid: () => {
+          setBusy(null);
+          window.setTimeout(() => void done("Thank you. The new plan takes over as described; this page updates within a minute."), 8000);
+        },
+        closed: () => setBusy(null),
+        failed: (msg) => {
+          setBusy(null);
+          setNote((n) => ({ ...n, [s.id]: msg }));
+        },
+      });
     } catch (e) {
       setNote((n) => ({ ...n, [s.id]: e instanceof Error ? e.message : "The change could not be made." }));
-    } finally {
       setBusy(null);
     }
   }
@@ -325,6 +350,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
 
   return (
     <div className="space-y-4">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       {subs.map((s) => (
         <div key={s.id} className="rounded-2xl border border-border bg-muted/30 p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -344,15 +370,17 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
                       : "Active."}
               </p>
             </div>
-            {s.can_switch_to && s.can_cancel && (
-              <button
-                onClick={() => switchBilling(s)}
-                disabled={busy === s.id}
-                className="rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50"
-              >
-                {busy === s.id ? "Working…" : switchLabel(s.can_switch_to, pricing.cloud_yearly_free_months)}
-              </button>
-            )}
+            {s.can_cancel &&
+              (s.switch_options ?? []).map((to) => (
+                <button
+                  key={to}
+                  onClick={() => changePlan(s, to)}
+                  disabled={busy === s.id}
+                  className="rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50"
+                >
+                  {busy === s.id ? "Working…" : switchLabel(to, s.plan_code, pricing)}
+                </button>
+              ))}
             {s.can_cancel ? (
               <button
                 onClick={() => cancel(s)}

@@ -6,6 +6,7 @@ import { portalApi, type PortalInstance } from "@/lib/portalApi";
 import { fetchPricingClient, defaultPricing, fmtINR, type Pricing } from "@/lib/pricing";
 import { paymentTerms, storageOffered } from "@/lib/paymentTerms";
 import { storageLine } from "@/lib/storageLine";
+import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
 
 /**
  * Extra storage on the workspace card: what the workspace has, or the offer.
@@ -41,33 +42,22 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
 
   const buy = async () => {
     setErr("");
-    if (typeof window === "undefined" || !window.Razorpay) {
-      setErr("The payment library is still loading. Try again in a moment.");
-      return;
-    }
     setBusy(true);
     try {
       const sub = await portalApi.addStorage(inst.id);
-      const rzp = new window.Razorpay({
-        key: sub.razorpay_key_id,
-        subscription_id: sub.subscription_id,
-        name: "OneCamp Cloud",
-        description: `Extra storage, ${pricing.storage_addon_gb} GB, monthly`,
-        prefill: { email: sub.email, name: sub.name },
-        theme: { color: "#6d5efc" },
-        handler: () => {
+      openSubscriptionCheckout(sub, `Extra storage, ${pricing.storage_addon_gb} GB, monthly`, {
+        paid: () => {
           setPaid(true);
           setBusy(false);
           // The webhook marks the workspace; give it a moment, then reload.
           window.setTimeout(onChanged, 8000);
         },
-        modal: { ondismiss: () => setBusy(false) },
+        closed: () => setBusy(false),
+        failed: (msg) => {
+          setBusy(false);
+          setErr(msg);
+        },
       });
-      rzp.on("payment.failed", () => {
-        setBusy(false);
-        setErr("Payment failed or was cancelled. You have not been charged.");
-      });
-      rzp.open();
     } catch (e) {
       setBusy(false);
       setErr(e instanceof Error ? e.message : "The purchase could not be started.");

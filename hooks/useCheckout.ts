@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import { cloudCheckoutDescription } from "@/lib/paymentTerms";
 import {
   createCheckoutOrder,
   createCloudSubscription,
@@ -107,7 +108,7 @@ export function useCheckout(): CheckoutController {
           key: sub.razorpay_key_id,
           subscription_id: sub.subscription_id,
           name: "OneCamp Cloud",
-          description: "Managed Hosting, Monthly (includes a self-host license)",
+          description: cloudCheckoutDescription(input.plan_code),
           prefill: { email: sub.email, name: sub.name, contact: contact ?? "" },
           theme: { color: "#6d5efc" },
           handler: () => {

@@ -1,5 +1,5 @@
 import { ButtonLink } from "@/components/ui/Button";
-import { storageOffered, yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
+import { businessOffered, storageOffered, yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
 import { Reveal } from "@/components/site/Reveal";
 import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
 import { fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
@@ -85,6 +85,17 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               )}
               {/* Extra room for files, bought later from the account page. Only
                   once a plan exists to charge it. */}
+              {/* The next size up, for teams past what Team includes. Links to the
+                  buy page opened on Business. */}
+              {businessOffered(pricing) && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  More than {pricing.cloud_seats} people?{" "}
+                  <a href="/buy?plan=cloud&size=business" className="font-medium text-brand underline underline-offset-2">
+                    Business
+                  </a>{" "}
+                  is {fmtINR(pricing.business_inr)}/mo for {pricing.business_seats} users on a larger machine, and you can move between them any time.
+                </p>
+              )}
               {storageOffered(pricing) && (
                 <p className="mt-1 text-xs text-muted-foreground">
                   Need more room for files? Add {pricing.storage_addon_gb} GB for {fmtINR(pricing.storage_addon_inr)} a month, any time, from your account.

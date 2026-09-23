@@ -36,8 +36,8 @@ export interface PortalSubscription {
   label?: string;
   /** Set on an add-on: the workspace it extends. */
   instance_id?: string;
-  /** "monthly" or "yearly" when the customer may switch to it from here; see billingSwitch. */
-  can_switch_to?: string;
+  /** The plans the customer may change to from here ("monthly", "yearly", "business"); see billingSwitch. */
+  switch_options?: string[];
   /** A switch already scheduled for the end of the cycle, in words. */
   pending_label?: string;
   status: string;
@@ -89,7 +89,13 @@ export interface PortalInstance {
   mem_used_pct?: number;
   capacity_verdict?: string;
   capacity_reason?: string;
+  /** "team" or "business": what the workspace is sold as and runs on. */
+  size?: string;
+  /** Set while the workspace is moving between machines; see moveLine. */
+  move?: PortalMove;
 }
+
+export type PortalMove = { to_size: string; label: string; when?: string; can_move_now: boolean };
 
 export type PortalCheckout = { subscription_id: string; razorpay_key_id: string; name: string; email: string };
 
@@ -218,6 +224,15 @@ export const portalApi = {
     return data.data;
   },
 
+  /** Start a move that is ready now, instead of in quiet hours. */
+  async moveNow(id: string): Promise<string> {
+    const res = await fetch(`${base}/instance/${id}/move-now`, { method: "POST", credentials: "include" });
+    if (res.status === 401) throw new PortalAuthError();
+    const data = (await res.json().catch(() => ({}))) as { msg?: string };
+    if (!res.ok) throw new Error(data?.msg || "The move could not be started.");
+    return data?.msg || "Moving now.";
+  },
+
   /** A short-lived download of the newest off-site backup copy. */
   async backupLink(id: string): Promise<PortalBackupLink> {
     const res = await fetch(`${base}/instance/${id}/backup`, { credentials: "include" });
@@ -253,8 +268,9 @@ export const portalApi = {
     return { msg: data?.msg || "Checked." };
   },
 
-  /** Switch a workspace's billing; returns the sentence about what was done. */
-  async changeBilling(id: string, to: "monthly" | "yearly"): Promise<string> {
+  /** Change a subscription's plan; returns what was done, and a checkout when the
+   *  customer must confirm a replacement (UPI Autopay, eMandate). */
+  async changePlan(id: string, to: string): Promise<{ detail: string; checkout?: PortalCheckout }> {
     const res = await fetch(`${base}/subscription/${id}/billing`, {
       method: "POST",
       credentials: "include",
@@ -262,9 +278,9 @@ export const portalApi = {
       body: JSON.stringify({ to }),
     });
     if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { detail?: string } };
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { detail?: string; checkout?: PortalCheckout } };
     if (!res.ok) throw new Error(data?.msg || "The change could not be made.");
-    return data?.data?.detail || "Billing changed.";
+    return { detail: data?.data?.detail || "Plan changed.", checkout: data?.data?.checkout };
   },
 
   async cancelSubscription(id: string): Promise<void> {

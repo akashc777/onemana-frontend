@@ -1,18 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { switchConfirm, switchLabel } from "./billingSwitch";
+import { changesNow, switchConfirm, switchLabel } from "./billingSwitch";
+import { defaultPricing } from "./pricing";
 
-describe("billing switch words", () => {
-  it("offers the saving going up and the timing going down", () => {
-    expect(switchLabel("yearly", 2)).toBe("Switch to yearly, 2 months free");
-    expect(switchLabel("yearly", 0)).toBe("Switch to yearly");
-    expect(switchLabel("monthly", 2)).toContain("when the year ends");
-    expect(switchLabel("", 2)).toBe("");
+const p = { ...defaultPricing, cloud_yearly_free_months: 2 };
+
+describe("plan change words", () => {
+  it("happens now only when paying more, sooner, from Team monthly", () => {
+    expect(changesNow("yearly", "onecamp_cloud_team")).toBe(true);
+    expect(changesNow("business", "onecamp_cloud_team")).toBe(true);
+    expect(changesNow("business", "onecamp_cloud_team_yearly")).toBe(false);
+    expect(changesNow("monthly", "onecamp_cloud_business")).toBe(false);
+    expect(changesNow("monthly", "onecamp_cloud_team_yearly")).toBe(false);
   });
 
-  it("says exactly what is charged and that nothing is refunded", () => {
-    expect(switchConfirm("yearly")).toContain("difference");
-    expect(switchConfirm("yearly")).toContain("we do not offer refunds");
-    expect(switchConfirm("monthly")).toContain("Nothing is charged");
-    expect(switchConfirm("monthly")).toContain("not refunded");
+  it("labels each change by what it does and when", () => {
+    expect(switchLabel("business", "onecamp_cloud_team", p)).toBe("Upgrade to Business, 100 users");
+    expect(switchLabel("business", "onecamp_cloud_team_yearly", p)).toContain("when the year ends");
+    expect(switchLabel("yearly", "onecamp_cloud_team", p)).toBe("Switch to yearly, 2 months free");
+    expect(switchLabel("monthly", "onecamp_cloud_business", p)).toBe("Move down to Team when this month ends");
+    expect(switchLabel("monthly", "onecamp_cloud_team_yearly", p)).toBe("Switch to monthly when the year ends");
+  });
+
+  it("says what is charged and that nothing is refunded", () => {
+    const up = switchConfirm("business", "onecamp_cloud_team", p);
+    expect(up).toContain("difference");
+    expect(up).toContain("₹24,999");
+    expect(up).toContain("we do not offer refunds");
+    const down = switchConfirm("monthly", "onecamp_cloud_business", p);
+    expect(down).toContain("Nothing is charged");
+    expect(down).toContain("not refunded");
+    expect(switchConfirm("monthly", "onecamp_cloud_team_yearly", p)).toContain("the paid year ends");
   });
 });
