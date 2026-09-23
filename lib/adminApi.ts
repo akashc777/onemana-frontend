@@ -671,6 +671,8 @@ export interface BlogImportResult {
 export interface StorageCheck {
   configured: boolean;
   awaiting_approval: boolean;
+  /** What the OVH key still lacks for buying and retiring machines, as "METHOD /path". */
+  key_missing?: string[];
   project: string;
   region: string;
   endpoint: string;

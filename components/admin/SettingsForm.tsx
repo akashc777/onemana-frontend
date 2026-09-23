@@ -130,6 +130,16 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "ovh_endpoint", label: "API endpoint", hint: "MUST match the region you created the token in, or every call returns 403 with no hint why. EU: https://eu.api.ovh.com/1.0 (the default) · Canada: https://ca.api.ovh.com/1.0 · US: https://api.us.ovhcloud.com/1.0. If you signed in at auth.ca.ovhcloud.com, you need the Canada one." },
       { key: "ovh_os_template", label: "OS template", hint: "The image reinstalled onto each machine. Leave blank for the default." },
       { key: "ovh_cloud_project", label: "Public Cloud project id", hint: "The Public Cloud project (its service name, a 32-character id) that holds customers' extra-storage buckets. Free to have; storage is billed per GB as used, and a bucket is created only after a customer has paid. The API token must also cover GET/POST/DELETE /cloud/project/*. Empty means extra storage is attached by hand." },
+      { key: "ovh_auto_order", label: "Buy servers automatically", hint: "Empty = off. \"preview\" prices what would be bought and buys nothing; \"on\" buys. A machine is ordered only when a paying customer is waiting (awaiting_hardware) and no delivered server is spare, one per pass, within the caps below. The customer has already paid by then, so nothing is bought before money arrives. Run preview for a day first; the orders table shows what it would have done." },
+      { key: "ovh_auto_order_plans", label: "Plans to buy, in order", hint: "Eco plan codes in preference order, e.g. 24sk302,24sk40-v1 (KS-3, KS-4). The first one in stock in a listed datacenter is bought." },
+      { key: "ovh_auto_order_datacenters", label: "Datacenters", hint: "e.g. gra,rbx,sbg,bhs. Only these are considered." },
+      { key: "ovh_auto_order_max_price", label: "Most to pay per order", hint: "Tax included, in the account's currency, e.g. 39.99. Anything dearer is refused. Keep it under a fifth of a month's subscription so the margin holds." },
+      { key: "ovh_auto_order_max_open", label: "Orders placed but not delivered, at most", type: "number", hint: "Default 1." },
+      { key: "ovh_auto_order_monthly_cap", label: "Orders in any 30 days, at most", type: "number", hint: "Default 3. The ceiling on what a bug could cost." },
+      { key: "ovh_auto_order_plans_business", label: "Plans to buy for Business, in order", hint: "Eco plan codes for Business machines, e.g. 24sk50-v1. The 64 GB variant is chosen automatically from the Business RAM minimum. Empty: nothing is bought for Business." },
+      { key: "ovh_auto_order_max_price_business", label: "Most to pay per Business order", hint: "Tax included, first month and setup fee, in the account's currency, e.g. 70." },
+      { key: "ovh_end_idle_servers", label: "End idle machines with their paid month", hint: "Default on: a machine nobody uses is set to end when its paid month runs out, and switched back if a customer takes it first. Set off to keep every pool machine renewing." },
+      { key: "ovh_keep_spare", label: "Spare machines to keep renewing", type: "number", hint: "Default 0: no machine is paid for before a customer pays. Set 1 to always have one ready (faster setup, costs a machine a month)." },
       { key: "ovh_cloud_region", label: "Object storage region", hint: "Where buckets are made, e.g. GRA, SBG, BHS. Default GRA. The bucket's endpoint follows from it (s3.gra.io.cloud.ovh.net)." },
       { key: "ovh_min_ram_mb", label: "Smallest machine: RAM (MB)", type: "number", hint: "A pooled server below this is refused before it is wiped. Default 7500, which is what an \"8 GB\" machine reports. 0 accepts anything." },
       { key: "ovh_min_disk_gb", label: "Smallest machine: disk (GB)", type: "number", hint: "Same check for disk. Default 40." },
@@ -394,7 +404,13 @@ function StorageCheckLine({ saved }: { saved: boolean }) {
             : `Ready: buckets will be made in ${state.check.region} (${state.check.endpoint}). Projects the token sees: ${state.check.visible_projects.join(", ") || "none"}.`}
         </p>
       )}
-      {state.kind === "ok" && !state.check.configured && (
+      {state.kind === "ok" && (state.check.key_missing?.length ?? 0) > 0 && (
+        <p className="mt-1 text-amber-700 dark:text-amber-400">
+          The key cannot yet {state.check.awaiting_approval ? "(approval pending) " : ""}buy or retire machines. Missing:{" "}
+          {state.check.key_missing?.join(", ")}.
+        </p>
+      )}
+      {state.kind === "ok" && (!state.check.configured || (state.check.key_missing?.length ?? 0) > 0) && (
         <button
           type="button"
           onClick={async () => {
@@ -408,7 +424,7 @@ function StorageCheckLine({ saved }: { saved: boolean }) {
           }}
           className="mt-1 block underline underline-offset-2 text-foreground"
         >
-          Grant Public Cloud access (one click at OVH)
+          Grant OVH access: storage, buying and retiring machines (one click at OVH)
         </button>
       )}
       {state.kind === "err" && <p className="mt-1 text-red-600 dark:text-red-400">{state.msg}</p>}
