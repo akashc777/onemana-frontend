@@ -29,7 +29,7 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
     return () => { alive = false; };
   }, []);
 
-  const line = storageLine(inst.storage_addon_state, inst.storage_addon_gb);
+  const line = storageLine(inst.storage_addon_state, inst.storage_addon_gb, inst.storage_used_gb);
   if (line) return <p className="text-sm text-muted-foreground">{line}</p>;
   if (inst.state !== "live" || !storageOffered(pricing)) return null;
   if (paid) {

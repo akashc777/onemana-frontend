@@ -14,6 +14,16 @@ describe("storageLine", () => {
     expect(storageLine("attached", 500)).toBe("500 GB of extra storage attached.");
     expect(storageLine("ending", 500)).toContain("fit on the machine again");
   });
+
+  it("gives the daily reading once there is one, and says plainly when it is over", () => {
+    expect(storageLine("attached", 500, 120)).toBe("120 GB used of 500 GB of extra storage.");
+    expect(storageLine("attached", 500, 500)).toBe("500 GB used of 500 GB of extra storage.");
+    const over = storageLine("attached", 500, 640);
+    expect(over).toContain("640 GB used of 500 GB");
+    expect(over).toContain("Nothing is cut off");
+    expect(over).toContain("Remove for good");
+    expect(over).not.toMatch(/refund|—|--/);
+  });
 });
 
 describe("the add-on's money words", () => {

@@ -85,6 +85,8 @@ export interface PortalInstance {
   /** Extra storage bought for this workspace and how far attaching it has got; see storageLine. */
   storage_addon_gb: number;
   storage_addon_state: string;
+  // What the files bucket holds, from the daily reading; absent before it.
+  storage_used_gb?: number;
   /** From the daily reading; see capacityLine. Absent until the first reading. */
   mem_used_pct?: number;
   capacity_verdict?: string;
