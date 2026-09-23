@@ -2,7 +2,7 @@ import Link from "next/link";
 import CostCalculator from "@/components/site/CostCalculator";
 import SwitchingCosts from "@/components/site/SwitchingCosts";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
-import { features, MODULES_ON_HOMEPAGE, steps, faqs, requirements, requirementsIntro, trustPoints, whyBuilt, governance, enterpriseControls } from "@/lib/content";
+import { features, MODULES_ON_HOMEPAGE, steps, faqs, requirements, trustPoints, governance, enterpriseControls } from "@/lib/content";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { getGithubStars } from "@/lib/github";
@@ -62,7 +62,7 @@ export default async function HomePage() {
             <div className="max-w-xl">
               <Reveal>
                 <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
-                  Self-hosted · Open-source frontend
+                  Chat · Docs · Tasks · Calls · AI agents, on your server
                 </p>
               </Reveal>
               <Reveal delay={60}>
@@ -79,11 +79,14 @@ export default async function HomePage() {
               </Reveal>
               <Reveal delay={180}>
                 <div className="mt-8 flex w-full flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center">
-                  <ButtonLink href="/buy" variant="brandPremium" size="lg" className="w-full sm:w-auto">
-                    Get OneCamp
+                  {/* The demo leads: of thirty visitors who reached checkout in
+                      sixty days none bought, and the demo is the step that needs
+                      no card and no server. Buying is one click further on. */}
+                  <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg" className="w-full sm:w-auto">
+                    Try the live demo
                   </ButtonLink>
-                  <ButtonLink href={site.demoStartUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
-                    Try live demo
+                  <ButtonLink href="/buy" variant="ghost" size="lg" className="w-full sm:w-auto">
+                    Get OneCamp
                   </ButtonLink>
                   <span className="hidden text-xs text-muted-foreground sm:ml-1 sm:inline-flex">
                     <GitHubStars className="!py-1.5" stars={stars} />
@@ -117,6 +120,19 @@ export default async function HomePage() {
         </Reveal>
       </Section>
 
+      {/* Evidence straight after the tour, before any argument: two buyers in
+          their own words and the one checkable fact about who runs it. It used
+          to sit six sections down, under an essay on why the product exists. */}
+      <Section divider spacing="compact">
+        <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          What buyers say
+        </p>
+        <SocialProof />
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          OneMana runs its own workspace on this: {requirements[0].spec}.
+        </p>
+      </Section>
+
       {/*
         The lead argument, placed directly after the tour and BEFORE the module grid.
         Ordering is the reposition: a visitor who scrolls the modules first is being invited to compare
@@ -145,52 +161,6 @@ export default async function HomePage() {
           <Link href={governance.alsoShippedHref} className="underline underline-offset-4 hover:text-foreground">
             Read the docs
           </Link>
-        </p>
-      </Section>
-
-      <Section id="enterprise" divider>
-        <SectionHeading
-          eyebrow={enterpriseControls.eyebrow}
-          title={enterpriseControls.title}
-          subtitle={enterpriseControls.subtitle}
-        />
-        {/* The heading above this is "the boxes procurement makes you tick",
-            which describes a checklist rather than four cards compressed into
-            narrow columns. The ticks are gone with the cards: in a section
-            titled "already in the box", a tick beside every line contrasts with
-            nothing. */}
-        <ControlIndex groups={enterpriseControls.groups} />
-      </Section>
-
-      <Section divider className="overflow-hidden">
-        <SectionAmbient variant="features" />
-        <SectionHeading
-          eyebrow={whyBuilt.eyebrow}
-          title={whyBuilt.title}
-          subtitle={whyBuilt.subtitle}
-        />
-        <Reveal className="mx-auto mt-8 max-w-2xl">
-          <p className="text-center text-base leading-relaxed text-muted-foreground">{whyBuilt.story}</p>
-        </Reveal>
-        {/* StackConvergence ("replaces Slack, Notion, Asana, Zoom") no longer
-            mounts here. It re-opened the all-in-one fight the site had already
-            stopped fighting, in the section meant to explain why the product
-            exists. If it is wanted for search, it belongs on its own page. */}
-        <div className="mt-14">
-          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            What buyers say
-          </p>
-          <SocialProof />
-        </div>
-      </Section>
-
-      {/* StatStrip is gone. Four animated figures, of which "infinity people" and
-          "100% on your infrastructure" were rhetoric rather than evidence, and
-          the count-up rendered "<0 min to get running" into the HTML crawlers
-          read. One fact that is checkable beats four that are not. */}
-      <Section divider spacing="compact">
-        <p className="text-center text-sm text-muted-foreground">
-          OneMana runs its own workspace on this: {requirements[0].spec}.
         </p>
       </Section>
 
@@ -238,6 +208,20 @@ export default async function HomePage() {
           </Link>
           . No account, nothing to install.
         </p>
+      </Section>
+
+      <Section id="enterprise" divider>
+        <SectionHeading
+          eyebrow={enterpriseControls.eyebrow}
+          title={enterpriseControls.title}
+          subtitle={enterpriseControls.subtitle}
+        />
+        {/* The heading above this is "the boxes procurement makes you tick",
+            which describes a checklist rather than four cards compressed into
+            narrow columns. The ticks are gone with the cards: in a section
+            titled "already in the box", a tick beside every line contrasts with
+            nothing. */}
+        <ControlIndex groups={enterpriseControls.groups} />
       </Section>
 
       <Section id="features" divider className="overflow-hidden">
@@ -325,6 +309,12 @@ export default async function HomePage() {
             under the price with the visitor's own headcount in it. */}
         <div className="container-x mt-10">
           <CostCalculator lifetimeUsd={pricing.lifetime_usd} />
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Sizing: {requirements.map((r) => `${r.label.toLowerCase()}, ${r.spec}`).join("; ")}.{" "}
+            <Link href="/docs/scale-self-hosted" className="underline underline-offset-4 hover:text-foreground">
+              How it grows
+            </Link>
+          </p>
         </div>
 
         {/* Right after the price, where somebody who just decided not to buy
@@ -336,29 +326,6 @@ export default async function HomePage() {
             cta="Send me the setup guide"
             hint="One email: what running your own takes, and what moves across from Jira, Slack or Asana. Unsubscribe in one click."
           />
-        </div>
-      </Section>
-
-      <Section divider>
-        <div className="mx-auto max-w-3xl">
-          <SectionHeading
-            eyebrow="Hardware"
-            title="Rough sizing"
-            subtitle={requirementsIntro}
-          />
-          <div className="mt-10 space-y-4">
-            {requirements.map((r, i) => (
-              <Reveal key={r.label} delay={i * 50}>
-                <div className="rounded-lg border border-border bg-card px-5 py-4 sm:px-6">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <p className="font-medium text-foreground">{r.label}</p>
-                    <p className="text-sm text-muted-foreground">{r.spec}</p>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.note}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </Section>
 
@@ -393,11 +360,11 @@ export default async function HomePage() {
               Bounded by your permissions. Audited before it acts. On hardware you own.
             </p>
             <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <ButtonLink href="/buy" variant="brandPremium" size="lg">
-                Get OneCamp
+              <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg">
+                Try the live demo
               </ButtonLink>
-              <ButtonLink href={site.demoStartUrl} external variant="ghost" size="lg">
-                Try live demo
+              <ButtonLink href="/buy" variant="ghost" size="lg">
+                Get OneCamp
               </ButtonLink>
             </div>
             <p className="relative mt-4 text-xs text-muted-foreground">
