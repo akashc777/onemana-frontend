@@ -134,6 +134,33 @@ export interface PaymentReconciliation {
   failed: string[];
 }
 
+/** What auto-order would buy for a size now, priced through the real cart and never bought. */
+export interface ServerOrderPreview {
+  size: string;
+  reason?: string;
+  offer?: { PlanCode: string; Datacenter: string; Memory: string; Storage: string };
+  order?: { PriceText: string; Currency: string; Options?: string[] };
+  skipped?: string[];
+  /** The machine's monthly cost with tax, and the margin it leaves on the plan. */
+  monthly_text?: string;
+  margin_pct?: number;
+  floor_pct: number;
+  target_pct: number;
+}
+
+/** A machine auto-order bought, or would have in preview. */
+export interface ServerOrderRow {
+  id: string;
+  plan_code: string;
+  size: string;
+  datacenter: string;
+  price_text: string;
+  state: string;
+  server_name: string;
+  detail: string;
+  placed_at: string;
+}
+
 async function adminGet<T>(path: string): Promise<T> {
   const res = await fetch(`${site.backendUrl}${path}`, {
     headers: { "X-Admin-Token": getToken() },
@@ -762,6 +789,16 @@ export const adminApi = {
     const data = await adminGet<{ data?: PlanCheck }>(`/onecamp/admin/plans/check?setting=${setting}`);
     if (!data?.data) throw new Error("no answer from the plan check");
     return data.data;
+  },
+
+  async serverOrderPreview(size: "team" | "business"): Promise<ServerOrderPreview> {
+    const data = await adminGet<{ data: ServerOrderPreview }>(`/onecamp/admin/servers/order-preview?size=${size}`);
+    return data.data;
+  },
+
+  async serverOrders(): Promise<ServerOrderRow[]> {
+    const data = await adminGet<{ data?: ServerOrderRow[] }>("/onecamp/admin/servers/orders");
+    return data?.data ?? [];
   },
 
   async reconcileServers(): Promise<ServerReconciliation> {

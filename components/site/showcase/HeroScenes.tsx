@@ -486,12 +486,12 @@ export function ActScene({ reduced, onDone }: SceneProps) {
 // Scene 3 - Answers from everything, cited (workspace + connected apps)
 // ===========================================================================
 
-const ASK_PROMPT = "What did we promise customers about refund timing?";
-const ASK_ANSWER = `The refund SLA is 5 business days (updated last week). Support communicates this and the policy doc matches.`;
+const ASK_PROMPT = "What did we promise customers about support response times?";
+const ASK_ANSWER = `First reply within 4 business hours (updated last week). Support communicates this and the SLA doc matches.`;
 const ASK_SOURCES = [
-  { tag: "#support", tint: "text-emerald-600 dark:text-emerald-400", note: "“we tell customers 5 business days” - Priya" },
-  { tag: "Refund Policy", tint: "text-sky-600 dark:text-sky-400", note: "doc · §3 Refunds" },
-  { tag: "Gmail", tint: "text-rose-600 dark:text-rose-400", note: "“Re: Refund SLA” thread" },
+  { tag: "#support", tint: "text-emerald-600 dark:text-emerald-400", note: "“we tell customers 4 business hours” - Priya" },
+  { tag: "Support SLA", tint: "text-sky-600 dark:text-sky-400", note: "doc · §3 Response times" },
+  { tag: "Gmail", tint: "text-rose-600 dark:text-rose-400", note: "“Re: Support SLA” thread" },
 ];
 
 export function KnowledgeScene({ reduced, onDone }: SceneProps) {
@@ -617,7 +617,7 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
               <span className="text-xs font-semibold text-foreground">Priya Nair</span>
               <span className="text-[10px] text-muted-foreground">Tue</span>
             </p>
-            <p className="mt-1 text-sm leading-relaxed text-foreground">We tell customers refunds land in 5 business days.</p>
+            <p className="mt-1 text-sm leading-relaxed text-foreground">We tell customers they hear back within 4 business hours.</p>
           </div>
         </article>
         <article className="flex gap-2.5">

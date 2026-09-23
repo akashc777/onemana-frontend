@@ -1,5 +1,6 @@
 "use client";
 
+import { MachinesPanel } from "@/components/admin/MachinesPanel";
 import { useCallback, useEffect, useState } from "react";
 import {
   adminApi,
@@ -67,6 +68,7 @@ export function WorkspacesPanel() {
 
   return (
     <div className="space-y-4">
+      <MachinesPanel />
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => void run("Sweep", () => adminApi.sweepServers())}
