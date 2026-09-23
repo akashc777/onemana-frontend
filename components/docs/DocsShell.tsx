@@ -17,7 +17,7 @@ export function DocsShell({
         <nav className="max-h-[min(50vh,20rem)] overflow-y-auto rounded-xl border border-border bg-muted/30 p-4 lg:max-h-none lg:overflow-visible" aria-label="Documentation">
           <Link
             href="/docs"
-            className={`mb-4 block text-sm font-medium ${activeSlug ? "text-muted-foreground hover:text-foreground" : "text-foreground"}`}
+            className={`mb-3 block py-1 text-sm font-medium ${activeSlug ? "text-muted-foreground hover:text-foreground" : "text-foreground"}`}
           >
             Overview
           </Link>
