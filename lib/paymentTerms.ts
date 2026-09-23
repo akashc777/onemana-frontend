@@ -95,3 +95,17 @@ export function cloudCheckoutDescription(planCode?: string): string {
   }
   return "Managed hosting, Team, monthly (includes a self-host license)";
 }
+
+/** The checkout link for a Cloud choice, so every page opens it on that choice. */
+export function cloudBuyHref(b: Billing): string {
+  if (b === "business") return "/buy?plan=cloud&size=business";
+  if (b === "yearly") return "/buy?plan=cloud&billing=yearly";
+  return "/buy?plan=cloud";
+}
+
+/** The Cloud choice a checkout link names; cloudBuyHref's inverse. */
+export function billingFromParams(size: string | null, billing: string | null): Billing {
+  if (size === "business") return "business";
+  if (billing === "yearly") return "yearly";
+  return "monthly";
+}

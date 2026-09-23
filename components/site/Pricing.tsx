@@ -1,8 +1,8 @@
 import { ButtonLink } from "@/components/ui/Button";
-import { businessOffered, storageOffered, yearlyOffered, yearlySaving } from "@/lib/paymentTerms";
 import { Reveal } from "@/components/site/Reveal";
-import { cloudBenefits, lifetimeBenefits, savingsPitch } from "@/lib/content";
-import { currencyNote, dual, fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
+import { lifetimeBenefits, savingsPitch } from "@/lib/content";
+import { currencyNote, fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
+import { CloudPlanCard } from "@/components/site/CloudPlanCard";
 
 function Check() {
   return (
@@ -64,57 +64,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
         </Reveal>
 
         <Reveal delay={100}>
-          <div className="pricing-card card relative border border-border flex h-full flex-col p-6 sm:p-7">
-            <header>
-              <p className="text-sm font-medium text-muted-foreground">OneCamp Cloud · Managed</p>
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-[2.75rem]">
-                  {fmtUSD(pricing.cloud_usd)}
-                </span>
-                <span className="text-sm text-muted-foreground">/ month</span>
-              </div>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                {fmtINR(pricing.cloud_inr)}/mo billed in INR · {pricing.cloud_seats} users included
-              </p>
-              {/* Only once a yearly plan exists to charge it; the saving is the
-                  backend's arithmetic over the two prices, never a number here. */}
-              {yearlyOffered(pricing) && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  or {dual(pricing.cloud_yearly_usd, pricing.cloud_yearly_inr)} a year{yearlySaving(pricing) ? `, ${yearlySaving(pricing)}` : ""}
-                </p>
-              )}
-              {/* Extra room for files, bought later from the account page. Only
-                  once a plan exists to charge it. */}
-              {/* The next size up, for teams past what Team includes. Links to the
-                  buy page opened on Business. */}
-              {businessOffered(pricing) && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  More than {pricing.cloud_seats} people?{" "}
-                  <a href="/buy?plan=cloud&size=business" className="font-medium text-brand underline underline-offset-2">
-                    Business
-                  </a>{" "}
-                  is {dual(pricing.business_usd, pricing.business_inr, "/mo")} for {pricing.business_seats} users on a larger machine, and you can move between them any time.
-                </p>
-              )}
-              {storageOffered(pricing) && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Need more room for files? Add {pricing.storage_addon_gb} GB for {dual(pricing.storage_addon_usd, pricing.storage_addon_inr)} a month, any time, from your account.
-                </p>
-              )}
-            </header>
-            <ul className="mt-8 flex-1 space-y-3 text-sm text-foreground">
-              {cloudBenefits.map((b) => (
-                <li key={b} className="flex items-start gap-2.5">
-                  <Check /> {b}
-                </li>
-              ))}
-            </ul>
-            <footer className="mt-8 border-t border-border/60 pt-6">
-              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="lg" className="w-full">
-                Start with OneCamp Cloud
-              </ButtonLink>
-            </footer>
-          </div>
+          <CloudPlanCard pricing={pricing} />
         </Reveal>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">{currencyNote(pricing)}</p>

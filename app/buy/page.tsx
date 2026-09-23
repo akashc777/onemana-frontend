@@ -2,7 +2,7 @@
 
 import { guessCountry } from "@/lib/guessCountry";
 import Script from "next/script";
-import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing } from "@/lib/paymentTerms";
+import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing, billingFromParams } from "@/lib/paymentTerms";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
@@ -38,7 +38,7 @@ function BuyInner() {
   // once a yearly plan exists to charge it.
   // ?size=business opens on Business (the pricing page and the "outgrowing
   // its machine" email link here); it only sticks once Business is on sale.
-  const [billing, setBilling] = useState<Billing>(params.get("size") === "business" ? "business" : "monthly");
+  const [billing, setBilling] = useState<Billing>(billingFromParams(params.get("size"), params.get("billing")));
 
   useEffect(() => {
     fetchPricingClient().then(setPricing);

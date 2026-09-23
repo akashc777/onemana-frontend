@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { businessOffered, choiceLabel, choicePrice, cloudCheckoutDescription, cloudChoices, cloudPlanCode, paymentTerms } from "./paymentTerms";
+import { billingFromParams, businessOffered, choiceLabel, choicePrice, cloudBuyHref, cloudCheckoutDescription, cloudChoices, cloudPlanCode, paymentTerms } from "./paymentTerms";
 import { defaultPricing, usdAt } from "./pricing";
 
 const on = { ...defaultPricing, cloud_yearly_configured: true, cloud_yearly_paise: 9999000, cloud_yearly_inr: 99990, cloud_yearly_usd: usdAt(9999000, defaultPricing.usd_rate), cloud_yearly_free_months: 2, business_configured: true };
@@ -30,5 +30,17 @@ describe("Cloud plan choices", () => {
     expect(cloudCheckoutDescription("onecamp_cloud_business")).toContain("Business");
     expect(cloudCheckoutDescription("onecamp_cloud_team_yearly")).toContain("yearly");
     expect(cloudCheckoutDescription(undefined)).toContain("monthly");
+  });
+});
+
+describe("checkout links for each Cloud plan", () => {
+  it("open the checkout on the plan they name, and only that plan", () => {
+    for (const b of ["monthly", "yearly", "business"] as const) {
+      const q = new URLSearchParams(cloudBuyHref(b).split("?")[1]);
+      expect(q.get("plan")).toBe("cloud");
+      expect(billingFromParams(q.get("size"), q.get("billing"))).toBe(b);
+    }
+    expect(billingFromParams(null, null)).toBe("monthly");
+    expect(billingFromParams(null, "weekly")).toBe("monthly");
   });
 });
