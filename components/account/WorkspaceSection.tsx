@@ -203,8 +203,10 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
 
       {inst.working && (
         <p className="text-xs text-muted-foreground">
-          This usually takes under an hour. We will email you when it is ready, and there
-          is nothing for you to do until then.
+          {inst.state === "awaiting_hardware"
+            ? "Most workspaces are ready within a few hours."
+            : "This usually takes under an hour."}{" "}
+          We will email you when it is ready, and there is nothing for you to do until then.
         </p>
       )}
 
