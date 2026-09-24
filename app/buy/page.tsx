@@ -127,7 +127,7 @@ function BuyInner() {
         className="!pb-0"
       />
       <section className="pb-16 sm:pb-20">
-        <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start">
+        <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-y-4">
           <aside className="lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
