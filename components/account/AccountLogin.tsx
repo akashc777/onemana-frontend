@@ -12,11 +12,19 @@ const inputCls =
  * dashboard. The code step is enumeration-safe (the server always responds the
  * same way), so we always advance to the code screen.
  */
-export function AccountLogin({ onSignedIn }: { onSignedIn: () => void }) {
+export function AccountLogin({
+  onSignedIn,
+  initialEmail = "",
+  initialNotice = "",
+}: {
+  onSignedIn: () => void;
+  initialEmail?: string;
+  initialNotice?: string;
+}) {
   const [step, setStep] = useState<"email" | "code">("email");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState("");
-  const [notice, setNotice] = useState("");
+  const [notice, setNotice] = useState(initialNotice);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -61,6 +69,7 @@ export function AccountLogin({ onSignedIn }: { onSignedIn: () => void }) {
 
         {step === "email" ? (
           <form onSubmit={sendCode} className="card space-y-4">
+            {notice && <p className="rounded-lg border border-brand/20 bg-brand/10 px-3 py-2 text-xs text-foreground/80">{notice}</p>}
             <div>
               <label htmlFor="acc-email" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 Email address

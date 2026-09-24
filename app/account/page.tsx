@@ -13,6 +13,9 @@ type State =
 
 export default function AccountPage() {
   const [state, setState] = useState<State>({ phase: "loading" });
+  // Set when a sign-in link from an email did not work, to say so and keep the address.
+  const [linkEmail, setLinkEmail] = useState("");
+  const [linkNotice, setLinkNotice] = useState("");
 
   const load = useCallback(async () => {
     setState({ phase: "loading" });
@@ -29,7 +32,23 @@ export default function AccountPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    // A sign-in link from an email (?email=&signin=): use it once, then take it
+    // out of the address bar so it is neither bookmarked nor shared.
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email") ?? "";
+    const token = params.get("signin") ?? "";
+    if (!email || !token) {
+      load();
+      return;
+    }
+    window.history.replaceState(null, "", window.location.pathname);
+    portalApi
+      .verify(email, token)
+      .catch(() => {
+        setLinkEmail(email);
+        setLinkNotice("That sign-in link has been used or has expired. We can email you a code instead.");
+      })
+      .finally(load);
   }, [load]);
 
   async function logout() {
@@ -53,7 +72,7 @@ export default function AccountPage() {
   }
 
   if (state.phase === "signedOut") {
-    return <AccountLogin onSignedIn={load} />;
+    return <AccountLogin onSignedIn={load} initialEmail={linkEmail} initialNotice={linkNotice} />;
   }
 
   return <AccountDashboard overview={state.overview} onLogout={logout} onReload={load} />;

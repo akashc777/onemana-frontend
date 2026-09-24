@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
 import { indianStates } from "@/lib/states";
 import { countries } from "@/lib/countries";
+import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
 import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, dual, currencyNote, type Pricing } from "@/lib/pricing";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -48,18 +49,23 @@ function BuyInner() {
   const [name, setName] = useState("");
   // A first guess from the browser, replaced on mount; see lib/guessCountry.
   const [country, setCountry] = useState("US");
-  useEffect(() => {
-    setCountry(
-      guessCountry(
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
-        navigator.languages ?? [navigator.language],
-        new Set(countries.map((c) => c.code)),
-      ),
-    );
-  }, []);
   const [gstin, setGstin] = useState("");
   const [stateName, setStateName] = useState("");
-  const [phone, setPhone] = useState("");
+  // Starts with the buyer's calling code; see lib/dialCodes.
+  const [phone, setPhone] = useState(dialPrefix("US"));
+  const changeCountry = (next: string) => {
+    setPhone((current) => phoneForCountry(current, country, next));
+    setCountry(next);
+  };
+  useEffect(() => {
+    const guessed = guessCountry(
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+      navigator.languages ?? [navigator.language],
+      new Set(countries.map((c) => c.code)),
+    );
+    setPhone((current) => phoneForCountry(current, "US", guessed));
+    setCountry(guessed);
+  }, []);
 
   const isIndia = country === "IN";
   const isCloud = plan === "cloud";
@@ -94,10 +100,10 @@ function BuyInner() {
       gstin: isIndia ? gstin.trim() : "",
       state: isIndia ? stateName : "",
       state_code: stateCode,
-      phone: phone.trim(),
+      phone: contactForCheckout(phone),
     };
-    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice) }, phone.trim());
-    else await start(input, phone.trim());
+    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice) }, contactForCheckout(phone));
+    else await start(input, contactForCheckout(phone));
   }
 
   const benefits = isCloud ? cloudBenefits : lifetimeBenefits;
@@ -246,7 +252,7 @@ function BuyInner() {
             <Field label="Country">
               <Select
                 value={country}
-                onChange={setCountry}
+                onChange={changeCountry}
                 ariaLabel="Country"
                 options={countries.map((c) => ({ value: c.code, label: c.name }))}
               />
@@ -267,8 +273,8 @@ function BuyInner() {
                 </Field>
               </>
             )}
-            <Field label="Phone (optional)">
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="With country code, e.g. +1 415 555 0100" autoComplete="tel" />
+            <Field label="Mobile (optional)" hint="The payment window asks for one; give it here and it opens filled in.">
+              <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="With country code, e.g. +1 415 555 0100" autoComplete="tel" inputMode="tel" />
             </Field>
 
             {error && (

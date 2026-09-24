@@ -63,6 +63,10 @@ function SuccessInner() {
                   <span className="font-mono text-xs">acme.onemana.dev</span>. You can move to a domain
                   you own later, from the same page, at no extra cost.
                 </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  The welcome email arriving at <span className="font-medium text-foreground">{email}</span> has
+                  a button that signs you straight in. Or continue here with a code:
+                </p>
                 <ButtonLink href="/account" variant="brandPremium" className="mt-4">
                   Choose your address
                 </ButtonLink>
