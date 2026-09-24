@@ -143,6 +143,13 @@ I'd hold for Daniel's sign-off, then ship. Want me to remind him?`;
 
 const EARLIER_POSTS = [
   {
+    who: "Maya",
+    initials: "MA",
+    tint: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+    at: "9:27 PM",
+    text: "Release notes read well. I'll post them to #general once we ship.",
+  },
+  {
     who: "Priya N.",
     initials: "PN",
     tint: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
