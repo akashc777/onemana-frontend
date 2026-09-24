@@ -308,7 +308,7 @@ export default async function HomePage() {
             converts is specific arithmetic rather than adjectives, so it belongs
             under the price with the visitor's own headcount in it. */}
         <div className="container-x mt-10">
-          <CostCalculator lifetimeUsd={pricing.lifetime_usd} />
+          <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Sizing: {requirements.map((r) => `${r.label.toLowerCase()}, ${r.spec}`).join("; ")}.{" "}
             <Link href="/docs/scale-self-hosted" className="underline underline-offset-4 hover:text-foreground">

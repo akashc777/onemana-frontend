@@ -21,6 +21,9 @@
  */
 
 import React, { useMemo, useState } from "react"
+import Link from "next/link"
+import type { Pricing } from "@/lib/pricing"
+import { cloudYearFor } from "@/lib/cloudYear"
 
 /**
  * List prices per user per month, shown so the arithmetic is checkable.
@@ -48,7 +51,7 @@ const SERVER_USD_PER_MONTH = 12
 const fmt = (n: number) =>
     n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 
-export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd }) => {
+export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }> = ({ lifetimeUsd, pricing }) => {
     const [people, setPeople] = useState(20)
     const [withAi, setWithAi] = useState(true)
 
@@ -140,6 +143,18 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number }> = ({ lifetimeUsd 
                 rather than the same paragraph in both places. */}
             <p className="mt-3 text-xs leading-relaxed text-foreground/50">
                 Not counted: someone has to run the server. What that takes is above.
+                {(() => {
+                    const cloud = pricing && cloudYearFor(Math.max(1, Math.min(1000, people)), pricing)
+                    return cloud ? (
+                        <>
+                            {" "}Or nobody does:{" "}
+                            <Link href={cloud.href} className="underline underline-offset-2 hover:text-foreground">
+                                OneCamp Cloud ({cloud.plan}) is {fmt(cloud.usdYear)} a year
+                            </Link>
+                            , hosted, backed up and updated for you.
+                        </>
+                    ) : null
+                })()}
             </p>
         </div>
     )
