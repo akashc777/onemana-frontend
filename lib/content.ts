@@ -219,7 +219,7 @@ export const faqs = [
   },
   {
     q: "I pay once. What is included?",
-    a: "One licence key, unlimited users, no annual renewal. Agents, local AI, SSO, SCIM, MFA, and the audit log are included. Cloud plans include a self-host licence so you can switch later.",
+    a: "One license key, unlimited users, no annual renewal. Agents, local AI, SSO, SCIM, MFA, and the audit log are included. Cloud plans include a self-host license so you can switch later.",
   },
   {
     q: "Can we import Slack?",
@@ -339,7 +339,7 @@ export const savingsPitch = {
   // vague range was the weaker of the two: a precise figure somebody typed the
   // input to is evidence, a range is a claim. What stays here is the part the
   // arithmetic cannot say, which is what you get rather than what you save.
-  body: "Elsewhere the AI is a per-seat add-on on top of the seat. Here it is in the licence. Put your team size in below.",
+  body: "Elsewhere the AI is a per-seat add-on on top of the seat. Here it is in the license. Put your team size in below.",
   highlight: "Pay once. Own it forever.",
 };
 

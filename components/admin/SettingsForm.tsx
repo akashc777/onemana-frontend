@@ -30,7 +30,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "email_from", label: "From", hint: 'e.g. "OneMana <noreply@onemana.dev>"' },
       { key: "resend_api_key", label: "Resend API Key", type: "password" },
       { key: "resend_admin_key", label: "Resend admin key (for workspaces)", type: "password", hint: "A FULL-ACCESS Resend key used only to make and delete each Cloud workspace's own send-only key. Never used to send; keep the key above send-only. Empty: workspaces are not lent email." },
-      { key: "workspace_email_domain", label: "Domain Cloud workspaces send from", hint: "Each live Cloud workspace gets its own send-only key for this domain: invitations and password resets only, at most 20 a day, so the free Resend allowance stays shared fairly. Keep it off the store's own domain so a workspace's mail can never cost a customer their licence email. Empty: the domain of the announcement sender. It must be verified in Resend, and the Resend key above must be full access to make keys; Workspaces shows whether both hold." },
+      { key: "workspace_email_domain", label: "Domain Cloud workspaces send from", hint: "Each live Cloud workspace gets its own send-only key for this domain: invitations and password resets only, at most 20 a day, so the free Resend allowance stays shared fairly. The free plan allows one domain, so this can be the store's own; that is safe only because workspaces send essentials alone, within the cap. Empty: the domain of the announcement sender. It must be verified in Resend, and the Resend key above must be full access to make keys; Workspaces shows whether both hold." },
       { key: "brevo_api_key", label: "Brevo API Key", type: "password" },
     ],
   },

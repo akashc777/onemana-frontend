@@ -113,7 +113,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     <div className="mt-1 text-3xl font-semibold tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-xs text-foreground/50">first year, and it does not grow with the team</div>
                     <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
-                        <li>{fmt(lifetimeUsd)} licence, paid once, unlimited users</li>
+                        <li>{fmt(lifetimeUsd)} license, paid once, unlimited users</li>
                         <li>{fmt(SERVER_USD_PER_MONTH)}/mo server that runs it</li>
                         {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>

@@ -229,7 +229,7 @@ function BuyInner() {
             <div className="card mt-4">
               <p className="font-medium text-foreground">Not buying today?</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Leave your address and we will tell you when the price or the licence terms
+                Leave your address and we will tell you when the price or the license terms
                 change, and when something ships that you asked for.
               </p>
               <div className="mt-3">
