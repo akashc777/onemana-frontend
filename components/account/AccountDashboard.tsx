@@ -22,6 +22,7 @@ const TABS: { key: Tab; label: string }[] = [
 function statusBadge(status: string) {
   const map: Record<string, string> = {
     active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+    authenticated: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
     created: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
     paid: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
     paused: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
@@ -32,6 +33,11 @@ function statusBadge(status: string) {
     failed: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
   };
   return map[status] || "bg-slate-500/20 text-foreground/80";
+}
+
+/** A subscription status in words: Razorpay's "authenticated" means authorised, first charge still to come. */
+function statusLabel(status: string): string {
+  return status === "authenticated" ? "scheduled" : status;
 }
 
 function CopyButton({ value, label = "Copy" }: { value: string; label?: string }) {
@@ -388,7 +394,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-foreground">{s.label || "OneCamp Cloud"}</span>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${statusBadge(s.status)}`}>{s.status}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${statusBadge(s.status)}`}>{statusLabel(s.status)}</span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{s.seats > 0 ? `${s.seats} users included · ` : ""}{s.plan_code}</p>
               <p className="mt-2 text-sm text-foreground/80">
@@ -398,6 +404,8 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
                     ? s.can_keep
                       ? "Ended. Your workspace is still online for you to export or keep."
                       : "Ended. No further charges."
+                  : s.status === "authenticated"
+                    ? "Authorised. Takes over at your next renewal, so no day is charged twice."
                   : s.status === "halted"
                     ? "A payment did not go through. Once it ends you can keep your workspace from here with another card."
                   : s.cancel_at_period_end
