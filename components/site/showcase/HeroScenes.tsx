@@ -141,6 +141,23 @@ const MENTION_REPLY = `Checked the v2.4 release checklist:
 
 I'd hold for Daniel's sign-off, then ship. Want me to remind him?`;
 
+const EARLIER_POSTS = [
+  {
+    who: "Priya N.",
+    initials: "PN",
+    tint: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+    at: "9:31 PM",
+    text: "v2.4 changelog is merged. Screenshots are in the release doc.",
+  },
+  {
+    who: "Daniel",
+    initials: "DA",
+    tint: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+    at: "9:34 PM",
+    text: "Staging is green. Rollback drill is next on my list.",
+  },
+] as const;
+
 export function MentionAgentScene({ reduced, onDone }: SceneProps) {
   const [phase, setPhase] = useState<"context" | "typing" | "sent" | "thinking" | "reply" | "approve" | "done">(
     reduced ? "done" : "context",
@@ -206,6 +223,25 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-hidden p-3 sm:p-4">
+        {/* EARLIER CONVERSATION. The list is bottom-anchored like a real chat, so
+            with one opening message the frame's visible top half was empty: the
+            first thing under "Try the live demo" was a blank channel. These fill
+            it, and scroll up out of view as the scene plays. */}
+        {EARLIER_POSTS.map((post) => (
+          <article key={post.who} className="flex gap-2.5">
+            <span className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-[10px] font-semibold sm:h-9 sm:w-9 ${post.tint}`}>
+              {post.initials}
+            </span>
+            <div className="min-w-0">
+              <p className="flex items-baseline gap-2">
+                <span className="text-xs font-semibold text-foreground">{post.who}</span>
+                <span className="text-[10px] text-muted-foreground">{post.at}</span>
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-foreground">{post.text}</p>
+            </div>
+          </article>
+        ))}
+
         {/* context post */}
         <article className="flex gap-2.5">
           <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-violet-500/15 text-[10px] font-semibold text-violet-700 dark:text-violet-300 sm:h-9 sm:w-9">

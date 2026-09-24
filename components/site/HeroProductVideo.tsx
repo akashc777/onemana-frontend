@@ -38,14 +38,17 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
         <div className="premium-frame-ring" aria-hidden />
         <div className="premium-frame-accent absolute inset-x-0 top-0 z-10 h-px" aria-hidden />
         <div className="relative aspect-video bg-muted/40">
+          {/* OUR OWN COVER, not the video's thumbnail. YouTube's frame showed an
+              older admin screen and a sidebar of test channels, the first view
+              of the product most visitors get. This is the live demo as it is
+              today; refresh it when the product changes (see tour-cover.jpg). */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`https://img.youtube.com/vi/${id}/maxresdefault.jpg`}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-90 transition group-hover:opacity-100"
-            onError={(e) => {
-              e.currentTarget.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-            }}
+            src="/tour-cover.jpg"
+            alt="The OneCamp home screen: what needs you now, a briefing of recent highlights, and the Q4 launch project"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-top opacity-90 transition group-hover:opacity-100"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
           <div className="absolute inset-0 grid place-items-center">
