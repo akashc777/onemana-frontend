@@ -118,14 +118,14 @@ function BuyInner() {
             : "Self-hosted workspace. Lifetime license, unlimited users."
         }
         align="left"
-        className="!pb-6"
+        className="!pb-0"
       />
       <section className="pb-16 sm:pb-20">
         <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start">
           <aside>
 
             {/* Plan switch */}
-            <div className="mt-6 grid grid-cols-2 gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-sm">
+            <div className="grid grid-cols-2 gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-sm">
               <button
                 type="button"
                 onClick={() => setPlan("lifetime")}

@@ -2,6 +2,15 @@
 const nextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
+    // Addresses people type or search engines guess. /pricing was a 404, and
+    // the pricing lives on the home page.
+    async redirects() {
+        return [
+            { source: "/pricing", destination: "/#pricing", permanent: false },
+            { source: "/login", destination: "/account", permanent: false },
+            { source: "/signin", destination: "/account", permanent: false },
+        ];
+    },
     async headers() {
         return [
             {
