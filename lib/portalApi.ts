@@ -184,6 +184,15 @@ export const portalApi = {
     if (!res.ok) throw new Error(data?.msg || "That code is invalid or has expired.");
   },
 
+  // The customer moves the account to a new address: a code goes there first.
+  async requestEmailChange(email: string): Promise<void> {
+    await req<unknown>("/email/request", { method: "POST", body: JSON.stringify({ email }) });
+  },
+
+  async confirmEmailChange(email: string, code: string): Promise<void> {
+    await req<unknown>("/email/confirm", { method: "POST", body: JSON.stringify({ email, code }) });
+  },
+
   async logout(): Promise<void> {
     await fetch(`${base}/logout`, { method: "POST", credentials: "include" }).catch(() => {});
   },

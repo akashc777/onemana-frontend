@@ -1,5 +1,6 @@
 "use client";
 
+import { ChangeEmail } from "@/components/account/ChangeEmail";
 import { useCallback, useEffect, useState } from "react";
 import Script from "next/script";
 import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
@@ -108,7 +109,7 @@ export function AccountDashboard({
       {tab === "overview" && <OverviewTab overview={overview} onManageSubscription={() => setTab("subscription")} />}
       {tab === "invoices" && <InvoicesTab />}
       {tab === "subscription" && <SubscriptionTab initial={overview.subscriptions} onChanged={onReload} />}
-      {tab === "billing" && <BillingTab overview={overview} />}
+      {tab === "billing" && <BillingTab overview={overview} onChanged={onReload} />}
     </div>
   );
 }
@@ -485,15 +486,18 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function BillingTab({ overview }: { overview: PortalOverview }) {
+function BillingTab({ overview, onChanged }: { overview: PortalOverview; onChanged: () => void }) {
   const c = overview.customer;
   const address = [c.address_line, c.city, c.state, c.country].filter(Boolean).join(", ");
   return (
     <div className="rounded-2xl border border-border bg-muted/30 p-5">
       <h2 className="mb-2 text-sm font-semibold text-foreground">Billing details</h2>
-      <p className="mb-4 text-xs text-muted-foreground">These appear on your GST invoices. To change them, reply to your invoice email.</p>
+      <p className="mb-4 text-xs text-muted-foreground">These appear on your GST invoices. To change the others, reply to your invoice email.</p>
       <Row label="Name" value={c.name} />
       <Row label="Email" value={c.email} />
+      <div className="border-b border-border pb-2.5 text-right">
+        <ChangeEmail current={c.email} onChanged={onChanged} />
+      </div>
       <Row label="GSTIN" value={c.gstin} />
       <Row label="Phone" value={c.phone} />
       <Row label="Address" value={address} />
