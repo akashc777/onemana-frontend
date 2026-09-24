@@ -148,6 +148,14 @@ export interface ServerOrderPreview {
   target_pct: number;
 }
 
+/** Whether Cloud workspaces can be lent OneCamp's email. */
+export interface WorkspaceEmailCheck {
+  domain: string;
+  domain_ok: boolean;
+  can_manage_keys: boolean;
+  problem?: string;
+}
+
 /** A machine auto-order bought, or would have in preview. */
 export interface ServerOrderRow {
   id: string;
@@ -793,6 +801,11 @@ export const adminApi = {
 
   async serverOrderPreview(size: "team" | "business"): Promise<ServerOrderPreview> {
     const data = await adminGet<{ data: ServerOrderPreview }>(`/onecamp/admin/servers/order-preview?size=${size}`);
+    return data.data;
+  },
+
+  async workspaceEmailCheck(): Promise<WorkspaceEmailCheck> {
+    const data = await adminGet<{ data: WorkspaceEmailCheck }>("/onecamp/admin/email/check");
     return data.data;
   },
 

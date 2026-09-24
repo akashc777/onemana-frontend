@@ -29,6 +29,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "email_provider", label: "Provider", type: "select", options: ["resend", "brevo"] },
       { key: "email_from", label: "From", hint: 'e.g. "OneMana <noreply@onemana.dev>"' },
       { key: "resend_api_key", label: "Resend API Key", type: "password" },
+      { key: "workspace_email_domain", label: "Domain Cloud workspaces send from", hint: "Each live Cloud workspace gets its own send-only key for this domain: invitations and password resets only, at most 20 a day, so the free Resend allowance stays shared fairly. Keep it off the store's own domain so a workspace's mail can never cost a customer their licence email. Empty: the domain of the announcement sender. It must be verified in Resend, and the Resend key above must be full access to make keys; Workspaces shows whether both hold." },
       { key: "brevo_api_key", label: "Brevo API Key", type: "password" },
     ],
   },

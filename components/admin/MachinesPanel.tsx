@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { adminApi, type ServerOrderPreview, type ServerOrderRow } from "@/lib/adminApi";
+import { adminApi, type ServerOrderPreview, type ServerOrderRow, type WorkspaceEmailCheck } from "@/lib/adminApi";
 
 // What a new customer's machine would cost right now, and the margin it leaves.
 //
@@ -63,6 +63,7 @@ function PreviewCard({ p }: { p: ServerOrderPreview }) {
 export function MachinesPanel() {
   const [previews, setPreviews] = useState<ServerOrderPreview[] | null>(null);
   const [orders, setOrders] = useState<ServerOrderRow[]>([]);
+  const [mail, setMail] = useState<WorkspaceEmailCheck | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -73,6 +74,7 @@ export function MachinesPanel() {
       const [p, o] = await Promise.all([Promise.all(SIZES.map((s) => adminApi.serverOrderPreview(s))), adminApi.serverOrders()]);
       setPreviews(p);
       setOrders(o.slice(0, 8));
+      setMail(await adminApi.workspaceEmailCheck().catch(() => null));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not price machines");
     } finally {
@@ -99,6 +101,13 @@ export function MachinesPanel() {
             <PreviewCard key={p.size} p={p} />
           ))}
         </div>
+      )}
+      {mail && (
+        <p className={`text-xs ${mail.domain_ok && mail.can_manage_keys ? "text-muted-foreground" : "text-amber-700 dark:text-amber-300"}`}>
+          {mail.domain_ok && mail.can_manage_keys
+            ? `Workspace email: new workspaces can send invitations and resets from ${mail.domain}.`
+            : `Workspace email is off for new workspaces: ${mail.problem || "unknown reason"}.`}
+        </p>
       )}
       {orders.length > 0 && (
         <div className="overflow-x-auto">
