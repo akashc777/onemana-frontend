@@ -128,7 +128,7 @@ function BuyInner() {
       />
       <section className="pb-16 sm:pb-20">
         <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start">
-          <aside>
+          <aside className="lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
             <div className="grid grid-cols-2 gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-sm">
@@ -203,46 +203,9 @@ function BuyInner() {
                 ))}
               </ul>
             </div>
-            {/* THE ONE THING THIS PAGE DID NOT OFFER. Thirty people reached checkout
-                in sixty days and none of them bought, and nineteen of them opened
-                the refund policy on the way. They are looking for a way to reduce
-                the risk of paying first for software they then have to install on
-                their own server. The demo already exists and is clicked from every
-                other page; it was missing from the only page where the decision is
-                actually made. */}
-            <div className="card mt-4 border-brand/30 bg-brand/[0.04]">
-              <p className="font-medium text-foreground">Try it before you pay</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                The live demo is the real product with sample data. Nothing to install and no
-                account needed.
-              </p>
-              <ButtonLink href={site.demoStartUrl} external variant="ghost" className="mt-3">
-                Open the live demo
-              </ButtonLink>
-            </div>
-
-            <p className="mt-4 text-xs text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>
-
-            {/* Only one of the thirty ever came back on another day, so there is no
-                consideration cycle to catch them in later. Either we can reach them
-                or they are gone. */}
-            <div className="card mt-4">
-              <p className="font-medium text-foreground">Not buying today?</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Leave your address and we will tell you when the price or the license terms
-                change, and when something ships that you asked for.
-              </p>
-              <div className="mt-3">
-                <SubscribeForm
-                  source="buy"
-                  cta="Send me the setup guide"
-                  hint="What running your own takes, and what moves across. One email, no sequence you did not ask for."
-                />
-              </div>
-            </div>
           </aside>
 
-          <form onSubmit={handleSubmit} className="card-premium card h-fit space-y-4 bg-card/90" noValidate>
+          <form onSubmit={handleSubmit} className="card-premium card h-fit space-y-4 bg-card/90 lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
             <Field label="Email" required hint="Your license key & invoice are sent here.">
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>
@@ -301,6 +264,51 @@ function BuyInner() {
               <a href="/refund-policy" className="underline hover:text-foreground">Refund Policy</a>.
             </p>
           </form>
+
+          {/* AFTER THE FORM IN THE PAGE, beside the product on a wide screen. On a
+              phone the columns stack in page order, and these used to sit between
+              the price and the form: a buyer who had decided scrolled past "Try it
+              before you pay" and "Not buying today?" for four screens to find where
+              to pay. Now the form follows the price; these follow the form. */}
+          <div className="lg:col-start-1 lg:row-start-2">
+            {/* THE ONE THING THIS PAGE DID NOT OFFER. Thirty people reached checkout
+                in sixty days and none of them bought, and nineteen of them opened
+                the refund policy on the way. They are looking for a way to reduce
+                the risk of paying first for software they then have to install on
+                their own server. The demo already exists and is clicked from every
+                other page; it was missing from the only page where the decision is
+                actually made. */}
+            <div className="card border-brand/30 bg-brand/[0.04]">
+              <p className="font-medium text-foreground">Try it before you pay</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                The live demo is the real product with sample data. Nothing to install and no
+                account needed.
+              </p>
+              <ButtonLink href={site.demoStartUrl} external variant="ghost" className="mt-3">
+                Open the live demo
+              </ButtonLink>
+            </div>
+
+            <p className="mt-4 text-xs text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>
+
+            {/* Only one of the thirty ever came back on another day, so there is no
+                consideration cycle to catch them in later. Either we can reach them
+                or they are gone. */}
+            <div className="card mt-4">
+              <p className="font-medium text-foreground">Not buying today?</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Leave your address and we will tell you when the price or the license terms
+                change, and when something ships that you asked for.
+              </p>
+              <div className="mt-3">
+                <SubscribeForm
+                  source="buy"
+                  cta="Send me the setup guide"
+                  hint="What running your own takes, and what moves across. One email, no sequence you did not ask for."
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </>
