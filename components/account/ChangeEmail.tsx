@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { portalApi } from "@/lib/portalApi";
+import { CODE_LENGTH } from "@/lib/oneTimeCode";
+import CodeInput from "./CodeInput";
 
 // Moving the account to a new address, proven by a code sent there.
 //
@@ -87,17 +89,14 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
             Enter the 6-digit code we sent to {email.trim()}. Your workspaces move to the new address too.
           </label>
           <div className="flex flex-wrap gap-2">
-            <input
+            <CodeInput
               id="change-code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              onChange={setCode}
               className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm tracking-widest"
               placeholder="000000"
             />
-            <button type="button" onClick={confirm} disabled={busy || code.length !== 6} className="btn-primary px-3 py-2 text-sm disabled:opacity-50">
+            <button type="button" onClick={confirm} disabled={busy || code.length !== CODE_LENGTH} className="btn-primary px-3 py-2 text-sm disabled:opacity-50">
               {busy ? "Checking…" : "Confirm"}
             </button>
           </div>

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { portalApi } from "@/lib/portalApi";
+import { CODE_LENGTH } from "@/lib/oneTimeCode";
+import CodeInput from "./CodeInput";
 
 const inputCls =
   "w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 sm:text-sm";
@@ -100,22 +102,19 @@ export function AccountLogin({
               <label htmlFor="acc-code" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 6-digit code
               </label>
-              <input
+              <CodeInput
                 id="acc-code"
-                inputMode="numeric"
-                autoComplete="one-time-code"
                 autoFocus
                 required
-                maxLength={6}
                 value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                onChange={setCode}
                 placeholder="123456"
                 className={`${inputCls} text-center text-lg tracking-[0.5em]`}
               />
               <p className="mt-1.5 text-xs text-muted-foreground">Sent to {email}. It expires in 10 minutes.</p>
             </div>
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-            <button disabled={busy || code.length < 6} className="btn-primary w-full">
+            <button disabled={busy || code.length < CODE_LENGTH} className="btn-primary w-full">
               {busy ? "Verifying…" : "Sign in"}
             </button>
             <button
