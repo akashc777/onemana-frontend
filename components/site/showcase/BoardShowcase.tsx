@@ -106,7 +106,7 @@ export function BoardShowcase({ embedded = false }: { embedded?: boolean }) {
             className={`hidden items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold transition-colors sm:inline-flex ${
               phase === "done"
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "bg-violet-500/10 text-violet-700 dark:text-violet-300"
+                : "bg-brand/10 text-brand"
             }`}
           >
             {phase === "done" ? <>✓ Added to board</> : <><IconSparkles className="h-3 w-3" /> AI</>}
@@ -185,7 +185,7 @@ export function BoardShowcase({ embedded = false }: { embedded?: boolean }) {
           {composerOpen ? (
             <div className="w-[min(92%,22rem)] rounded-xl border border-border bg-popover/95 p-2.5 shadow-xl backdrop-blur-sm">
               <div className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground">
-                <IconSparkles className="h-3.5 w-3.5 text-violet-500" /> Generate with AI
+                <IconSparkles className="h-3.5 w-3.5 text-brand" /> Generate with AI
               </div>
               <div className="mb-1.5 flex flex-wrap gap-1">
                 {PILLS.map((p) => (
@@ -205,7 +205,7 @@ export function BoardShowcase({ embedded = false }: { embedded?: boolean }) {
                 <span className="min-w-0 flex-1 truncate text-xs text-foreground">
                   {typed || <span className="text-muted-foreground">Describe what you want to draw…</span>}
                   {(phase === "typing" || phase === "thinking") && (
-                    <span className="ml-0.5 inline-block h-3 w-0.5 translate-y-0.5 animate-pulse bg-violet-500 align-middle" />
+                    <span className="ml-0.5 inline-block h-3 w-0.5 translate-y-0.5 animate-pulse bg-brand align-middle" />
                   )}
                 </span>
                 <span className="flex-shrink-0 rounded-md bg-brand px-2 py-1 text-[10px] font-medium text-white">

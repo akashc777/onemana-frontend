@@ -82,7 +82,7 @@ export function DocShowcase({ embedded = false }: { embedded?: boolean }) {
             className={`hidden items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold transition-colors sm:inline-flex ${
               phase === "done"
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "bg-violet-500/10 text-violet-700 dark:text-violet-300"
+                : "bg-brand/10 text-brand"
             }`}
           >
             {phase === "done" ? (
@@ -139,7 +139,7 @@ export function DocShowcase({ embedded = false }: { embedded?: boolean }) {
         <h4 className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-foreground">
           Rollout plan
           {phase !== "done" && (
-            <span className="inline-flex items-center gap-1 rounded bg-violet-500/10 px-1.5 py-0.5 text-[8px] font-semibold text-violet-700 dark:text-violet-300">
+            <span className="inline-flex items-center gap-1 rounded bg-brand/10 px-1.5 py-0.5 text-[8px] font-semibold text-brand">
               <IconSparkles className="h-2.5 w-2.5" /> AI agent
             </span>
           )}

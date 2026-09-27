@@ -105,12 +105,12 @@ export function TasksShowcase({ embedded = false }: { embedded?: boolean }) {
                     key={task.title}
                     className={`rounded-md border bg-background p-2 shadow-sm transition-shadow hover:shadow-md ${
                       task.byAI
-                        ? "border-violet-500/40 ring-1 ring-violet-500/20 animate-fade-up"
+                        ? "border-brand/40 ring-1 ring-brand/20 animate-fade-up"
                         : "border-border/70"
                     }`}
                   >
                     {task.byAI && (
-                      <span className="mb-1 inline-flex items-center gap-1 rounded bg-violet-500/10 px-1 py-0.5 text-[8px] font-semibold text-violet-700 dark:text-violet-300">
+                      <span className="mb-1 inline-flex items-center gap-1 rounded bg-brand/10 px-1 py-0.5 text-[8px] font-semibold text-brand">
                         <IconSparkles className="h-2.5 w-2.5" /> AI
                       </span>
                     )}
@@ -141,11 +141,11 @@ export function TasksShowcase({ embedded = false }: { embedded?: boolean }) {
               phase === "idle"
                 ? "translate-y-2 opacity-0"
                 : "translate-y-0 opacity-100"
-            } ${phase === "done" ? "border-emerald-500/40" : "border-violet-500/40"}`}
+            } ${phase === "done" ? "border-emerald-500/40" : "border-brand/40"}`}
           >
             <span
               className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full ${
-                phase === "done" ? "bg-emerald-500 text-white" : "bg-violet-500/15 text-violet-600 dark:text-violet-400"
+                phase === "done" ? "bg-emerald-500 text-white" : "bg-brand/10 text-brand"
               }`}
             >
               {phase === "done" ? <span className="text-[10px] font-bold">✓</span> : <IconSparkles className="h-3 w-3" />}

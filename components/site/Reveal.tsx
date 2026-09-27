@@ -20,29 +20,34 @@ function isInViewport(el: HTMLElement) {
 
 /**
  * Reveal animates its children into view on first scroll-intersection using a
- * single IntersectionObserver - no animation library, SSR-safe, and a no-op
- * when prefers-reduced-motion is set (handled in CSS). The entrance direction
- * is GPU-only (transform/opacity).
+ * single IntersectionObserver - no animation library, and a no-op when
+ * prefers-reduced-motion is set. The entrance is GPU-only (transform/opacity).
+ *
+ * Content is visible until proven otherwise. It used to render at opacity 0 and
+ * wait for the observer, so without JavaScript (crawlers, link previews, reader
+ * mode, a full-page capture) whole sections of the page were blank. Now only a
+ * block that starts below the fold is held back, after hydration, and only
+ * until it is reached; printing releases everything.
  */
 export function Reveal({ children, delay = 0, direction = "up", className = "", as }: RevealProps) {
   const Tag = (as ?? "div") as ElementType;
   const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || isInViewport(el)) {
-      setVisible(true);
-      return;
-    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || isInViewport(el)) return;
+    setPending(true);
+    const release = () => setPending(false);
+    window.addEventListener("beforeprint", release);
 
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setVisible(true);
+            setPending(false);
             obs.unobserve(entry.target);
           }
         });
@@ -50,13 +55,16 @@ export function Reveal({ children, delay = 0, direction = "up", className = "", 
       { threshold: 0.08, rootMargin: "0px 0px -4% 0px" },
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      window.removeEventListener("beforeprint", release);
+    };
   }, []);
 
   return (
     <Tag
       ref={ref as never}
-      className={`reveal reveal-${direction} ${visible ? "is-visible" : ""} ${className}`}
+      className={`reveal reveal-${direction} ${pending ? "is-pending" : ""} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

@@ -282,11 +282,11 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
           <div
             className={`flex items-center gap-2 rounded-full border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur transition-all duration-300 ${
               phase === "idle" ? "translate-y-2 opacity-0" : "translate-y-0 opacity-100"
-            } ${phase === "done" ? "border-emerald-500/40" : "border-violet-500/40"}`}
+            } ${phase === "done" ? "border-emerald-500/40" : "border-brand/40"}`}
           >
             <span
               className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full ${
-                phase === "done" ? "bg-emerald-500 text-white" : "bg-violet-500/15 text-violet-600 dark:text-violet-400"
+                phase === "done" ? "bg-emerald-500 text-white" : "bg-brand/10 text-brand"
               }`}
             >
               {phase === "done" ? <span className="text-[10px] font-bold">✓</span> : <IconSparkles className="h-3 w-3" />}

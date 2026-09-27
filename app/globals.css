@@ -269,36 +269,37 @@ body {
     text-wrap: balance;
   }
 
+  /* Visible by default. Only a block that starts below the fold is held back
+     (is-pending, set by Reveal after hydration), so the page reads without
+     JavaScript: crawlers, link previews, reader mode and a full-page capture
+     all see every section. */
   .reveal {
-    opacity: 0;
-    transform: translateY(16px);
     transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
       transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .reveal-up {
+  .reveal.is-pending {
+    opacity: 0;
+  }
+
+  .reveal-up.is-pending {
     transform: translateY(16px);
   }
 
-  .reveal-down {
+  .reveal-down.is-pending {
     transform: translateY(-16px);
   }
 
-  .reveal-left {
+  .reveal-left.is-pending {
     transform: translateX(-20px);
   }
 
-  .reveal-right {
+  .reveal-right.is-pending {
     transform: translateX(20px);
   }
 
-  .reveal-scale {
+  .reveal-scale.is-pending {
     transform: scale(0.98);
-  }
-
-  .reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0) translateX(0) scale(1);
   }
 
   .scroll-progress {
@@ -1229,7 +1230,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
+  .reveal,
+  .reveal.is-pending {
     opacity: 1;
     transform: none;
     transition: none;

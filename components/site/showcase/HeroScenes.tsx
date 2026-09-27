@@ -59,11 +59,11 @@ function useHoldThenDone(active: boolean, onDone: () => void, hold = HOLD_MS) {
 
 // --- shared bits -----------------------------------------------------------
 
-function BotAvatar({ initials = "RC", tint = "bg-violet-500/15 text-violet-600 dark:text-violet-400" }: { initials?: string; tint?: string }) {
+function BotAvatar({ initials = "RC", tint = "bg-brand/10 text-brand" }: { initials?: string; tint?: string }) {
   return (
     <span className={`relative grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg text-[10px] font-semibold sm:h-9 sm:w-9 ${tint}`}>
       {initials}
-      <span className="absolute -bottom-1 -right-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-violet-600 text-white ring-2 ring-card">
+      <span className="absolute -bottom-1 -right-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-brand text-white ring-2 ring-card">
         <IconSparkles className="h-2 w-2" />
       </span>
     </span>
@@ -72,7 +72,7 @@ function BotAvatar({ initials = "RC", tint = "bg-violet-500/15 text-violet-600 d
 
 function AiBadge() {
   return (
-    <span className="rounded-[4px] bg-violet-500/15 px-1 py-px text-[8px] font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400">
+    <span className="rounded-[4px] bg-brand/10 px-1 py-px text-[8px] font-bold uppercase tracking-wide text-brand">
       AI
     </span>
   );
@@ -121,7 +121,7 @@ function useStream(active: boolean, full: string, stepMs: number, onComplete?: (
 const AI_HEADER = (
   <div className="flex h-10 flex-shrink-0 items-center justify-between border-b border-border/60 bg-card/40 px-3">
     <div className="flex items-center gap-2">
-      <span className="grid h-6 w-6 place-items-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-400">
+      <span className="grid h-6 w-6 place-items-center rounded-md bg-brand/10 text-brand">
         <IconSparkles className="h-3.5 w-3.5" />
       </span>
       <span className="text-xs font-semibold text-foreground">OneCamp AI</span>
@@ -220,7 +220,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
       <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
         <div className="min-w-0">
           <p className="flex items-center gap-1 truncate text-sm font-medium text-foreground">
-            <IconHash className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> engineering
+            <IconHash className="h-3.5 w-3.5 text-muted-foreground" /> engineering
           </p>
           <p className="text-[11px] text-muted-foreground">Release Captain · AI teammate · in this channel</p>
         </div>
@@ -251,7 +251,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
 
         {/* context post */}
         <article className="flex gap-2.5">
-          <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-violet-500/15 text-[10px] font-semibold text-violet-700 dark:text-violet-300 sm:h-9 sm:w-9">
+          <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-brand/10 text-[10px] font-semibold text-brand sm:h-9 sm:w-9">
             AK
           </span>
           <div className="min-w-0">
@@ -275,7 +275,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
                 <span className="text-[10px] text-muted-foreground">9:39 PM</span>
               </p>
               <p className="mt-1 text-sm leading-relaxed text-foreground">
-                <span className="rounded bg-violet-500/15 px-1 font-medium text-violet-700 dark:text-violet-300">@Release Captain</span>{" "}
+                <span className="rounded bg-brand/10 px-1 font-medium text-brand">@Release Captain</span>{" "}
                 are we clear to ship v2.4 tonight?
               </p>
             </div>
@@ -297,13 +297,13 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
                   <TypingIndicator />
                 </span>
               ) : (
-                <p className="mt-1 whitespace-pre-line border-l-2 border-violet-500/25 pl-2.5 text-sm leading-relaxed text-foreground">
+                <p className="mt-1 whitespace-pre-line border-l-2 border-brand/25 pl-2.5 text-sm leading-relaxed text-foreground">
                   {MENTION_REPLY}
                 </p>
               )}
               {showApprove && (
                 <div className="mt-2 flex items-start gap-1.5 rounded-md border border-border bg-muted/40 px-2 py-1.5 text-[10px] leading-snug text-muted-foreground">
-                  <span className="mt-px grid h-3.5 w-3.5 flex-shrink-0 place-items-center rounded bg-violet-500/15 text-violet-600 dark:text-violet-400">
+                  <span className="mt-px grid h-3.5 w-3.5 flex-shrink-0 place-items-center rounded bg-brand/10 text-brand">
                     <IconSparkles className="h-2 w-2" />
                   </span>
                   <span>
@@ -343,7 +343,7 @@ export function MentionAgentScene({ reduced, onDone }: SceneProps) {
 const CTX_POSTS = [
   { initials: "PN", tint: "bg-rose-500/15 text-rose-700 dark:text-rose-300", author: "Priya Nair", time: "9:41 AM", text: "Shipped checkout to staging. Payment latency down 40%." },
   { initials: "DC", tint: "bg-sky-500/15 text-sky-700 dark:text-sky-300", author: "Daniel Cho", time: "9:42 AM", text: "I'll run the rollback drill before we promote to prod." },
-  { initials: "AK", tint: "bg-violet-500/15 text-violet-700 dark:text-violet-300", author: "Aisha Khan", time: "9:43 AM", text: "Can someone post an APAC recap? I missed the morning thread." },
+  { initials: "AK", tint: "bg-brand/10 text-brand", author: "Aisha Khan", time: "9:43 AM", text: "Can someone post an APAC recap? I missed the morning thread." },
 ];
 
 const ACT_PROMPT = "Recap today and turn the follow-ups into tasks";
@@ -420,7 +420,7 @@ export function ActScene({ reduced, onDone }: SceneProps) {
         )}
         {phase !== "typing" && (
         <div className="flex gap-2 animate-fade-up">
-          <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
+          <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
             <IconSparkles className="h-3.5 w-3.5" />
           </span>
           <div className="min-w-0 max-w-[calc(100%-2rem)] flex-1 rounded-lg rounded-bl-sm border border-border bg-muted px-3 py-2.5 text-[11px] leading-[1.55] text-foreground">
@@ -500,7 +500,7 @@ export function ActScene({ reduced, onDone }: SceneProps) {
     <ShowcaseShell activeNav="channels" aiPanel={aiPanel} aiActive heightClass="h-[min(480px,74vh)] sm:h-[480px]">
       <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
         <p className="flex items-center gap-1 truncate text-sm font-medium text-foreground">
-          <IconHash className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> engineering
+          <IconHash className="h-3.5 w-3.5 text-muted-foreground" /> engineering
         </p>
         <span className="rounded-md border border-brand/50 bg-brand/[0.08] px-2 py-1 text-[11px] font-medium text-brand shadow-sm">Ask AI</span>
       </header>
@@ -592,7 +592,7 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
         )}
         {phase !== "typing" && (
         <div className="flex gap-2 animate-fade-up">
-          <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
+          <span className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
             <IconSparkles className="h-3.5 w-3.5" />
           </span>
           <div className="min-w-0 max-w-[calc(100%-2rem)] flex-1 rounded-lg rounded-bl-sm border border-border bg-muted px-3 py-2.5 text-[11px] leading-[1.55] text-foreground">
@@ -648,7 +648,7 @@ export function KnowledgeScene({ reduced, onDone }: SceneProps) {
     <ShowcaseShell activeNav="channels" aiPanel={aiPanel} aiActive heightClass="h-[min(480px,74vh)] sm:h-[480px]">
       <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
         <p className="flex items-center gap-1 truncate text-sm font-medium text-foreground">
-          <IconHash className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> support
+          <IconHash className="h-3.5 w-3.5 text-muted-foreground" /> support
         </p>
         <span className="rounded-md border border-brand/50 bg-brand/[0.08] px-2 py-1 text-[11px] font-medium text-brand shadow-sm">Ask AI</span>
       </header>
@@ -705,11 +705,11 @@ function ToolChip({ label, live = false }: { label: string; live?: boolean }) {
     <span
       className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-px text-[9px] font-medium transition-colors ${
         live
-          ? "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-300"
+          ? "border-brand/40 bg-brand/10 text-brand"
           : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
       }`}
     >
-      {live ? <span className="h-1 w-1 animate-pulse rounded-full bg-violet-500" /> : <span className="text-[8px]">✓</span>}
+      {live ? <span className="h-1 w-1 animate-pulse rounded-full bg-brand" /> : <span className="text-[8px]">✓</span>}
       {label}
     </span>
   );
@@ -767,7 +767,7 @@ export function HandoffScene({ reduced, onDone }: SceneProps) {
             <span className="truncate">#engineering</span>
           </p>
         </div>
-        <span className="flex-shrink-0 rounded-md border border-violet-500/30 bg-violet-500/[0.07] px-2 py-1 text-[10px] font-medium text-violet-600 dark:text-violet-400">
+        <span className="flex-shrink-0 rounded-md border border-brand/30 bg-brand/[0.07] px-2 py-1 text-[10px] font-medium text-brand">
           ⚡ Durable · survives restarts
         </span>
       </header>
@@ -805,9 +805,9 @@ export function HandoffScene({ reduced, onDone }: SceneProps) {
                 {!showResult && (
                   <div className="flex items-center gap-2">
                     {working ? (
-                      <span className="h-3 w-3 flex-shrink-0 animate-spin rounded-full border-[1.5px] border-violet-500/40 border-t-violet-500" />
+                      <span className="h-3 w-3 flex-shrink-0 animate-spin rounded-full border-[1.5px] border-brand/40 border-t-brand" />
                     ) : (
-                      <span className="grid h-3.5 w-3.5 flex-shrink-0 place-items-center rounded-full bg-violet-500/15 text-[8px] text-violet-600 dark:text-violet-400">
+                      <span className="grid h-3.5 w-3.5 flex-shrink-0 place-items-center rounded-full bg-brand/10 text-[8px] text-brand">
                         <IconSparkles className="h-2 w-2" />
                       </span>
                     )}
@@ -1005,7 +1005,7 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
       <header className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
         <div className="min-w-0">
           <p className="flex items-center gap-1 truncate text-sm font-medium text-foreground">
-            <IconHash className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> engineering
+            <IconHash className="h-3.5 w-3.5 text-muted-foreground" /> engineering
           </p>
           <p className="text-[11px] text-muted-foreground">Builder · AI teammate · opens PRs on your own infra</p>
         </div>
@@ -1039,7 +1039,7 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
                 <span className="text-[10px] text-muted-foreground">10:13 AM</span>
               </p>
               <p className="mt-1 text-sm leading-relaxed text-foreground">
-                <span className="rounded bg-violet-500/15 px-1 font-medium text-violet-700 dark:text-violet-300">@Builder</span>{" "}
+                <span className="rounded bg-brand/10 px-1 font-medium text-brand">@Builder</span>{" "}
                 add a <code className="rounded bg-foreground/10 px-1 font-mono text-[12px]">--dry-run</code> flag to the import CLI so it prints what it would do without writing anything. Open a PR.
               </p>
             </div>
@@ -1059,7 +1059,7 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
 
               {/* Acknowledgement (verbatim executeCodePRTool copy) */}
               {!showResult && (
-                <p className="mt-1 whitespace-pre-line border-l-2 border-violet-500/25 pl-2.5 text-sm leading-relaxed text-foreground">
+                <p className="mt-1 whitespace-pre-line border-l-2 border-brand/25 pl-2.5 text-sm leading-relaxed text-foreground">
                   {CODEPR_ACK}
                 </p>
               )}
@@ -1068,7 +1068,7 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
               {working && (
                 <div className="mt-2 pl-2.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-foreground">
-                    <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-violet-500/40 border-t-violet-500" />
+                    <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-brand/40 border-t-brand" />
                     Working in an isolated sandbox
                   </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -1082,14 +1082,14 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
                             stageDone
                               ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                               : stageActive
-                              ? "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-300"
+                              ? "border-brand/40 bg-brand/10 text-brand"
                               : "border-border bg-muted/40 text-muted-foreground/50"
                           }`}
                         >
                           {stageDone ? (
                             <span className="text-[8px]">✓</span>
                           ) : stageActive ? (
-                            <span className="h-2 w-2 animate-spin rounded-full border-[1.5px] border-violet-500/40 border-t-violet-500" />
+                            <span className="h-2 w-2 animate-spin rounded-full border-[1.5px] border-brand/40 border-t-brand" />
                           ) : (
                             <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
                           )}
