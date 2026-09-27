@@ -14,7 +14,7 @@ export function DocsShell({
   return (
     <div className="container-x flex flex-col gap-8 py-10 sm:gap-10 sm:py-12 lg:flex-row lg:gap-14 lg:py-16">
       <aside className="lg:sticky lg:top-20 lg:h-fit lg:w-64 lg:flex-shrink-0">
-        <nav className="max-h-[min(50vh,20rem)] overflow-y-auto rounded-xl border border-border bg-muted/30 p-4 lg:max-h-none lg:overflow-visible" aria-label="Documentation">
+        <nav className="max-h-[min(50vh,20rem)] overflow-y-auto border-b border-border pb-4 lg:max-h-none lg:overflow-visible lg:border-b-0 lg:border-r lg:pb-0 lg:pr-6" aria-label="Documentation">
           <Link
             href="/docs"
             className={`mb-3 block py-1 text-sm font-medium ${activeSlug ? "text-muted-foreground hover:text-foreground" : "text-foreground"}`}

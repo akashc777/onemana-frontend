@@ -49,16 +49,16 @@ export function CompareView() {
                     title="What the others do better"
                     subtitle={`Every one of these is a real reason to buy something else. Checked ${CLAIMS_CHECKED}.`}
                 />
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {/* A list with the product in the margin: four boxes of equal
+                    weight made an honest concession look like a feature grid. */}
+                <dl className="mt-8 divide-y divide-border border-y border-border">
                     {rivals.map((r, i) => (
-                        <Reveal key={r.name} delay={i * 60}>
-                            <div className="h-full rounded-xl border border-border bg-card p-5">
-                                <p className="text-sm font-semibold text-foreground">{r.name}</p>
-                                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.theyWin}</p>
-                            </div>
+                        <Reveal key={r.name} delay={i * 60} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-8">
+                            <dt className="font-medium text-foreground">{r.name}</dt>
+                            <dd className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{r.theyWin}</dd>
                         </Reveal>
                     ))}
-                </div>
+                </dl>
             </Section>
 
             {/* The table. Structural claims only: how you pay, and what exists. */}

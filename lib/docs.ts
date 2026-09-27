@@ -20,6 +20,8 @@ export interface DocPage {
 export interface DocNavItem {
   slug: string;
   title: string;
+  /** The guide's own one-line description (its SEO description), if written. */
+  summary?: string;
 }
 export interface DocNavGroup {
   category: string;
@@ -66,7 +68,7 @@ export function groupDocs(docs: DocPage[]): DocNavGroup[] {
       labels.set(key, label);
       order.push(key);
     }
-    map.get(key)!.push({ slug: d.slug, title: d.title });
+    map.get(key)!.push({ slug: d.slug, title: d.title, summary: d.seo_desc?.trim() || undefined });
   }
   return order.map((key) => ({ category: labels.get(key)!, items: map.get(key)! }));
 }
