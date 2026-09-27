@@ -174,7 +174,7 @@ export function CompareView() {
                     align="left"
                     eyebrow="Bring your agent"
                     title="Already paying for an agent? Bring it."
-                    subtitle="Claude, ChatGPT and Grok Bot are billed by the seat and are good at the work. OneCamp is where they do it beside your team: each arrives as a named agent with a sponsor, reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
+                    subtitle="Whether it is a hosted agent billed by the seat or your own on a local model, OneCamp is where it works beside your team: each arrives as a named agent with a sponsor, reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
                 />
                 <Reveal className="mt-8">
                     <div className="overflow-x-auto rounded-xl border border-border">

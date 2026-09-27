@@ -85,7 +85,7 @@ export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never }
     name: "OneCamp",
     what: "Chat, docs, tasks, tables, video, calendar and agents in one workspace",
     billing: "One licence, unlimited users, or a flat monthly cloud",
-    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. Claude, ChatGPT and Grok Bot sign in by URL, and agents built elsewhere (AG-UI or A2A) run under the same rules",
+    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. Any MCP agent signs in by URL, local models included, and agents built elsewhere (AG-UI or A2A) run under the same rules",
 }
 
 /**
@@ -110,6 +110,12 @@ export interface AgentYouBring {
 }
 
 export const agentsYouBring: AgentYouBring[] = [
+    {
+        name: "Your own agent, on a local model",
+        billing: "Free and open source, on hardware you already run (Open WebUI or goose with Ollama, for example)",
+        connects: "Any MCP client: add the OneCamp address as a remote MCP server and sign in. In Open WebUI, Admin, Integrations, Add Connection, type MCP (Streamable HTTP)",
+        source: "https://docs.openwebui.com/features/extensibility/mcp/",
+    },
     {
         name: "Claude",
         billing: "Per seat, per month on Team and Enterprise; per person on Pro and Max",
