@@ -85,8 +85,50 @@ export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never }
     name: "OneCamp",
     what: "Chat, docs, tasks, tables, video, calendar and agents in one workspace",
     billing: "One licence, unlimited users, or a flat monthly cloud",
-    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. An agent built elsewhere, on anything that speaks AG-UI, runs under the same rules",
+    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. Claude, ChatGPT and Grok Bot sign in by URL, and agents built elsewhere (AG-UI or A2A) run under the same rules",
 }
+
+/**
+ * Agents a buyer may already pay for, and how each one works inside OneCamp.
+ *
+ * NOT RIVALS. These do the work; OneCamp is where they do it next to the team,
+ * as a named agent with a sponsor, a reach and a kill switch. So the page says
+ * how each one bills and how it connects, both structural facts with a source,
+ * and never that one is better or worse.
+ *
+ * The connection line describes the product as shipped: /v1/mcp answers OAuth
+ * sign-in (oneCamp business/OAuthServer), and each vendor's own setup path was
+ * read from its documentation on the date in CLAIMS_CHECKED.
+ */
+export interface AgentYouBring {
+    name: string
+    /** How it is billed. Structural, not a price. */
+    billing: string
+    /** How it connects to OneCamp, in the vendor's own menu words. */
+    connects: string
+    source: string
+}
+
+export const agentsYouBring: AgentYouBring[] = [
+    {
+        name: "Claude",
+        billing: "Per seat, per month on Team and Enterprise; per person on Pro and Max",
+        connects: "Customize, Connectors, Add custom connector: paste your OneCamp address and sign in",
+        source: "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+    },
+    {
+        name: "ChatGPT",
+        billing: "Per seat, per month on Business and Enterprise; per person on Plus and Pro",
+        connects: "Developer mode, then Apps & Connectors, Create: paste the address and choose OAuth",
+        source: "https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt",
+    },
+    {
+        name: "Grok Bot",
+        billing: "With SuperGrok and Cursor plans, with bot usage billed separately",
+        connects: "Tell a bot to add a custom MCP server at your OneCamp address, then sign in",
+        source: "https://x.ai/news/introducing-grok-bot",
+    },
+]
 
 /**
  * The question worth asking all five, including us.

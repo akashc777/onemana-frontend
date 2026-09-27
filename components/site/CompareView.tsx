@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import {
     CLAIMS_CHECKED,
     RECORD_KEEPING_IN_FORCE,
+    agentsYouBring,
     RECORD_KEEPING_SOURCE,
     cancels,
     killQuestion,
@@ -164,6 +165,54 @@ export function CompareView() {
                         Check a record yourself
                     </ButtonLink>
                 </Reveal>
+            </Section>
+
+            {/* The agents a buyer already pays for are not the competition. They
+                are what arrives here, and this is how. */}
+            <Section divider>
+                <SectionHeading
+                    align="left"
+                    eyebrow="Bring your agent"
+                    title="Already paying for an agent? Bring it."
+                    subtitle="Claude, ChatGPT and Grok Bot are billed by the seat and are good at the work. OneCamp is where they do it beside your team: each arrives as a named agent with a sponsor, reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
+                />
+                <Reveal className="mt-8">
+                    <div className="overflow-x-auto rounded-xl border border-border">
+                        <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
+                            <caption className="sr-only">How the agents you already pay for connect to OneCamp</caption>
+                            <thead>
+                                <tr className="border-b border-border bg-muted/40">
+                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">Agent</th>
+                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">How it is billed</th>
+                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">How it joins OneCamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {agentsYouBring.map((a) => (
+                                    <tr key={a.name} className="border-b border-border last:border-0">
+                                        <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
+                                            <a
+                                                href={a.source}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="underline underline-offset-4 decoration-border hover:decoration-foreground"
+                                            >
+                                                {a.name}
+                                            </a>
+                                        </th>
+                                        <td className="px-4 py-4 align-top text-muted-foreground">{a.billing}</td>
+                                        <td className="px-4 py-4 align-top text-muted-foreground">{a.connects}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Reveal>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    No token to paste: the agent signs in, and whoever approves it picks the agent it acts as and what
+                    it may do. OneCamp itself is one licence with unlimited people, so an agent is never another seat.
+                    Checked {CLAIMS_CHECKED}.
+                </p>
             </Section>
 
             {/* Why the question above stopped being a matter of taste. */}

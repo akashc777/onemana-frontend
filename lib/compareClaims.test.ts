@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest"
 import {
     CLAIMS_CHECKED,
     RECORD_KEEPING_IN_FORCE,
+    agentsYouBring,
     RECORD_KEEPING_SOURCE,
     killQuestion,
     onecampRow,
@@ -121,5 +122,26 @@ describe("what the page says about the regulation", () => {
             expect(/enterprise-grade|best-in-class|robust|world-class/i.test(r.produced),
                 `"${r.asked}" is answered with an adjective`).toBe(false)
         }
+    })
+})
+
+describe("the agents a buyer already pays for", () => {
+    it("sources how each one bills and connects", () => {
+        expect(agentsYouBring.length).toBeGreaterThan(0)
+        for (const a of agentsYouBring) {
+            expect(a.source, `${a.name} has no source`).toMatch(/^https:\/\//)
+            expect(a.billing.length, `${a.name} has no billing line`).toBeGreaterThan(10)
+            expect(a.connects.length, `${a.name} has no connection line`).toBeGreaterThan(10)
+        }
+    })
+
+    it("never tells a buyer to paste a token", () => {
+        for (const a of agentsYouBring) {
+            expect(a.connects).not.toMatch(/token|bearer|api key/i)
+        }
+    })
+
+    it("is rendered on the page", () => {
+        expect(VIEW).toContain("agentsYouBring")
     })
 })
