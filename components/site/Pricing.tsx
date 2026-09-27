@@ -20,9 +20,10 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
     <div className="mt-10 space-y-10">
       <Reveal>
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium text-brand">{savingsPitch.eyebrow}</p>
-          <p className="mt-2 text-base leading-relaxed text-muted-foreground">{savingsPitch.body}</p>
-          <p className="mt-3 text-sm font-semibold tracking-tight text-foreground">{savingsPitch.highlight}</p>
+          {/* One sentence under the heading, not three stacked blocks: the
+              heading already says "buy once", and the calculator below does
+              the arithmetic. */}
+          <p className="text-base leading-relaxed text-muted-foreground">{savingsPitch.body}</p>
         </div>
       </Reveal>
 
@@ -31,12 +32,10 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
           <div className="pricing-card pricing-card-featured card relative flex h-full flex-col overflow-hidden border-brand/25 bg-gradient-to-b from-brand/[0.04] to-card p-6 dark:from-brand/[0.08] sm:p-7">
             <div className="premium-frame-accent absolute inset-x-0 top-0 h-px" aria-hidden />
             <header>
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-foreground">Self-Host · Lifetime</p>
-                <span className="rounded border border-brand/30 bg-brand/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
-                  Popular
-                </span>
-              </div>
+              {/* No "Popular" badge: nothing on the page backs it, and a site that
+                  sources every claim about competitors should not make an
+                  unsourced one about itself. */}
+              <p className="text-sm font-medium text-foreground">Self-Host · Lifetime</p>
               <div className="mt-5 flex items-baseline gap-2">
                 <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-[2.75rem]">
                   {fmtUSD(pricing.lifetime_usd)}

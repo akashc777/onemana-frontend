@@ -332,7 +332,6 @@ export const trustPoints: { icon: TrustIconKey; label: string; detail: string }[
 ];
 
 export const savingsPitch = {
-  eyebrow: "The math",
   title: "One payment beats six subscriptions",
   // The number moved to the calculator below, where the visitor supplies their
   // own headcount. Two statements of one argument is worse than either, and the
@@ -340,7 +339,6 @@ export const savingsPitch = {
   // input to is evidence, a range is a claim. What stays here is the part the
   // arithmetic cannot say, which is what you get rather than what you save.
   body: "Elsewhere the AI is a per-seat add-on on top of the seat. Here it is in the license. Put your team size in below.",
-  highlight: "Pay once. Own it forever.",
 };
 
 /** Side-by-side billing comparison - static, no animation. Shown once in #pricing. */

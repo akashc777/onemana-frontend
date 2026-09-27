@@ -1378,3 +1378,9 @@ select option {
   background-color: rgb(var(--background));
   color: rgb(var(--foreground));
 }
+
+/* Native checkboxes, radios and ranges take the brand, not the browser's blue:
+   the pricing calculator's "We want AI too" was the only blue on the site. */
+:root {
+  accent-color: rgb(var(--brand));
+}

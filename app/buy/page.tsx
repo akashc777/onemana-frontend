@@ -138,12 +138,7 @@ function BuyInner() {
                 aria-pressed={!isCloud}
                 className={`relative rounded-md px-3 py-2 font-medium transition ${!isCloud ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <span className="flex flex-col items-center gap-0.5 sm:flex-row sm:gap-1.5">
-                  <span>Lifetime · self-host</span>
-                  <span className="rounded border border-brand/30 bg-brand/[0.08] px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-brand">
-                    Popular
-                  </span>
-                </span>
+                Lifetime · self-host
               </button>
               <button
                 type="button"
