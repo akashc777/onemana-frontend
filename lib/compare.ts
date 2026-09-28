@@ -67,6 +67,17 @@ export const rivals: Rival[] = [
         source: "https://mattermost.com/pricing/",
     },
     {
+        // Block's open workspace (July 2026) is the closest to OneCamp's own
+        // claim: agents as members with their own identity. A buyer researching
+        // governed agents finds it within minutes, so the page names it first.
+        name: "Buzz",
+        what: "Block's open-source workspace where people and agents share channels",
+        billing: "Free and open source (Apache 2.0); Block's hosted version is free in early beta",
+        agents: "Agents join as members with their own keys, permissions and signed actions",
+        theyWin: "Free, backed by Block, with agent identities that sign their own work and ready harnesses for Goose, Codex and Claude Code",
+        source: "https://block.xyz/inside/introducing-buzz-where-humans-and-agents-work-together",
+    },
+    {
         name: "Plane",
         what: "Project management, self-hostable, with local model support",
         billing: "Per user, per month, from $6 a seat",

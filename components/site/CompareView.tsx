@@ -37,7 +37,7 @@ export function CompareView() {
             <PageHeader
                 eyebrow="Compare"
                 title="Where OneCamp wins, and where it does not"
-                subtitle="Four open alternatives, the subscriptions all of them replace, and one question that separates them. Claims about other products link to the page they came from."
+                subtitle="Five open alternatives, the subscriptions all of them replace, and one question that separates them. Claims about other products link to the page they came from."
                 divider
             />
 
@@ -76,7 +76,7 @@ export function CompareView() {
                     <div className="overflow-x-auto rounded-xl border border-border">
                         <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
                             <caption className="sr-only">
-                                OneCamp compared with four open alternatives on billing and agent governance
+                                OneCamp compared with five open alternatives on billing and agent governance
                             </caption>
                             <thead>
                                 <tr className="border-b border-border bg-muted/40">
