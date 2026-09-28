@@ -254,7 +254,7 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
           {ROWS.map((r, idx) => (
             <div
               key={r.title}
-              className={`grid grid-cols-[1.6fr_0.9fr_0.9fr_0.7fr_0.5fr] items-center border-b border-border/40 text-[11px] transition-all duration-300 ${
+              className={`grid grid-cols-[1.6fr_0.9fr_0.9fr_0.7fr_0.5fr] items-center border-b border-border/40 text-[11px] transition duration-300 ${
                 showRows ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
               }`}
               style={{ transitionDelay: showRows && !reduce.current ? `${idx * 120}ms` : "0ms" }}
@@ -280,7 +280,7 @@ export function TablesShowcase({ embedded = false }: { embedded?: boolean }) {
       {!reduce.current && (
         <div className="pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 px-2">
           <div
-            className={`flex items-center gap-2 rounded-full border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur transition-all duration-300 ${
+            className={`flex items-center gap-2 rounded-full border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur transition duration-300 ${
               phase === "idle" ? "translate-y-2 opacity-0" : "translate-y-0 opacity-100"
             } ${phase === "done" ? "border-emerald-500/40" : "border-brand/40"}`}
           >

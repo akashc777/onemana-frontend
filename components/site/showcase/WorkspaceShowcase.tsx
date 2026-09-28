@@ -58,7 +58,7 @@ export function WorkspaceShowcase() {
         className="relative mb-5 flex gap-1 overflow-x-auto rounded-lg border border-border bg-muted/50 p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <span
-          className="tab-indicator absolute bottom-0.5 top-0.5 rounded-md bg-background shadow-sm transition-all duration-300 ease-out"
+          className="tab-indicator absolute bottom-0.5 top-0.5 rounded-md bg-background shadow-sm transition-[left,width] duration-300 ease-out"
           style={{ left: indicator.left, width: indicator.width }}
           aria-hidden
         />

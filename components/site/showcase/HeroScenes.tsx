@@ -1078,7 +1078,7 @@ export function CodePRScene({ reduced, onDone }: SceneProps) {
                       return (
                         <span
                           key={s}
-                          className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-px text-[9px] font-medium transition-all duration-300 ${
+                          className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-px text-[9px] font-medium transition duration-300 ${
                             stageDone
                               ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                               : stageActive

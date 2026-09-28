@@ -23,7 +23,7 @@ export function ThemeToggle() {
       className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
     >
       <svg
-        className={`absolute h-[18px] w-[18px] transition-all duration-300 ${isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
+        className={`absolute h-[18px] w-[18px] transition duration-300 ${isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -34,7 +34,7 @@ export function ThemeToggle() {
         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" strokeLinecap="round" />
       </svg>
       <svg
-        className={`absolute h-[18px] w-[18px] transition-all duration-300 ${isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0"}`}
+        className={`absolute h-[18px] w-[18px] transition duration-300 ${isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0"}`}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

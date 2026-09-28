@@ -201,7 +201,7 @@ export function CalendarShowcase({ embedded = false }: { embedded?: boolean }) {
       {!reduce.current && (
         <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 px-2">
           <div
-            className={`flex items-center gap-2 rounded-full border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur transition-all duration-300 ${
+            className={`flex items-center gap-2 rounded-full border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur transition duration-300 ${
               phase === "idle" ? "translate-y-2 opacity-0" : "translate-y-0 opacity-100"
             } ${phase === "done" ? "border-emerald-500/40" : "border-brand/40"}`}
           >
