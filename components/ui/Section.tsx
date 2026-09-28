@@ -11,14 +11,17 @@ interface SectionProps {
   spacing?: "default" | "compact";
 }
 
+// Phones get a tighter rhythm: 64px on both sides of every section left
+// screen-high gaps on a 390px screen, and the homepage ran to about twenty
+// phone screens before a buyer reached the price. Larger screens are unchanged.
 const SPACING = {
-  default: "py-16 sm:py-20",
-  compact: "py-12 sm:py-14",
+  default: "py-11 sm:py-20",
+  compact: "py-9 sm:py-14",
 } as const;
 
 const SPACING_WITH_DIVIDER = {
-  default: "pt-16 sm:pt-20 pb-16 sm:pb-20",
-  compact: "pt-12 sm:pt-14 pb-12 sm:pb-14",
+  default: "pt-11 sm:pt-20 pb-11 sm:pb-20",
+  compact: "pt-9 sm:pt-14 pb-9 sm:pb-14",
 } as const;
 
 /** Semantic <section> with consistent vertical rhythm and width. */
