@@ -84,7 +84,7 @@ export function AboutView() {
         </Reveal>
 
         <Reveal delay={120} className="mt-10 text-center text-sm text-muted-foreground">
-          <p>
+          <p id="contact" className="scroll-mt-24">
             Questions?{" "}
             <a href="mailto:support@onemana.dev" className="font-medium text-brand hover:underline">
               support@onemana.dev

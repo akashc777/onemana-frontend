@@ -1,3 +1,6 @@
+// Kept in step with site.demoUrl (lib/site.ts), which this file cannot import.
+const demoUrl = (process.env.NEXT_PUBLIC_DEMO_URL || "https://onecamp.onemana.dev").replace(/\/$/, "");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
@@ -10,6 +13,12 @@ const nextConfig = {
             { source: "/governance", destination: "/#governance", permanent: false },
             { source: "/login", destination: "/account", permanent: false },
             { source: "/signin", destination: "/account", permanent: false },
+            // Addresses people type, or that posts and emails have linked to,
+            // for pages that live elsewhere. The demo is on its own host; see
+            // site.demoStartUrl for why it carries start_demo.
+            { source: "/demo", destination: `${demoUrl}${demoUrl.includes("?") ? "&" : "?"}start_demo=1`, permanent: false },
+            { source: "/contact", destination: "/about#contact", permanent: false },
+            { source: "/support", destination: "/about#contact", permanent: false },
         ];
     },
     async headers() {
