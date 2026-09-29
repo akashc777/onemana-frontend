@@ -10,15 +10,16 @@
      most expensive thing a small product can get wrong about its own look.
 
      These values are the exact sRGB of the app's OKLCH tokens. Same ground, same
-     ink, same hairline, same accent. See app/globals.css in the workspace. */
+     ink, same hairline, same accent. See app/globals.css in the workspace;
+     app/sharedTokens.test.ts fails if either side drifts. */
   --background: 254 253 252;
   --foreground: 22 19 16;
   --muted: 246 244 241;
-  --muted-foreground: 116 111 105;
+  --muted-foreground: 111 105 99;
   --border: 230 227 224;
   --accent: 246 243 240;
-  --accent-foreground: 22 19 16;
-  --card: 255 254 253;
+  --accent-foreground: 29 26 22;
+  --card: 255 255 254;
   --ring: 185 74 0;
   --grid-line: 230 227 224;
   --dot-grid: 213 208 202;
