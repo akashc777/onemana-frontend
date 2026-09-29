@@ -52,13 +52,15 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
             className="absolute inset-0 h-full w-full object-cover opacity-90 transition group-hover:opacity-100"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="grid h-16 w-16 place-items-center rounded-md bg-brand text-white shadow-sm transition group-hover:bg-brand-dark sm:h-[4.5rem] sm:w-[4.5rem]">
-              <svg viewBox="0 0 24 24" className="ml-0.5 h-7 w-7 sm:h-8 sm:w-8" fill="currentColor" aria-hidden>
-                <path d="M8 5v14l11-7L8 5z" />
-              </svg>
-            </span>
-          </div>
+          {/* Bottom-left, not centred: a centred button sat on the film's
+              wordmark. A labelled control also says what the click does. */}
+          <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-md bg-brand py-2 pl-3 pr-3.5 text-sm font-medium text-white shadow-sm transition group-hover:bg-brand-dark sm:bottom-5 sm:left-5">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+              <path d="M8 5v14l11-7L8 5z" />
+            </svg>
+            Watch the film
+            <span className="font-normal tabular-nums text-white/80">1:32</span>
+          </span>
         </div>
       </button>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-center">
