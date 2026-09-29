@@ -1229,12 +1229,66 @@ body {
     inset 0 1px 0 rgb(255 255 255 / 0.04);
 }
 
+/* Kinetic headline (components/site/KineticHeadline). Plays once: each word
+   rises in turn, then a brand line draws under the claim. No loop, no script. */
+.kinetic-word {
+  display: inline-block;
+  animation: kinetic-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms + 120ms);
+}
+.kinetic-underline {
+  background-image: linear-gradient(rgb(var(--brand)), rgb(var(--brand)));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 0.08em;
+  animation: kinetic-underline 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms + 320ms);
+}
+@keyframes kinetic-rise {
+  from { opacity: 0; transform: translateY(0.35em); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kinetic-underline {
+  from { background-size: 0% 0.08em; }
+  to { background-size: 100% 0.08em; }
+}
+
+/* The refusal in the hero record (components/site/HeroReceipt). Once the
+   headline has landed, the REFUSED stamp lands after it and its reason
+   follows: the one row the section exists to show. Not a ticker. */
+.refusal-stamp {
+  display: inline-block;
+  animation: refusal-stamp 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+  animation-delay: 1.2s;
+}
+.refusal-reason {
+  animation: refusal-reason 0.5s ease-out both;
+  animation-delay: 1.55s;
+}
+@keyframes refusal-stamp {
+  from { opacity: 0; transform: scale(1.6) rotate(-4deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes refusal-reason {
+  from { opacity: 0; transform: translateY(-0.2em); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .reveal.is-pending {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .kinetic-word,
+  .kinetic-underline,
+  .refusal-stamp,
+  .refusal-reason {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 
   .stack-enter .tool-tile {

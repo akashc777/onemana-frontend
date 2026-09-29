@@ -18,9 +18,11 @@
  * authorisation can put on its front page, and it is the row a sceptical
  * engineer will look at first.
  *
- * Static by design. This is a specimen of a real record, not a live feed and not
- * a fake one that animates to look busy: an invented ticker would undermine the
- * exact quality the section exists to demonstrate.
+ * Not a ticker. This is a specimen of a real record, not a live feed and not a
+ * fake one that animates to look busy: an invented ticker would undermine the
+ * exact quality the section exists to demonstrate. The one motion here is a
+ * single emphasis on the refusal once the headline has landed (.refusal-stamp,
+ * then .refusal-reason), because that is the row a reader should look at.
  */
 
 import React from "react"
@@ -81,7 +83,7 @@ export const HeroReceipt: React.FC = () => (
                             <span
                                 className={
                                     r.outcome === "refused"
-                                        ? "rounded-sm bg-brand/10 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-brand"
+                                        ? "refusal-stamp rounded-sm bg-brand/10 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-brand"
                                         : "rounded-sm bg-foreground/[0.06] px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-foreground/45"
                                 }
                             >
@@ -90,7 +92,7 @@ export const HeroReceipt: React.FC = () => (
                         </span>
                         <span className="mt-0.5 block truncate text-[0.78rem] text-foreground/55">{r.detail}</span>
                         {r.note && (
-                            <span className="mt-1 block text-[0.72rem] leading-snug text-brand/90">{r.note}</span>
+                            <span className="refusal-reason mt-1 block text-[0.72rem] leading-snug text-brand/90">{r.note}</span>
                         )}
                     </span>
                 </li>

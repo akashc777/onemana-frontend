@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { KineticHeadline } from "@/components/site/KineticHeadline"
 import CostCalculator from "@/components/site/CostCalculator";
 import SwitchingCosts from "@/components/site/SwitchingCosts";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
@@ -65,11 +66,13 @@ export default async function HomePage() {
                   Chat · Docs · Tasks · Calls · AI agents, on your server
                 </p>
               </Reveal>
-              <Reveal delay={60}>
-                <h1 className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.4rem]">
-                  An agent can only do what the person behind it could.
-                </h1>
-              </Reveal>
+              {/* Its own entrance (KineticHeadline); Reveal would hide it while it moves. */}
+              <KineticHeadline
+                className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.4rem]"
+                before="An agent can only do what"
+                emphasis="the person behind it"
+                after="could."
+              />
               <Reveal delay={120}>
                 <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
                   Checked live on every call, and written to the log before it acts. Chat, docs, tasks,
@@ -95,9 +98,11 @@ export default async function HomePage() {
               </Reveal>
             </div>
 
-            <Reveal delay={140} className="lg:pt-2">
+            {/* Visible from the first paint: its one motion, the refusal landing,
+                is timed from page load and would play unseen inside Reveal. */}
+            <div className="lg:pt-2">
               <HeroReceipt />
-            </Reveal>
+            </div>
           </div>
 
           <Reveal delay={200} direction="scale" className="mx-auto mt-16 w-full max-w-6xl">
