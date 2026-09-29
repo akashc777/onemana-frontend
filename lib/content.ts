@@ -132,6 +132,11 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     body: "Every call, allowed or refused, hash-chained and exportable.",
   },
   {
+    icon: "api",
+    title: "Bring your assistant",
+    body: "Connect ChatGPT, Claude or Grok. It acts only as you.",
+  },
+  {
     icon: "shield",
     title: "SSO and provisioning",
     body: "SAML, OIDC, LDAP, SCIM 2.0, TOTP. No enterprise tier.",
@@ -152,11 +157,6 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     body: "Kanban beside your channels. Nothing to keep in sync.",
   },
   {
-    icon: "table",
-    title: "Tables",
-    body: "Typed databases with grid, board, calendar and chart views.",
-  },
-  {
     icon: "video",
     title: "Video",
     body: "LiveKit and transcription on your hardware. AI recap after.",
@@ -165,6 +165,11 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     icon: "lock",
     title: "Your server",
     body: "One Docker command, SSL included. No phone home.",
+  },
+  {
+    icon: "table",
+    title: "Tables",
+    body: "Typed databases with grid, board, calendar and chart views.",
   },
   {
     icon: "automation",
@@ -185,11 +190,6 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
     icon: "teams",
     title: "Teams",
     body: "Roles and projects. The AI sees only what you see.",
-  },
-  {
-    icon: "api",
-    title: "Bring your assistant",
-    body: "Connect ChatGPT, Claude or Grok. It acts only as you.",
   },
 ];
 
