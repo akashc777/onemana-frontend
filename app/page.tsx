@@ -114,9 +114,9 @@ export default async function HomePage() {
       <Section id="tour" divider className="overflow-hidden">
         <SectionAmbient variant="tour" />
         <SectionHeading
-          eyebrow="Product tour"
+          eyebrow="Launch film"
           title="See it before you commit"
-          subtitle="Walk through the app: channels, AI, docs, tasks, and more. Built from the same components we ship."
+          subtitle="An agent refused on the record, then the product: channels, docs, tasks, your server."
         />
         <Reveal direction="scale" className="mt-12">
           <div className="tour-video-glow relative">

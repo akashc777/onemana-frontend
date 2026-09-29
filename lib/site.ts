@@ -50,7 +50,7 @@ export const site = {
   priceInr: 24999,
   cloudPriceInr: 9999,
   cloudSeats: 30,
-  demoVideoId: "t0IpX9IZcmg",
+  demoVideoId: "zUipDthtraQ", // the launch film (92 s), recorded in the live demo
   version: "2",
   twitter: "https://twitter.com/akashc777",
 };
