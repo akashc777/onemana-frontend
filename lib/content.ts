@@ -188,8 +188,8 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   },
   {
     icon: "api",
-    title: "Programmable",
-    body: "Scoped API, TypeScript SDK and an MCP server.",
+    title: "Bring your assistant",
+    body: "Connect ChatGPT, Claude or Grok. It acts only as you.",
   },
 ];
 
@@ -209,9 +209,15 @@ export const faqs = [
     q: "Where does the model run?",
     a: "On infrastructure you choose. Ollama locally by default; OpenAI, Anthropic, or any OpenAI-compatible endpoint when you want. Local-only mode refuses cloud providers outright rather than warning and allowing them. PII redaction runs before anything outbound. OneCamp Cloud does not resell inference: you bring your own key.",
   },
+  // Personal agents (ChatGPT, Claude, Grok Bot, Meta's Muse) now reach work tools
+  // by signing in as the person, with everything the account can open. This is
+  // the answer OneCamp gives instead, and each clause is a server rule:
+  //   acts as you                 agent-bound token capped by live permissions
+  //   deleting waits for approval business/MCPServer/write.go
+  //   disconnect ends it at once  business/MCPServer/oauth Disconnect
   {
-    q: "What happens when someone leaves?",
-    a: "Deactivate them in OneCamp, or let SCIM do it from your directory. Eligibility is re-checked on every call, so their sessions, API tokens, and agents stop immediately. You do not hunt for credentials to revoke.",
+    q: "Can the assistant I already use work in OneCamp?",
+    a: "Yes. Connect ChatGPT, Claude, Grok Bot or any MCP client by URL and approve it once. It acts as you and never more: deleting waits for a person's approval, every call is on the record, and disconnecting stops it at once.",
   },
   {
     q: "Do you support SSO and SCIM?",
