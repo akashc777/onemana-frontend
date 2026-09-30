@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEmail } from "@/components/account/ChangeEmail";
+import { FREE_PLAN_CODE, FREE_SEATS } from "@/lib/freePlan";
 import { useCallback, useEffect, useState } from "react";
 import Script from "next/script";
 import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
@@ -151,7 +152,11 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
               <div key={l.key} className="rounded-2xl border border-border bg-muted/30 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    {l.product_type === "saas_subscription" ? "Cloud (includes self-host)" : "Lifetime self-host license"}
+                    {l.product_type === "saas_subscription"
+                      ? "Cloud (includes self-host)"
+                      : l.plan_code === FREE_PLAN_CODE
+                        ? `Free self-host license (up to ${FREE_SEATS} people)`
+                        : "Lifetime self-host license"}
                   </span>
                   <span className="text-xs text-muted-foreground">Issued {formatDate(l.issued_at)}</span>
                 </div>

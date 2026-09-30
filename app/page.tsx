@@ -88,8 +88,11 @@ export default async function HomePage() {
                   <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg" className="w-full sm:w-auto">
                     Try the live demo
                   </ButtonLink>
-                  <ButtonLink href="/buy" variant="ghost" size="lg" className="w-full sm:w-auto">
-                    Get OneCamp
+                  {/* Free, not "Get OneCamp": of 48 who reached the buy page in
+                      September two opened the payment window. The free plan
+                      lets a team use it for real before anyone pays. */}
+                  <ButtonLink href="/free" variant="ghost" size="lg" className="w-full sm:w-auto">
+                    Start free
                   </ButtonLink>
                   <span className="hidden text-xs text-muted-foreground sm:ml-1 sm:inline-flex">
                     <GitHubStars className="!py-1.5" stars={stars} />

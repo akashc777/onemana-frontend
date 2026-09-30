@@ -79,6 +79,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "cloud_plan_id_storage", label: "Razorpay plan ID (extra storage)", hint: "plan_… for the monthly extra-storage add-on. Empty means storage is not offered: the pricing page hides it and the portal shows no button. Must charge exactly the price below; use the check under it." },
       { key: "cloud_price_storage", label: "Extra storage price (paise/mo)", type: "number", hint: "299900 = ₹2,999 a month. Must equal what the Razorpay plan charges." },
       { key: "cloud_storage_addon_gb", label: "Extra storage size (GB)", type: "number", hint: "What the add-on buys. Default 500. Priced at least five times what the object store costs us, so the margin holds." },
+      { key: "free_seat_limit", label: "Free plan: people", type: "number", hint: "How many people a free self-hosted licence covers. Default 25. Applies to binaries built from now on; the site says 25 (lib/freePlan.ts), so change both together." },
       { key: "cloud_seats_nudge_pct", label: "Seat nudge at (%)", type: "number", hint: "Email the customer once when their people reach this share of the included seats. Default 80: 24 of 30. Monthly at most while over. Nothing is enforced." },
       { key: "owner_email", label: "Owner alert email", hint: "Where new-Cloud-order notifications are sent." },
       { key: "support_reply_to", label: "Support reply-to", hint: "The Reply-To on every email we send a customer, e.g. support@onemana.dev. A reply to a nudge lands here." },

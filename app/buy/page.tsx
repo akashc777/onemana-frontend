@@ -15,6 +15,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
+import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
 
 type Plan = "lifetime" | "cloud";
@@ -279,9 +280,16 @@ function BuyInner() {
                 The live demo is the real product with sample data. Nothing to install and no
                 account needed.
               </p>
-              <ButtonLink href={site.demoStartUrl} external variant="ghost" className="mt-3">
-                Open the live demo
-              </ButtonLink>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <ButtonLink href={site.demoStartUrl} external variant="ghost">
+                  Open the live demo
+                </ButtonLink>
+                {!isCloud && (
+                  <ButtonLink href="/free" variant="ghost">
+                    Or run it free for up to {FREE_SEATS} people
+                  </ButtonLink>
+                )}
+              </div>
             </div>
 
             <p className="mt-4 text-xs text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>

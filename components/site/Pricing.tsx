@@ -3,6 +3,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { lifetimeBenefits, savingsPitch } from "@/lib/content";
 import { currencyNote, fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
 import { CloudPlanCard } from "@/components/site/CloudPlanCard";
+import { FREE_SEATS } from "@/lib/freePlan";
 
 function Check() {
   return (
@@ -24,6 +25,20 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
               heading already says "buy once", and the calculator below does
               the arithmetic. */}
           <p className="text-base leading-relaxed text-muted-foreground">{savingsPitch.body}</p>
+        </div>
+      </Reveal>
+
+      <Reveal>
+        <div className="card flex flex-col items-start justify-between gap-4 border-brand/20 bg-brand/[0.03] p-5 sm:flex-row sm:items-center sm:p-6">
+          <div>
+            <p className="text-sm font-medium text-foreground">Free for up to {FREE_SEATS} people</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Every feature, on your own server. No card.
+            </p>
+          </div>
+          <ButtonLink href="/free" variant="ghost" size="md" className="shrink-0">
+            Start free
+          </ButtonLink>
         </div>
       </Reveal>
 
