@@ -24,6 +24,8 @@ import React, { useMemo, useState } from "react"
 import Link from "next/link"
 import type { Pricing } from "@/lib/pricing"
 import { cloudYearFor } from "@/lib/cloudYear"
+import { teamCost } from "@/lib/teamCost"
+import { FREE_SEATS } from "@/lib/freePlan"
 
 /**
  * List prices per user per month, shown so the arithmetic is checkable.
@@ -55,15 +57,12 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     const [people, setPeople] = useState(20)
     const [withAi, setWithAi] = useState(true)
 
-    const { saasYear, oneCampYear, multiple, lines } = useMemo(() => {
-        const seats = Math.max(1, Math.min(1000, people))
-        const lines = SEAT_COSTS.filter((t) => !t.ai || withAi)
-        const perSeatMonth = lines.reduce((n, t) => n + t.usd, 0)
-        const saasYear = perSeatMonth * seats * 12
-        // First year, so the licence is included rather than amortised away.
-        const oneCampYear = lifetimeUsd + SERVER_USD_PER_MONTH * 12
-        return { saasYear, oneCampYear, multiple: saasYear / oneCampYear, lines }
-    }, [people, lifetimeUsd, withAi])
+    // First year, so a licence is included rather than amortised away; a team
+    // within the free plan pays none (lib/teamCost).
+    const { saasYear, oneCampYear, multiple, lines, free } = useMemo(
+        () => teamCost(people, withAi, lifetimeUsd, SERVER_USD_PER_MONTH, SEAT_COSTS),
+        [people, lifetimeUsd, withAi],
+    )
 
     return (
         <div className="mx-auto max-w-2xl rounded-lg border border-border bg-canvas-raised p-6 sm:p-8">
@@ -113,7 +112,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     <div className="mt-1 text-3xl font-semibold tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-xs text-foreground/50">first year, and it does not grow with the team</div>
                     <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
-                        <li>{fmt(lifetimeUsd)} license, paid once, unlimited users</li>
+                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${fmt(lifetimeUsd)} license, paid once, unlimited users`}</li>
                         <li>{fmt(SERVER_USD_PER_MONTH)}/mo server that runs it</li>
                         {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>
