@@ -10,6 +10,7 @@ export const FREE_PLAN_CODE = "free_selfhost";
 export const freeIncludes = [
   `Up to ${FREE_SEATS} people`,
   "Every feature, AI teammates included",
+  "AI teammates never take one of the places",
   "Your server, your data, one-command install",
   "Updates within your major version",
 ];
