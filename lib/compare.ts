@@ -78,6 +78,17 @@ export const rivals: Rival[] = [
         source: "https://block.xyz/inside/introducing-buzz-where-humans-and-agents-work-together",
     },
     {
+        // Launched 24 Sep 2026 with a $20M seed as "agent-native messaging":
+        // the other product built on agents as members, so a buyer comparing
+        // governed agents meets it. Read from its own announcement.
+        name: "Ando",
+        what: "Team messaging where agents join channels and DMs as members",
+        billing: "Per human seat, agents not counted; prices not published, access by waitlist",
+        agents: "Agents follow channels and join conversations without being mentioned, each with an identity, an inbox and permissions",
+        theyWin: "$20M of backing, agents that choose which conversations to join across a workspace, and its own hosted harness next to Claude, Codex and Grok Bot",
+        source: "https://www.ando.so/blog/introducing-ando",
+    },
+    {
         name: "Plane",
         what: "Project management, self-hostable, with local model support",
         billing: "Per user, per month, from $6 a seat",
@@ -95,8 +106,8 @@ export const rivals: Rival[] = [
 export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never } = {
     name: "OneCamp",
     what: "Chat, docs, tasks, tables, video, calendar and agents in one workspace",
-    billing: "One licence, unlimited users, or a flat monthly cloud",
-    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. Any MCP agent signs in by URL, local models included, and agents built elsewhere (AG-UI or A2A) run under the same rules",
+    billing: "Free for up to 25 people on your server, one licence for unlimited users, or a flat monthly cloud",
+    agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. An agent following a channel replies there, tells its sponsor privately, or stays silent. Any MCP agent signs in by URL, local models included, and agents built elsewhere (AG-UI or A2A) run under the same rules",
 }
 
 /**
