@@ -328,6 +328,7 @@ export interface VisitStats {
   demo_drop_off: FunnelStop[];
   /** Buy page, payment window, and how it ended; distinct visitors per step. */
   checkout_funnel?: FunnelStop[];
+  free_funnel?: FunnelStop[];
 }
 
 export interface FYEarning {

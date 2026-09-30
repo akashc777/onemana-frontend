@@ -109,6 +109,7 @@ export function VisitorsPanel() {
   const demoFunnel = [...(data?.demo_drop_off ?? [])].reverse();
   const demoClicks = data?.demo_clicks ?? 0;
   const checkoutFunnel = data?.checkout_funnel ?? [];
+  const freeFunnel = data?.free_funnel ?? [];
   const maxDay = daily.reduce((m, d) => Math.max(m, d.views), 0) || 1;
   const countryTotal = byCountry.reduce((s, c) => s + c.views, 0) || 1;
   const deviceTotal = byDevice.reduce((s, d) => s + d.views, 0) || 1;
@@ -232,6 +233,17 @@ export function VisitorsPanel() {
             caption="Distinct visitors at each step of the checkout in this window."
             empty="Nobody reached the buy page in this range."
             stops={checkoutFunnel}
+          />
+
+          {/* The free plan, beside the checkout: a claim is a team that
+              installs before anyone pays. */}
+          <FunnelCard
+            title="The free plan"
+            total={freeFunnel[0]?.visitors ?? 0}
+            totalLabel={`${freeFunnel[0]?.visitors ?? 0} opened the free plan`}
+            caption="Distinct visitors who opened /free, and who claimed a key, in this window."
+            empty="Nobody opened the free plan in this range."
+            stops={freeFunnel}
           />
 
           {/* Devices */}
