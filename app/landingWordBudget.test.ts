@@ -65,7 +65,9 @@ const PRODUCT_MOCK_MARKER = "landing-diet: product-mock";
  * say so anywhere, the installer only says it after the install finishes, and a
  * buyer whose model was "run one command" met an unexpected step at the moment
  * they expected to be done. Eighteen words against a support thread and a
- * stalled install is the trade this budget exists to allow.
+ * stalled install is the trade this budget exists to allow. (Since 1 October
+ * 2026 the installer serves the web app, and step one names the 8 GB machine
+ * floor in that sentence's place.)
  *
  * Raised from 870 to 885 on 15 September 2026 for the governed demo, which is
  * section 5 of the redesign plan's own wireframe and budgeted there at 40-60

@@ -6,6 +6,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { site } from "@/lib/site";
 import { trackEvent } from "@/lib/track";
 import { FREE_SEATS, freeClaimPayload, freeIncludes } from "@/lib/freePlan";
+import { selfHostNeeds } from "@/lib/content";
 
 const inputCls =
   "w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 sm:text-sm";
@@ -104,6 +105,19 @@ export default function FreePage() {
                 </li>
               ))}
             </ul>
+            <div className="space-y-2 rounded-lg border border-border px-4 py-3">
+              <p className="text-sm font-medium text-foreground">What you need</p>
+              <ul className="space-y-1.5 text-sm text-muted-foreground">
+                {selfHostNeeds.map((need) => (
+                  <li key={need} className="flex items-start gap-2.5">
+                    <span aria-hidden className="mt-0.5">·</span> {need}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm text-muted-foreground">
+                No server? <a href="/buy" className="font-medium text-foreground underline underline-offset-4">OneCamp Cloud</a> runs it for you.
+              </p>
+            </div>
             <p className="text-sm text-muted-foreground">
               Past {FREE_SEATS} people? A lifetime licence removes the limit, and the workspace you already run keeps working:
               re-run the same install command after buying.
