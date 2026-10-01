@@ -12,6 +12,7 @@ const STATIC_ROUTES = [
   "/blog",
   "/about",
   "/terms-of-service",
+  "/privacy-policy",
   "/refund-policy",
   "/account-ownership-policy",
   "/taxes-on-services",

@@ -81,7 +81,7 @@ export default function FreePage() {
                     className={inputCls}
                     placeholder="you@company.com"
                   />
-                  <span className="mt-1 block text-xs text-muted-foreground">The key is sent here, so use one you can open.</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">The key is sent here, so use one you can open. See our <a href="/privacy-policy" className="underline underline-offset-2">privacy policy</a>.</span>
                 </label>
                 <label className="block">
                   <span className="mb-1.5 block text-sm font-medium text-foreground">Name or team (optional)</span>

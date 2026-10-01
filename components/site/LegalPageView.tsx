@@ -1,6 +1,7 @@
 import { legalPages } from "@/lib/legalPages";
 
 const EYEBROWS: Record<string, string> = {
+  "privacy-policy": "Legal",
   "refund-policy": "Legal",
   "terms-of-service": "Legal",
   "account-ownership-policy": "Legal",

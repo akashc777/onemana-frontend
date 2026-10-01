@@ -1,18 +1,84 @@
 import { site } from "./site";
 
-const VID_KEY = "om_vid";
+/*
+ * WHAT THIS STORES, AND WHEN.
+ *
+ * One random id (om_vid) in localStorage, so a pageview can be joined to a
+ * later checkout. The browser never invents it: the server issues it with the
+ * first pageview and says whether it may be kept. For a visitor in the EEA, the
+ * UK or Switzerland it says no, because storing a non-essential id on their
+ * device needs consent there, and we would rather store nothing than show a
+ * banner. They are counted for the day without anything on their device.
+ *
+ * Nothing at all is sent from a browser with Global Privacy Control or Do Not
+ * Track switched on, or from the operator's own browsers (om_internal), which
+ * the admin panel marks on sign-in. No cookies.
+ */
 
-/** Returns a stable anonymous visitor id (localStorage), creating one if needed. */
+const VID_KEY = "om_vid";
+const INTERNAL_KEY = "om_internal";
+const VID_SHAPE = /^[A-Za-z0-9-]{8,64}$/;
+
+function storage(): Storage | null {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
+}
+
+/** The visitor id this browser was issued, or "" when it holds none. */
 export function getVisitorId(): string {
   try {
-    let id = localStorage.getItem(VID_KEY);
-    if (!id) {
-      id = (crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`);
-      localStorage.setItem(VID_KEY, id);
-    }
-    return id;
+    return storage()?.getItem(VID_KEY) ?? "";
   } catch {
     return "";
+  }
+}
+
+/** The browser asked not to be tracked (Global Privacy Control, Do Not Track). */
+export function optedOut(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const nav = navigator as Navigator & { globalPrivacyControl?: boolean };
+  return nav.globalPrivacyControl === true || nav.doNotTrack === "1";
+}
+
+/** This is one of the operator's own browsers. */
+export function isInternal(): boolean {
+  try {
+    return storage()?.getItem(INTERNAL_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Marks this browser as the operator's, so it sends no more pageviews. */
+export function markInternal(): void {
+  try {
+    storage()?.setItem(INTERNAL_KEY, "1");
+  } catch {
+    /* storage disabled: the server-side exclusion still applies */
+  }
+}
+
+/**
+ * Applies the server's answer to a beacon: keep the id it issued, or delete
+ * any id held when it says this browser may keep none. Anything else (an old
+ * server's empty reply, a network error) changes nothing. Exported for tests.
+ */
+export function applyVerdict(body: unknown): void {
+  const s = storage();
+  if (!s || !body || typeof body !== "object") return;
+  const v = body as { store?: unknown; visitor_id?: unknown };
+  try {
+    if (v.store === true && typeof v.visitor_id === "string" && VID_SHAPE.test(v.visitor_id)) {
+      s.setItem(VID_KEY, v.visitor_id);
+    } else if (v.store === false) {
+      s.removeItem(VID_KEY);
+      noStore = true;
+    }
+  } catch {
+    /* ignore */
   }
 }
 
@@ -95,20 +161,37 @@ export function trackEvent(name: string): void {
   trackPageview(`${EVENT_PREFIX}${name}`);
 }
 
+// Set once the server has said this browser keeps no id, so later beacons
+// stop waiting for one.
+let noStore = false;
+// Beacons sent before this browser has an id wait for the first answer, so
+// they all carry the id it brings instead of each being issued a new one.
+let first: Promise<void> | null = null;
+
+async function send(path: string, referrer: string): Promise<void> {
+  const res = await fetch(`${site.backendUrl}/onecamp/track`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ visitor_id: getVisitorId(), path, referrer }),
+    keepalive: true,
+  });
+  applyVerdict(await res.json().catch(() => null));
+}
+
 /** Fire-and-forget anonymous pageview beacon. Never blocks or throws. */
 export function trackPageview(path: string): void {
   try {
-    const body = JSON.stringify({
-      visitor_id: getVisitorId(),
-      path,
-      referrer: typeof document !== "undefined" ? document.referrer : "",
-    });
-    void fetch(`${site.backendUrl}/onecamp/track`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-      keepalive: true,
-    }).catch(() => {});
+    if (optedOut() || isInternal()) return;
+    const referrer = typeof document !== "undefined" ? document.referrer : "";
+    if (getVisitorId() || noStore) {
+      void send(path, referrer).catch(() => {});
+      return;
+    }
+    if (!first) {
+      first = send(path, referrer).catch(() => {});
+      return;
+    }
+    void first.then(() => send(path, referrer)).catch(() => {});
   } catch {
     /* ignore */
   }

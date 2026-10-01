@@ -87,6 +87,7 @@ export const footerLinks = {
     { label: "Terms of Service", href: "/terms-of-service" },
   ],
   Policies: [
+    { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Refund Policy", href: "/refund-policy" },
     { label: "Account Ownership", href: "/account-ownership-policy" },
     { label: "Taxes on Services", href: "/taxes-on-services" },

@@ -27,6 +27,9 @@ const NOT_IN_FORM = new Set<string>([
   // operator pins a rate with usd_inr_rate_override instead. See usdRate.go.
   "usd_inr_rate",
   "usd_inr_rate_at",
+  // The operator's own browsers, as JSON. Managed from the Visitors panel
+  // (signing in adds the browser; "Count again" removes it), not typed by hand.
+  "analytics_excluded_visitors",
 ])
 
 function goFiles(dir: string, out: string[] = []): string[] {

@@ -178,6 +178,13 @@ async function adminGet<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+/** One of the operator's browsers, left out of every visit report. */
+export interface ExcludedBrowser {
+  id: string;
+  label: string;
+  added_at: string;
+}
+
 export interface Order {
   id: string;
   email: string;
@@ -1099,6 +1106,25 @@ export const adminApi = {
   // ---- Analytics + earnings ----
   visitStats: (from?: string, to?: string) =>
     adminGet<{ data: VisitStats }>(`/onecamp/admin/visits${rangeQuery(from, to)}`).then((d) => d.data),
+  /** The operator's own browsers, whose visits every report leaves out. */
+  excludedBrowsers: () => adminGet<{ data: ExcludedBrowser[] }>("/onecamp/admin/visits/excluded").then((d) => d.data ?? []),
+  excludeBrowser: async (visitorId: string, label: string): Promise<ExcludedBrowser[]> => {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/visits/excluded`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
+      body: JSON.stringify({ visitor_id: visitorId, label }),
+    });
+    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    return ((await res.json()) as { data: ExcludedBrowser[] }).data ?? [];
+  },
+  includeBrowser: async (visitorId: string): Promise<ExcludedBrowser[]> => {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/visits/excluded/${encodeURIComponent(visitorId)}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Token": getToken() },
+    });
+    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    return ((await res.json()) as { data: ExcludedBrowser[] }).data ?? [];
+  },
   earnings: (from?: string, to?: string) =>
     adminGet<{ data: EarningsSummary }>(`/onecamp/admin/earnings${rangeQuery(from, to)}`).then((d) => d.data),
   taxPayments: () => adminGet<{ data: TaxPayment[] }>("/onecamp/admin/tax-payments").then((d) => d.data ?? []),

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { adminApi, type VisitStats, type FunnelStop } from "@/lib/adminApi";
 import { countryName, countryFlag } from "@/lib/geo";
+import { OwnBrowsersCard } from "./OwnBrowsersCard";
 
 // Map is client-only (react-simple-maps fetches its topojson at runtime).
 const VisitorMap = dynamic(() => import("./VisitorMap").then((m) => m.VisitorMap), {
@@ -312,6 +313,7 @@ export function VisitorsPanel() {
           </div>
         </>
       )}
+      <OwnBrowsersCard onChange={load} />
     </div>
   );
 }

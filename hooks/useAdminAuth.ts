@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { adminApi, clearToken, getToken, setToken } from "@/lib/adminApi";
+import { rememberOwnBrowser } from "@/lib/ownBrowser";
 
 export type AuthStatus = "checking" | "authed" | "unauthed";
 
@@ -28,7 +29,12 @@ export function useAdminAuth(): AdminAuth {
     let alive = true;
     adminApi
       .verify(token)
-      .then((ok) => alive && setStatus(ok ? "authed" : "unauthed"))
+      .then((ok) => {
+        if (!alive) return;
+        setStatus(ok ? "authed" : "unauthed");
+        // The operator's browser: stop counting it, history included.
+        if (ok) void rememberOwnBrowser();
+      })
       .catch(() => alive && setStatus("unauthed"));
     return () => {
       alive = false;
@@ -40,6 +46,7 @@ export function useAdminAuth(): AdminAuth {
     if (ok) {
       setToken(token.trim());
       setStatus("authed");
+      void rememberOwnBrowser();
     }
     return ok;
   }, []);
