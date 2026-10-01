@@ -42,6 +42,8 @@ export const site = {
     return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=drill`;
   },
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
+  /** The open-source server (AGPL-3.0). */
+  serverGithubUrl: "https://github.com/OneMana-Soft/OneCamp",
   githubRepo: process.env.NEXT_PUBLIC_GITHUB_REPO || "OneMana-Soft/OneCamp-fe",
   docsPath: "/docs",
   // Rupee fallbacks for anything rendered without the backend. There are no

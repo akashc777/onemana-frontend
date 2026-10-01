@@ -48,8 +48,8 @@ export function SocialProof() {
                   <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-foreground hover:underline">
                     {s.detail}
                   </a>
-                ) : s.label === "Open-source frontend" ? (
-                  <a href={site.githubUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-foreground hover:underline">
+                ) : s.label === "Open source" ? (
+                  <a href={site.serverGithubUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-foreground hover:underline">
                     {s.detail}
                   </a>
                 ) : (

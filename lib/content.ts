@@ -245,7 +245,7 @@ export const faqs = [
   },
   {
     q: "What if OneMana shuts down?",
-    a: "You already have the backend binary and an open-source frontend. Your instance does not phone home. It keeps running on your hardware.",
+    a: "The code is open source: server AGPL-3.0, web app MIT. Your instance does not phone home. It keeps running on your hardware.",
   },
 ];
 
@@ -324,7 +324,7 @@ export const socialProof = {
   signals: [
     { label: "Runs in production", detail: "Same app OneMana ships from" },
     { label: "Live demo", detail: "Kick the tires first" },
-    { label: "Open-source frontend", detail: "Read the code on GitHub" },
+    { label: "Open source", detail: "Read the code on GitHub (AGPL-3.0)" },
   ],
 };
 
@@ -401,7 +401,7 @@ export const lifetimeBenefits = [
   "Unlimited users. No per-seat fees",
   "All modules incl. local AI and agents",
   "SSO, SCIM, MFA, and the audit log included",
-  "Open-source frontend, yours forever",
+  "Commercial licence: no AGPL obligations",
   "Runs on your own server",
   "Free updates within your major version",
 ];
