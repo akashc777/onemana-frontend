@@ -25,7 +25,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
             <tr>
               <th className="w-36" />
               {plans.map((p) => (
-                <th key={p.key} scope="col" className="px-3 pb-3 text-left align-bottom">
+                <th key={p.key} scope="col" className="px-3 pb-3 text-left align-top">
                   <span className="block font-semibold text-foreground">{p.name}</span>
                   <span className="mt-1 block text-xs font-normal text-muted-foreground">{p.summary}</span>
                 </th>
