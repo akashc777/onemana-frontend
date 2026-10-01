@@ -244,8 +244,15 @@ export function VisitorsPanel() {
             totalLabel={`${freeFunnel[0]?.visitors ?? 0} opened the free plan`}
             caption="Distinct visitors who opened /free, and who claimed a key, in this window."
             empty="Nobody opened the free plan in this range."
-            stops={freeFunnel}
+            stops={freeFunnel.slice(0, 2)}
           />
+          {/* Claimed from the demo's own prompt: those never open /free, so they
+              are counted beside the page's funnel, not as a share of it. */}
+          {freeFunnel[2] && (
+            <p className="mt-2 px-1 text-xs text-muted-foreground">
+              Claimed from the demo&apos;s prompt: <span className="font-medium text-foreground">{freeFunnel[2].visitors}</span>
+            </p>
+          )}
 
           {/* Devices */}
           <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
