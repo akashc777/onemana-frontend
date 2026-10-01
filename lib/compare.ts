@@ -105,8 +105,8 @@ export const rivals: Rival[] = [
  */
 export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never } = {
     name: "OneCamp",
-    what: "Chat, docs, tasks, tables, video, calendar and agents in one workspace",
-    billing: "Free for up to 25 people on your server, one licence for unlimited users, or a flat monthly cloud",
+    what: "Chat, docs, tasks, tables, video, calendar, Gmail and agents in one workspace. Open source (AGPL-3.0)",
+    billing: "Free and open source to self-host; a free ready-made release for up to 25 people; one licence for unlimited users; or a flat monthly cloud",
     agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. An agent following a channel replies there, tells its sponsor privately, or stays silent. Any MCP agent signs in by URL, local models included, and agents built elsewhere (AG-UI or A2A) run under the same rules",
 }
 
