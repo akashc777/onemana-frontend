@@ -2,6 +2,7 @@
 
 import { guessCountry } from "@/lib/guessCountry";
 import Script from "next/script";
+import { PlanComparison } from "@/components/site/PlanComparison";
 import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing, billingFromParams } from "@/lib/paymentTerms";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -314,6 +315,7 @@ function BuyInner() {
           </div>
         </div>
       </section>
+      <PlanComparison pricing={pricing} />
     </>
   );
 }
