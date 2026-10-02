@@ -5,6 +5,7 @@ import SwitchingCosts from "@/components/site/SwitchingCosts";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { features, MODULES_ON_HOMEPAGE, steps, faqs, requirements, trustPoints, governance, enterpriseControls } from "@/lib/content";
 import { site } from "@/lib/site";
+import { FREE_SEATS } from "@/lib/freePlan";
 import { getPricing } from "@/lib/pricing";
 import { getGithubStars } from "@/lib/github";
 import { Section, SectionHeading } from "@/components/ui/Section";
@@ -63,7 +64,7 @@ export default async function HomePage() {
             <div className="max-w-xl">
               <Reveal>
                 <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
-                  Chat · Docs · Tasks · Calls · AI agents, on your server
+                  Open source · Chat · Docs · Tasks · Calls · AI agents, on your server
                 </p>
               </Reveal>
               {/* Its own entrance (KineticHeadline); Reveal would hide it while it moves. */}
@@ -98,6 +99,15 @@ export default async function HomePage() {
                     <GitHubStars className="!py-1.5" stars={stars} />
                   </span>
                 </div>
+                {/* The two things a launch visitor checks first, and the hero
+                    named neither: is it open, and can a team use it for free. */}
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Free for up to {FREE_SEATS} people, no card.{" "}
+                  <a href={site.serverGithubUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">
+                    Open source on GitHub
+                  </a>
+                  , AGPL-3.0.
+                </p>
               </Reveal>
             </div>
 
