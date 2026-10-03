@@ -65,21 +65,21 @@ export default async function HomePage() {
             <div className="max-w-xl">
               <Reveal>
                 <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
-                  Open source · Chat · Docs · Tasks · Calls · AI agents, on your server
+                  Open source · Free for teams up to 25
                 </p>
               </Reveal>
               {/* Its own entrance (KineticHeadline); Reveal would hide it while it moves. */}
               <KineticHeadline
                 className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.4rem]"
-                before="An agent can only do what"
-                emphasis="the person behind it"
-                after="could."
+                before="Your team's chat, docs, tasks and calls,"
+                emphasis="in one app you own"
+                after="."
               />
               <Reveal delay={120}>
                 <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
-                  Checked live on every call, and written to the log before it acts. Chat, docs, tasks,
-                  video and calendar come with it, in one Docker deploy, with no per-seat fees and
-                  nothing leaving your network.
+                  Like Slack, Notion and Zoom in one place, running on your own server, so your
+                  company&apos;s data stays yours. Its AI agents do work for you, and can only do what
+                  you are allowed to do.
                 </p>
               </Reveal>
               <Reveal delay={180}>
@@ -133,7 +133,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Launch film"
           title="See it before you commit"
-          subtitle="An agent refused on the record, then the product: channels, docs, tasks, your server."
+          subtitle="An AI agent stopped from overstepping, then the app: chat, docs, tasks, on your server."
         />
         <Reveal direction="scale" className="mt-12">
           <div className="tour-video-glow relative">
@@ -194,9 +194,9 @@ export default async function HomePage() {
           name and the refusal sentence the product actually produces. */}
       <Section id="demo" divider>
         <SectionHeading
-          eyebrow="The one path"
+          eyebrow="See it happen"
           title="Watch an agent get stopped"
-          subtitle="Priya can't post in #finance. Neither can her agent, and the refusal is written down."
+          subtitle="Priya can't post in #finance. Neither can her AI agent, and the attempt is written down."
         />
         <Reveal className="mt-10">
           <GovernedDemo />
@@ -249,8 +249,8 @@ export default async function HomePage() {
       <Section id="features" divider className="overflow-hidden">
         <SectionHeading
           eyebrow="What's inside"
-          title="The work the AI is governed over"
-          subtitle="Governance is only worth something if there is real work behind it."
+          title="Everything your team works in"
+          subtitle="Chat, docs, tasks, video calls and AI, in one app."
         />
         {/* An index rather than twelve cards. The differentiators are argued
             above this, so the honest job here is "does it have all the pieces",
@@ -320,8 +320,8 @@ export default async function HomePage() {
         <SectionAmbient variant="pricing" />
         <SectionHeading
           eyebrow="Pricing"
-          title="Buy once, or let us host it"
-          subtitle="One lifetime license for self-hosting, or fully managed OneCamp Cloud."
+          title="Free for small teams. Pay once when you grow."
+          subtitle="Run it on your own server, or let us host it for you."
         />
         <Pricing pricing={pricing} />
 

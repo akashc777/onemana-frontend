@@ -6,9 +6,9 @@ export const site = {
   company: "OneMana Solutions (OPC) Private Limited",
   // Leads with governance rather than "one workspace", which described the category and not the reason
   // to choose this one. See the header of lib/content.ts for the argument.
-  tagline: "Governed AI. Your infrastructure.",
+  tagline: "Like Slack, Notion and Zoom in one app. Free for up to 25 people.",
   description:
-    "OneCamp is a self-hosted workspace where AI agents are bounded by the live permissions of the person who authorised them, and no agent action runs unless it is recorded first. Tamper-evident audit log, SAML, OIDC, LDAP, SCIM, and MFA included. Chat, docs, tasks, tables, whiteboards, video, and calendar in one Docker deploy. Pay once, unlimited users.",
+    "OneCamp is your team's chat, docs, tasks and video calls in one app that runs on your own server, like Slack, Notion and Zoom together. Its AI agents can only do what you are allowed to do, and everything they do is logged. Open source, free for up to 25 people, pay once for more.",
   url: "https://onemana.dev",
   backendUrl:
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "https://backend.onemana.dev",
@@ -64,9 +64,9 @@ export const site = {
 
 export const navLinks = [
   { label: "Tour", href: "/#tour" },
-  // Named "Governance" rather than "Security". Security reads as a trust page full of badges; this is a
+  // Named "Safe AI" (was "Governance", 3 Oct 2026): a first-time visitor knows what safe AI means; "governance" needs explaining. Not "Security": that reads as a trust page full of badges; this is a
   // product argument, and it is the reason to choose OneCamp over an AI workspace that is easier to buy.
-  { label: "Governance", href: "/#governance" },
+  { label: "Safe AI", href: "/#governance" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Docs", href: "/docs" },
 ];
@@ -78,7 +78,7 @@ export const footerLinks = {
     // purpose. /compare is where that argument moved, so it has to be reachable
     // from somewhere or it is a page only a search engine ever sees.
     { label: "Compare", href: "/compare" },
-    { label: "Governance", href: "/#governance" },
+    { label: "Safe AI", href: "/#governance" },
     { label: "Enterprise controls", href: "/#enterprise" },
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },

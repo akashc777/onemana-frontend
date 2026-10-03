@@ -100,7 +100,7 @@ export const HeroReceipt: React.FC = () => (
 
         <div className="border-t border-border px-4 py-2.5">
             <p className="m-0 text-[0.72rem] leading-relaxed text-foreground/45">
-                Written before the action, so a refusal is on the record too.
+                Priya&apos;s AI agent made a task and read a doc, then was stopped from posting in #finance, because Priya can&apos;t post there either.
             </p>
         </div>
     </figure>

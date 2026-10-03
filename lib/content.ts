@@ -31,25 +31,25 @@ export type FeatureIconKey = "ai" | "chat" | "tasks" | "docs" | "board" | "video
  * go and verify. The second one is worth more precisely because it is falsifiable.
  */
 export const governance = {
-  eyebrow: "Governed AI",
-  title: "Permissions, not promises",
+  eyebrow: "Safe AI agents",
+  title: "AI that can't go behind your back",
   subtitle:
-    "Most AI workspaces ask you to trust that the assistant will behave. This one is built so it cannot misbehave quietly.",
+    "Most AI tools ask you to trust them. OneCamp is built so its agents cannot quietly overstep.",
   points: [
     {
       icon: "shield" as FeatureIconKey,
-      title: "An agent can only do what its author could",
-      body: "Every action is checked against the live permission graph of the human who authorised it: channel, project, and document membership, read at the moment of the call. Remove someone from a channel and their agents lose it on the next request, not at the next token rotation.",
+      title: "An agent can only do what you can do",
+      body: "Before every action, OneCamp checks what the person who set up the agent is allowed to do right now. Remove someone from a channel and their agents lose it at once.",
     },
     {
       icon: "audit" as FeatureIconKey,
-      title: "If it can't be recorded, it doesn't happen",
-      body: "The audit entry is written before the tool call. A failed write refuses the call. A decision that was made and never recorded is worse than one recorded and abandoned, because only the second is discoverable afterwards.",
+      title: "Nothing happens off the record",
+      body: "Every action is written to a log before it runs. If it cannot be written down, it does not run.",
     },
     {
       icon: "lock" as FeatureIconKey,
-      title: "Refusals are on the record",
-      body: "A denied call leaves a row with the reason, the credential, the named agent, and the human behind it. Each entry hashes the one before it, so quiet edits to history break the chain.",
+      title: "You can see what was blocked",
+      body: "When an agent is stopped, the log says what it tried, why it was stopped, and who it was working for. Nobody can quietly edit the log afterwards.",
     },
   ],
   // What used to be governance points 4 through 7. One line on the homepage;
@@ -64,9 +64,9 @@ export const governance = {
  * mentioned anywhere on the site before, which was costing deals silently.
  */
 export const enterpriseControls = {
-  eyebrow: "Enterprise controls",
-  title: "The boxes procurement makes you tick",
-  subtitle: "Already in the box. No enterprise tier, no add-on SKU.",
+  eyebrow: "For companies",
+  title: "What your IT team will ask about",
+  subtitle: "Included with a licence or Cloud. No separate enterprise tier.",
   groups: [
     {
       label: "Identity",

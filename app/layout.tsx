@@ -14,7 +14,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} · Governed AI on your own server`,
+    default: `${site.name} · Team chat, docs, tasks and calls on your own server`,
     template: `%s · ${site.name}`,
   },
   description: site.description,

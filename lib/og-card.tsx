@@ -11,10 +11,10 @@ export const OG_SIZE = { width: 1200, height: 630 };
  */
 export const OG_IMAGE_VERSION = "4";
 
-export const OG_TITLE = `${site.name} · Governed AI on your own server`;
+export const OG_TITLE = `${site.name} · Team chat, docs, tasks and calls on your own server`;
 export const OG_DESCRIPTION =
-  "AI agents bounded by the live permissions of whoever authorised them, and audited before they act. Self-hosted, with SSO, SCIM, and MFA. Pay once, unlimited users.";
-export const OG_ALT = "OneCamp: AI with permissions, not promises. On your own server.";
+  "Like Slack, Notion and Zoom in one app, running on your own server. AI agents that can only do what you can, with every action logged. Free for up to 25 people.";
+export const OG_ALT = "OneCamp: your team's chat, docs, tasks and calls in one app, on your own server.";
 
 export const defaultOgImages = [
   {
@@ -112,9 +112,9 @@ export function OgCard() {
             eyeballed: satori does not wrap-and-shrink, it just overflows the card, so a headline that is
             two characters too long ships as a cropped image nobody notices until it is in a tweet.
           */}
-          <span style={{ display: "flex" }}>AI with permissions,</span>
-          <span style={{ display: "flex", color: "#c84f00" }}>not promises.</span>
-          <span style={{ display: "flex", marginTop: 10, fontSize: 52, color: "#222222" }}>On your own server.</span>
+          <span style={{ display: "flex" }}>Chat, docs, tasks and calls</span>
+          <span style={{ display: "flex", color: "#c84f00" }}>in one app you own.</span>
+          <span style={{ display: "flex", marginTop: 10, fontSize: 52, color: "#222222" }}>With AI agents you control.</span>
         </div>
 
         <div style={{ display: "flex", marginTop: 32, fontSize: 26, fontWeight: 500, color: "#5f6368" }}>
