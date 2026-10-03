@@ -54,7 +54,10 @@ const fmt = (n: number) =>
     n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 
 export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }> = ({ lifetimeUsd, pricing }) => {
-    const [people, setPeople] = useState(20)
+    // 40, not 20: above the free plan's 25, so the comparison beside the $259
+    // licence is about the licence. At 20 it priced the free plan and claimed
+    // "70x less" next to a price it was not about (buyer review, 3 Oct 2026).
+    const [people, setPeople] = useState(40)
     const [withAi, setWithAi] = useState(true)
 
     // First year, so a licence is included rather than amortised away; a team
