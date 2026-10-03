@@ -10,7 +10,7 @@ import { selfHostNeeds, steps } from "@/lib/content"
  * the installer actually does.
  *
  * Two ways this went wrong:
- * - The machine floor (8 GB) appeared only deep in the scaling docs, so the
+ * - The machine floor (now 4 GB) appeared only deep in the scaling docs, so the
  *   first anyone heard of it was an install that fell over.
  * - Since v2.34.0 the installer serves the web app itself, but the site kept
  *   warning about a "second deploy" that no longer exists: friction on the
@@ -23,8 +23,9 @@ const read = (p: string) => readFileSync(join(ROOT, p), "utf8").toLowerCase()
 
 describe("what a buyer is told before they pay", () => {
     it("names the machine floor in the install steps and the needs list", () => {
-        expect(steps[0].body).toContain("8 GB")
-        expect(selfHostNeeds.join(" ")).toMatch(/8 GB of RAM and 40 GB of disk/)
+        expect(steps[0].body).toContain("4 GB")
+        expect(selfHostNeeds.join(" ")).toMatch(/4 GB of RAM and 40 GB of disk/)
+        expect(read("app/buy/success/page.tsx")).toContain("4 gb of ram")
     })
 
     it("says the install serves the web app, and warns of no second deploy", () => {

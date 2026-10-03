@@ -199,19 +199,20 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
  * scale-self-hosted); change both together.
  */
 export const selfHostNeeds = [
-  "A Linux server with Docker, 8 GB of RAM and 40 GB of disk",
-  "A domain you control: the installer prints the DNS records to add",
+  "A Linux server with Docker, 4 GB of RAM and 40 GB of disk",
+  "No domain needed: it starts on a free address; add yours later",
   "One command to install. It serves the web app too, so there is nothing else to deploy",
 ];
 
 export const steps = [
   // The machine is named here, before anyone pays or claims a key: someone who
-  // learns the 8 GB floor after installing has already lost an evening. Since
+  // learns the floor after installing has already lost an evening. 4 GB since
+  // virus scanning, the one 2 GB service, became optional by RAM. Since
   // the installer started serving the web app itself (v2.34.0), there is no
   // second deploy to warn about, and saying there is one costs a buyer for
   // nothing. Kept in step with selfHostNeeds below and pinned by
   // installExpectation.test.ts.
-  { n: "1", title: "Run one command", body: "SSH into a Docker-capable server with 8 GB of RAM and run the installer. It pulls images, wires SSL, sets up the database and serves your team's web app too." },
+  { n: "1", title: "Run one command", body: "SSH into a server with 4 GB of RAM and run the installer. It asks one email, then sets up SSL, the database and your team's web app. No domain needed." },
   { n: "2", title: "Connect your directory", body: "Point SAML, OIDC, or LDAP at it and switch on SCIM so joiners and leavers handle themselves. Or just send email invites and skip this." },
   { n: "3", title: "Give the AI a job", body: "Build an agent, decide whether it acts or asks first, and watch what it does in the audit log." },
 ];
