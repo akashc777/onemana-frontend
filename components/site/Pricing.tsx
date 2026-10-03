@@ -58,7 +58,9 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
                 <span className="text-sm text-muted-foreground">once</span>
               </div>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                {fmtINR(pricing.lifetime_inr)} billed in INR · taxes included
+                {pricing.charge_usd
+                  ? `Charged in US dollars · ${fmtINR(pricing.lifetime_inr)} in India`
+                  : `${fmtINR(pricing.lifetime_inr)} billed in INR · taxes included`}
               </p>
             </header>
             <ul className="mt-8 flex-1 space-y-3 text-sm text-foreground">

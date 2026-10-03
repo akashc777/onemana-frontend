@@ -169,7 +169,9 @@ function BuyInner() {
                     : yearly
                       ? `${fmtINR(pricing.cloud_yearly_inr)}/yr billed in INR${saving ? ` · ${saving}` : ""} · ${pricing.cloud_seats} users included · includes a self-host license`
                       : `${fmtINR(pricing.cloud_inr)}/mo billed in INR · ${pricing.cloud_seats} users included · includes a self-host license`
-                  : `${fmtINR(pricing.lifetime_inr)} billed in INR · one-time · all taxes included · unlimited users`}
+                  : pricing.charge_usd && !isIndia
+                    ? "Charged in US dollars · one-time · unlimited users"
+                    : `${fmtINR(pricing.lifetime_inr)} billed in INR · one-time · all taxes included · unlimited users`}
               </p>
               {showChoices && (
                 <div
@@ -247,14 +249,16 @@ function BuyInner() {
                 : isCloud
                   ? // The chosen plan's own price: Business once read Team's here.
                     `Subscribe - ${dual(price.usd, price.inr, price.per)}`
-                  : `Pay ${dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
+                  : pricing.charge_usd
+                    ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
+                    : `Pay ${dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
             </Button>
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
             <p className="text-center text-xs text-foreground/80">
               {paymentTerms(isCloud ? choice : "lifetime")}
             </p>
-            <p className="text-center text-xs text-muted-foreground">{currencyNote(pricing)}</p>
+            <p className="text-center text-xs text-muted-foreground">{currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}</p>
             <p className="text-center text-xs text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="underline hover:text-foreground">Terms</a> and{" "}

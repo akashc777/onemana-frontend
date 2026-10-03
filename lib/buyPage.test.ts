@@ -91,7 +91,9 @@ describe("the buy page quotes the price it charges", () => {
     expect(page).not.toMatch(/Subscribe - \$\{fmtUSD\(pricing\.cloud_usd\)/)
   })
 
-  it("says the charge is in rupees where the money is paid", () => {
-    expect(page).toContain("currencyNote(pricing)")
+  // Rupees in India and for Cloud; dollars for the licence abroad once the
+  // backend charges them (charge_usd). The note under the button says which.
+  it("says how the charge is made where the money is paid", () => {
+    expect(page).toContain("currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })")
   })
 })

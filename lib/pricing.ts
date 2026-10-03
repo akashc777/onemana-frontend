@@ -41,6 +41,8 @@ export interface Pricing {
   business_paise: number;
   business_seats: number;
   business_configured: boolean;
+  /** Buyers outside India are charged the dollar price for the licence (the backend's charge_usd). */
+  charge_usd: boolean;
 }
 
 /**
@@ -92,6 +94,7 @@ export const defaultPricing: Pricing = {
   business_paise: 2499900,
   business_seats: 100,
   business_configured: false,
+  charge_usd: false,
 };
 
 /** Fetches live pricing from the backend (revalidated), falling back safely. */
@@ -139,7 +142,14 @@ export function dual(usdAmount: number, inrAmount: number, per = ""): string {
  * the dollar figure is close, not exact, and saying so here is cheaper than
  * a buyer finding out on their statement.
  */
-export function currencyNote(p: Pricing): string {
+export function currencyNote(p: Pricing, ctx: { inIndia?: boolean; cloud?: boolean } = {}): string {
   const rate = p.usd_rate > 0 ? ` (₹${p.usd_rate.toFixed(2)} to the dollar)` : "";
-  return `You pay in Indian rupees. Dollar amounts are at today's exchange rate${rate}; your card converts at its own rate and may add a small foreign transaction fee.`;
+  const rupees = `Dollar amounts are at today's exchange rate${rate}; your card converts at its own rate and may add a small foreign transaction fee.`;
+  if (!p.charge_usd) return `You pay in Indian rupees. ${rupees}`;
+  // The licence is charged in dollars outside India; Cloud is still a rupee
+  // subscription. Say which applies to what this note sits under.
+  if (ctx.cloud) return `OneCamp Cloud is billed in Indian rupees. ${rupees}`;
+  if (ctx.inIndia === true) return "You pay in Indian rupees, with a GST invoice.";
+  if (ctx.inIndia === false) return "Charged in US dollars: the price shown is the amount on your card.";
+  return `The licence is charged in US dollars outside India and in rupees in India. OneCamp Cloud is billed in rupees: ${rupees.charAt(0).toLowerCase()}${rupees.slice(1)}`;
 }

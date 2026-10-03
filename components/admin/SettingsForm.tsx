@@ -64,6 +64,7 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
     group: "Pricing (admin-editable)",
     fields: [
       { key: "onecamp_price", label: "Lifetime price (paise)", type: "number", hint: "2499900 = ₹24,999 - the amount charged in INR (GST-inclusive)" },
+      { key: "charge_usd", label: "Charge the licence in dollars outside India", hint: "true or false. Turned on by the dollar check (POST /onecamp/admin/payments/usd-probe) once Razorpay accepts a USD order; set false to charge everyone in rupees again. The dollar charge is the rupee price at the day's rate, the number the site already shows. Cloud stays in rupees." },
       { key: "usd_inr_rate_override", label: "Pin the dollar rate (optional)", type: "number", hint: "Leave empty: every dollar price is worked out from the rupee price at the day's exchange rate, fetched automatically. Set rupees per dollar, e.g. 95.5, only to hold the dollar figures steady for a launch or a sale." },
       { key: "cloud_price", label: "Cloud price (paise/mo)", type: "number", hint: "999900 = ₹9,999 - invoice amount. Must equal what the Razorpay plan charges; use the check under the plan id." },
       { key: "cloud_seats", label: "Cloud seats", type: "number", hint: "Users included in the Cloud plan, e.g. 30" },
