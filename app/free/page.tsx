@@ -49,7 +49,7 @@ export default function FreePage() {
       <PageHeader
         eyebrow="Free plan"
         title={`Free for up to ${FREE_SEATS} people`}
-        subtitle="Run OneCamp on your own server with every feature. We email you a licence key and one command to install it. No card."
+        subtitle="Run OneCamp on your own server: chat, docs, tasks, calls and AI teammates. We email you a licence key and one command to install it. No card."
         align="left"
         className="!pb-0"
       />

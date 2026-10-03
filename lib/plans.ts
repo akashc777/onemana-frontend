@@ -5,8 +5,10 @@ import { site } from "@/lib/site";
 /**
  * The four ways to have OneCamp, side by side, in words a buyer uses.
  *
- * Every option has every feature. They differ in who installs and updates it,
- * how many people it covers, and the licence terms, so those are the rows.
+ * Every option has the product: chat, docs, tasks, calls and AI teammates. They
+ * differ in who installs and updates it, how many people it covers, the licence
+ * terms, and (since 3 Oct 2026) the company controls, which the free licence
+ * leaves out. Those are the rows.
  * Prices and seat counts come from the live pricing (never typed here), and the
  * free plan's size from FREE_SEATS, so this table cannot disagree with checkout.
  */
@@ -21,6 +23,8 @@ export interface PlanOption {
   updates: string;
   licence: string;
   help: string;
+  /** SSO, LDAP, SCIM and audit export: what the free licence leaves out. */
+  controls: string;
   cta: { label: string; href: string; external?: boolean };
 }
 
@@ -31,6 +35,7 @@ export const PLAN_ROWS: { key: keyof Omit<PlanOption, "key" | "name" | "summary"
   { key: "install", label: "Install" },
   { key: "updates", label: "Updates" },
   { key: "licence", label: "Licence" },
+  { key: "controls", label: "Company controls (SSO, LDAP, SCIM, audit export)" },
   { key: "help", label: "Help" },
 ];
 
@@ -49,6 +54,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       install: "Build it yourself with Docker",
       updates: "Pull and rebuild",
       licence: "AGPL-3.0: share your changes if you offer them to others",
+      controls: "Included",
       help: "Community, on GitHub",
       cta: { label: "View on GitHub", href: site.serverGithubUrl, external: true },
     },
@@ -62,6 +68,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       install: "One command",
       updates: "One command",
       licence: "AGPL-3.0",
+      controls: "Not included",
       help: "Community",
       cta: { label: "Get a free key", href: "/free" },
     },
@@ -75,6 +82,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       install: "One command",
       updates: "One command, free within your major version",
       licence: "Commercial: no AGPL obligations",
+      controls: "Included",
       help: "Email support",
       cta: { label: "Buy once", href: "/buy?plan=lifetime" },
     },
@@ -88,6 +96,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       install: "Nothing to install",
       updates: "Automatic",
       licence: "Commercial, and a self-host licence is included",
+      controls: "Included",
       help: "Email support",
       cta: { label: "Start with Cloud", href: "/buy?plan=cloud" },
     },

@@ -33,7 +33,7 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
           <div>
             <p className="text-sm font-medium text-foreground">Free for up to {FREE_SEATS} people</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Every feature, on your own server. No card.
+              Everything a team uses, on your own server. No card.
             </p>
           </div>
           <ButtonLink href="/free" variant="ghost" size="md" className="shrink-0">

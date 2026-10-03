@@ -220,7 +220,7 @@ export const steps = [
 export const faqs = [
   {
     q: "Where does the model run?",
-    a: "OneCamp ships no model. Connect OpenAI, Anthropic or any compatible endpoint with your key, or run Ollama on your own server (about 8 GB more memory). Local-only mode refuses cloud providers outright, and PII is redacted before anything leaves. Cloud includes no model either.",
+    a: "OneCamp ships no model. Connect OpenAI, Anthropic or any compatible endpoint with your key, or run Ollama on your own server (about 8 GB more memory). Local-only mode refuses cloud providers, and PII is redacted before anything leaves. Cloud runs one for you.",
   },
   // Personal agents (ChatGPT, Claude, Grok Bot, Meta's Muse) now reach work tools
   // by signing in as the person, with everything the account can open. This is
@@ -238,7 +238,7 @@ export const faqs = [
   },
   {
     q: "I pay once. What is included?",
-    a: "One license key, unlimited users, no annual renewal. Agents, local AI, SSO, SCIM, MFA, and the audit log are included. Cloud plans include a self-host license so you can switch later.",
+    a: "One license key, unlimited users, no annual renewal. Everything is included: agents, local AI, SSO, LDAP, SCIM and audit export. Cloud plans include a self-host license so you can switch later.",
   },
   {
     q: "Can we import Slack?",
@@ -398,7 +398,7 @@ export const cloudBenefits = [
   "Free address on onemana.dev, or bring your own domain",
   "Your own server. No database shared with anyone",
   "We handle SSL, monitoring, and uptime",
-  "AI teammates included. Bring your own model key",
+  "AI teammates with a model on your server: no key needed",
   "Includes a self-host license. Switch anytime",
   "We set everything up, usually within a day",
 ];
@@ -406,7 +406,7 @@ export const cloudBenefits = [
 export const lifetimeBenefits = [
   "Unlimited users. No per-seat fees",
   "All modules incl. local AI and agents",
-  "SSO, SCIM, MFA, and the audit log included",
+  "SSO, LDAP, SCIM and audit export: the company controls",
   "Commercial licence: no AGPL obligations",
   "Runs on your own server",
   "Free updates within your major version",

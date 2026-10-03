@@ -4,7 +4,7 @@ import { FREE_SEATS } from "@/lib/freePlan";
 
 export const metadata: Metadata = {
   title: "Start OneCamp free",
-  description: `Run OneCamp on your own server, free for up to ${FREE_SEATS} people, with every feature including AI teammates. No card.`,
+  description: `Run OneCamp on your own server, free for up to ${FREE_SEATS} people, with chat, docs, tasks, calls and AI teammates. No card.`,
   alternates: { canonical: "/free" },
   openGraph: {
     title: `OneCamp is free for up to ${FREE_SEATS} people`,

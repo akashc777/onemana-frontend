@@ -15,8 +15,8 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
         Which OneCamp is for you
       </h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Every option has every feature, AI teammates included. They differ in who installs and updates it, how many
-        people it covers, and the licence.
+        Every option has chat, docs, tasks, calls and AI teammates. They differ in who installs and updates it, how
+        many people it covers, the licence, and whether company controls come with it.
       </p>
 
       <div className="mt-8 hidden overflow-x-auto md:block">
