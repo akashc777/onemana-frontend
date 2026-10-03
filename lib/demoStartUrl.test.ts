@@ -66,7 +66,10 @@ describe("the demo link", () => {
  */
 describe("the homepage demo section", () => {
   const page = readFileSync(join(ROOT, "app/page.tsx"), "utf8")
-  const section = page.slice(page.indexOf('<Section id="demo"'), page.indexOf('<Section id="features"'))
+  // To the demo section's own closing tag, so moving sections around the page
+  // does not empty the slice (it once ran to the next section's opening tag).
+  const start = page.indexOf('<Section id="demo"')
+  const section = page.slice(start, page.indexOf("</Section>", start))
 
   it("sends the visitor to the drill, not to a home screen", () => {
     // start_demo=1 signs somebody in and leaves them to find the drill. The

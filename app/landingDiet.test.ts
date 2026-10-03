@@ -127,7 +127,9 @@ describe("landing diet", () => {
 describe("copy the plan specifies", () => {
   const required: [string, string][] = [
     ["final CTA headline", "If you can&apos;t say what your AI is allowed to do, this is for you."],
-    ["final CTA sub-line", "Bounded by your permissions. Audited before it acts. On hardware you own."],
+    // Re-worded in plain language on 3 Oct 2026 at the owner's request (the
+    // site must make sense to someone with no background); the pin moves with it.
+    ["final CTA sub-line", "It can only do what you can. It writes down everything it does. It runs on your own server."],
   ];
   for (const [what, text] of required) {
     it(`keeps the ${what}`, () => {

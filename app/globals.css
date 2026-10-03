@@ -1262,27 +1262,6 @@ body {
   to { background-size: 100% 0.08em; }
 }
 
-/* The refusal in the hero record (components/site/HeroReceipt). Once the
-   headline has landed, the REFUSED stamp lands after it and its reason
-   follows: the one row the section exists to show. Not a ticker. */
-.refusal-stamp {
-  display: inline-block;
-  animation: refusal-stamp 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
-  animation-delay: 1.2s;
-}
-.refusal-reason {
-  animation: refusal-reason 0.5s ease-out both;
-  animation-delay: 1.55s;
-}
-@keyframes refusal-stamp {
-  from { opacity: 0; transform: scale(1.6) rotate(-4deg); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes refusal-reason {
-  from { opacity: 0; transform: translateY(-0.2em); }
-  to { opacity: 1; transform: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .reveal.is-pending {
@@ -1292,9 +1271,7 @@ body {
   }
 
   .kinetic-word,
-  .kinetic-underline,
-  .refusal-stamp,
-  .refusal-reason {
+  .kinetic-underline {
     animation: none;
     opacity: 1;
     transform: none;

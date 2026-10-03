@@ -55,7 +55,7 @@ export const governance = {
   // What used to be governance points 4 through 7. One line on the homepage;
   // the detail lives in the docs. Seven essays of equal weight flattened the
   // three that carry the argument.
-  alsoShipped: "Local-only AI that refuses cloud providers · on-server Whisper for calls · SCIM offboarding that reaches agents. Details in the docs.",
+  alsoShipped: "Also: keep AI entirely on your server, transcribe calls without sending audio out, and cut agents off the moment their person leaves.",
   alsoShippedHref: "/docs",
 };
 
@@ -116,56 +116,18 @@ export const enterpriseControls = {
 export const MODULES_ON_HOMEPAGE = 10;
 
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
-  {
-    icon: "agent",
-    title: "AI agents",
-    body: "Badged teammates that act or propose, bounded by their owner.",
-  },
-  {
-    icon: "ai",
-    title: "Any AI model",
-    body: "Your API key, or local models. Answers cite sources.",
-  },
-  {
-    icon: "audit",
-    title: "Audit trail",
-    body: "Every call, allowed or refused, hash-chained and exportable.",
-  },
-  {
-    icon: "api",
-    title: "Bring your assistant",
-    body: "Connect ChatGPT, Claude or Grok. It acts only as you.",
-  },
-  {
-    icon: "shield",
-    title: "SSO and provisioning",
-    body: "SAML, OIDC, LDAP, SCIM 2.0, TOTP. No enterprise tier.",
-  },
-  {
-    icon: "chat",
-    title: "Chat",
-    body: "Channels, threads, DMs, files. Real-time over MQTT.",
-  },
-  {
-    icon: "docs",
-    title: "Docs",
-    body: "Block editor with live cursors. We cancelled Notion.",
-  },
-  {
-    icon: "tasks",
-    title: "Tasks",
-    body: "Kanban beside your channels. Nothing to keep in sync.",
-  },
-  {
-    icon: "video",
-    title: "Video",
-    body: "LiveKit and transcription on your hardware. AI recap after.",
-  },
-  {
-    icon: "lock",
-    title: "Your server",
-    body: "One Docker command, SSL included. No phone home.",
-  },
+  // What a team does in it first, then what makes it different. Plain words:
+  // a body here is read by someone deciding what the app is (3 Oct 2026).
+  { icon: "chat", title: "Chat", body: "Channels, threads, direct messages and files, updated live." },
+  { icon: "docs", title: "Docs", body: "Write together, with everyone's cursor on the page." },
+  { icon: "tasks", title: "Tasks", body: "Boards and lists right beside your conversations." },
+  { icon: "video", title: "Video", body: "Calls on your own server, with an AI recap after." },
+  { icon: "agent", title: "AI agents", body: "AI teammates that do the work, or ask first." },
+  { icon: "ai", title: "Any AI model", body: "Your own API key, or a model on your server." },
+  { icon: "audit", title: "Audit trail", body: "A record of everything every agent did or tried." },
+  { icon: "lock", title: "Your server", body: "One install command. Nothing is sent to us." },
+  { icon: "api", title: "Bring your assistant", body: "Use ChatGPT or Claude inside OneCamp, limited to you." },
+  { icon: "shield", title: "Company sign-in", body: "Single sign-on and automatic accounts, with a licence." },
   {
     icon: "table",
     title: "Tables",
@@ -213,7 +175,7 @@ export const steps = [
   // nothing. Kept in step with selfHostNeeds below and pinned by
   // installExpectation.test.ts.
   { n: "1", title: "Run one command", body: "SSH into a server with 4 GB of RAM and run the installer. It asks one email, then sets up SSL, the database and your team's web app. No domain needed." },
-  { n: "2", title: "Connect your directory", body: "Point SAML, OIDC, or LDAP at it and switch on SCIM so joiners and leavers handle themselves. Or just send email invites and skip this." },
+  { n: "2", title: "Invite your team", body: "Send email invites. With a licence, connect your company sign-in instead." },
   { n: "3", title: "Give the AI a job", body: "Connect a model, build an agent, and read its audit log." },
 ];
 
@@ -349,21 +311,6 @@ export const trustPoints: { icon: TrustIconKey; label: string; detail: string }[
   { icon: "server", label: "Data stays yours", detail: "Runs on your server" },
   { icon: "identity", label: "SSO, SCIM, MFA", detail: "No enterprise tier" },
 ];
-
-export const savingsPitch = {
-  title: "One payment beats six subscriptions",
-  // The number moved to the calculator below, where the visitor supplies their
-  // own headcount. Two statements of one argument is worse than either, and the
-  // vague range was the weaker of the two: a precise figure somebody typed the
-  // input to is evidence, a range is a claim. What stays here is the part the
-  // arithmetic cannot say, which is what you get rather than what you save.
-  //
-  // Then replaced (3 Oct 2026) by the question a visitor could not answer from
-  // this section: do I have to pay at all? A buyer's review found the paid
-  // licence sitting beside a free plan and a calculator about the free plan,
-  // with nothing saying who the licence is for.
-  body: "Free up to 25 people. Past that, pay once or let us host it.",
-};
 
 /** Side-by-side billing comparison - static, no animation. Shown once in #pricing. */
 export const pricingComparison = {

@@ -15,7 +15,6 @@ import { Reveal } from "@/components/site/Reveal";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroMedia } from "@/components/site/HeroMedia";
-import { HeroReceipt } from "@/components/site/HeroReceipt";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { ModuleIndex } from "@/components/site/ModuleIndex";
 import { ControlIndex } from "@/components/site/ControlIndex";
@@ -46,23 +45,16 @@ export default async function HomePage() {
         <HeroAmbient />
         {/* No WebGL. The particle sphere was the one thing on the page that
             explained nothing about the product, and it pulled three + gsap onto
-            the critical path of a site whose whole job is to load fast. The
-            audit receipt beside the headline is the hero artefact. */}
+            the critical path of a site whose whole job is to load fast. */}
         <div className="container-x">
-          {/* ASYMMETRIC ON PURPOSE.
-              What was here was the default: centred pill badge, centred headline
-              with one word in the accent colour, centred subhead, two centred
-              buttons, a star pill, four icon cards. Every element symmetrical and
-              every element identical to every other product's front page.
-
-              The claim this product makes is falsifiable, which is rare enough to
-              build on: an agent cannot exceed the person who authorised it, and
-              the action is recorded before it happens. So the right column shows
-              the record rather than a screenshot, and it shows a REFUSAL, which
-              is the one thing a competitor without real authorisation cannot put
-              on their page. */}
-          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-            <div className="max-w-xl">
+          {/* ONE COLUMN, THEN THE PRODUCT (3 Oct 2026).
+              The right column used to be an audit-log table: task.create,
+              doc.read, channel.post REFUSED. Beside a headline that now says
+              what OneCamp is, it read as a developer's terminal, and its story
+              is told properly twice further down (Safe AI, and the stopped-agent
+              walkthrough). So the hero says what it is, then shows it. */}
+          <div>
+            <div className="max-w-2xl">
               <Reveal>
                 <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
                   Open source · Free for teams up to 25
@@ -112,55 +104,64 @@ export default async function HomePage() {
               </Reveal>
             </div>
 
-            {/* Visible from the first paint: its one motion, the refusal landing,
-                is timed from page load and would play unseen inside Reveal. */}
-            <div className="lg:pt-2">
-              <HeroReceipt />
-            </div>
           </div>
 
-          {/* Not on a phone: there the receipt above is already a screen of its
-              own, the film follows straight after, and this made the hero two
-              screens long before a visitor reached anything new. */}
-          <Reveal delay={200} direction="scale" className="mx-auto mt-16 hidden w-full max-w-6xl sm:block">
+          {/* The product itself, on every screen: it is what the headline
+              describes, so it is the first thing after it. */}
+          <Reveal delay={200} direction="scale" className="mx-auto mt-12 w-full max-w-6xl sm:mt-16">
             <HeroMedia />
           </Reveal>
         </div>
       </section>
 
-      <Section id="tour" divider className="overflow-hidden">
-        <SectionAmbient variant="tour" />
+      <Section id="features" divider className="overflow-hidden">
         <SectionHeading
-          eyebrow="Launch film"
-          title="See it before you commit"
-          subtitle="An AI agent stopped from overstepping, then the app: chat, docs, tasks, on your server."
+          eyebrow="What's inside"
+          title="Everything your team works in"
+          subtitle="Chat, docs, tasks, video calls and AI, in one app."
         />
-        <Reveal direction="scale" className="mt-12">
-          <div className="tour-video-glow relative">
-            <HeroProductVideo />
-          </div>
+        {/* An index rather than twelve cards. The differentiators are argued
+            above this, so the honest job here is "does it have all the pieces",
+            and that question wants a list somebody can scan, not a grid of
+            equally weighted boxes with twelve pastel chips in twelve colours
+            assigned by position. */}
+        <ModuleIndex items={features.slice(0, MODULES_ON_HOMEPAGE)} />
+        {/* The remaining modules are NAMED rather than hidden. A reader scanning
+            for "does it do whiteboards" must not conclude it does not, and a
+            "+5 more" with no names invites exactly that. */}
+        <p className="mt-6 text-sm text-muted-foreground">
+          Also{" "}
+          {features.slice(MODULES_ON_HOMEPAGE).map((f, i, a) => (
+            <span key={f.title}>
+              {f.title.toLowerCase()}
+              {i < a.length - 2 ? ", " : i === a.length - 2 ? " and " : ""}
+            </span>
+          ))}
+          .{" "}
+          <Link href="/docs" className="underline underline-offset-4 hover:text-foreground">
+            All of it in the docs
+          </Link>
+        </p>
+      </Section>
+
+      <Section divider className="overflow-hidden">
+        <SectionAmbient variant="product" />
+        <SectionHeading
+          eyebrow="Inside the product"
+          title="What it actually looks like"
+          subtitle="Ask the AI to brainstorm a mind map on the whiteboard, or build a table from a sentence. Calendars with a live now-line. Docs with someone else's cursor in them. The same UI we use at OneMana."
+        />
+        <Reveal direction="left" className="mt-12">
+          <WorkspaceShowcase />
         </Reveal>
       </Section>
 
-      {/* Evidence straight after the tour, before any argument: two buyers in
-          their own words and the one checkable fact about who runs it. It used
-          to sit six sections down, under an essay on why the product exists. */}
-      <Section divider spacing="compact">
-        <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          What buyers say
-        </p>
-        <SocialProof />
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          OneMana runs its own workspace on this: {requirements[0].spec}.
-        </p>
-      </Section>
-
       {/*
-        The lead argument, placed directly after the tour and BEFORE the module grid.
-        Ordering is the reposition: a visitor who scrolls the modules first is being invited to compare
-        each one against the category leader they already use, which is a comparison OneCamp loses nine
-        times out of twelve and does not need to win. This section is the one thing no competitor here
-        offers, so it goes where the modules used to be.
+        The difference, straight after the product. ORDER (3 Oct 2026): what it is, what it
+        looks like, why it is different, the proof, then setup, IT and price. It used to lead with
+        this argument and reach the modules seventh, so a newcomer met "governance" and SAML before
+        learning what the app does. The modules are stated plainly rather than argued against each
+        category leader, which keeps the comparison the earlier ordering was avoiding off the page.
       */}
       <Section id="governance" divider className="overflow-hidden">
         <SectionAmbient variant="features" />
@@ -232,59 +233,29 @@ export default async function HomePage() {
         </p>
       </Section>
 
-      <Section id="enterprise" divider>
-        <SectionHeading
-          eyebrow={enterpriseControls.eyebrow}
-          title={enterpriseControls.title}
-          subtitle={enterpriseControls.subtitle}
-        />
-        {/* The heading above this is "the boxes procurement makes you tick",
-            which describes a checklist rather than four cards compressed into
-            narrow columns. The ticks are gone with the cards: in a section
-            titled "already in the box", a tick beside every line contrasts with
-            nothing. */}
-        <ControlIndex groups={enterpriseControls.groups} />
-      </Section>
-
-      <Section id="features" divider className="overflow-hidden">
-        <SectionHeading
-          eyebrow="What's inside"
-          title="Everything your team works in"
-          subtitle="Chat, docs, tasks, video calls and AI, in one app."
-        />
-        {/* An index rather than twelve cards. The differentiators are argued
-            above this, so the honest job here is "does it have all the pieces",
-            and that question wants a list somebody can scan, not a grid of
-            equally weighted boxes with twelve pastel chips in twelve colours
-            assigned by position. */}
-        <ModuleIndex items={features.slice(0, MODULES_ON_HOMEPAGE)} />
-        {/* The remaining modules are NAMED rather than hidden. A reader scanning
-            for "does it do whiteboards" must not conclude it does not, and a
-            "+5 more" with no names invites exactly that. */}
-        <p className="mt-6 text-sm text-muted-foreground">
-          Also{" "}
-          {features.slice(MODULES_ON_HOMEPAGE).map((f, i, a) => (
-            <span key={f.title}>
-              {f.title.toLowerCase()}
-              {i < a.length - 2 ? ", " : i === a.length - 2 ? " and " : ""}
-            </span>
-          ))}
-          .{" "}
-          <Link href="/docs" className="underline underline-offset-4 hover:text-foreground">
-            All of it in the docs
-          </Link>
+      {/* Evidence after the claim and its walkthrough: two buyers in their own
+          words and the one checkable fact about who runs it. */}
+      <Section divider spacing="compact">
+        <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          What buyers say
+        </p>
+        <SocialProof />
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          OneMana runs its own workspace on this: {requirements[0].spec}.
         </p>
       </Section>
 
-      <Section divider className="overflow-hidden">
-        <SectionAmbient variant="product" />
+      <Section id="tour" divider className="overflow-hidden">
+        <SectionAmbient variant="tour" />
         <SectionHeading
-          eyebrow="Inside the product"
-          title="What it actually looks like"
-          subtitle="Ask the AI to brainstorm a mind map on the whiteboard, or build a table from a sentence. Calendars with a live now-line. Docs with someone else's cursor in them. The same UI we use at OneMana."
+          eyebrow="Launch film"
+          title="See it before you commit"
+          subtitle="An AI agent stopped from overstepping, then the app: chat, docs, tasks, on your server."
         />
-        <Reveal direction="left" className="mt-12">
-          <WorkspaceShowcase />
+        <Reveal direction="scale" className="mt-12">
+          <div className="tour-video-glow relative">
+            <HeroProductVideo />
+          </div>
         </Reveal>
       </Section>
 
@@ -305,6 +276,20 @@ export default async function HomePage() {
             <span className="font-medium text-foreground">Works on every device.</span> Web, a desktop app, and phones.
           </div>
         </Reveal>
+      </Section>
+
+      <Section id="enterprise" divider>
+        <SectionHeading
+          eyebrow={enterpriseControls.eyebrow}
+          title={enterpriseControls.title}
+          subtitle={enterpriseControls.subtitle}
+        />
+        {/* The heading above this is "the boxes procurement makes you tick",
+            which describes a checklist rather than four cards compressed into
+            narrow columns. The ticks are gone with the cards: in a section
+            titled "already in the box", a tick beside every line contrasts with
+            nothing. */}
+        <ControlIndex groups={enterpriseControls.groups} />
       </Section>
 
       <Section id="switching" divider>
@@ -381,7 +366,7 @@ export default async function HomePage() {
                 scrolled past the hero without reading it needs the claim once more,
                 and the plan says so. */}
             <p className="relative mx-auto mt-4 max-w-md text-muted-foreground">
-              Bounded by your permissions. Audited before it acts. On hardware you own.
+              It can only do what you can. It writes down everything it does. It runs on your own server.
             </p>
             <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg">

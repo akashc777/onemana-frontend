@@ -1,6 +1,6 @@
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/site/Reveal";
-import { lifetimeBenefits, savingsPitch } from "@/lib/content";
+import { lifetimeBenefits } from "@/lib/content";
 import { currencyNote, fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
 import { CloudPlanCard } from "@/components/site/CloudPlanCard";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -19,15 +19,6 @@ function Check() {
 export function Pricing({ pricing }: { pricing: PricingData }) {
   return (
     <div className="mt-10 space-y-10">
-      <Reveal>
-        <div className="mx-auto max-w-2xl text-center">
-          {/* One sentence under the heading, not three stacked blocks: the
-              heading already says "buy once", and the calculator below does
-              the arithmetic. */}
-          <p className="text-base leading-relaxed text-muted-foreground">{savingsPitch.body}</p>
-        </div>
-      </Reveal>
-
       <Reveal>
         <div className="card flex flex-col items-start justify-between gap-4 border-brand/20 bg-brand/[0.03] p-5 sm:flex-row sm:items-center sm:p-6">
           <div>
