@@ -123,8 +123,8 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   },
   {
     icon: "ai",
-    title: "Local AI",
-    body: "Ollama by default. Cited answers from your own data.",
+    title: "Any AI model",
+    body: "Your API key, or local models. Answers cite sources.",
   },
   {
     icon: "audit",
@@ -214,13 +214,13 @@ export const steps = [
   // installExpectation.test.ts.
   { n: "1", title: "Run one command", body: "SSH into a server with 4 GB of RAM and run the installer. It asks one email, then sets up SSL, the database and your team's web app. No domain needed." },
   { n: "2", title: "Connect your directory", body: "Point SAML, OIDC, or LDAP at it and switch on SCIM so joiners and leavers handle themselves. Or just send email invites and skip this." },
-  { n: "3", title: "Give the AI a job", body: "Build an agent, decide whether it acts or asks first, and watch what it does in the audit log." },
+  { n: "3", title: "Give the AI a job", body: "Connect a model, build an agent, and read its audit log." },
 ];
 
 export const faqs = [
   {
     q: "Where does the model run?",
-    a: "On infrastructure you choose. Ollama locally by default; OpenAI, Anthropic, or any OpenAI-compatible endpoint when you want. Local-only mode refuses cloud providers outright rather than warning and allowing them. PII redaction runs before anything outbound. OneCamp Cloud does not resell inference: you bring your own key.",
+    a: "OneCamp ships no model. Connect OpenAI, Anthropic or any compatible endpoint with your key, or run Ollama on your own server (about 8 GB more memory). Local-only mode refuses cloud providers outright, and PII is redacted before anything leaves. Cloud includes no model either.",
   },
   // Personal agents (ChatGPT, Claude, Grok Bot, Meta's Muse) now reach work tools
   // by signing in as the person, with everything the account can open. This is
@@ -357,7 +357,12 @@ export const savingsPitch = {
   // vague range was the weaker of the two: a precise figure somebody typed the
   // input to is evidence, a range is a claim. What stays here is the part the
   // arithmetic cannot say, which is what you get rather than what you save.
-  body: "Elsewhere the AI is a per-seat add-on on top of the seat. Here it is in the license. Put your team size in below.",
+  //
+  // Then replaced (3 Oct 2026) by the question a visitor could not answer from
+  // this section: do I have to pay at all? A buyer's review found the paid
+  // licence sitting beside a free plan and a calculator about the free plan,
+  // with nothing saying who the licence is for.
+  body: "Free up to 25 people. Past that, pay once or let us host it.",
 };
 
 /** Side-by-side billing comparison - static, no animation. Shown once in #pricing. */

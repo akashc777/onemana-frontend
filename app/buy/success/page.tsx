@@ -120,7 +120,7 @@ function SuccessInner() {
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/docs" variant="brandPremium">Read the setup docs</ButtonLink>
-            <ButtonLink href={site.githubUrl} external variant="ghost">Open-source on GitHub</ButtonLink>
+            <ButtonLink href={site.githubOrgUrl} external variant="ghost">Open-source on GitHub</ButtonLink>
           </div>
         </div>
         <p className="mt-6 text-center text-xs text-muted-foreground">

@@ -32,7 +32,7 @@ const NOT_MIGRATED = [
 ]
 
 const OPERATIONS = [
-    { k: "Install", v: "One command. SSL, database and models included, usually under ten minutes." },
+    { k: "Install", v: "One command. SSL, the database and the web app included; allow 10 to 20 minutes the first time." },
     { k: "Updates", v: "One command. It refuses to start against a schema it does not match, rather than corrupting anything." },
     { k: "Backups", v: "Scheduled at install. A backup on the same machine is an undo buffer, not disaster recovery, and it says so." },
     { k: "Restore", v: "Brings the schema forward, restarts in place, and never leaves the application stopped." },

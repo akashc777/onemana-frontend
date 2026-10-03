@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { site } from "@/lib/site";
+import { sumStars } from "@/lib/github";
 
 /** GitHub uses amber/gold for the star icon in repo badges - not foreground gray. */
 function StarIcon({ className = "" }: { className?: string }) {
@@ -43,12 +44,13 @@ export function GitHubStars({
     }
     if (starsProp === null) return;
     let alive = true;
-    fetch(`https://api.github.com/repos/${site.githubRepo}`, {
-      headers: { Accept: "application/vnd.github+json" },
-    })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (alive && d && typeof d.stargazers_count === "number") setStars(d.stargazers_count);
+    sumStars((repo) =>
+      fetch(`https://api.github.com/repos/${repo}`, { headers: { Accept: "application/vnd.github+json" } }).then((r) =>
+        r.ok ? r.json() : null,
+      ),
+    )
+      .then((n) => {
+        if (alive && n !== null) setStars(n);
       })
       .catch(() => {});
     return () => {
@@ -58,10 +60,11 @@ export function GitHubStars({
 
   return (
     <a
-      href={site.githubUrl}
+      href={site.githubOrgUrl}
       target="_blank"
       rel="noreferrer"
-      aria-label={`Star ${site.githubRepo} on GitHub${stars !== null ? ` - ${stars} stars` : ""}`}
+      title="Stars across OneCamp's repositories: the server, the web app and the desktop app"
+      aria-label={`OneCamp on GitHub${stars !== null ? `: ${stars} stars across its repositories` : ""}`}
       className={`inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted ${className}`}
     >
       <GitHubMark />

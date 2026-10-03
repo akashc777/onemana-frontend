@@ -104,7 +104,7 @@ export default async function HomePage() {
                     named neither: is it open, and can a team use it for free. */}
                 <p className="mt-4 text-sm text-muted-foreground">
                   Free for up to {FREE_SEATS} people, no card.{" "}
-                  <a href={site.serverGithubUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">
+                  <a href={site.githubOrgUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">
                     Open source on GitHub
                   </a>
                   , AGPL-3.0.
@@ -292,7 +292,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Getting started"
           title="One person installs. Everyone else logs in."
-          subtitle="Most teams are up in under ten minutes."
+          subtitle="The first install takes 10 to 20 minutes."
         />
         <div className="relative mt-12 grid gap-5 md:grid-cols-3">
           <StepsConnector />
@@ -302,7 +302,7 @@ export default async function HomePage() {
         </div>
         <Reveal className="mx-auto mt-10 max-w-2xl">
           <div className="rounded-lg border border-border bg-muted/30 px-5 py-4 text-center text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Works on every device.</span> Web, PWA with push notifications, no app store required.
+            <span className="font-medium text-foreground">Works on every device.</span> Web, a desktop app, and phones.
           </div>
         </Reveal>
       </Section>

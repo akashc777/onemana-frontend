@@ -45,6 +45,11 @@ export const site = {
   /** The open-source server (AGPL-3.0). */
   serverGithubUrl: "https://github.com/OneMana-Soft/OneCamp",
   githubRepo: process.env.NEXT_PUBLIC_GITHUB_REPO || "OneMana-Soft/OneCamp-fe",
+  /** Every public OneCamp repository. The star badge counts all of them and
+   *  links to the organisation, so the number and the place it sends people
+   *  agree: it used to show the web app's stars beside a link to the server. */
+  githubOrgUrl: "https://github.com/OneMana-Soft",
+  githubRepos: ["OneMana-Soft/OneCamp", "OneMana-Soft/OneCamp-fe", "OneMana-Soft/OneCamp-desktop"] as const,
   docsPath: "/docs",
   // Rupee fallbacks for anything rendered without the backend. There are no
   // dollar constants: dollars are the rupee price at the day's rate, from
@@ -81,7 +86,7 @@ export const footerLinks = {
     { label: "Blog", href: "/blog" },
     { label: "Live Demo", href: site.demoStartUrl, external: true },
     { label: "Setup Docs", href: "/docs" },
-    { label: "GitHub", href: site.githubUrl, external: true },
+    { label: "GitHub", href: site.githubOrgUrl, external: true },
   ],
   Company: [
     { label: "About Us", href: "/about" },

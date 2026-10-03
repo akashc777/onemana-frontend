@@ -70,7 +70,7 @@ export function AboutView() {
             </p>
             <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">The team: all 1 of us.</p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-              <ButtonLink href={site.githubUrl} external variant="ghost" size="sm">
+              <ButtonLink href={site.githubOrgUrl} external variant="ghost" size="sm">
                 GitHub
               </ButtonLink>
               <ButtonLink href={site.twitter} external variant="ghost" size="sm">

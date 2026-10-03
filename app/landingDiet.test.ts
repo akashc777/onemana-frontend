@@ -67,7 +67,7 @@ describe("landing diet", () => {
     // your own hardware) into the "also" line while keeping Whiteboard and
     // Automations visible. The order of this array is now load-bearing.
     const visible = features.slice(0, MODULES_ON_HOMEPAGE).map((f) => f.title);
-    for (const must of ["AI agents", "Local AI", "Audit trail", "Your server", "Video", "Chat"]) {
+    for (const must of ["AI agents", "Any AI model", "Audit trail", "Your server", "Video", "Chat"]) {
       expect(visible, `${must} must be listed on the homepage, not deferred to the docs`).toContain(must);
     }
   });
