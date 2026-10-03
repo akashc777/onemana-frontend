@@ -29,6 +29,7 @@ import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumV
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
 import { SocialProof } from "@/components/site/SocialProof";
 import { SectionAmbient } from "@/components/site/SectionAmbient";
+import { Fold } from "@/components/site/Fold";
 
 export const revalidate = 300;
 
@@ -118,8 +119,11 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <Reveal delay={200} direction="scale" className="mx-auto mt-16 w-full max-w-6xl">
-                          <HeroMedia />
+          {/* Not on a phone: there the receipt above is already a screen of its
+              own, the film follows straight after, and this made the hero two
+              screens long before a visitor reached anything new. */}
+          <Reveal delay={200} direction="scale" className="mx-auto mt-16 hidden w-full max-w-6xl sm:block">
+            <HeroMedia />
           </Reveal>
         </div>
       </section>
@@ -326,7 +330,9 @@ export default async function HomePage() {
             converts is specific arithmetic rather than adjectives, so it belongs
             under the price with the visitor's own headcount in it. */}
         <div className="container-x mt-10">
-          <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />
+          <Fold summary="Compare the cost for your team" className="mx-auto max-w-2xl">
+            <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />
+          </Fold>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Sizing: {requirements.map((r) => `${r.label.toLowerCase()}, ${r.spec}`).join("; ")}.{" "}
             <Link href="/docs/scale-self-hosted" className="underline underline-offset-4 hover:text-foreground">

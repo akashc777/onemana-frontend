@@ -13,9 +13,11 @@ function QuoteMark() {
 export function SocialProof() {
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="grid gap-5 md:grid-cols-2">
+      {/* A swipe row on a phone, where two stacked quotes were a screen and a
+          half; side by side from md up. */}
+      <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
         {testimonials.map((t, i) => (
-          <Reveal key={t.author} delay={i * 80}>
+          <Reveal key={t.author} delay={i * 80} className="w-[85%] flex-shrink-0 snap-center md:w-auto">
             <figure className="premium-frame relative h-full overflow-hidden rounded-lg">
               <div className="premium-frame-accent" aria-hidden />
               <div className="flex h-full flex-col px-6 py-7 sm:px-8 sm:py-8">
@@ -38,7 +40,8 @@ export function SocialProof() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      {/* Not on a phone: the hero already links the demo and the code. */}
+      <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-3">
         {socialProof.signals.map((s, i) => (
           <Reveal key={s.label} delay={i * 60}>
             <div className="rounded-lg border border-border bg-background px-4 py-3.5 text-center">

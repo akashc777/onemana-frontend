@@ -29,7 +29,6 @@ import React from "react"
 
 interface Row {
     time: string
-    actor: string
     action: string
     detail: string
     outcome: "allowed" | "refused"
@@ -39,21 +38,18 @@ interface Row {
 const ROWS: Row[] = [
     {
         time: "09:14:02",
-        actor: "Release Captain",
         action: "task.create",
         detail: "#engineering · “Cut 2.7.0 release notes”",
         outcome: "allowed",
     },
     {
         time: "09:14:02",
-        actor: "Release Captain",
         action: "doc.read",
         detail: "Release checklist",
         outcome: "allowed",
     },
     {
         time: "09:14:03",
-        actor: "Release Captain",
         action: "channel.post",
         detail: "#finance",
         outcome: "refused",
@@ -63,11 +59,14 @@ const ROWS: Row[] = [
 
 export const HeroReceipt: React.FC = () => (
     <figure className="m-0 overflow-hidden rounded-lg border border-border bg-canvas-raised">
-        <figcaption className="flex items-baseline justify-between gap-3 border-b border-border px-4 py-2.5">
-            <span className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-foreground/45">
+        <figcaption className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2.5">
+            <span className="whitespace-nowrap font-mono text-[0.65rem] uppercase tracking-[0.12em] text-foreground/45">
                 Audit log · workspace
             </span>
-            <span className="font-mono text-[0.65rem] text-foreground/35">acting as Priya N.</span>
+            <span className="font-mono text-[0.65rem] text-foreground/45">
+                {/* The agent in its own colour, as the product marks it. */}
+                <span className="rounded-sm bg-agent-muted px-1 py-px text-agent">Release Captain</span> acting as Priya N.
+            </span>
         </figcaption>
 
         <ol className="m-0 list-none p-0">

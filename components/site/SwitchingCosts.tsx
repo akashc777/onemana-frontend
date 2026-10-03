@@ -15,6 +15,8 @@
 
 import React from "react"
 
+import { Fold } from "@/components/site/Fold"
+
 const MIGRATION = [
     "Channels, messages and threads, in order",
     "Direct messages and group conversations",
@@ -44,47 +46,51 @@ export const SwitchingCosts: React.FC = () => (
             <p className="mt-2 text-sm text-foreground/70">
                 Export your workspace from Slack, upload the archive, and OneCamp imports it.
             </p>
-            <ul className="mt-4 space-y-1.5 text-sm text-foreground/70">
-                {MIGRATION.map((m) => (
-                    <li key={m} className="flex gap-2">
-                        <span aria-hidden className="text-brand">·</span>
-                        {m}
-                    </li>
-                ))}
-            </ul>
-            <p className="mt-4 text-sm text-foreground/70">
-                It shows you a plan before it writes anything, de-duplicates so a second attempt cannot double-post
-                your history, and can be rolled back if you change your mind.
-            </p>
+            <Fold summary="What it brings, and what it will not" className="mt-3">
+                <ul className="mt-2 space-y-1.5 text-sm text-foreground/70 sm:mt-4">
+                    {MIGRATION.map((m) => (
+                        <li key={m} className="flex gap-2">
+                            <span aria-hidden className="text-brand">·</span>
+                            {m}
+                        </li>
+                    ))}
+                </ul>
+                <p className="mt-4 text-sm text-foreground/70">
+                    It shows you a plan before it writes anything, de-duplicates so a second attempt cannot double-post
+                    your history, and can be rolled back if you change your mind.
+                </p>
 
-            <h4 className="mt-5 text-sm font-medium text-foreground/90">What it will not bring</h4>
-            <ul className="mt-2 space-y-1.5 text-sm text-foreground/60">
-                {NOT_MIGRATED.map((m) => (
-                    <li key={m} className="flex gap-2">
-                        <span aria-hidden className="text-foreground/30">·</span>
-                        {m}
-                    </li>
-                ))}
-            </ul>
-            <p className="mt-4 text-xs leading-relaxed text-foreground/50">
-                Said here rather than discovered afterwards.
-            </p>
+                <h4 className="mt-5 text-sm font-medium text-foreground/90">What it will not bring</h4>
+                <ul className="mt-2 space-y-1.5 text-sm text-foreground/60">
+                    {NOT_MIGRATED.map((m) => (
+                        <li key={m} className="flex gap-2">
+                            <span aria-hidden className="text-foreground/30">·</span>
+                            {m}
+                        </li>
+                    ))}
+                </ul>
+                <p className="mt-4 text-xs leading-relaxed text-foreground/50">
+                    Said here rather than discovered afterwards.
+                </p>
+            </Fold>
         </div>
 
         <div className="rounded-lg border border-border bg-canvas-raised p-6">
             <h3 className="text-lg font-semibold">And someone has to run it</h3>
-            <dl className="mt-4 space-y-2.5">
-                {OPERATIONS.map((o) => (
-                    <div key={o.k} className="text-sm">
-                        <dt className="font-medium text-foreground/90">{o.k}</dt>
-                        <dd className="text-foreground/60">{o.v}</dd>
-                    </div>
-                ))}
-            </dl>
-            <p className="mt-4 text-xs leading-relaxed text-foreground/50">
-                It is still your server. If nobody on the team wants that job, a subscription is the right answer,
-                and we would rather you heard that here.
-            </p>
+            <Fold summary="Install, updates, backups, restore, health" className="mt-3">
+                <dl className="mt-2 space-y-2.5 sm:mt-1">
+                    {OPERATIONS.map((o) => (
+                        <div key={o.k} className="text-sm">
+                            <dt className="font-medium text-foreground/90">{o.k}</dt>
+                            <dd className="text-foreground/60">{o.v}</dd>
+                        </div>
+                    ))}
+                </dl>
+                <p className="mt-4 text-xs leading-relaxed text-foreground/50">
+                    It is still your server. If nobody on the team wants that job, a subscription is the right answer,
+                    and we would rather you heard that here.
+                </p>
+            </Fold>
         </div>
     </div>
 )

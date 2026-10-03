@@ -28,11 +28,11 @@ export const ControlIndex: React.FC<{ groups: readonly ControlGroupData[] }> = (
     <div className="mx-auto mt-12 max-w-3xl border-t border-border">
         {groups.map((g, i) => (
             <Reveal key={g.label} delay={Math.min(i, 4) * 50}>
-                <section className="grid grid-cols-1 gap-x-6 border-b border-border py-6 sm:grid-cols-[9rem_1fr] sm:py-7">
+                <section className="grid grid-cols-1 gap-x-6 border-b border-border py-4 sm:grid-cols-[9rem_1fr] sm:py-7">
                     <h3 className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-brand sm:pt-0.5">
                         {g.label}
                     </h3>
-                    <ul className="mt-3 grid gap-x-8 gap-y-1.5 sm:mt-0 sm:grid-cols-2">
+                    <ul className="mt-2 grid gap-x-8 gap-y-1 sm:mt-0 sm:grid-cols-2 sm:gap-y-1.5">
                         {g.items.map((item) => (
                             <li key={item} className="text-sm leading-relaxed text-foreground/80">
                                 {item}

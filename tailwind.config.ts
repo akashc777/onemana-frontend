@@ -21,6 +21,11 @@ const config: Config = {
           foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
         },
         card: "rgb(var(--card) / <alpha-value>)",
+        agent: {
+          DEFAULT: "rgb(var(--agent) / <alpha-value>)",
+          foreground: "rgb(var(--agent-foreground) / <alpha-value>)",
+          muted: "rgb(var(--agent-muted) / <alpha-value>)",
+        },
         ring: "rgb(var(--ring) / <alpha-value>)",
         // Pointed at the tokens rather than hardcoded.
         //

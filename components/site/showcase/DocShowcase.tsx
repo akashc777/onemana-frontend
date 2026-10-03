@@ -82,7 +82,7 @@ export function DocShowcase({ embedded = false }: { embedded?: boolean }) {
             className={`hidden items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold transition-colors sm:inline-flex ${
               phase === "done"
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "bg-brand/10 text-brand"
+                : "bg-agent-muted text-agent"
             }`}
           >
             {phase === "done" ? (
@@ -139,7 +139,7 @@ export function DocShowcase({ embedded = false }: { embedded?: boolean }) {
         <h4 className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-foreground">
           Rollout plan
           {phase !== "done" && (
-            <span className="inline-flex items-center gap-1 rounded bg-brand/10 px-1.5 py-0.5 text-[8px] font-semibold text-brand">
+            <span className="inline-flex items-center gap-1 rounded bg-agent-muted px-1.5 py-0.5 text-[8px] font-semibold text-agent">
               <IconSparkles className="h-2.5 w-2.5" /> AI agent
             </span>
           )}
@@ -148,8 +148,8 @@ export function DocShowcase({ embedded = false }: { embedded?: boolean }) {
           {typed}
           {(typing || phase === "thinking") && (
             <span className="relative inline-block align-middle">
-              <span className="inline-block h-4 w-0.5 translate-y-0.5 animate-pulse" style={{ backgroundColor: "#7c6cff" }} />
-              <span className="absolute -top-4 left-0 inline-flex items-center gap-0.5 whitespace-nowrap rounded px-1 py-0.5 text-[8px] font-semibold text-white" style={{ backgroundColor: "#7c6cff" }}>
+              <span className="inline-block h-4 w-0.5 translate-y-0.5 animate-pulse bg-agent" />
+              <span className="absolute -top-4 left-0 inline-flex items-center gap-0.5 whitespace-nowrap rounded bg-agent px-1 py-0.5 text-[8px] font-semibold text-agent-foreground">
                 AI agent
               </span>
             </span>

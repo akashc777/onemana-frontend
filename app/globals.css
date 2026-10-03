@@ -29,6 +29,11 @@
      on the page and as a ground under white, which the old one did not. */
   --brand: 185 74 0;
   --glow-brand: 185 74 0;
+  /* Agents have a colour of their own, the same as in the product: the accent
+     marks links and calls to action, and an agent is neither. */
+  --agent: 81 82 193;
+  --agent-foreground: 251 251 255;
+  --agent-muted: 236 239 255;
 }
 
 
@@ -50,6 +55,9 @@
      confident on paper reads as mud on near black. */
   --brand: 242 140 92;
   --glow-brand: 242 140 92;
+  --agent: 167 176 253;
+  --agent-foreground: 18 20 40;
+  --agent-muted: 38 41 68;
 }
 
 

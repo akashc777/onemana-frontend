@@ -157,7 +157,7 @@ export const GovernedDemo: React.FC = () => {
                                 <span className="flex flex-wrap items-baseline gap-x-2">
                                     <span className="text-[0.78rem] font-medium text-foreground/80">{s.who}</span>
                                     {s.agent && (
-                                        <span className="rounded-sm bg-foreground/[0.06] px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-foreground/45">
+                                        <span className="rounded-sm bg-agent-muted px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-agent">
                                             agent
                                         </span>
                                     )}
@@ -177,7 +177,7 @@ export const GovernedDemo: React.FC = () => {
                                     className={
                                         call === "refused"
                                             ? "rounded-sm bg-brand/10 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-brand"
-                                            : "rounded-sm bg-foreground/[0.06] px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-foreground/45"
+                                            : "rounded-sm bg-agent-muted px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-agent"
                                     }
                                 >
                                     {call === "refused" ? "refused" : "checking"}

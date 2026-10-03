@@ -59,11 +59,11 @@ function useHoldThenDone(active: boolean, onDone: () => void, hold = HOLD_MS) {
 
 // --- shared bits -----------------------------------------------------------
 
-function BotAvatar({ initials = "RC", tint = "bg-brand/10 text-brand" }: { initials?: string; tint?: string }) {
+function BotAvatar({ initials = "RC", tint = "bg-agent-muted text-agent" }: { initials?: string; tint?: string }) {
   return (
-    <span className={`relative grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg text-[10px] font-semibold sm:h-9 sm:w-9 ${tint}`}>
+    <span className={`relative grid h-8 w-8 flex-shrink-0 place-items-center rounded-[28%] text-[10px] font-semibold ring-1 ring-agent/30 sm:h-9 sm:w-9 ${tint}`}>
       {initials}
-      <span className="absolute -bottom-1 -right-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-brand text-white ring-2 ring-card">
+      <span className="absolute -bottom-1 -right-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-agent text-agent-foreground ring-2 ring-card">
         <IconSparkles className="h-2 w-2" />
       </span>
     </span>
@@ -72,8 +72,8 @@ function BotAvatar({ initials = "RC", tint = "bg-brand/10 text-brand" }: { initi
 
 function AiBadge() {
   return (
-    <span className="rounded-[4px] bg-brand/10 px-1 py-px text-[8px] font-bold uppercase tracking-wide text-brand">
-      AI
+    <span className="rounded-[4px] bg-agent-muted px-1 py-px text-[8px] font-bold uppercase tracking-wide text-agent">
+      Agent
     </span>
   );
 }
