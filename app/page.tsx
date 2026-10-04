@@ -15,6 +15,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { Pricing } from "@/components/site/Pricing";
 import { GitHubStars } from "@/components/site/GitHubStars";
 import { HeroMedia } from "@/components/site/HeroMedia";
+import { HeroLoop } from "@/components/site/HeroLoop";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { ModuleIndex } from "@/components/site/ModuleIndex";
 import { ControlIndex } from "@/components/site/ControlIndex";
@@ -47,13 +48,13 @@ export default async function HomePage() {
             explained nothing about the product, and it pulled three + gsap onto
             the critical path of a site whose whole job is to load fast. */}
         <div className="container-x">
-          {/* ONE COLUMN, THEN THE PRODUCT (3 Oct 2026).
+          {/* TEXT, THE HEADLINE ACTED OUT, THEN THE PRODUCT (3 Oct 2026).
               The right column used to be an audit-log table: task.create,
               doc.read, channel.post REFUSED. Beside a headline that now says
               what OneCamp is, it read as a developer's terminal, and its story
               is told properly twice further down (Safe AI, and the stopped-agent
               walkthrough). So the hero says what it is, then shows it. */}
-          <div>
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,540px)]">
             <div className="max-w-2xl">
               <Reveal>
                 <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
@@ -104,6 +105,13 @@ export default async function HomePage() {
               </Reveal>
             </div>
 
+            {/* The headline acted out: four things in one window, and an agent
+                turning a conversation into tasks. Wide screens only, where the
+                space beside the text was empty; on a phone the product screen
+                below follows the text directly. */}
+            <div className="hidden lg:block">
+              <HeroLoop />
+            </div>
           </div>
 
           {/* The product itself, on every screen: it is what the headline
