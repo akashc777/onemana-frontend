@@ -1,3 +1,4 @@
+import { FREE_SEATS } from "./freePlan";
 // Marketing copy - company voice, uneven on purpose.
 //
 // POSITIONING: governed AI, not all-in-one.
@@ -349,6 +350,22 @@ export const cloudBenefits = [
   "Includes a self-host license. Switch anytime",
   "We set everything up, usually within a day",
 ];
+
+/**
+ * Before you pay: the trust a $259 card from an unknown company has to clear,
+ * answered with facts a buyer can check rather than quotes we do not have
+ * (buyer review, 4 Oct 2026: "the trust gap is the part that still matters").
+ *   Run it first     the free plan is the same app (helpers/seatLimit.go)
+ *   Read the code    github.com/OneMana-Soft/OneCamp, AGPL-3.0
+ *   Nothing to stop  no licence server: a paid build has no cap stamped in
+ *   Who you pay      the registered company, Razorpay, GST invoice
+ */
+export const beforeYouPay = [
+  { title: "Run it first", body: `The free plan is the same app for up to ${FREE_SEATS} people. Pay when you outgrow it.` },
+  { title: "Read the code", body: "Every line is public under AGPL-3.0.", href: "https://github.com/OneMana-Soft/OneCamp", link: "See it on GitHub" },
+  { title: "Nothing to switch off", body: "No licence server and no phone-home. A paid build has no cap, so it keeps running if we stop." },
+  { title: "Who you pay", body: "OneMana Solutions (OPC) Private Limited, Bangalore. Razorpay takes the card; you get a GST invoice.", href: "mailto:support@onemana.dev", link: "Ask first" },
+] as const;
 
 export const lifetimeBenefits = [
   "Unlimited users. No per-seat fees",

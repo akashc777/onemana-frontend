@@ -12,8 +12,12 @@ import { FREE_SEATS } from "./freePlan"
 export interface SeatCost {
     name: string
     usd: number
-    /** Counted only when the visitor wants AI. */
-    ai: boolean
+    /**
+     * When the line counts: always, only when the visitor wants AI, or only
+     * when they do not. A plan that bundles AI replaces the plan without it
+     * (Notion Plus becomes Notion Business), so AI is a swap, not an add-on.
+     */
+    when: "always" | "ai" | "noAi"
 }
 
 export interface TeamCost {
@@ -34,7 +38,7 @@ export function teamCost(
     seatCosts: readonly SeatCost[],
 ): TeamCost {
     const seats = Math.max(1, Math.min(1000, Math.floor(people) || 1))
-    const lines = seatCosts.filter((t) => !t.ai || withAi)
+    const lines = seatCosts.filter((t) => t.when === "always" || (t.when === "ai") === withAi)
     const saasYear = lines.reduce((n, t) => n + t.usd, 0) * seats * 12
     const free = seats <= FREE_SEATS
     const licenceUsd = free ? 0 : lifetimeUsd

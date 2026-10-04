@@ -3,11 +3,11 @@ import { teamCost } from "./teamCost";
 import { FREE_SEATS } from "./freePlan";
 
 const COSTS = [
-  { name: "Slack Pro", usd: 8.75, ai: false },
-  { name: "Notion Business", usd: 10, ai: false },
-  { name: "Zoom Pro", usd: 13, ai: false },
-  { name: "AI", usd: 10, ai: true },
-];
+  { name: "Slack Pro", usd: 7.25, when: "always" },
+  { name: "Notion Plus", usd: 10, when: "noAi" },
+  { name: "Notion Business, AI included", usd: 20, when: "ai" },
+  { name: "Zoom Pro", usd: 13.33, when: "always" },
+] as const;
 
 describe("teamCost", () => {
   it("charges no licence inside the free plan", () => {
@@ -21,9 +21,10 @@ describe("teamCost", () => {
     expect(c.free).toBe(false);
     expect(c.oneCampYear).toBe(260 + 144);
   });
-  it("adds the AI line only when asked", () => {
-    expect(teamCost(10, true, 260, 12, COSTS).saasYear).toBe((8.75 + 10 + 13 + 10) * 10 * 12);
-    expect(teamCost(10, false, 260, 12, COSTS).saasYear).toBe((8.75 + 10 + 13) * 10 * 12);
+  it("swaps to the plan that includes AI only when asked", () => {
+    expect(teamCost(10, true, 260, 12, COSTS).saasYear).toBeCloseTo((7.25 + 20 + 13.33) * 10 * 12);
+    expect(teamCost(10, false, 260, 12, COSTS).saasYear).toBeCloseTo((7.25 + 10 + 13.33) * 10 * 12);
+    expect(teamCost(10, true, 260, 12, COSTS).lines.map((l) => l.name)).not.toContain("Notion Plus");
   });
   it("bounds silly input", () => {
     expect(teamCost(0, false, 260, 12, COSTS).seats).toBe(1);

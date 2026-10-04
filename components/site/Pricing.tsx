@@ -1,6 +1,6 @@
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/site/Reveal";
-import { lifetimeBenefits } from "@/lib/content";
+import { beforeYouPay, lifetimeBenefits } from "@/lib/content";
 import { currencyNote, fmtINR, fmtUSD, type Pricing as PricingData } from "@/lib/pricing";
 import { CloudPlanCard } from "@/components/site/CloudPlanCard";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -74,6 +74,29 @@ export function Pricing({ pricing }: { pricing: PricingData }) {
           <CloudPlanCard pricing={pricing} />
         </Reveal>
       </div>
+      <Reveal>
+        <div className="mx-auto max-w-4xl border-t border-border pt-8">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Before you pay</p>
+          <dl className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {beforeYouPay.map((b) => (
+              <div key={b.title}>
+                <dt className="text-sm font-medium text-foreground">{b.title}</dt>
+                <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  {b.body}
+                  {"href" in b && (
+                    <>
+                      {" "}
+                      <a href={b.href} className="underline underline-offset-2 hover:text-foreground">
+                        {b.link}
+                      </a>
+                    </>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </Reveal>
       <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">{currencyNote(pricing)}</p>
     </div>
   );

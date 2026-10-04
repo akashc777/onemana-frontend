@@ -28,30 +28,32 @@ import { teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 
 /**
- * List prices per user per month, shown so the arithmetic is checkable.
+ * List prices per user per month, billed annually, shown so the arithmetic is
+ * checkable. Checked October 2026; PRICES_CHECKED says so on screen.
  *
- * `ai` marks a line that only applies when the visitor wants AI, so the toggle
- * filters this one list rather than maintaining a second set of numbers that
- * could drift from it.
- *
- * The AI line is deliberately conservative. Notion sold its AI add-on at $10
- * per user per month before folding it into higher base prices in 2026, and
- * agent runs are now billed separately at $10 per 1,000 credits with no
- * published per-action rate. Charging the old add-on price understates what a
- * team running agents actually pays, which is the right direction to be wrong in.
+ * Every line is a plan someone can buy today. AI is not an add-on any more:
+ * Notion AI comes only with Notion Business, so wanting AI swaps Notion Plus
+ * ($10) for Business ($20) rather than adding a retired $10 add-on, which a
+ * careful buyer rightly picked at (buyer review, 4 Oct 2026). Where sources
+ * disagree, the lower price is used: Zoom Pro moved twice in 2026, so $13.33.
  */
 const SEAT_COSTS = [
-    { name: "Slack Pro", usd: 8.75, ai: false },
-    { name: "Notion Business", usd: 10, ai: false },
-    { name: "Zoom Pro", usd: 13, ai: false },
-    { name: "Notion AI, at its old add-on price", usd: 10, ai: true },
+    { name: "Slack Pro", usd: 7.25, when: "always" },
+    { name: "Notion Plus", usd: 10, when: "noAi" },
+    { name: "Notion Business, which includes Notion AI", usd: 20, when: "ai" },
+    { name: "Zoom Pro", usd: 13.33, when: "always" },
 ] as const
+
+const PRICES_CHECKED = "October 2026"
 
 /** A VPS that comfortably runs a team of this size, from the hardware FAQ. */
 const SERVER_USD_PER_MONTH = 12
 
 const fmt = (n: number) =>
     n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+// Per-seat prices keep their cents ($7.25), so the sum can be checked.
+const fmtSeat = (n: number) =>
+    n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: Number.isInteger(n) ? 0 : 2 })
 
 export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }> = ({ lifetimeUsd, pricing }) => {
     // 40, not 20: above the free plan's 25, so the comparison beside the $259
@@ -104,9 +106,10 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
                         {lines.map((t) => (
                             <li key={t.name}>
-                                {t.name}, {fmt(t.usd)}/user/mo
+                                {t.name}, {fmtSeat(t.usd)}/user/mo
                             </li>
                         ))}
+                        <li>List prices, billed annually, checked {PRICES_CHECKED}</li>
                     </ul>
                 </div>
 
