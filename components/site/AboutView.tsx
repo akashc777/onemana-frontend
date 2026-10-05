@@ -45,8 +45,9 @@ export function AboutView() {
             <p>
               Small teams and solo warriors 🥷 deserve the same powerful tools big companies get, without the
               enterprise price tag, without the vendor lock-in, and without someone else owning your data. Pay once (or
-              let us host it), but the product should never hold your data hostage. The frontend is open on GitHub. The
-              backend runs on your server. That is the deal.
+              let us host it), but the product should never hold your data hostage. All of it is open source on GitHub
+              under AGPL-3.0, the server and the web app, both editions. It runs on your server, or on one we run for
+              you. That is the deal.
             </p>
           </div>
         </Reveal>
