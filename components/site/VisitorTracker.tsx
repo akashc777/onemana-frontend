@@ -16,12 +16,26 @@ import {
  * Sends an anonymous pageview on every route change (skips the admin area).
  * Renders nothing.
  */
+/** The event a ?ref= on the landing URL records, or null when it has none we accept. */
+export function refEvent(search: string): string | null {
+  const ref = new URLSearchParams(search).get("ref")?.toLowerCase() ?? "";
+  return /^[a-z0-9][a-z0-9-]{0,47}$/.test(ref) ? `ref-${ref}` : null;
+}
+
 export function VisitorTracker() {
   const pathname = usePathname();
   useEffect(() => {
     if (!pathname || pathname.startsWith("/admin")) return;
     trackPageview(pathname);
   }, [pathname]);
+
+  // Where a visit came from when a link says so: the "Made with OneCamp" credit
+  // on customers' booking pages, forms and guest links carries ?ref=. Counted
+  // once per landing, as an event, so it joins the same visitor's pageviews.
+  useEffect(() => {
+    const ref = refEvent(window.location.search);
+    if (ref) trackEvent(ref);
+  }, []);
 
   // ONE LISTENER RATHER THAN SEVEN onClick HANDLERS. The demo is linked from the
   // nav, the hero, the sticky bar, the social proof block and the about page, and
