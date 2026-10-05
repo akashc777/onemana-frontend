@@ -37,7 +37,7 @@ export const audiences: Audience[] = [
     eyebrow: "For agencies and studios",
     title: "One workspace for your team and your clients",
     subtitle:
-      "Client channels, request forms, booking links and sprints, on a server you own. Add every contractor without a per-seat bill.",
+      "Client channels, project links, request forms, booking links and billable hours, on a server you own. Add every contractor without a per-seat bill.",
     seoTitle: "OneCamp for agencies: client channels, request forms and booking links",
     seoDescription:
       "Invite clients into a shared channel with no account, turn their requests into tasks, let them book calls, and run sprints. Self-hosted, pay once, unlimited people.",
@@ -68,9 +68,14 @@ export const audiences: Audience[] = [
         body: "A lifetime licence covers everyone on your server. Bring in contractors for a project and take them off after, without a bill that moves.",
       },
       {
-        icon: "agent",
-        title: "AI that works within limits",
-        body: "Agents draft client updates and file tasks, but only where the person behind them can act, and every action is logged before it runs.",
+        icon: "docs",
+        title: "Clients follow their project",
+        body: "Send a client a link to their project: what's in progress, what's done, what's due, and comments if you allow them. No status emails, no account.",
+      },
+      {
+        icon: "table",
+        title: "Hours you can invoice",
+        body: "Run a timer on a task or add time by hand, mark it billable or not, and download a project's hours as a CSV for the invoice.",
       },
     ],
     prices: "dual",
@@ -83,6 +88,10 @@ export const audiences: Audience[] = [
       {
         q: "Can one client see another client's work?",
         a: "No. A guest link reaches only the channel it was made for: not other channels, not people's profiles, not search, not files.",
+      },
+      {
+        q: "Can clients see how their project is going?",
+        a: "Yes. A project link shows its tasks by status, dates and assignees, without an account. Turn comments on and they can ask about a task right where the work is.",
       },
       {
         q: "Can we try it with a real client first?",
