@@ -78,6 +78,9 @@ export const footerLinks = {
     // purpose. /compare is where that argument moved, so it has to be reachable
     // from somewhere or it is a page only a search engine ever sees.
     { label: "Compare", href: "/compare" },
+    { label: "For agencies", href: "/for/agencies" },
+    { label: "For teams in India", href: "/for/india" },
+    { label: "For regulated teams", href: "/for/compliance" },
     { label: "Safe AI", href: "/#governance" },
     { label: "Enterprise controls", href: "/#enterprise" },
     { label: "Features", href: "/#features" },
