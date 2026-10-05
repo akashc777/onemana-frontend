@@ -2,14 +2,13 @@ import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 import { listPublishedPosts } from "@/lib/blog";
 import { listPublishedDocs } from "@/lib/docs";
+import { audiences } from "@/lib/audiences";
+import { alternatives } from "@/lib/alternatives";
 
 const STATIC_ROUTES = [
   "",
   "/buy",
   "/compare",
-  "/for/agencies",
-  "/for/india",
-  "/for/compliance",
   "/verify",
   "/docs",
   "/blog",
@@ -23,7 +22,9 @@ const STATIC_ROUTES = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((path) => ({
+  // The landing pages come from their own data, so a new one can't be left out.
+  const landing = [...audiences.map((a) => `/for/${a.slug}`), ...alternatives.map((a) => `/alternatives/${a.slug}`)];
+  const staticEntries: MetadataRoute.Sitemap = [...STATIC_ROUTES, ...landing].map((path) => ({
     url: `${site.url}${path}`,
     lastModified: now,
     changeFrequency: path === "" ? "weekly" : "monthly",

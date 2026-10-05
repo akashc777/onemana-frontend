@@ -8,7 +8,7 @@ export function Footer() {
       <div aria-hidden className="footer-grid pointer-events-none absolute inset-0" />
       <div className="container-x relative">
         <div className="section-divider" role="separator" aria-hidden />
-        <div className="grid grid-cols-2 gap-8 py-14 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-8 py-14 md:grid-cols-6">
           <div className="col-span-2">
             <div className="flex flex-wrap items-center gap-2.5">
               <div className="flex items-center gap-2.5 font-semibold text-foreground">

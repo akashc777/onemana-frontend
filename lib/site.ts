@@ -1,3 +1,4 @@
+import { ALTERNATIVE_INDEX } from "@/lib/alternativeIndex";
 // Central site configuration. Values that differ per environment come from
 // NEXT_PUBLIC_* env vars with sensible production defaults.
 
@@ -91,6 +92,8 @@ export const footerLinks = {
     { label: "Setup Docs", href: "/docs" },
     { label: "GitHub", href: site.githubOrgUrl, external: true },
   ],
+  // One link per "alternative to" page, from the pages' own data.
+  "Switch from": ALTERNATIVE_INDEX.map((a) => ({ label: a.label, href: `/alternatives/${a.slug}` })),
   Company: [
     { label: "About Us", href: "/about" },
     { label: "My Account", href: "/account" },

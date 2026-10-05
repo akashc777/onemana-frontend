@@ -28,6 +28,18 @@ export interface Audience {
   faqs: { q: string; a: string }[];
   /** A doc or page that backs the argument up. */
   proof?: { label: string; href: string };
+  /** On an "alternative to" page: the rival, honestly. */
+  rival?: {
+    name: string;
+    /** How it is billed: structural, never a price that moves. */
+    billing: string;
+    /** What it genuinely does better. */
+    theyWin: string[];
+    /** Its pricing page, where `billing` can be checked. */
+    source: string;
+  };
+  /** On an "alternative to" page: the steps that move a team across. */
+  move?: { title: string; steps: string[] };
 }
 
 export const audiences: Audience[] = [
