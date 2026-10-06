@@ -30,6 +30,9 @@ const NOT_IN_FORM = new Set<string>([
   // The operator's own browsers, as JSON. Managed from the Visitors panel
   // (signing in adds the browser; "Count again" removes it), not typed by hand.
   "analytics_excluded_visitors",
+  // The latest daily walk through the buyer's path, as JSON. Written by the
+  // journey runner on the demo host (POST /onecamp/admin/journey), never by hand.
+  "journey_last_report",
 ])
 
 function goFiles(dir: string, out: string[] = []): string[] {
