@@ -38,10 +38,14 @@ async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: b
   return (data as { data: T }).data;
 }
 
-/** Published docs in sidebar order (content omitted by the API). Always
- *  fetched fresh so newly published docs appear immediately. */
-export async function listPublishedDocs(): Promise<DocPage[]> {
-  return (await getJSON<DocPage[] | null>("/onecamp/docs", { noStore: true })) ?? [];
+/** Published docs in sidebar order (content omitted by the API).
+ *
+ *  `fresh` reads past every cache, for a page rendered on each request (the
+ *  docs index). Everywhere else it is cached for as long as the page itself:
+ *  a no-store read inside a page that regenerates on a timer makes Next throw
+ *  DYNAMIC_SERVER_USAGE, and every doc page answered 500 for that reason. */
+export async function listPublishedDocs(opts: { fresh?: boolean } = {}): Promise<DocPage[]> {
+  return (await getJSON<DocPage[] | null>("/onecamp/docs", opts.fresh ? { noStore: true } : { revalidate: 120 })) ?? [];
 }
 
 /** A single published doc by slug. Returns null on 404. */

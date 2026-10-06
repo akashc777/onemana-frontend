@@ -30,7 +30,7 @@ export const dynamic = "force-dynamic";
 export default async function DocsIndexPage() {
   let docs = [] as Awaited<ReturnType<typeof listPublishedDocs>>;
   try {
-    docs = await listPublishedDocs();
+    docs = await listPublishedDocs({ fresh: true });
   } catch {
     docs = [];
   }
