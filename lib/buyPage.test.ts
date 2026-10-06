@@ -50,6 +50,15 @@ describe("the checkout page", () => {
     expect(BUY).toMatch(/source="buy"/)
   })
 
+  it("offers the free plan beside the self-host price, before the form", () => {
+    // It used to sit below the form, four screens down on a phone, where a team
+    // small enough to need nothing else had already been asked to pay.
+    const free = BUY.indexOf('href="/free"')
+    const form = BUY.indexOf("<form onSubmit={handleSubmit}")
+    expect(free, "no link to /free").toBeGreaterThan(-1)
+    expect(free, "the free plan comes after the pay form").toBeLessThan(form)
+  })
+
   it("still asks for no refund window anywhere on the page", () => {
     // Standing policy: OneCamp does not offer refunds, and the risk-reduction
     // here is the demo, never a promise the refund policy contradicts.

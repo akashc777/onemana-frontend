@@ -152,7 +152,23 @@ function BuyInner() {
               </button>
             </div>
 
-            <div className="card-premium card mt-6 bg-card/90">
+            {/* THE FREE PLAN, WHERE THE PRICE IS. A team of under 25 that reaches
+                this page about to pay for something it can run free has been
+                failed by us, not saved a sale: it either pays and feels misled
+                later, or leaves to think about it and does not come back. The
+                same offer used to sit below the form, four screens down on a
+                phone. The licence card below says what paying adds. */}
+            {!isCloud && (
+              <p className="mt-4 rounded-lg border border-border bg-muted/40 px-3.5 py-2.5 text-sm text-muted-foreground">
+                Fewer than {FREE_SEATS} people? OneCamp is free for you.{" "}
+                <a href="/free" className="font-medium text-foreground underline underline-offset-4 hover:text-brand">
+                  Get the install command
+                </a>
+                , no card or email needed.
+              </p>
+            )}
+
+            <div className="card-premium card mt-4 bg-card/90">
               <div className="flex items-baseline justify-between">
                 <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp Lifetime"}</span>
                 <span className="text-2xl font-semibold text-foreground">
@@ -289,11 +305,6 @@ function BuyInner() {
                 <ButtonLink href={site.demoStartUrl} external variant="ghost">
                   Open the live demo
                 </ButtonLink>
-                {!isCloud && (
-                  <ButtonLink href="/free" variant="ghost">
-                    Or run it free for up to {FREE_SEATS} people
-                  </ButtonLink>
-                )}
               </div>
             </div>
 
