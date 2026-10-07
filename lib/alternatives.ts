@@ -73,7 +73,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Basecamp: projects, chat, docs and a client link to follow their project, plus time tracking, booking pages and intake forms.",
     points: [
-      { icon: "tasks", title: "Projects your way", body: "Lists, boards, cycles, repeating tasks and saved views, with statuses you name yourself." },
+      { icon: "tasks", title: "Projects your way", body: "Lists, boards, a timeline, cycles, repeating tasks and saved views, with statuses you name yourself." },
       { icon: "docs", title: "Clients follow their project", body: "Send a client a link to their project: status, dates and comments if you allow them. No account needed." },
       { icon: "table", title: "Time you can bill", body: "Timers and time added by hand on any task, with a report and CSV export per project." },
       { icon: "calendar", title: "Booking pages and forms", body: "Clients book calls in your free time and send requests through forms that become tasks." },
@@ -156,12 +156,12 @@ export const alternatives: Audience[] = [
     eyebrow: "A self-hosted alternative to ClickUp",
     title: "Tasks, chat and time tracking, without the per-seat bill",
     subtitle:
-      "Projects with lists, boards, cycles and saved views; channels and calls; time on tasks with an invoice-ready export. On a server you own.",
+      "Projects with lists, boards, a timeline, cycles and saved views; channels and calls; time on tasks with an invoice-ready export. On a server you own.",
     seoTitle: "Self-hosted ClickUp alternative: OneCamp, free for up to 25 people",
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to ClickUp: tasks with boards and cycles, chat and calls, docs, time tracking and client links. Import your ClickUp workspace.",
     points: [
-      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, cycles, repeating tasks, custom statuses and saved views per person." },
+      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline, cycles, repeating tasks, custom statuses and saved views per person." },
       { icon: "table", title: "Time on tasks", body: "Timers and manual time, billable or not, with a report by person and task and a CSV export." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so status updates don't need a separate tool." },
       { icon: "docs", title: "Clients without accounts", body: "Share one project or channel with a client from a link, and take forms and bookings from them." },
@@ -179,7 +179,7 @@ export const alternatives: Audience[] = [
       name: "ClickUp",
       billing: "Per user, per month, with AI sold on top of the plan.",
       theyWin: [
-        "More views (Gantt, workload, mind maps) and deeper dashboards.",
+        "More views (workload, mind maps), task dependencies on the Gantt chart, and deeper dashboards.",
         "Goals and portfolio reporting across many teams.",
         "Hosted for you, with nothing to run.",
       ],
