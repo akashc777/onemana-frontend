@@ -82,7 +82,7 @@ export const audiences: Audience[] = [
       {
         icon: "docs",
         title: "Clients follow their project",
-        body: "Send a client a link to their project: what's in progress, what's done, what's due, and the update you post each week, drafted from the tasks in a minute. No status emails, no account.",
+        body: "Send a client a link to their project: what's in progress, what's done, what's due, the plan on a timeline, and the update you post each week, drafted from the tasks in a minute. No status emails, no account.",
       },
       {
         icon: "table",
@@ -103,7 +103,7 @@ export const audiences: Audience[] = [
       },
       {
         q: "Can clients see how their project is going?",
-        a: "Yes. A project link shows its tasks by status, dates and assignees, without an account, and the updates you choose to show them: where the project stands and what changed, drafted from its tasks. Turn comments on and they can ask about a task right where the work is.",
+        a: "Yes. A project link shows its tasks by status or on a timeline, with dates and assignees, without an account, and the updates you choose to show them: where the project stands and what changed, drafted from its tasks. Turn comments on and they can ask about a task right where the work is.",
       },
       {
         q: "Can we try it with a real client first?",
