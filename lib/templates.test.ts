@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { byWeek, dayLabel, demoTemplateUrl, descriptionBlocks, taskCount, templateBySlug, templateFile, templates, weeksLong } from "./templates";
+import { byWeek, dayLabel, demoTemplateUrl, descriptionBlocks, groupLists, taskCount, templateBySlug, templateFile, templates, weeksLong } from "./templates";
 
 describe("the template data", () => {
   it("has the built-in templates, each with a slug a demo link accepts", () => {
     expect(templates.length).toBeGreaterThanOrEqual(7);
     for (const t of templates) {
-      expect(t.id).toMatch(/^[a-z0-9][a-z0-9-]{0,59}$/);
+      // The shape the demo's link takes a template id in (onecamp-fe isTemplateId).
+      expect(t.id).toMatch(/^[a-z][a-z0-9-]{0,59}$/);
+      // The pages promise every task says what done looks like.
+      for (const task of t.tasks) expect(task.description, `${t.id}: ${task.name}`).toBeTruthy();
+      // A plan reads in date order, so weeks never repeat on the page.
+      const days = t.tasks.flatMap((task) => (task.due_day === undefined ? [] : [task.due_day]));
+      expect(days, t.id).toEqual([...days].sort((a, b) => a - b));
       expect(t.tasks.length).toBeGreaterThan(4);
       expect(t.description.length).toBeGreaterThan(20);
     }
@@ -35,6 +41,15 @@ describe("the template data", () => {
     ]);
     expect(descriptionBlocks("<p><script>x</script>hi</p>")).toEqual([{ kind: "p", text: "xhi" }]);
     expect(descriptionBlocks(undefined)).toEqual([]);
+  });
+
+  it("keeps text and lists in the order written, each run of items one list", () => {
+    expect(groupLists(descriptionBlocks("<p>Ask:</p><ul><li>Logo</li><li>Fonts</li></ul><p>By Friday.</p><ul><li>Copy</li></ul>"))).toEqual([
+      "Ask:",
+      ["Logo", "Fonts"],
+      "By Friday.",
+      ["Copy"],
+    ]);
   });
 
   it("makes a file the app reads, and a demo link that opens on the template", () => {

@@ -4,10 +4,12 @@
  * content/templates.json is written by the OneCamp server's own code
  * (business/ProjectTemplate, TestExportBuiltIns), so these pages show exactly
  * the tasks, dates and statuses a project made from each template gets. When a
- * built-in template changes there, export it again:
+ * built-in template changes there, export it again from the oneCamp root (an
+ * absolute path, since go test runs in the package; -count=1, since a cached
+ * pass writes nothing):
  *
- *   TEMPLATES_EXPORT=…/onemana-frontend/content/templates.json \
- *     go test ./business/ProjectTemplate/ -run TestExportBuiltIns
+ *   TEMPLATES_EXPORT="$PWD/../onemana-frontend/content/templates.json" \
+ *     go test -count=1 ./business/ProjectTemplate/ -run TestExportBuiltIns
  */
 import data from "@/content/templates.json";
 import { site } from "@/lib/site";
@@ -75,6 +77,21 @@ export function descriptionBlocks(html = ""): { kind: "p" | "li"; text: string }
   for (const m of html.matchAll(/<(p|li)>([\s\S]*?)<\/\1>/g)) {
     const text = unescape(m[2].replace(/<br\s*\/?>/g, "\n").replace(/<[^>]*>/g, "")).trim();
     if (text) out.push({ kind: m[1] as "p" | "li", text });
+  }
+  return out;
+}
+
+/**
+ * Description blocks as a page shows them, in order: a paragraph's text, or a
+ * run of list items together as one list.
+ */
+export function groupLists(blocks: { kind: "p" | "li"; text: string }[]): (string | string[])[] {
+  const out: (string | string[])[] = [];
+  for (const b of blocks) {
+    const last = out.at(-1);
+    if (b.kind === "p") out.push(b.text);
+    else if (Array.isArray(last)) last.push(b.text);
+    else out.push([b.text]);
   }
   return out;
 }

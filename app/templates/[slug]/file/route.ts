@@ -3,6 +3,9 @@ import { templateBySlug, templateFile, templates } from "@/lib/templates";
 // The template as a file for "Add a template file" in OneCamp: a starting
 // point to change and keep as a workspace's own.
 export const dynamic = "force-static";
+// Only the templates there are: any other name is the site's 404, not a
+// handler run (and a cached "Not found") for every stray link.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return templates.map((t) => ({ slug: t.id }));

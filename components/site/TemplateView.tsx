@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { FREE_SEATS } from "@/lib/freePlan";
 import {
   byWeek,
+  groupLists,
   dayLabel,
   demoTemplateUrl,
   descriptionBlocks,
@@ -40,8 +41,8 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <ol className="grid gap-10" aria-label="The plan, week by week">
-              {weeks.map((w) => (
-                <li key={w.week}>
+              {weeks.map((w, i) => (
+                <li key={i}>
                   <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Week {w.week}</h2>
                   <ul className="mt-3 grid gap-3">
                     {w.tasks.map((task) => (
@@ -109,9 +110,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
 }
 
 function TaskCard({ task }: { task: TemplateTask }) {
-  const blocks = descriptionBlocks(task.description);
-  const paragraphs = blocks.filter((b) => b.kind === "p");
-  const items = blocks.filter((b) => b.kind === "li");
+  const blocks = groupLists(descriptionBlocks(task.description));
   const when =
     task.due_day === undefined
       ? null
@@ -128,13 +127,14 @@ function TaskCard({ task }: { task: TemplateTask }) {
           {task.priority && `${PRIORITY[task.priority] ?? task.priority} priority`}
         </p>
       </div>
-      {paragraphs.map((b) => (
-        <p key={b.text} className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{b.text}</p>
-      ))}
-      {items.length > 0 && (
-        <ul className="mt-2 grid gap-1 text-sm text-muted-foreground">
-          {items.map((b) => <li key={b.text} className="flex gap-2"><span aria-hidden>·</span>{b.text}</li>)}
-        </ul>
+      {blocks.map((b, i) =>
+        typeof b === "string" ? (
+          <p key={i} className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{b}</p>
+        ) : (
+          <ul key={i} className="mt-2 grid gap-1 text-sm text-muted-foreground">
+            {b.map((item, j) => <li key={j} className="flex gap-2"><span aria-hidden>·</span>{item}</li>)}
+          </ul>
+        ),
       )}
       {!!task.subtasks?.length && (
         <ul className="mt-3 grid gap-1 text-sm text-muted-foreground" aria-label={`Steps in ${task.name}`}>
