@@ -72,6 +72,8 @@ export const navLinks = [
   // Named "Safe AI" (was "Governance", 3 Oct 2026): a first-time visitor knows what safe AI means; "governance" needs explaining. Not "Security": that reads as a trust page full of badges; this is a
   // product argument, and it is the reason to choose OneCamp over an AI workspace that is easier to buy.
   { label: "Safe AI", href: "/#governance" },
+  // The quickest answer to "what would we use it for": a project with its plan already in it.
+  { label: "Templates", href: "/templates" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Docs", href: "/docs" },
 ];

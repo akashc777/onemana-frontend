@@ -27,6 +27,7 @@ import { StepCard, FaqItem } from "@/components/site/marketing";
 import { StepsConnector } from "@/components/site/StepsConnector";
 import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
 import { StickyBuyCta } from "@/components/site/StickyBuyCta";
+import { TemplateStrip } from "@/components/site/TemplateStrip";
 import { SocialProof } from "@/components/site/SocialProof";
 import { SectionAmbient } from "@/components/site/SectionAmbient";
 import { Fold } from "@/components/site/Fold";
@@ -284,6 +285,27 @@ export default async function HomePage() {
             <span className="font-medium text-foreground">Works on every device.</span> Web, a desktop app, and phones.
           </div>
         </Reveal>
+      </Section>
+
+      {/* Day one, after the install: a project that starts with its plan.
+          The gallery was linked only from the footer, so the templates (the
+          quickest way to see what OneCamp is for) were a page almost nobody
+          reached. Names and sizes here; each plan is read on its own page. */}
+      <Section id="templates" divider>
+        <SectionHeading
+          eyebrow="Project templates"
+          title="Start a project with its plan already in it"
+          subtitle="Every task, what done looks like, and its date."
+        />
+        <TemplateStrip />
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
+          <ButtonLink href={site.demoUrlTo("templates")} external variant="brandPremium">
+            Try them in the live demo
+          </ButtonLink>
+          <Link href="/templates" className="text-muted-foreground underline underline-offset-4 hover:text-foreground">
+            See every plan, week by week
+          </Link>
+        </div>
       </Section>
 
       <Section id="enterprise" divider>
