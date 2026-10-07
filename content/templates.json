@@ -1,0 +1,625 @@
+[
+  {
+    "id": "client-project",
+    "name": "Client project",
+    "description": "Kickoff to invoice for one client: assets, drafts, their review, delivery and a testimonial.",
+    "statuses": [
+      {
+        "name": "Client review",
+        "category": "inReview",
+        "color": "amber"
+      }
+    ],
+    "tasks": [
+      {
+        "name": "Kickoff call",
+        "description": "<p>Agree on the goal, the scope, the deadline and who signs off. Put the notes in this task so everyone works from the same page.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "client",
+        "due_day": 1
+      },
+      {
+        "name": "Collect brand assets and access",
+        "description": "<p>Ask for everything in one message, so the client answers once.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "client",
+        "due_day": 3,
+        "subtasks": [
+          {
+            "name": "Logo files and fonts"
+          },
+          {
+            "name": "Brand colours"
+          },
+          {
+            "name": "Copy and images"
+          },
+          {
+            "name": "Logins we'll need"
+          }
+        ]
+      },
+      {
+        "name": "Share the timeline with the client",
+        "description": "<p>The dates they&#39;ll see work, and the dates we need their answers by. Share the project with them (Share with a client) so they can follow along.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "client",
+        "due_day": 4
+      },
+      {
+        "name": "First draft",
+        "description": "<p>Good enough to react to, not polished. Note any open questions at the top.</p>",
+        "status": "todo",
+        "priority": "high",
+        "start_day": 4,
+        "due_day": 10
+      },
+      {
+        "name": "Send the draft for review",
+        "description": "<p>Move the task to Client review. Ask for all feedback in one round, by a date.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "client",
+        "due_day": 11
+      },
+      {
+        "name": "Revisions",
+        "description": "<p>Work through the feedback. Anything outside the agreed scope gets its own task and its own price.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "start_day": 12,
+        "due_day": 15
+      },
+      {
+        "name": "Final delivery",
+        "description": "<p>Hand over the files and the logins, with a short note on how to use what we made.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "client",
+        "due_day": 17
+      },
+      {
+        "name": "Send the invoice",
+        "description": "<p>If the team logged time on this project, OneCamp makes the invoice from it: open the project&#39;s time (the clock) and choose Make an invoice.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 18
+      },
+      {
+        "name": "Ask for a testimonial",
+        "description": "<p>A week after delivery, when the work has proven itself. Two or three sentences in their words is plenty.</p>",
+        "status": "todo",
+        "priority": "low",
+        "tags": "client",
+        "due_day": 25
+      }
+    ]
+  },
+  {
+    "id": "product-launch",
+    "name": "Product launch",
+    "description": "Two weeks to launch day: positioning, the page, the post, the emails and a retro.",
+    "tasks": [
+      {
+        "name": "Write the positioning brief",
+        "description": "<p>Who it&#39;s for, the problem it solves, why now, and the one sentence everyone will repeat.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "launch",
+        "due_day": 2
+      },
+      {
+        "name": "Draft the launch page",
+        "description": "<p>Lead with the problem and the one sentence from the brief. One clear call to action.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "launch",
+        "start_day": 2,
+        "due_day": 7
+      },
+      {
+        "name": "Check pricing and plans",
+        "description": "<p>The numbers on the page, the checkout and the docs all say the same thing.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 7
+      },
+      {
+        "name": "Record a short demo",
+        "description": "<p>Two minutes or less, one take is fine. Show the problem, then the product solving it.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "launch",
+        "due_day": 10
+      },
+      {
+        "name": "Write the announcement post",
+        "description": "<p>What&#39;s new, who it helps and how to try it. Link the demo.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "launch",
+        "due_day": 10
+      },
+      {
+        "name": "Email existing customers",
+        "description": "<p>Short and personal: what changed for them and the one thing to try first.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "launch",
+        "due_day": 13
+      },
+      {
+        "name": "Launch day",
+        "description": "<p>Keep this task open all day and tick the steps off as they go out.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "launch",
+        "due_day": 14,
+        "subtasks": [
+          {
+            "name": "Publish the page and the post"
+          },
+          {
+            "name": "Send the emails"
+          },
+          {
+            "name": "Share it where our people are"
+          },
+          {
+            "name": "Answer every question within the hour"
+          }
+        ]
+      },
+      {
+        "name": "Launch retro",
+        "description": "<p>Thirty minutes: the numbers, what worked, and what we&#39;d do differently next time.</p>",
+        "status": "todo",
+        "priority": "low",
+        "due_day": 21
+      }
+    ]
+  },
+  {
+    "id": "website-redesign",
+    "name": "Website redesign",
+    "description": "From an audit of the old site to launch, with redirects so links and search rankings carry over.",
+    "statuses": [
+      {
+        "name": "Design review",
+        "category": "inReview",
+        "color": "violet"
+      }
+    ],
+    "tasks": [
+      {
+        "name": "Audit the current site",
+        "description": "<p>Which pages people visit, what&#39;s out of date and what&#39;s broken. Export the analytics before anything changes.</p>",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 3
+      },
+      {
+        "name": "Sitemap and content plan",
+        "description": "<p>Every page the new site will have, what it&#39;s for, and who writes it.</p>",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 7
+      },
+      {
+        "name": "Wireframes",
+        "description": "<p>Layout only, in grey. Agree on these before anything gets colour.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "start_day": 7,
+        "due_day": 12
+      },
+      {
+        "name": "Visual design",
+        "description": "<p>The home page and one inner page first; the rest follow their lead.</p>",
+        "status": "todo",
+        "priority": "high",
+        "start_day": 12,
+        "due_day": 19
+      },
+      {
+        "name": "Write and collect the copy",
+        "description": "<p>Real words, not placeholder text, before the build starts.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 19
+      },
+      {
+        "name": "Build",
+        "status": "todo",
+        "priority": "high",
+        "start_day": 19,
+        "due_day": 33
+      },
+      {
+        "name": "Test on phones and browsers",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 36,
+        "subtasks": [
+          {
+            "name": "iPhone Safari"
+          },
+          {
+            "name": "Android Chrome"
+          },
+          {
+            "name": "Desktop Chrome, Firefox and Safari"
+          },
+          {
+            "name": "Forms send and arrive"
+          },
+          {
+            "name": "Page speed"
+          }
+        ]
+      },
+      {
+        "name": "Set up redirects",
+        "description": "<p>Map every old address to its new one, so old links and search rankings carry over.</p>",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 37
+      },
+      {
+        "name": "Launch",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 38
+      },
+      {
+        "name": "Check analytics and search a week on",
+        "description": "<p>Look for pages that lost visits and addresses that now lead nowhere.</p>",
+        "status": "todo",
+        "priority": "low",
+        "due_day": 45
+      }
+    ]
+  },
+  {
+    "id": "feature-build",
+    "name": "Feature build",
+    "description": "One feature from spec to release: design, build, code review, QA and the release note.",
+    "statuses": [
+      {
+        "name": "QA",
+        "category": "inReview",
+        "color": "violet"
+      }
+    ],
+    "tasks": [
+      {
+        "name": "Write the spec",
+        "description": "<p>The problem, who has it, what done looks like, and what&#39;s out of scope.</p>",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 2
+      },
+      {
+        "name": "Design",
+        "description": "<p>The flows and the screens, the empty and error states included.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "start_day": 2,
+        "due_day": 5
+      },
+      {
+        "name": "Build",
+        "status": "todo",
+        "priority": "high",
+        "start_day": 5,
+        "due_day": 12
+      },
+      {
+        "name": "Tests",
+        "description": "<p>The cases from the spec, and the bug you&#39;d be embarrassed to ship.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 12
+      },
+      {
+        "name": "Code review",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 13
+      },
+      {
+        "name": "QA pass",
+        "description": "<p>Move tasks to QA as they&#39;re ready. Test it as the person in the spec would use it.</p>",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 14
+      },
+      {
+        "name": "Release",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 15
+      },
+      {
+        "name": "Write the release note",
+        "description": "<p>What changed and who it helps, in a sentence or two.</p>",
+        "status": "todo",
+        "priority": "low",
+        "due_day": 15
+      }
+    ]
+  },
+  {
+    "id": "event",
+    "name": "Event",
+    "description": "Six weeks to a meetup, an offsite or a conference day, and the follow-up after it.",
+    "tasks": [
+      {
+        "name": "Set the date, the budget and the goal",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 1
+      },
+      {
+        "name": "Book the venue",
+        "description": "<p>Check the capacity, the access, the Wi-Fi and what&#39;s included before signing.</p>",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 7
+      },
+      {
+        "name": "Plan the agenda and invite speakers",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 14
+      },
+      {
+        "name": "Open registration",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 14
+      },
+      {
+        "name": "Order food and drinks",
+        "description": "<p>Ask about dietary needs in the registration form.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 30
+      },
+      {
+        "name": "Badges, signs and the run sheet",
+        "status": "todo",
+        "priority": "low",
+        "due_day": 38,
+        "subtasks": [
+          {
+            "name": "Print badges"
+          },
+          {
+            "name": "Signs to the room"
+          },
+          {
+            "name": "Run sheet: who does what, minute by minute"
+          }
+        ]
+      },
+      {
+        "name": "Remind the attendees",
+        "description": "<p>Where, when, how to get there and who to call on the day.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 40
+      },
+      {
+        "name": "Event day",
+        "status": "todo",
+        "priority": "high",
+        "due_day": 42
+      },
+      {
+        "name": "Send thanks, photos and slides",
+        "status": "todo",
+        "priority": "medium",
+        "due_day": 44
+      },
+      {
+        "name": "Event retro",
+        "status": "todo",
+        "priority": "low",
+        "due_day": 49
+      }
+    ]
+  },
+  {
+    "id": "new-hire-onboarding",
+    "name": "New hire onboarding",
+    "description": "From a week before their first day to the 90-day review: accounts, a buddy and check-ins.",
+    "tasks": [
+      {
+        "name": "Send the welcome email",
+        "description": "<p>The start date and time, where to go, who to ask for, and what to bring.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "onboarding",
+        "due_day": 0
+      },
+      {
+        "name": "Set up their accounts",
+        "status": "todo",
+        "priority": "high",
+        "tags": "onboarding",
+        "due_day": 3,
+        "subtasks": [
+          {
+            "name": "Email"
+          },
+          {
+            "name": "Invite to OneCamp and their team's channels"
+          },
+          {
+            "name": "The tools for their role"
+          },
+          {
+            "name": "Payroll and documents"
+          }
+        ]
+      },
+      {
+        "name": "Get their laptop ready",
+        "status": "todo",
+        "priority": "high",
+        "tags": "onboarding",
+        "due_day": 4
+      },
+      {
+        "name": "Pick a buddy",
+        "description": "<p>Someone outside their reporting line to ask the questions they won&#39;t ask their manager.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "onboarding",
+        "due_day": 5
+      },
+      {
+        "name": "First day: welcome, tour and lunch",
+        "status": "todo",
+        "priority": "high",
+        "tags": "onboarding",
+        "due_day": 7
+      },
+      {
+        "name": "Walk through how we work",
+        "description": "<p>The handbook, the policies, and where things live in OneCamp.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "onboarding",
+        "due_day": 8
+      },
+      {
+        "name": "Their first small task, shipped",
+        "description": "<p>Something real and small, done in their first week.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "onboarding",
+        "due_day": 11
+      },
+      {
+        "name": "Two-week check-in",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "onboarding",
+        "due_day": 21
+      },
+      {
+        "name": "30-day check-in",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "onboarding",
+        "due_day": 37
+      },
+      {
+        "name": "90-day review",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "onboarding",
+        "due_day": 97
+      }
+    ]
+  },
+  {
+    "id": "security-audit-prep",
+    "name": "Security audit prep",
+    "description": "The groundwork before an auditor or a customer's security review: policies, access, backups and evidence.",
+    "tasks": [
+      {
+        "name": "Agree on the scope and the auditor",
+        "description": "<p>Which standard or questionnaire, which systems are in scope, and the dates.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "audit",
+        "due_day": 3
+      },
+      {
+        "name": "Gather the policies",
+        "description": "<p>Keep each policy as a doc, with its owner and the date it was last reviewed.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "audit",
+        "due_day": 10,
+        "subtasks": [
+          {
+            "name": "Information security"
+          },
+          {
+            "name": "Access control"
+          },
+          {
+            "name": "Incident response"
+          },
+          {
+            "name": "Backups and recovery"
+          },
+          {
+            "name": "Vendor management"
+          }
+        ]
+      },
+      {
+        "name": "Review who has access to what",
+        "description": "<p>Remove the accounts of people who left, and admin rights nobody uses.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "audit",
+        "due_day": 14
+      },
+      {
+        "name": "Review vendors",
+        "description": "<p>Every service that holds our data or our customers&#39; data, and what it holds.</p>",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "audit",
+        "due_day": 17
+      },
+      {
+        "name": "Test a restore from backup",
+        "description": "<p>Restore to a spare server, check the data is all there, and note how long it took.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "audit",
+        "due_day": 21
+      },
+      {
+        "name": "Run an incident drill",
+        "status": "todo",
+        "priority": "medium",
+        "tags": "audit",
+        "due_day": 24
+      },
+      {
+        "name": "Collect the evidence",
+        "description": "<p>Screenshots, exports and logs, one folder per control, named so the auditor can find them.</p>",
+        "status": "todo",
+        "priority": "high",
+        "tags": "audit",
+        "due_day": 28
+      },
+      {
+        "name": "Walk the auditor through it",
+        "status": "todo",
+        "priority": "high",
+        "tags": "audit",
+        "due_day": 35
+      },
+      {
+        "name": "Fix what they found",
+        "description": "<p>One task per finding, each with an owner and a date.</p>",
+        "status": "backlog",
+        "priority": "medium",
+        "tags": "audit",
+        "due_day": 49
+      }
+    ]
+  }
+]

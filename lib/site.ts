@@ -28,7 +28,11 @@ export const site = {
   // parameter by forgetting it, and the click tracker's startsWith(demoUrl)
   // match keeps working.
   get demoStartUrl() {
-    return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=1`;
+    return this.demoUrlTo("1");
+  },
+  /** The demo, signed in and landing where `to` names (the demo app's allow-list). */
+  demoUrlTo(to: string): string {
+    return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=${encodeURIComponent(to)}`;
   },
   /**
    * A demo link that names where it is going.
@@ -40,7 +44,7 @@ export const site = {
    * on the drill, running it once.
    */
   demoDrillUrl(): string {
-    return `${this.demoUrl}${this.demoUrl.includes("?") ? "&" : "?"}start_demo=drill`;
+    return this.demoUrlTo("drill");
   },
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/OneMana-Soft/OneCamp-fe",
   /** The open-source server (AGPL-3.0). */
@@ -79,6 +83,7 @@ export const footerLinks = {
     // purpose. /compare is where that argument moved, so it has to be reachable
     // from somewhere or it is a page only a search engine ever sees.
     { label: "Compare", href: "/compare" },
+    { label: "Project templates", href: "/templates" },
     { label: "For agencies", href: "/for/agencies" },
     { label: "For teams in India", href: "/for/india" },
     { label: "For regulated teams", href: "/for/compliance" },

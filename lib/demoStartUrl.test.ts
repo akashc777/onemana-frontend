@@ -43,7 +43,8 @@ describe("the demo link", () => {
   it("is used by every link that sends someone to the demo", () => {
     const TRACKER = "components/site/VisitorTracker.tsx"
     const offenders = execSync(
-      "grep -rln 'site\\.demoUrl' app components lib --include='*.ts' --include='*.tsx' || true",
+      // site.demoUrlTo(…) always starts the demo; only the bare site.demoUrl is the old sign-in page.
+      "grep -rlnE 'site\\.demoUrl([^T]|$)' app components lib --include='*.ts' --include='*.tsx' || true",
       { cwd: ROOT, encoding: "utf8" },
     )
       .split("\n")

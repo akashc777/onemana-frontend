@@ -3,8 +3,8 @@ import type { Audience } from "@/lib/audiences";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { site } from "@/lib/site";
 
-/** Metadata for a page rendered from an Audience, at `path` (e.g. "/for/agencies"). */
-export function landingMetadata(a: Audience, path: string): Metadata {
+/** Metadata for a landing page (an audience, a rival, a template) at `path`, e.g. "/for/agencies". */
+export function landingMetadata(a: Pick<Audience, "seoTitle" | "seoDescription">, path: string): Metadata {
   return {
     title: a.seoTitle,
     description: a.seoDescription,

@@ -4,6 +4,7 @@ import { listPublishedPosts } from "@/lib/blog";
 import { listPublishedDocs } from "@/lib/docs";
 import { audiences } from "@/lib/audiences";
 import { alternatives } from "@/lib/alternatives";
+import { templates } from "@/lib/templates";
 
 const STATIC_ROUTES = [
   "",
@@ -23,7 +24,12 @@ const STATIC_ROUTES = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   // The landing pages come from their own data, so a new one can't be left out.
-  const landing = [...audiences.map((a) => `/for/${a.slug}`), ...alternatives.map((a) => `/alternatives/${a.slug}`)];
+  const landing = [
+    ...audiences.map((a) => `/for/${a.slug}`),
+    ...alternatives.map((a) => `/alternatives/${a.slug}`),
+    "/templates",
+    ...templates.map((t) => `/templates/${t.id}`),
+  ];
   const staticEntries: MetadataRoute.Sitemap = [...STATIC_ROUTES, ...landing].map((path) => ({
     url: `${site.url}${path}`,
     lastModified: now,
