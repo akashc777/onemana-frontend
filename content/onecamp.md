@@ -135,7 +135,7 @@ Eight powerful modules, one unified workspace - all self-hosted on your servers.
   },
   {
     "title": "✅  Tasks & Kanban",
-    "content": "Visual boards, assignees, due dates, and project tracking. Manage work the way your team thinks.",
+    "content": "Visual boards, a timeline where tasks wait on each other, and a workload that shows who has room each week. Manage work the way your team thinks.",
     "idx": 2,
     "name": "0f88kh7u"
   },

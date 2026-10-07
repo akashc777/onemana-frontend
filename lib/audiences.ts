@@ -106,6 +106,10 @@ export const audiences: Audience[] = [
         a: "Yes. A project link shows its tasks by status or on a timeline, with dates and assignees, without an account, and the updates you choose to show them: where the project stands and what changed, drafted from its tasks. Turn comments on and they can ask about a task right where the work is.",
       },
       {
+        q: "Can we see who has room for a new client?",
+        a: "Yes. Projects → Workload shows each person's open tasks week by week, across every client project, against how many they take on. Open a week to move a task a week later or hand it to someone with room.",
+      },
+      {
         q: "Can we try it with a real client first?",
         a: "Yes. The free plan covers up to 25 people on your own server, with guest channels, forms and booking links included.",
       },
