@@ -127,7 +127,7 @@ export const alternatives: Audience[] = [
     prices: "dual",
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
-      { q: "Can we import from Notion?", a: "Task databases come across as projects, with each row a task. Pages and wikis are copied over by hand for now." },
+      { q: "Can we import from Notion?", a: "Task databases come across as projects, with each row a task and the database's other properties as custom fields. Pages and wikis are copied over by hand for now." },
       { q: "Does the AI need an API key?", a: "No: run a local model on the same server, or bring a key from the provider you prefer." },
     ],
     proof: { label: "Installation guide", href: "/docs/installation" },
@@ -171,7 +171,7 @@ export const alternatives: Audience[] = [
     prices: "dual",
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
-      { q: "Can we import from ClickUp?", a: "Yes. Admin → Import → ClickUp brings spaces and lists across as projects, with tasks, statuses, assignees and comments." },
+      { q: "Can we import from ClickUp?", a: "Yes. Admin → Import → ClickUp brings spaces and lists across as projects, with tasks, statuses, assignees, comments and custom fields." },
       { q: "Is there time tracking?", a: "Yes, on every task, with a project report and CSV export for invoices." },
     ],
     proof: { label: "Time tracking", href: "/docs/time-tracking" },
@@ -215,7 +215,7 @@ export const alternatives: Audience[] = [
     prices: "dual",
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
-      { q: "Can we import from Asana?", a: "Yes. Admin → Import → Asana brings projects across with their tasks, subtasks, sections as statuses, assignees, dates and comments." },
+      { q: "Can we import from Asana?", a: "Yes. Admin → Import → Asana brings projects across with their tasks, subtasks, sections as statuses, assignees, dates, comments and custom fields." },
       { q: "Are goals, the timeline or the workload on a paid plan?", a: "No. Goals, timelines, dependencies, the projects overview and the workload are in every edition, the free one included." },
     ],
     proof: { label: "Workload", href: "/docs/workload" },
@@ -259,7 +259,7 @@ export const alternatives: Audience[] = [
     prices: "dual",
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
-      { q: "Can we import from monday.com?", a: "Yes. Admin → Import → monday.com brings boards across as projects, with items, subitems, statuses, people, dates and updates." },
+      { q: "Can we import from monday.com?", a: "Yes. Admin → Import → monday.com brings boards across as projects, with items, subitems, statuses, people, dates and updates, and your other columns as custom fields." },
       { q: "Are dependencies or workload on a higher plan?", a: "No. Every edition has them, the free one included." },
     ],
     proof: { label: "Timeline and dependencies", href: "/docs/project-timeline" },
