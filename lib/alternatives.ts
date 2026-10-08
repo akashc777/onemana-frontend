@@ -161,7 +161,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to ClickUp: tasks with boards and cycles, chat and calls, docs, time tracking and client links. Import your ClickUp workspace.",
     points: [
-      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline where tasks wait on each other, a workload by week, cycles, repeating tasks, custom statuses, saved views, goals and reports." },
+      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline where tasks wait on each other, a workload by week, cycles with burndown, repeating tasks, statuses and fields of your own, saved views, goals and reports." },
       { icon: "table", title: "Time on tasks", body: "Timers and manual time, billable or not, with a report by person and task and a CSV export." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so status updates don't need a separate tool." },
       { icon: "docs", title: "Clients without accounts", body: "Share one project or channel with a client from a link, and take forms and bookings from them." },
@@ -249,7 +249,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to monday.com: boards, timelines with dependencies, team workload with time off, client links, chat and calls. Import your monday.com boards.",
     points: [
-      { icon: "tasks", title: "Boards your way", body: "Boards and lists with statuses you name, cycles, repeating tasks, saved views and weekly reports." },
+      { icon: "tasks", title: "Boards your way", body: "Boards and lists with statuses and fields you name, cycles, repeating tasks, saved views and weekly reports." },
       { icon: "board", title: "Dependencies on the timeline", body: "Draw an arrow from one task to the next; move one and the rest follow, just far enough." },
       { icon: "teams", title: "Workload with time off", body: "Each person's week in tasks or estimated hours, less the days they're away. No higher plan needed." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so updates don't need another tool." },
