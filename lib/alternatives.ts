@@ -172,14 +172,14 @@ export const alternatives: Audience[] = [
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
       { q: "Can we import from ClickUp?", a: "Yes. Admin → Import → ClickUp brings spaces and lists across as projects, with tasks, statuses, assignees, comments and custom fields." },
-      { q: "Is there time tracking?", a: "Yes, on every task, with a project report and CSV export for invoices." },
+      { q: "Is there time tracking?", a: "Yes, on every task, with a project report, CSV export, and invoices you save, send and mark paid." },
     ],
     proof: { label: "Time tracking", href: "/docs/time-tracking" },
     rival: {
       name: "ClickUp",
       billing: "Per user, per month, with AI sold on top of the plan.",
       theyWin: [
-        "Mind maps, every kind of dependency (not only finish to start), workload in story points, and dashboards you build widget by widget.",
+        "Mind maps, workload in story points, and dashboards you build widget by widget.",
         "Thousands of integrations, and a template for almost any process.",
         "Hosted for you, with nothing to run.",
       ],
@@ -205,7 +205,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Asana: goals with progress from their projects, timelines with dependencies, team workload with time off, and chat, docs and calls built in. Import your Asana projects.",
     points: [
-      { icon: "tasks", title: "A timeline that moves with you", body: "Drag a task and the tasks waiting on it move along, just far enough. Arrows turn red when a plan can't hold." },
+      { icon: "tasks", title: "A timeline that moves with you", body: "Drag a task and the tasks waiting on it move along, just far enough, keeping any lag you set. Arrows turn red when a plan can't hold." },
       { icon: "teams", title: "Who has room this week", body: "Each person's week in tasks or estimated hours against what they take on, less their time off. Hand a task to whoever has room." },
       { icon: "board", title: "Goals that fill in by themselves", body: "Progress from the projects serving a goal, its sub-goals or a number, with check-ins drafted for the owner. And a report across every project, week by week." },
       { icon: "chat", title: "The conversation in the same place", body: "Channels, threads and calls beside the work, so status doesn't live in another app." },
@@ -250,7 +250,7 @@ export const alternatives: Audience[] = [
       "OneCamp is an open-source, self-hosted alternative to monday.com: boards, timelines with dependencies, team workload with time off, client links, chat and calls. Import your monday.com boards.",
     points: [
       { icon: "tasks", title: "Boards your way", body: "Boards and lists with statuses and fields you name, cycles, repeating tasks, saved views and weekly reports." },
-      { icon: "board", title: "Dependencies on the timeline", body: "Draw an arrow from one task to the next; move one and the rest follow, just far enough." },
+      { icon: "board", title: "Dependencies on the timeline", body: "Draw an arrow from one task to the next, finish to start or any of the other three kinds, with a lag if you need one; move one and the rest follow, just far enough." },
       { icon: "teams", title: "Workload with time off", body: "Each person's week in tasks or estimated hours, less the days they're away. No higher plan needed." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so updates don't need another tool." },
       { icon: "teams", title: "Every person included", body: "No seat buckets: add the sixth person without paying for ten. Free for up to 25." },
@@ -295,7 +295,7 @@ export const alternatives: Audience[] = [
     points: [
       { icon: "table", title: "Time on the task", body: "Start a timer from the task itself, so every hour is already tied to the work and the project." },
       { icon: "automation", title: "A timer you can't lose", body: "The running timer follows you around the app; starting another stops the first." },
-      { icon: "docs", title: "Rates and invoices", body: "An hourly rate for the project and for anyone who differs; the report says what the time comes to, and the invoice starts from it." },
+      { icon: "docs", title: "Rates and invoices", body: "An hourly rate for the project and for anyone who differs; the report says what the time comes to, and the invoice starts from it. Saved invoices are numbered and followed to paid." },
       { icon: "tasks", title: "And the rest of the work", body: "Projects, chat, docs and a calendar in the same app, so the timer isn't another tool." },
       { icon: "teams", title: "Every tracker included", body: "Free for up to 25 people, so contractors log time without a seat each." },
       { icon: "lock", title: "Your hours on your server", body: "Time data never sits with a vendor." },
