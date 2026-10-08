@@ -156,12 +156,12 @@ export const alternatives: Audience[] = [
     eyebrow: "A self-hosted alternative to ClickUp",
     title: "Tasks, chat and time tracking, without the per-seat bill",
     subtitle:
-      "Projects with lists, boards, a timeline with dependencies, a workload by person and week, cycles and saved views; channels and calls; time on tasks with an invoice-ready export. On a server you own.",
+      "Projects with lists, boards, a timeline with dependencies, a workload by person and week, cycles, saved views and goals; channels and calls; time on tasks with an invoice-ready export. On a server you own.",
     seoTitle: "Self-hosted ClickUp alternative: OneCamp, free for up to 25 people",
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to ClickUp: tasks with boards and cycles, chat and calls, docs, time tracking and client links. Import your ClickUp workspace.",
     points: [
-      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline where tasks wait on each other, a workload by week, cycles, repeating tasks, custom statuses and saved views." },
+      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline where tasks wait on each other, a workload by week, cycles, repeating tasks, custom statuses, saved views and goals." },
       { icon: "table", title: "Time on tasks", body: "Timers and manual time, billable or not, with a report by person and task and a CSV export." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so status updates don't need a separate tool." },
       { icon: "docs", title: "Clients without accounts", body: "Share one project or channel with a client from a link, and take forms and bookings from them." },
@@ -180,7 +180,7 @@ export const alternatives: Audience[] = [
       billing: "Per user, per month, with AI sold on top of the plan.",
       theyWin: [
         "Mind maps, every kind of dependency (not only finish to start), workload in story points, and deeper dashboards.",
-        "Goals and portfolio reporting across many teams.",
+        "Thousands of integrations, and a template for almost any process.",
         "Hosted for you, with nothing to run.",
       ],
       source: "https://clickup.com/pricing",
@@ -198,16 +198,16 @@ export const alternatives: Audience[] = [
     slug: "asana",
     label: "Asana",
     eyebrow: "A self-hosted alternative to Asana",
-    title: "Timelines, dependencies and workload, without a plan to unlock them",
+    title: "Goals, timelines and workload, without a plan to unlock them",
     subtitle:
-      "Projects with a timeline where tasks wait on each other, every project on one page, and a workload that shows who has room each week, plus chat, docs and calls. On your own server, free for up to 25 people.",
-    seoTitle: "Self-hosted Asana alternative: OneCamp, with timeline and workload free",
+      "Goals whose progress fills in from the work, projects with a timeline where tasks wait on each other, and a workload that shows who has room each week, plus chat, docs and calls. On your own server, free for up to 25 people.",
+    seoTitle: "Self-hosted Asana alternative: OneCamp, with goals, timeline and workload free",
     seoDescription:
-      "OneCamp is an open-source, self-hosted alternative to Asana: timelines with dependencies, a projects overview, team workload with time off, and chat, docs and calls built in. Import your Asana projects.",
+      "OneCamp is an open-source, self-hosted alternative to Asana: goals with progress from their projects, timelines with dependencies, team workload with time off, and chat, docs and calls built in. Import your Asana projects.",
     points: [
       { icon: "tasks", title: "A timeline that moves with you", body: "Drag a task and the tasks waiting on it move along, just far enough. Arrows turn red when a plan can't hold." },
       { icon: "teams", title: "Who has room this week", body: "Each person's week in tasks or estimated hours against what they take on, less their time off. Hand a task to whoever has room." },
-      { icon: "board", title: "Every project on one page", body: "Health from weekly updates, what's late and what's due, and every project on one timeline." },
+      { icon: "board", title: "Goals that fill in by themselves", body: "Progress from the projects serving a goal, its sub-goals or a number, with check-ins drafted for the owner. And every project on one page." },
       { icon: "chat", title: "The conversation in the same place", body: "Channels, threads and calls beside the work, so status doesn't live in another app." },
       { icon: "docs", title: "Clients follow along", body: "Share a project with a client from a link, as a board or a timeline. No account needed." },
       { icon: "lock", title: "On your server", body: "Open source and self-hosted, free for up to 25 people, then one licence for everyone." },
@@ -216,14 +216,14 @@ export const alternatives: Audience[] = [
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
       { q: "Can we import from Asana?", a: "Yes. Admin → Import → Asana brings projects across with their tasks, subtasks, sections as statuses, assignees, dates and comments." },
-      { q: "Is the timeline or the workload on a paid plan?", a: "No. Timelines, dependencies, the projects overview and the workload are in every edition, the free one included." },
+      { q: "Are goals, the timeline or the workload on a paid plan?", a: "No. Goals, timelines, dependencies, the projects overview and the workload are in every edition, the free one included." },
     ],
     proof: { label: "Workload", href: "/docs/workload" },
     rival: {
       name: "Asana",
       billing: "Per seat, per month, with a minimum number of seats and seats added in blocks above five. Timeline is on Starter; workload, goals and portfolios are on Advanced.",
       theyWin: [
-        "Goals and portfolios that roll progress up across many teams.",
+        "Portfolios with custom fields and charts for reporting across hundreds of projects.",
         "A large library of rules, integrations and approval flows.",
         "Hosted for you, with mature mobile apps.",
       ],
