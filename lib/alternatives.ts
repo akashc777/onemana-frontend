@@ -161,7 +161,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to ClickUp: tasks with boards and cycles, chat and calls, docs, time tracking and client links. Import your ClickUp workspace.",
     points: [
-      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline where tasks wait on each other, a workload by week, cycles, repeating tasks, custom statuses, saved views and goals." },
+      { icon: "tasks", title: "Tasks that fit the team", body: "Lists, boards, a timeline where tasks wait on each other, a workload by week, cycles, repeating tasks, custom statuses, saved views, goals and reports." },
       { icon: "table", title: "Time on tasks", body: "Timers and manual time, billable or not, with a report by person and task and a CSV export." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so status updates don't need a separate tool." },
       { icon: "docs", title: "Clients without accounts", body: "Share one project or channel with a client from a link, and take forms and bookings from them." },
@@ -179,7 +179,7 @@ export const alternatives: Audience[] = [
       name: "ClickUp",
       billing: "Per user, per month, with AI sold on top of the plan.",
       theyWin: [
-        "Mind maps, every kind of dependency (not only finish to start), workload in story points, and deeper dashboards.",
+        "Mind maps, every kind of dependency (not only finish to start), workload in story points, and dashboards you build widget by widget.",
         "Thousands of integrations, and a template for almost any process.",
         "Hosted for you, with nothing to run.",
       ],
@@ -207,7 +207,7 @@ export const alternatives: Audience[] = [
     points: [
       { icon: "tasks", title: "A timeline that moves with you", body: "Drag a task and the tasks waiting on it move along, just far enough. Arrows turn red when a plan can't hold." },
       { icon: "teams", title: "Who has room this week", body: "Each person's week in tasks or estimated hours against what they take on, less their time off. Hand a task to whoever has room." },
-      { icon: "board", title: "Goals that fill in by themselves", body: "Progress from the projects serving a goal, its sub-goals or a number, with check-ins drafted for the owner. And every project on one page." },
+      { icon: "board", title: "Goals that fill in by themselves", body: "Progress from the projects serving a goal, its sub-goals or a number, with check-ins drafted for the owner. And a report across every project, week by week." },
       { icon: "chat", title: "The conversation in the same place", body: "Channels, threads and calls beside the work, so status doesn't live in another app." },
       { icon: "docs", title: "Clients follow along", body: "Share a project with a client from a link, as a board or a timeline. No account needed." },
       { icon: "lock", title: "On your server", body: "Open source and self-hosted, free for up to 25 people, then one licence for everyone." },
@@ -223,7 +223,7 @@ export const alternatives: Audience[] = [
       name: "Asana",
       billing: "Per seat, per month, with a minimum number of seats and seats added in blocks above five. Timeline is on Starter; workload, goals and portfolios are on Advanced.",
       theyWin: [
-        "Portfolios with custom fields and charts for reporting across hundreds of projects.",
+        "Portfolios with custom fields, and charts you design, for reporting across hundreds of projects.",
         "A large library of rules, integrations and approval flows.",
         "Hosted for you, with mature mobile apps.",
       ],
@@ -249,7 +249,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to monday.com: boards, timelines with dependencies, team workload with time off, client links, chat and calls. Import your monday.com boards.",
     points: [
-      { icon: "tasks", title: "Boards your way", body: "Boards and lists with statuses you name, cycles, repeating tasks and saved views." },
+      { icon: "tasks", title: "Boards your way", body: "Boards and lists with statuses you name, cycles, repeating tasks, saved views and weekly reports." },
       { icon: "board", title: "Dependencies on the timeline", body: "Draw an arrow from one task to the next; move one and the rest follow, just far enough." },
       { icon: "teams", title: "Workload with time off", body: "Each person's week in tasks or estimated hours, less the days they're away. No higher plan needed." },
       { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so updates don't need another tool." },
@@ -268,7 +268,7 @@ export const alternatives: Audience[] = [
       billing: "Per seat, per month, sold in seat buckets with a three-seat minimum. Timeline is on Standard; the dependency column and workload are on Pro.",
       theyWin: [
         "Many column types and board layouts to model almost any process.",
-        "A large automation and integration library, and richer dashboards.",
+        "A large automation and integration library, and dashboards you build from widgets.",
         "Hosted for you, with nothing to run.",
       ],
       source: "https://monday.com/pricing",
