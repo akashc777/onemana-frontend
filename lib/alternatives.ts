@@ -288,14 +288,14 @@ export const alternatives: Audience[] = [
     eyebrow: "A self-hosted alternative to Toggl Track",
     title: "Track time where the work already is",
     subtitle:
-      "Start a timer on the task you're doing, or add time by hand, and export a project's billable hours for the invoice. No separate app, no separate bill.",
+      "Start a timer on the task you're doing, or add time by hand, set rates per project and per person, and invoice what the billable time comes to. No separate app, no separate bill.",
     seoTitle: "Toggl Track alternative with tasks built in: OneCamp time tracking",
     seoDescription:
-      "OneCamp tracks time on tasks: timers, manual entries, billable or not, and a per-project report with CSV export. Open source, self-hosted, free for up to 25 people.",
+      "OneCamp tracks time on tasks: timers, manual entries, billable or not, rates per project and per person, and a per-project report with money totals, CSV and invoices. Open source, self-hosted, free for up to 25 people.",
     points: [
       { icon: "table", title: "Time on the task", body: "Start a timer from the task itself, so every hour is already tied to the work and the project." },
       { icon: "automation", title: "A timer you can't lose", body: "The running timer follows you around the app; starting another stops the first." },
-      { icon: "docs", title: "Invoice-ready export", body: "Billable totals and hours to two decimals, by person and by task, as a CSV in your time zone." },
+      { icon: "docs", title: "Rates and invoices", body: "An hourly rate for the project and for anyone who differs; the report says what the time comes to, and the invoice starts from it." },
       { icon: "tasks", title: "And the rest of the work", body: "Projects, chat, docs and a calendar in the same app, so the timer isn't another tool." },
       { icon: "teams", title: "Every tracker included", body: "Free for up to 25 people, so contractors log time without a seat each." },
       { icon: "lock", title: "Your hours on your server", body: "Time data never sits with a vendor." },
@@ -303,7 +303,7 @@ export const alternatives: Audience[] = [
     prices: "dual",
     priceNote: "Free for up to 25 people; one licence after that, paid once.",
     faqs: [
-      { q: "Can I set billable rates?", a: "Each entry is billable or not; the export gives billable hours per person and task, ready to multiply by your rate." },
+      { q: "Can I set billable rates?", a: "Yes. A project's admins set an hourly rate for everyone and one for anyone who differs; the report, the CSV and the invoice show what the billable time comes to. Only admins see money." },
       { q: "Is there a desktop timer?", a: "The timer runs in the web and desktop apps, and keeps running if you close the task." },
     ],
     proof: { label: "Time tracking", href: "/docs/time-tracking" },
@@ -311,7 +311,6 @@ export const alternatives: Audience[] = [
       name: "Toggl Track",
       billing: "Per user, per month. Billable rates need a paid plan.",
       theyWin: [
-        "Rates per person and project, with money totals in the reports.",
         "Browser extensions that add a timer to dozens of other apps.",
         "Idle detection and reminders to track.",
       ],

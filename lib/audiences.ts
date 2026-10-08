@@ -87,7 +87,7 @@ export const audiences: Audience[] = [
       {
         icon: "table",
         title: "Hours you can invoice",
-        body: "Run a timer on a task or add time by hand, mark it billable or not, and download a project's hours as a CSV for the invoice.",
+        body: "Run a timer on a task or add time by hand, set an hourly rate for the project and for anyone who differs, and invoice what the billable time comes to.",
       },
     ],
     prices: "dual",
