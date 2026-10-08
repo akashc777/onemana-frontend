@@ -121,7 +121,7 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
   // a body here is read by someone deciding what the app is (3 Oct 2026).
   { icon: "chat", title: "Chat", body: "Channels, threads, direct messages and files, updated live." },
   { icon: "docs", title: "Docs", body: "Write together, with everyone's cursor on the page." },
-  { icon: "tasks", title: "Tasks", body: "Boards, timelines and workload, beside your conversations." },
+  { icon: "tasks", title: "Tasks", body: "Boards, timelines, workload and goals, beside your conversations." },
   { icon: "video", title: "Video", body: "Calls on your own server, with an AI recap after." },
   { icon: "agent", title: "AI agents", body: "AI teammates that do the work, or ask first." },
   { icon: "ai", title: "Any AI model", body: "Your own API key, or a model on your server." },
