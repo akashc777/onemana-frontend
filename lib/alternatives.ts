@@ -118,7 +118,7 @@ export const alternatives: Audience[] = [
       "OneCamp is an open-source, self-hosted alternative to Notion: real-time docs, tables and task projects, with chat, calls and calendar built in, and AI that runs on your own model.",
     points: [
       { icon: "docs", title: "Docs you write together", body: "Real-time editing, comments, mentions and templates, with history kept on your server." },
-      { icon: "table", title: "Tables and projects", body: "Tables for structured data and projects with lists, boards and cycles for the work itself." },
+      { icon: "table", title: "Tables and projects", body: "Tables with formulas, sorting and filters, whose rows link to tasks, docs and people, and projects with lists, boards and cycles for the work itself." },
       { icon: "chat", title: "The conversation next door", body: "Channels and threads for the team, so a doc's discussion doesn't move to another app." },
       { icon: "ai", title: "AI on your terms", body: "Use your own model provider or run one locally; agents only reach what their person can." },
       { icon: "teams", title: "No per-member bill", body: "Free for up to 25 people, then one licence for everyone, paid once." },
@@ -135,7 +135,7 @@ export const alternatives: Audience[] = [
       name: "Notion",
       billing: "Per member, per month. Its full AI is part of the Business plan and above.",
       theyWin: [
-        "A deeper page builder: databases with many views, relations and formulas.",
+        "A deeper page builder: databases with more views, relations between databases, and rollups.",
         "A huge template gallery and a large community.",
         "Hosted for you, with offline apps on every platform.",
       ],

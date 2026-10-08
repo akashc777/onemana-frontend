@@ -218,7 +218,7 @@ export const cancels = [
     { tool: "Notion", surface: "Docs, wikis, and collaborative editing" },
     { tool: "Asana or Trello", surface: "Tasks, boards, and sprints" },
     { tool: "Zoom", surface: "Calls and recordings, on your own LiveKit" },
-    { tool: "Airtable", surface: "Tables with typed columns and views" },
+    { tool: "Airtable", surface: "Tables with typed columns, formulas and views" },
     { tool: "Miro", surface: "Whiteboards" },
     { tool: "Google Calendar", surface: "Scheduling, tied to the same accounts" },
     { tool: "Otter or a per-minute transcriber", surface: "Meeting transcription, on your server" },
