@@ -27,7 +27,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Slack: channels, threads, calls and search, with tasks, docs and calendar built in. Import your Slack history or bridge channels both ways.",
     points: [
-      { icon: "chat", title: "Everything you use in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, calls with screen sharing, check-ins that ask a channel a question on a schedule, and search across all of it. Plus read receipts in DMs, which Slack never added." },
+      { icon: "chat", title: "Everything you use in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, voice, video and screen clips, calls with screen sharing, check-ins that ask a channel a question on a schedule, and search across all of it. Plus read receipts in DMs, which Slack never added." },
       { icon: "lock", title: "Your history stays yours", body: "Messages live on your server with no age limit, and nothing leaves it unless you connect something that sends it." },
       { icon: "tasks", title: "Work next to the talk", body: "Turn a message into a task, keep docs and whiteboards beside the channel, and see the calendar in the same app." },
       { icon: "teams", title: "No per-seat bill", body: "Free for up to 25 people. Past that, one licence covers everyone on your server, and AI agents never take a seat." },
