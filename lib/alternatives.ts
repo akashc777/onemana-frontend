@@ -179,7 +179,7 @@ export const alternatives: Audience[] = [
       name: "ClickUp",
       billing: "Per user, per month, with AI sold on top of the plan.",
       theyWin: [
-        "Mind maps, every kind of dependency (not only finish to start), workload counted in hours or points, and deeper dashboards.",
+        "Mind maps, every kind of dependency (not only finish to start), workload in story points, and deeper dashboards.",
         "Goals and portfolio reporting across many teams.",
         "Hosted for you, with nothing to run.",
       ],
@@ -191,6 +191,94 @@ export const alternatives: Audience[] = [
         "Make a ClickUp API token (Settings → Apps).",
         "In OneCamp, Admin → Import → ClickUp, and pick the spaces to bring.",
         "Invite the team; people who were assigned tasks keep them.",
+      ],
+    },
+  },
+  {
+    slug: "asana",
+    label: "Asana",
+    eyebrow: "A self-hosted alternative to Asana",
+    title: "Timelines, dependencies and workload, without a plan to unlock them",
+    subtitle:
+      "Projects with a timeline where tasks wait on each other, every project on one page, and a workload that shows who has room each week, plus chat, docs and calls. On your own server, free for up to 25 people.",
+    seoTitle: "Self-hosted Asana alternative: OneCamp, with timeline and workload free",
+    seoDescription:
+      "OneCamp is an open-source, self-hosted alternative to Asana: timelines with dependencies, a projects overview, team workload with time off, and chat, docs and calls built in. Import your Asana projects.",
+    points: [
+      { icon: "tasks", title: "A timeline that moves with you", body: "Drag a task and the tasks waiting on it move along, just far enough. Arrows turn red when a plan can't hold." },
+      { icon: "teams", title: "Who has room this week", body: "Each person's week in tasks or estimated hours against what they take on, less their time off. Hand a task to whoever has room." },
+      { icon: "board", title: "Every project on one page", body: "Health from weekly updates, what's late and what's due, and every project on one timeline." },
+      { icon: "chat", title: "The conversation in the same place", body: "Channels, threads and calls beside the work, so status doesn't live in another app." },
+      { icon: "docs", title: "Clients follow along", body: "Share a project with a client from a link, as a board or a timeline. No account needed." },
+      { icon: "lock", title: "On your server", body: "Open source and self-hosted, free for up to 25 people, then one licence for everyone." },
+    ],
+    prices: "dual",
+    priceNote: "Free for up to 25 people; one licence after that, paid once.",
+    faqs: [
+      { q: "Can we import from Asana?", a: "Yes. Admin → Import → Asana brings projects across with their tasks, subtasks, sections as statuses, assignees, dates and comments." },
+      { q: "Is the timeline or the workload on a paid plan?", a: "No. Timelines, dependencies, the projects overview and the workload are in every edition, the free one included." },
+    ],
+    proof: { label: "Workload", href: "/docs/workload" },
+    rival: {
+      name: "Asana",
+      billing: "Per seat, per month, with a minimum number of seats and seats added in blocks above five. Timeline is on Starter; workload, goals and portfolios are on Advanced.",
+      theyWin: [
+        "Goals and portfolios that roll progress up across many teams.",
+        "A large library of rules, integrations and approval flows.",
+        "Hosted for you, with mature mobile apps.",
+      ],
+      source: "https://asana.com/pricing",
+    },
+    move: {
+      title: "Moving from Asana",
+      steps: [
+        "Make an Asana personal access token in its developer console (app.asana.com/0/my-apps).",
+        "In OneCamp, Admin → Import → Asana, and pick the projects to bring.",
+        "Invite the team; people who were assigned tasks keep them.",
+      ],
+    },
+  },
+  {
+    slug: "monday",
+    label: "monday.com",
+    eyebrow: "A self-hosted alternative to monday.com",
+    title: "Boards, timelines and workload, with no seat buckets",
+    subtitle:
+      "Boards and lists, a timeline where tasks wait on each other, a workload that counts time off, and chat, docs and calls in the same app. On your own server, free for up to 25 people.",
+    seoTitle: "Self-hosted monday.com alternative: OneCamp, free for up to 25 people",
+    seoDescription:
+      "OneCamp is an open-source, self-hosted alternative to monday.com: boards, timelines with dependencies, team workload with time off, client links, chat and calls. Import your monday.com boards.",
+    points: [
+      { icon: "tasks", title: "Boards your way", body: "Boards and lists with statuses you name, cycles, repeating tasks and saved views." },
+      { icon: "board", title: "Dependencies on the timeline", body: "Draw an arrow from one task to the next; move one and the rest follow, just far enough." },
+      { icon: "teams", title: "Workload with time off", body: "Each person's week in tasks or estimated hours, less the days they're away. No higher plan needed." },
+      { icon: "chat", title: "Chat built in", body: "Channels, threads, DMs and calls, so updates don't need another tool." },
+      { icon: "teams", title: "Every person included", body: "No seat buckets: add the sixth person without paying for ten. Free for up to 25." },
+      { icon: "lock", title: "On your server", body: "Open source and self-hosted; your boards never sit with a vendor." },
+    ],
+    prices: "dual",
+    priceNote: "Free for up to 25 people; one licence after that, paid once.",
+    faqs: [
+      { q: "Can we import from monday.com?", a: "Yes. Admin → Import → monday.com brings boards across as projects, with items, subitems, statuses, people, dates and updates." },
+      { q: "Are dependencies or workload on a higher plan?", a: "No. Every edition has them, the free one included." },
+    ],
+    proof: { label: "Timeline and dependencies", href: "/docs/project-timeline" },
+    rival: {
+      name: "monday.com",
+      billing: "Per seat, per month, sold in seat buckets with a three-seat minimum. Timeline is on Standard; the dependency column and workload are on Pro.",
+      theyWin: [
+        "Many column types and board layouts to model almost any process.",
+        "A large automation and integration library, and richer dashboards.",
+        "Hosted for you, with nothing to run.",
+      ],
+      source: "https://monday.com/pricing",
+    },
+    move: {
+      title: "Moving from monday.com",
+      steps: [
+        "Copy your monday.com API token (your avatar → Developers → My access tokens).",
+        "In OneCamp, Admin → Import → monday.com, and pick the boards to bring.",
+        "Invite the team; people who were assigned items keep them.",
       ],
     },
   },

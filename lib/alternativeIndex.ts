@@ -6,5 +6,7 @@ export const ALTERNATIVE_INDEX = [
   { slug: "basecamp", label: "Basecamp" },
   { slug: "notion", label: "Notion" },
   { slug: "clickup", label: "ClickUp" },
+  { slug: "asana", label: "Asana" },
+  { slug: "monday", label: "monday.com" },
   { slug: "toggl", label: "Toggl" },
 ] as const;
