@@ -27,7 +27,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Slack: channels, threads, calls and search, with tasks, docs and calendar built in. Import your Slack history or bridge channels both ways.",
     points: [
-      { icon: "chat", title: "Everything you use in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, calls with screen sharing, and search across all of it." },
+      { icon: "chat", title: "Everything you use in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, calls with screen sharing, check-ins that ask a channel a question on a schedule, and search across all of it." },
       { icon: "lock", title: "Your history stays yours", body: "Messages live on your server with no age limit, and nothing leaves it unless you connect something that sends it." },
       { icon: "tasks", title: "Work next to the talk", body: "Turn a message into a task, keep docs and whiteboards beside the channel, and see the calendar in the same app." },
       { icon: "teams", title: "No per-seat bill", body: "Free for up to 25 people. Past that, one licence covers everyone on your server, and AI agents never take a seat." },
@@ -75,9 +75,9 @@ export const alternatives: Audience[] = [
     points: [
       { icon: "tasks", title: "Projects your way", body: "Lists, boards, a timeline with dependencies, cycles, repeating tasks and saved views, with statuses you name yourself." },
       { icon: "docs", title: "Clients follow their project", body: "Send a client a link to their project: status, dates and comments if you allow them. No account needed." },
-      { icon: "table", title: "Time you can bill", body: "Timers and time added by hand on any task, with a report and CSV export per project." },
+      { icon: "table", title: "Time you can bill", body: "Timers or time added by hand on any task, hourly rates per person, and a report that says what the time comes to, with CSV and invoices." },
       { icon: "calendar", title: "Booking pages and forms", body: "Clients book calls in your free time and send requests through forms that become tasks." },
-      { icon: "chat", title: "Real-time chat", body: "Channels, threads, DMs and calls for the team, with guests from outside when you want them." },
+      { icon: "chat", title: "Real-time chat", body: "Channels, threads, DMs and calls for the team, check-ins that ask a question on a schedule, and guests from outside when you want them." },
       { icon: "lock", title: "On your server", body: "Open source, self-hosted, and paid once if you grow past the free plan." },
     ],
     prices: "dual",
@@ -92,7 +92,7 @@ export const alternatives: Audience[] = [
       billing: "Per user, or a flat monthly price for unlimited users. Clients and guests are free.",
       theyWin: [
         "A calm, opinionated product with twenty years of polish.",
-        "Hill charts and automatic check-ins built into every project.",
+        "Hill charts, which show where each piece of work stands by feel, in every project.",
         "Hosted for you, with nothing to install.",
       ],
       source: "https://basecamp.com/pricing",

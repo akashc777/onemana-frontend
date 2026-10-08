@@ -119,7 +119,7 @@ export const MODULES_ON_HOMEPAGE = 10;
 export const features: { icon: FeatureIconKey; title: string; body: string }[] = [
   // What a team does in it first, then what makes it different. Plain words:
   // a body here is read by someone deciding what the app is (3 Oct 2026).
-  { icon: "chat", title: "Chat", body: "Channels, threads, direct messages and files, updated live." },
+  { icon: "chat", title: "Chat", body: "Channels, threads, direct messages and files, updated live, with check-ins that ask a channel a question on a schedule." },
   { icon: "docs", title: "Docs", body: "Write together, with everyone's cursor on the page." },
   { icon: "tasks", title: "Tasks", body: "Boards, timelines, workload and goals, beside your conversations." },
   { icon: "video", title: "Video", body: "Calls on your own server, with an AI recap after." },
