@@ -159,11 +159,11 @@ export const audiences: Audience[] = [
       },
     ],
     prices: "inr",
-    priceNote: "Prices exclude GST, which is shown on your invoice.",
+    priceNote: "Prices include GST, which your invoice shows separately.",
     faqs: [
       {
         q: "Do I get a proper tax invoice?",
-        a: "Yes. Every purchase has an invoice with GST shown separately. Add your GSTIN at checkout to claim input tax credit.",
+        a: "Yes. The price includes GST, and every purchase has an invoice that shows it separately. Add your GSTIN at checkout to claim input tax credit.",
       },
       {
         q: "Can I pay for Cloud with UPI?",
