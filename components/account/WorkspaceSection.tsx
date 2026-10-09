@@ -14,6 +14,7 @@ import {
   type PortalDomainPlan,
 } from "@/lib/portalApi";
 import { stateBadgeClass } from "@/lib/instanceState";
+import { checkVerdict, verificationTxtHost, workspaceHost, type CheckVerdict } from "@/lib/domainMove";
 import { usePoll } from "@/hooks/usePoll";
 
 // The customer's view of the workspace their subscription bought.
@@ -236,12 +237,14 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [note, setNote] = useState("");
+  const [verdict, setVerdict] = useState<CheckVerdict | null>(null);
 
   async function preview(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setErr("");
     setNote("");
+    setVerdict(null);
     try {
       setPlan(await portalApi.planDomain(inst.id, "custom", domain.trim(), true));
     } catch (e2) {
@@ -254,10 +257,13 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
   async function start() {
     setBusy(true);
     setErr("");
+    setVerdict(null);
     try {
       await portalApi.planDomain(inst.id, "custom", domain.trim(), false);
-      setNote("Started. Add the records below, then use Check records.");
-      onChanged();
+      // No onChanged() here: it reloads the whole account page, which unmounts
+      // this panel and threw this note away before anyone saw it. Starting a
+      // move changes nothing the workspace card shows.
+      setNote("Started. We look for your records every few minutes, or use Check records to look now.");
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : "Could not start that change.");
     } finally {
@@ -268,10 +274,13 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
   async function check() {
     setBusy(true);
     setErr("");
+    setNote("");
     try {
-      const r = await portalApi.checkDomain(inst.id);
-      setNote(r.msg);
-      onChanged();
+      const change = await portalApi.checkDomain(inst.id);
+      setVerdict(checkVerdict(change));
+      // Only a finished move changes the card (its address). Reloading for
+      // anything else unmounted this panel and lost the answer.
+      if (change.state === "applied") onChanged();
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : "Could not check those records.");
     } finally {
@@ -318,12 +327,17 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
 
       {err && <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>}
       {note && <p className="text-sm text-emerald-700 dark:text-emerald-300">{note}</p>}
+      {verdict && (
+        <p role="status" className={`text-sm ${VERDICT_TONE[verdict.tone]}`}>
+          {verdict.text}
+        </p>
+      )}
 
       {plan?.dns_records && plan.dns_records.length > 0 && (
         <div className="space-y-3">
           <p className="text-sm text-foreground/80">
             Create these records with whoever runs your DNS. Your workspace will be at{" "}
-            <span className="font-medium">{plan.to_domain}</span>.
+            <span className="font-medium">{workspaceHost(plan)}</span>.
           </p>
           {plan.verify_token && (
             <div className="overflow-x-auto rounded-lg border border-border">
@@ -331,7 +345,7 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
                 <tbody>
                   <tr className="border-b border-border">
                     <td className="px-3 py-2 font-medium">TXT</td>
-                    <td className="px-3 py-2 font-mono">_onecamp-verify.{plan.to_domain.split(".").slice(-2).join(".")}</td>
+                    <td className="px-3 py-2 font-mono break-all">{verificationTxtHost(plan.to_domain)}</td>
                     <td className="px-3 py-2 font-mono break-all">{plan.verify_token}</td>
                     <td className="px-3 py-2 text-muted-foreground">proves it is yours</td>
                   </tr>
@@ -379,6 +393,12 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
     </div>
   );
 }
+
+const VERDICT_TONE: Record<CheckVerdict["tone"], string> = {
+  done: "text-emerald-700 dark:text-emerald-300",
+  waiting: "text-amber-700 dark:text-amber-400",
+  failed: "text-rose-600 dark:text-rose-400",
+};
 
 // The one decision a subscriber makes.
 function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {

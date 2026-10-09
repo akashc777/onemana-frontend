@@ -130,6 +130,15 @@ export interface PortalDomainPlan {
   dns_records?: PortalDNSRecord[];
 }
 
+/** A domain move under way, as the check endpoint returns it; see lib/domainMove. */
+export interface PortalDomainChange {
+  to_domain: string;
+  /** pending_dns, verifying, applying, applied, failed or cancelled. */
+  state: string;
+  /** What is still missing while pending, in words the customer can act on. */
+  state_detail: string;
+}
+
 export interface PortalOverview {
   customer: PortalCustomer;
   licenses: PortalLicense[];
@@ -271,16 +280,21 @@ export const portalApi = {
     return (data?.data ?? {}) as PortalDomainPlan;
   },
 
-  /** "I have added the records, look now". A customer cannot otherwise tell us. */
-  async checkDomain(id: string): Promise<{ msg: string }> {
+  /** "I have added the records, look now". A customer cannot otherwise tell us.
+   *  The answer is the change itself: the endpoint sends no message. */
+  async checkDomain(id: string): Promise<PortalDomainChange> {
     const res = await fetch(`${base}/instance/${id}/domain/check`, {
       method: "POST",
       credentials: "include",
     });
     if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string };
+    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: Partial<PortalDomainChange> };
     if (!res.ok) throw new Error(data?.msg || "Could not check those records.");
-    return { msg: data?.msg || "Checked." };
+    return {
+      to_domain: data?.data?.to_domain ?? "",
+      state: data?.data?.state ?? "",
+      state_detail: data?.data?.state_detail ?? "",
+    };
   },
 
   /** Change a subscription's plan; returns what was done, and a checkout when the
