@@ -50,4 +50,21 @@ describe("every capture placement makes an offer", () => {
       expect(src, `${rel} still uses the old ask`).not.toContain("Keep me posted");
     }
   });
+
+  // The offer must also be one we keep. Every placement said "Send me the setup
+  // guide" and promised "one email", but POST /onecamp/subscribe only records the
+  // address (Subscribe in onemana-backend unsubscribeBusiness.go): nothing is sent
+  // in reply, and what the list gets is the occasional product announcement.
+  // Promising a guide that never arrives loses the reader at the one moment they
+  // trusted us with an address. Wire the endpoint to send one before asking again.
+  it("no placement, and not the default, promises something the form does not send", () => {
+    const sources = [...files, "components/site/SubscribeForm.tsx"].map((rel) =>
+      readFileSync(join(process.cwd(), rel), "utf8"),
+    );
+    for (const src of sources) {
+      for (const call of [...subscribeCalls(src), src.match(/cta = [^\n]*\n\s*hint = [^\n]*/)?.[0] ?? ""]) {
+        expect(call).not.toMatch(/setup guide|send me|one email/i);
+      }
+    }
+  });
 });

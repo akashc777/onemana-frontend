@@ -322,8 +322,8 @@ function BuyInner() {
               <div className="mt-3">
                 <SubscribeForm
                   source="buy"
-                  cta="Send me the setup guide"
-                  hint="What running your own takes, and what moves across. One email, no sequence you did not ask for."
+                  cta="Email me updates"
+                  hint="Only product announcements: new releases, and changes to the price or license terms. Unsubscribe in one click."
                 />
               </div>
             </div>

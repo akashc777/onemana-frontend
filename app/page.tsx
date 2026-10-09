@@ -362,8 +362,8 @@ export default async function HomePage() {
         <div className="container-x mt-10 max-w-xl">
           <SubscribeForm
             source="pricing"
-            cta="Send me the setup guide"
-            hint="One email: what running your own takes, and what moves across from Jira, Slack or Asana. Unsubscribe in one click."
+            cta="Email me updates"
+            hint="Occasional product announcements, such as new releases and price changes. Unsubscribe in one click."
           />
         </div>
       </Section>
