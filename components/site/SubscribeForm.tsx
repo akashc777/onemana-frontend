@@ -87,7 +87,7 @@ export function SubscribeForm({
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
         {state === "error" ? (
-          <span className="text-red-600 dark:text-red-400">{msg}</span>
+          <span className="text-danger">{msg}</span>
         ) : (
           hint
         )}

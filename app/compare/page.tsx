@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { CompareView } from "@/components/site/CompareView";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { site } from "@/lib/site";
+import { getPricing } from "@/lib/pricing";
+
+export const revalidate = 300;
 
 const DESCRIPTION =
   "OneCamp against Huly, Nextcloud, Mattermost and Plane: how each one bills you, what governs its agents, and what each of them does better. With the subscriptions a self-hosted workspace replaces.";
@@ -25,6 +28,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ComparePage() {
-  return <CompareView />;
+export default async function ComparePage() {
+  return <CompareView pricing={await getPricing()} />;
 }

@@ -65,7 +65,7 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
   };
 
   return (
-    <div className="rounded-xl border border-border bg-muted/30 p-4">
+    <div className="rounded-lg border border-border bg-muted/30 p-4">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <p className="text-sm text-foreground">
         Need more room for files and recordings? Add <strong>{pricing.storage_addon_gb} GB</strong> for{" "}

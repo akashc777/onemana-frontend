@@ -34,7 +34,7 @@ export function PageHeader({ eyebrow, title, subtitle, align = "left", divider =
         {children}
       </div>
       {divider && (
-        <div className="container-x pb-10 pt-10">
+        <div className="container-x pt-10">
           <div className="section-divider" role="separator" aria-hidden />
         </div>
       )}

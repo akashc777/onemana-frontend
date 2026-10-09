@@ -55,7 +55,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="text-xs font-medium text-brand hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className="text-xs font-medium text-brand-ink hover:underline">
         Change email
       </button>
     );
@@ -102,7 +102,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
           </div>
         </>
       )}
-      {error && <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
       <button type="button" onClick={reset} className="text-xs text-muted-foreground hover:text-foreground">
         Cancel
       </button>

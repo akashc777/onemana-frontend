@@ -53,10 +53,10 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
 
   return (
     <>
-      <section className="border-b border-border pt-14 sm:pt-16">
-        <div className="container-x pb-6">
-          {doc.category && <p className="text-sm font-medium text-brand">{doc.category}</p>}
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{doc.title}</h1>
+      <section className="border-b border-border pt-12 sm:pt-16">
+        <div className="container-x pb-8">
+          {doc.category && <p className="eyebrow !mb-2">{doc.category}</p>}
+          <h1 className="max-w-3xl text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{doc.title}</h1>
         </div>
       </section>
 
@@ -64,14 +64,13 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
 
       <DocsShell groups={groups} activeSlug={doc.slug}>
         <div
-          className="prose prose-lg max-w-none
-            prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:text-foreground
-            prose-a:text-brand prose-a:no-underline hover:prose-a:underline
+          className="prose max-w-[46rem] sm:prose-lg
+            prose-headings:scroll-mt-24 prose-headings:text-foreground
             prose-strong:text-foreground
-            prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-pre:bg-muted
-            prose-blockquote:border-l-brand prose-blockquote:text-muted-foreground
-            prose-img:rounded-xl prose-img:border prose-img:border-border
-            prose-table:overflow-hidden prose-th:text-foreground"
+            prose-pre:rounded-lg prose-pre:border prose-pre:border-border prose-pre:bg-muted
+            prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-muted-foreground
+            prose-img:rounded-lg prose-img:border prose-img:border-border
+            prose-th:text-foreground"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </DocsShell>

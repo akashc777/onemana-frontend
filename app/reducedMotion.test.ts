@@ -30,7 +30,11 @@ describe("reduced motion", () => {
       if (!/(^|[;\s])animation(-name)?\s*:\s*(?!none)/.test(m[2])) continue
       for (const cls of m[1].matchAll(/\.([a-zA-Z][\w-]*)/g)) animated.add(cls[1])
     }
-    expect(animated.size).toBeGreaterThan(0)
+    // Since the 10 Oct 2026 redesign nothing in globals.css animates at all, so
+    // the set may be empty; the universal rule below is what stills anything a
+    // component adds with a utility class.
+    expect(reduced, "the reduced-motion block is gone").toMatch(/animation-duration:\s*0\.01ms/)
+    expect(reduced).toMatch(/transition-duration:\s*0\.01ms/)
     const missing = [...animated].filter((c) => !new RegExp(`\\.${c}(?![\\w-])`).test(reduced))
     expect(missing).toEqual([])
   })

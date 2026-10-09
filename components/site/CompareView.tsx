@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section, SectionHeading } from "@/components/ui/Section";
-import { StackConvergence } from "@/components/site/StackConvergence";
+import CostCalculator from "@/components/site/CostCalculator";
+import type { Pricing } from "@/lib/pricing";
 import { ButtonLink } from "@/components/ui/Button";
 import {
     CLAIMS_CHECKED,
@@ -30,11 +31,10 @@ import { site } from "@/lib/site";
  * section worth reading, and everything on this page is one link away from a
  * source a reader can open in another tab.
  */
-export function CompareView() {
+export function CompareView({ pricing }: { pricing: Pricing }) {
     return (
         <>
             <PageHeader
-                eyebrow="Compare"
                 title="Where OneCamp wins, and where it does not"
                 subtitle="Five open alternatives, the subscriptions all of them replace, and one question that separates them. Claims about other products link to the page they came from."
                 divider
@@ -51,7 +51,7 @@ export function CompareView() {
                 {/* A list with the product in the margin: four boxes of equal
                     weight made an honest concession look like a feature grid. */}
                 <dl className="mt-8 divide-y divide-border border-y border-border">
-                    {rivals.map((r, i) => (
+                    {rivals.map((r) => (
                         <div key={r.name} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-8">
                             <dt className="font-medium text-foreground">{r.name}</dt>
                             <dd className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{r.theyWin}</dd>
@@ -64,7 +64,6 @@ export function CompareView() {
             <Section divider>
                 <SectionHeading
                     align="left"
-                    eyebrow="Side by side"
                     title="How you pay, and what governs the agents"
                     subtitle="Billing shape rather than today's price, because the shape is what you live with. Prices move; who you are billed for does not."
                 />
@@ -72,7 +71,7 @@ export function CompareView() {
                     {/* The table is the only element on the site allowed to scroll
                         sideways, and it does so inside its own box so the page
                         itself never does. */}
-                    <div className="overflow-x-auto rounded-xl border border-border">
+                    <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
                         <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
                             <caption className="sr-only">
                                 OneCamp compared with five open alternatives on billing and agent governance
@@ -86,7 +85,7 @@ export function CompareView() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="border-b border-border bg-brand/5">
+                                <tr className="border-b border-border bg-muted">
                                     <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
                                         {onecampRow.name}
                                     </th>
@@ -101,7 +100,7 @@ export function CompareView() {
                                                 href={r.source}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="underline underline-offset-4 decoration-border hover:decoration-foreground"
+                                                className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
                                             >
                                                 {r.name}
                                             </a>
@@ -125,12 +124,11 @@ export function CompareView() {
             <Section divider>
                 <SectionHeading
                     align="left"
-                    eyebrow="One question"
                     title="Ask all five of us the same thing"
                     subtitle="A governance claim you cannot check in an afternoon is a brochure. This one you can."
                 />
                 <div className="mt-8">
-                    <blockquote className="rounded-xl border border-border bg-card p-6">
+                    <blockquote className="rounded-lg bg-muted p-6">
                         <p className="text-balance text-lg leading-relaxed text-foreground">{killQuestion}</p>
                     </blockquote>
                 </div>
@@ -157,7 +155,7 @@ export function CompareView() {
                     </p>
                 </div>
                 <div className="mt-8 flex flex-wrap gap-3">
-                    <ButtonLink href={site.demoDrillUrl()} external variant="brandPremium" size="lg">
+                    <ButtonLink href={site.demoDrillUrl()} external variant="brand" size="lg">
                         Run the drill in the demo
                     </ButtonLink>
                     <ButtonLink href="/verify" variant="ghost" size="lg">
@@ -171,12 +169,11 @@ export function CompareView() {
             <Section divider>
                 <SectionHeading
                     align="left"
-                    eyebrow="Bring your agent"
                     title="Already paying for an agent? Bring it."
                     subtitle="Whether it is a hosted agent billed by the seat or your own on a local model, OneCamp is where it works beside your team: each arrives as a named agent with a sponsor, reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
                 />
                 <div className="mt-8">
-                    <div className="overflow-x-auto rounded-xl border border-border">
+                    <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
                         <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
                             <caption className="sr-only">How the agents you already pay for connect to OneCamp</caption>
                             <thead>
@@ -194,7 +191,7 @@ export function CompareView() {
                                                 href={a.source}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="underline underline-offset-4 decoration-border hover:decoration-foreground"
+                                                className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
                                             >
                                                 {a.name}
                                             </a>
@@ -223,7 +220,7 @@ export function CompareView() {
                     subtitle={`The EU AI Act's record-keeping obligations came into full application on ${RECORD_KEEPING_IN_FORCE}. Until then "our agents are audited" was a preference you could weigh against price.`}
                 />
                 <div className="mt-8">
-                    <div className="overflow-x-auto rounded-xl border border-border">
+                    <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
                         <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
                             <caption className="sr-only">
                                 Record-keeping obligations and what OneCamp produces against each
@@ -258,7 +255,7 @@ export function CompareView() {
                             href={RECORD_KEEPING_SOURCE}
                             target="_blank"
                             rel="noreferrer"
-                            className="underline underline-offset-4 decoration-border hover:decoration-foreground"
+                            className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
                         >
                             Read Article 12
                         </a>
@@ -271,15 +268,14 @@ export function CompareView() {
             <Section divider>
                 <SectionHeading
                     align="left"
-                    eyebrow="What it replaces"
                     title="The subscriptions this usually cancels"
                     subtitle="Not a feature-for-feature swap with any of them. Each surface is good enough that a small team stops paying for the separate tool."
                 />
                 <div className="mt-8">
-                    <StackConvergence />
+                    <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />
                 </div>
                 <div className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-                    {cancels.map((c, i) => (
+                    {cancels.map((c) => (
                         <div key={c.tool}>
                             <div className="flex flex-wrap items-baseline gap-x-2 border-b border-border/60 pb-3">
                                 <span className="text-sm font-semibold text-foreground">{c.tool}</span>
@@ -293,7 +289,7 @@ export function CompareView() {
                         If your team lives in one of those tools and nothing else, buy that tool. OneCamp is worth it
                         when the work crosses four of them and you want one set of permissions over the lot, including
                         the permissions an agent inherits.{" "}
-                        <Link href="/#pricing" className="text-brand underline underline-offset-4">
+                        <Link href="/pricing" className="link">
                             See what it costs
                         </Link>
                         .

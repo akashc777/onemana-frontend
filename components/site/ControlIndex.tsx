@@ -28,7 +28,7 @@ export const ControlIndex: React.FC<{ groups: readonly ControlGroupData[] }> = (
         {groups.map((g, i) => (
             <div key={g.label}>
                 <section className="grid grid-cols-1 gap-x-6 border-b border-border py-4 sm:grid-cols-[9rem_1fr] sm:py-7">
-                    <h3 className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-brand sm:pt-0.5">
+                    <h3 className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-brand-ink sm:pt-0.5">
                         {g.label}
                     </h3>
                     <ul className="mt-2 grid gap-x-8 gap-y-1 sm:mt-0 sm:grid-cols-2 sm:gap-y-1.5">

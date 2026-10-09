@@ -23,18 +23,18 @@ const TABS: { key: Tab; label: string }[] = [
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
-    active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-    authenticated: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-    created: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-    paid: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-    paused: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-    pending: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-    cancelled: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
-    halted: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-    completed: "bg-slate-500/20 text-foreground/80",
-    failed: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
+    active: "bg-success/15 text-success",
+    authenticated: "bg-info/15 text-info",
+    created: "bg-info/15 text-info",
+    paid: "bg-success/15 text-success",
+    paused: "bg-info/15 text-info",
+    pending: "bg-warning/15 text-warning",
+    cancelled: "bg-danger/15 text-danger",
+    halted: "bg-warning/15 text-warning",
+    completed: "bg-muted-foreground/20 text-foreground/80",
+    failed: "bg-danger/15 text-danger",
   };
-  return map[status] || "bg-slate-500/20 text-foreground/80";
+  return map[status] || "bg-muted-foreground/20 text-foreground/80";
 }
 
 /** A subscription status in words: Razorpay's "authenticated" means authorised, first charge still to come. */
@@ -89,7 +89,7 @@ export function AccountDashboard({
       </div>
 
       {/* tabs */}
-      <div className="mb-8 flex gap-1 overflow-x-auto rounded-xl border border-border bg-muted p-1">
+      <div className="mb-8 flex gap-1 overflow-x-auto rounded-lg border border-border bg-muted p-1">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -117,7 +117,7 @@ export function AccountDashboard({
 
 function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-muted/30 p-5">
+    <div className="rounded-lg border border-border bg-muted/30 p-5">
       <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className="mt-2 text-2xl font-bold text-foreground">{value}</p>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
@@ -143,13 +143,13 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
       <div>
         <h2 className="mb-3 text-sm font-semibold text-foreground">Your licenses</h2>
         {overview.licenses.length === 0 ? (
-          <p className="rounded-2xl border border-border bg-muted/30 p-5 text-sm text-muted-foreground">
+          <p className="rounded-lg border border-border bg-muted/30 p-5 text-sm text-muted-foreground">
             No licenses yet. Once your payment is processed, your license key appears here.
           </p>
         ) : (
           <div className="space-y-3">
             {overview.licenses.map((l) => (
-              <div key={l.key} className="rounded-2xl border border-border bg-muted/30 p-5">
+              <div key={l.key} className="rounded-lg border border-border bg-muted/30 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {l.product_type === "saas_subscription"
@@ -161,7 +161,7 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
                   <span className="text-xs text-muted-foreground">Issued {formatDate(l.issued_at)}</span>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <code className="min-w-0 flex-1 truncate rounded-lg bg-muted px-3 py-2 font-mono text-xs text-brand">{l.key}</code>
+                  <code className="min-w-0 flex-1 truncate rounded-lg bg-muted px-3 py-2 font-mono text-xs text-brand-ink">{l.key}</code>
                   <CopyButton value={l.key} label="Copy key" />
                 </div>
                 <div className="mt-3">
@@ -181,7 +181,7 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
       </div>
 
       {nextSub && (
-        <div className="rounded-2xl border border-border bg-muted/30 p-5">
+        <div className="rounded-lg border border-border bg-muted/30 p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-sm font-semibold text-foreground">OneCamp Cloud subscription</h2>
@@ -209,7 +209,7 @@ function Loading() {
 function ErrorState({ msg, onRetry }: { msg: string; onRetry: () => void }) {
   return (
     <div className="py-10 text-center text-sm">
-      <p className="text-red-600 dark:text-red-400">{msg}</p>
+      <p className="text-danger">{msg}</p>
       <button onClick={onRetry} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
     </div>
   );
@@ -247,10 +247,10 @@ function InvoicesTab() {
   if (error) return <ErrorState msg={error} onRetry={load} />;
   if (!invoices) return <Loading />;
   if (invoices.length === 0)
-    return <p className="rounded-2xl border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">No invoices yet.</p>;
+    return <p className="rounded-lg border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">No invoices yet.</p>;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border">
+    <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-left text-sm">
         <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
@@ -386,7 +386,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
 
   if (subs.length === 0)
     return (
-      <div className="rounded-2xl border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-lg border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
         You don&apos;t have any subscriptions. The lifetime license is a one-time purchase with nothing to manage here.
       </div>
     );
@@ -395,7 +395,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
     <div className="space-y-4">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       {subs.map((s) => (
-        <div key={s.id} className="rounded-2xl border border-border bg-muted/30 p-5">
+        <div key={s.id} className="rounded-lg border border-border bg-muted/30 p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -436,7 +436,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               <button
                 onClick={() => cancel(s)}
                 disabled={busy === s.id}
-                className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-700 hover:bg-rose-500/20 disabled:opacity-50 dark:text-rose-300"
+                className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger hover:bg-danger/20 disabled:opacity-50"
               >
                 {busy === s.id ? "Cancelling…" : "Cancel subscription"}
               </button>
@@ -495,7 +495,7 @@ function BillingTab({ overview, onChanged }: { overview: PortalOverview; onChang
   const c = overview.customer;
   const address = [c.address_line, c.city, c.state, c.country].filter(Boolean).join(", ");
   return (
-    <div className="rounded-2xl border border-border bg-muted/30 p-5">
+    <div className="rounded-lg border border-border bg-muted/30 p-5">
       <h2 className="mb-2 text-sm font-semibold text-foreground">Billing details</h2>
       <p className="mb-4 text-xs text-muted-foreground">These appear on your GST invoices. To change the others, reply to your invoice email.</p>
       <Row label="Name" value={c.name} />

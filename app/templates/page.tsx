@@ -28,7 +28,7 @@ export default function TemplatesPage() {
       <section className="pb-16 pt-8">
         <div className="container-x">
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href={site.demoUrlTo("templates")} external variant="brandPremium" size="lg">
+            <ButtonLink href={site.demoUrlTo("templates")} external variant="brand" size="lg">
               Try them in the live demo
             </ButtonLink>
             <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
@@ -38,9 +38,9 @@ export default function TemplatesPage() {
               <li key={t.id}>
                 <Link
                   href={`/templates/${t.id}`}
-                  className="card group flex h-full flex-col border border-border transition-colors hover:border-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                  className="card group flex h-full flex-col border border-border transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
                 >
-                  <h2 className="text-base font-semibold text-foreground group-hover:text-brand">{t.name}</h2>
+                  <h2 className="text-base font-semibold text-foreground group-hover:text-brand-ink">{t.name}</h2>
                   <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">{t.description}</p>
                   <p className="mt-4 text-xs font-medium tabular-nums text-muted-foreground">
                     {taskCount(t)} tasks · {weeksLong(t)} {weeksLong(t) === 1 ? "week" : "weeks"}

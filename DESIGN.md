@@ -161,7 +161,7 @@ most recognisable shape on the AI-built web. Ask what the content actually is:
 | Claims, each with a mechanism behind it | A numbered specification (`GuaranteeList`) |
 | An enumeration answering "does it have X" | A scannable index (`ModuleIndex`) |
 | A list somebody checks off | A checklist with the group in the margin (`ControlIndex`) |
-| A specification, a requirement, a fact | A definition list: the term in the margin, the detail beside it (`SpecList`) |
+| A specification, a requirement, a fact | A definition list: the term in the margin, the detail beside it (`RunSpec`, the `/for` pages) |
 | Evidence for a claim | The artefact itself. Show the record, or a real screenshot. |
 
 **Alternate shapes.** A left-aligned heading over full-width content, then a

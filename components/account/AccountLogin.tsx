@@ -71,7 +71,7 @@ export function AccountLogin({
 
         {step === "email" ? (
           <form onSubmit={sendCode} className="card space-y-4">
-            {notice && <p className="rounded-lg border border-brand/20 bg-brand/10 px-3 py-2 text-xs text-foreground/80">{notice}</p>}
+            {notice && <p className="rounded-lg border border-border-strong bg-brand-soft px-3 py-2 text-xs text-foreground/80">{notice}</p>}
             <div>
               <label htmlFor="acc-email" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 Email address
@@ -90,14 +90,14 @@ export function AccountLogin({
               />
               <p className="mt-1.5 text-xs text-muted-foreground">Use the email you purchased with.</p>
             </div>
-            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="text-sm text-danger">{error}</p>}
             <button disabled={busy || !email.trim()} className="btn-primary w-full">
               {busy ? "Sending…" : "Email me a code"}
             </button>
           </form>
         ) : (
           <form onSubmit={verify} className="card space-y-4">
-            {notice && <p className="rounded-lg border border-brand/20 bg-brand/10 px-3 py-2 text-xs text-foreground/80">{notice}</p>}
+            {notice && <p className="rounded-lg border border-border-strong bg-brand-soft px-3 py-2 text-xs text-foreground/80">{notice}</p>}
             <div>
               <label htmlFor="acc-code" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 6-digit code
@@ -113,7 +113,7 @@ export function AccountLogin({
               />
               <p className="mt-1.5 text-xs text-muted-foreground">Sent to {email}. It expires in 10 minutes.</p>
             </div>
-            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="text-sm text-danger">{error}</p>}
             <button disabled={busy || code.length < CODE_LENGTH} className="btn-primary w-full">
               {busy ? "Verifying…" : "Sign in"}
             </button>

@@ -71,22 +71,22 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <div className="container-x max-w-prose pt-12 sm:pt-16">
-        <Link href="/blog" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
-          ← Back to blog
+        <Link href="/blog" className="text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
+          ← All posts
         </Link>
 
         <header className="mt-6">
           {post.tags?.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
               {post.tags.map((t) => (
-                <span key={t} className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
+                <span key={t} className="rounded-sm bg-muted px-2 py-0.5 text-caption text-muted-foreground">
                   {t}
                 </span>
               ))}
             </div>
           )}
-          <h1 className="text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">{post.title}</h1>
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <h1 className="text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{post.title}</h1>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-small text-muted-foreground">
             {post.author && <span className="font-medium text-foreground">{post.author}</span>}
             {post.published_at && (
               <>
@@ -100,20 +100,19 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </header>
 
         {cover && (
-          <div className="mt-8 overflow-hidden rounded-xl border border-border">
+          <div className="mt-8 overflow-hidden rounded-lg border border-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cover} alt="" className="w-full object-cover" />
           </div>
         )}
 
         <div
-          className="prose prose-lg mt-10 max-w-none pb-20
-            prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:text-foreground
-            prose-a:text-brand prose-a:no-underline hover:prose-a:underline
+          className="prose mt-10 max-w-none pb-16 sm:prose-lg
+            prose-headings:scroll-mt-24 prose-headings:text-foreground
             prose-strong:text-foreground
-            prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-pre:bg-muted
-            prose-blockquote:border-l-brand prose-blockquote:text-muted-foreground
-            prose-img:rounded-xl prose-img:border prose-img:border-border"
+            prose-pre:rounded-lg prose-pre:border prose-pre:border-border prose-pre:bg-muted
+            prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-muted-foreground
+            prose-img:rounded-lg prose-img:border prose-img:border-border"
           dangerouslySetInnerHTML={{ __html: html }}
         />
 
@@ -121,9 +120,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               the bottom of a technical write-up is the warmest reader this site
               gets, and organic search sends more people here than to any other
               page. Until now they left with no way to hear from us again. */}
-          <div className="mb-20 rounded-2xl border border-border bg-muted/30 p-6">
-            <p className="text-sm font-medium text-foreground">Get the next one</p>
-            <p className="mb-3 mt-1 text-sm text-muted-foreground">
+          <div className="mb-20 border-t border-border pt-8">
+            <p className="text-small font-medium text-foreground">Get the next one</p>
+            <p className="mb-4 mt-1 text-small text-muted-foreground">
               I write these as I build OneCamp: what broke, what it cost, and what I changed.
             </p>
             <SubscribeForm

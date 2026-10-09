@@ -100,7 +100,7 @@ export function VerifyRecord() {
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
                 className={[
-                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-12 text-center transition-colors",
                     dragging ? "border-foreground/50 bg-foreground/5" : "border-border hover:border-foreground/30",
                 ].join(" ")}
             >
@@ -136,7 +136,7 @@ export function VerifyRecord() {
             )}
 
             {state.kind === "error" && (
-                <p className="mt-6 rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
+                <p className="mt-6 rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
                     {state.message}
                 </p>
             )}
@@ -152,8 +152,8 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
         <div className="mt-6 space-y-6">
             <div
                 className={[
-                    "rounded-2xl border p-5",
-                    clean ? "border-emerald-500/40 bg-emerald-500/5" : "border-destructive/50 bg-destructive/5",
+                    "rounded-lg border p-5",
+                    clean ? "border-success/40 bg-success/5" : "border-destructive/50 bg-destructive/5",
                 ].join(" ")}
             >
                 <p className="text-base font-semibold">
@@ -182,7 +182,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
                 )}
             </div>
 
-            <div className="overflow-x-auto rounded-xl border">
+            <div className="overflow-x-auto rounded-lg border">
                 <table className="w-full text-left text-sm">
                     <thead className="border-b bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                         <tr>
@@ -243,7 +243,7 @@ function Verdict({ verdict }: { verdict: VerifyReport["rows"][number]["verdict"]
         unhashed: "no hash on this row",
     }[verdict]
     const tone = {
-        verified: "text-emerald-600 dark:text-emerald-400",
+        verified: "text-success",
         mismatch: "text-destructive font-medium",
         redacted: "text-muted-foreground",
         unhashed: "text-muted-foreground",

@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { PostCard } from "@/components/blog/PostCard";
 
 export const metadata: Metadata = {
-  title: "Blog - product, AI & the future of work",
+  title: "Blog: notes from building OneCamp",
   description: `News, deep dives, and guides from the ${site.name} team on self-hosted, AI-native collaboration.`,
   alternates: { canonical: "/blog" },
   openGraph: {
@@ -37,24 +37,19 @@ export default async function BlogIndexPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Blog"
-        title="Ideas for the future of work"
-        subtitle="Product updates, engineering deep dives, and practical guides on building a calmer, self-hosted, AI-native workspace."
-        divider
+        title="Notes from building OneCamp"
+        subtitle="What we shipped, why, and what we learned on the way. Written by the people who build it."
       />
 
-      <div className="container-x pb-20 pt-2">
+      <div className="container-x pb-20">
         {posts.length === 0 ? (
-          <div className="card mx-auto max-w-md bg-muted/30 p-10 text-center">
-            <h2 className="text-lg font-medium text-foreground">No posts yet</h2>
-            <p className="mt-2 text-sm text-muted-foreground">We&apos;re writing the first stories. Check back soon.</p>
-          </div>
+          <p className="border-t border-border py-10 text-body text-muted-foreground">No posts yet. Check back soon.</p>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p, i) => (
-              <PostCard key={p.id} post={p} index={i} featured={i === 0} />
+          <ul className="border-t border-border">
+            {posts.map((p) => (
+              <PostCard key={p.id} post={p} />
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </>

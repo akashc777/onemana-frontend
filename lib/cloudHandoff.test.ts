@@ -71,7 +71,7 @@ describe("cloud purchase hand-off", () => {
     // The receipt's main button was "Read the setup docs" for everybody: a
     // self-hosting guide, for a buyer whose workspace we run.
     const buttons = cloudButtons()
-    expect(buttons).toMatch(/<ButtonLink href="\/account" variant="brandPremium">/)
+    expect(buttons).toMatch(/<ButtonLink href="\/account" variant="brand">/)
     expect(buttons).not.toContain("Read the setup docs")
     expect(flat(buttons)).toContain('{address ? "go to your account" : "choose your address"}')
   })

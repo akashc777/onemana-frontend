@@ -11,15 +11,15 @@ export function AboutView() {
   return (
     <>
       <PageHeader
-        eyebrow="About"
         title="Built in Bangalore, run on our own server"
         subtitle="OneCamp is a self-hosted workspace from OneMana. One founder, one product, no borrowed playbook."
         divider
       />
 
-      <article className="container-x mx-auto max-w-prose pb-20">
+      <div className="container-x pb-20 pt-10">
+      <article className="max-w-[46rem]">
         <div>
-          <div className="prose max-w-none prose-headings:tracking-[-0.02em] prose-headings:text-foreground prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-brand">
+          <div className="prose max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground">
             <h2>The story</h2>
             <p>
               One person. One mission. One slightly over-ambitious product roadmap.
@@ -42,7 +42,7 @@ export function AboutView() {
 
             <h2>What we believe</h2>
             <p>
-              Small teams and solo warriors 🥷 deserve the same powerful tools big companies get, without the
+              Small teams and solo warriors deserve the same powerful tools big companies get, without the
               enterprise price tag, without the vendor lock-in, and without someone else owning your data. Pay once (or
               let us host it), but the product should never hold your data hostage. All of it is open source on GitHub
               under AGPL-3.0, the server and the web app, both editions. It runs on your server, or on one we run for
@@ -51,25 +51,17 @@ export function AboutView() {
           </div>
         </div>
 
-        <div>
-          <div className="card-premium card mt-12 bg-card/90 p-8 text-center sm:p-10">
-            <div className="premium-frame-accent mx-auto mb-6 h-px w-16" aria-hidden />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={FOUNDER_AVATAR}
-              alt="Akash Hadagali"
-              width={112}
-              height={112}
-              className="mx-auto h-28 w-28 rounded-full border-2 border-brand/25 object-cover shadow-[0_8px_32px_rgb(255_77_0/0.12)]"
-            />
-            <h3 className="mt-5 text-lg font-semibold text-foreground">Akash Hadagali</h3>
-            <p className="mt-1 text-sm font-medium text-brand">Founder, OneMana</p>
-            <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        <div className="mt-12 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-start">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={FOUNDER_AVATAR} alt="Akash Hadagali" width={72} height={72} className="h-[72px] w-[72px] shrink-0 rounded-full object-cover" />
+          <div>
+            <h2 className="text-h3 text-foreground">Akash Hadagali</h2>
+            <p className="text-small text-muted-foreground">Founder, OneMana. The team: all 1 of us.</p>
+            <p className="mt-3 max-w-prose text-small text-muted-foreground">
               Founder, CEO, CTO, Designer, Intern &amp; Coffee Machine Operator. Writes the code. Fixes the bugs.
               Deploys at 2 AM. Answers support emails. Also somehow finds time to eat.
             </p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">The team: all 1 of us.</p>
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-4 flex flex-wrap gap-2">
               <ButtonLink href={site.githubOrgUrl} external variant="ghost" size="sm">
                 GitHub
               </ButtonLink>
@@ -83,24 +75,25 @@ export function AboutView() {
           </div>
         </div>
 
-        <div className="mt-10 text-center text-sm text-muted-foreground">
+        <div className="mt-12 border-t border-border pt-8 text-small text-muted-foreground">
           <p id="contact" className="scroll-mt-24">
             Questions?{" "}
-            <a href="mailto:support@onemana.dev" className="font-medium text-brand hover:underline">
+            <a href="mailto:support@onemana.dev" className="link">
               support@onemana.dev
             </a>
           </p>
           <p className="mt-2">
-            <Link href="/buy" className="font-medium text-foreground hover:text-brand">
-              Get OneCamp
-            </Link>
-            {" · "}
-            <Link href={site.demoStartUrl} className="font-medium text-foreground hover:text-brand">
+            <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">
               Try the live demo
+            </a>
+            {" · "}
+            <Link href="/free" className="link">
+              Install free
             </Link>
           </p>
         </div>
       </article>
+      </div>
     </>
   );
 }

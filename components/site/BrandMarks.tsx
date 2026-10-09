@@ -15,26 +15,6 @@ export function SlackMark({ className = "" }: { className?: string }) {
   );
 }
 
-/** Slack hash with a periodic "organize" motion - pieces drift, then snap into place. */
-export function SlackMarkAnimated({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden>
-      <g className="slack-piece slack-piece-a">
-        <rect x="4" y="10.5" width="7.5" height="3" rx="1.5" fill="#36C5F0" />
-      </g>
-      <g className="slack-piece slack-piece-b">
-        <rect x="10.5" y="4" width="3" height="7.5" rx="1.5" fill="#2EB67D" />
-      </g>
-      <g className="slack-piece slack-piece-c">
-        <rect x="12.5" y="10.5" width="7.5" height="3" rx="1.5" fill="#ECB22E" />
-      </g>
-      <g className="slack-piece slack-piece-d">
-        <rect x="10.5" y="12.5" width="3" height="7.5" rx="1.5" fill="#E01E5A" />
-      </g>
-    </svg>
-  );
-}
-
 export function NotionMark({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>

@@ -65,7 +65,7 @@ export default function AccountPage() {
     return (
       <div className="grid min-h-[70vh] place-items-center px-5 text-center text-sm">
         <div>
-          <p className="text-red-600 dark:text-red-400">{state.message}</p>
+          <p className="text-danger">{state.message}</p>
           <button onClick={load} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
         </div>
       </div>

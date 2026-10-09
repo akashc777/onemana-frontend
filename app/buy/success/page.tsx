@@ -59,8 +59,8 @@ function SuccessInner() {
   return (
     <section className="py-16 sm:py-20">
       <div className="container-x mx-auto max-w-2xl">
-        <div className="card-premium card bg-card/90 text-center">
-          <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-500/10 text-xl">
+        <div className="card bg-card/90 text-center">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-success/10 text-xl">
             {isCloud ? "☁️" : "✓"}
           </div>
           <h1 className="mt-4 text-2xl font-semibold text-foreground">
@@ -79,7 +79,7 @@ function SuccessInner() {
                 Thank you for subscribing. We run your workspace for you: set up, backed up and
                 kept up to date.
               </p>
-              <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
+              <div className="mt-6 rounded-lg border border-border bg-muted/40 p-5 text-left">
                 {address ? (
                   <>
                     <p className="font-medium text-foreground">We are setting up {address}</p>
@@ -131,14 +131,14 @@ function SuccessInner() {
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             {isCloud ? (
               <>
-                <ButtonLink href="/account" variant="brandPremium">
+                <ButtonLink href="/account" variant="brand">
                   {address ? "Go to your account" : "Choose your address"}
                 </ButtonLink>
                 <ButtonLink href="/docs/cloud" variant="ghost">How OneCamp Cloud works</ButtonLink>
               </>
             ) : (
               <>
-                <ButtonLink href="/docs" variant="brandPremium">Read the setup docs</ButtonLink>
+                <ButtonLink href="/docs" variant="brand">Read the setup docs</ButtonLink>
                 <ButtonLink href={site.githubOrgUrl} external variant="ghost">Open-source on GitHub</ButtonLink>
               </>
             )}

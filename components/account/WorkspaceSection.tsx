@@ -58,7 +58,7 @@ export function WorkspaceSection({
   // The backend says which instances are still moving, so this never has to guess.
   usePoll((instances ?? []).some((i) => i.working) || onItsWay, POLL_MS, load);
 
-  if (err) return <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>;
+  if (err) return <p className="text-sm text-danger">{err}</p>;
   if (!instances) return <p className="text-sm text-muted-foreground">Loading your workspace…</p>;
   if (onItsWay) {
     return (
@@ -103,7 +103,7 @@ function BackupDownload({ id }: { id: string }) {
       <button
         type="button"
         disabled={busy}
-        className="font-medium text-brand underline underline-offset-4 disabled:opacity-60"
+        className="font-medium text-brand-ink underline underline-offset-4 disabled:opacity-60"
         onClick={async () => {
           setBusy(true);
           setErr("");
@@ -177,7 +177,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
             href={`https://${inst.address}`}
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-brand underline underline-offset-4"
+            className="font-medium text-brand-ink underline underline-offset-4"
           >
             {inst.address}
           </a>
@@ -212,7 +212,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
       )}
 
       {inst.state === "live" && capacityLine(inst.capacity_verdict, inst.capacity_reason) && (
-        <p className="text-sm text-amber-700 dark:text-amber-400">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
+        <p className="text-sm text-warning">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
       )}
 
       {moveLine(inst.move) && (
@@ -251,7 +251,7 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
   const [open, setOpen] = useState(false);
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="text-sm text-brand underline underline-offset-4">
+      <button onClick={() => setOpen(true)} className="text-sm text-brand-ink underline underline-offset-4">
         Use my own domain
       </button>
     );
@@ -260,7 +260,7 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
   const subject = `Own domain for ${current}`;
   const body = `Hello,\n\nPlease move my workspace ${current} to: \n(for example team.yourcompany.com)\n`;
   return (
-    <div className="mt-2 space-y-3 rounded-xl border border-border bg-muted/30 p-4 text-sm">
+    <div className="mt-2 space-y-3 rounded-lg border border-border bg-muted/30 p-4 text-sm">
       <p>
         Moving to your own domain is set up with our help for now. Tell us the address you want, for example{" "}
         <span className="font-mono">team.yourcompany.com</span>, and we do it with you.
@@ -326,7 +326,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
           email you when it is ready.
         </p>
         {inst.choice_note && (
-          <p role="status" className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
+          <p role="status" className="mt-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-warning">
             {inst.choice_note}
           </p>
         )}
@@ -375,7 +375,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
         </fieldset>
       )}
 
-      {err && <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>}
+      {err && <p className="text-sm text-danger">{err}</p>}
 
       <button
         type="submit"

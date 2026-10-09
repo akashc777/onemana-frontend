@@ -23,7 +23,7 @@ export function DocsShell({
           </Link>
           {groups.map((group) => (
             <div key={group.category} className="mb-5 last:mb-0">
-              <h3 className="mb-2 text-xs font-medium text-muted-foreground">{group.category}</h3>
+              <h3 className="mb-2 font-sans text-caption font-medium tracking-normal text-muted-foreground">{group.category}</h3>
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const active = item.slug === activeSlug;

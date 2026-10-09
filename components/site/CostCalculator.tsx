@@ -24,11 +24,13 @@ import React, { useMemo, useState } from "react"
 import Link from "next/link"
 import type { Pricing } from "@/lib/pricing"
 import { cloudYearFor } from "@/lib/cloudYear"
+import { DEFAULT_USD_RATE, fmtINR } from "@/lib/pricing"
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 
-const fmt = (n: number) =>
-    n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+// Totals are shown in rupees, the currency OneCamp charges: the rivals' dollar
+// list prices at the day's rate (pricing.usd_rate), rounded to the hundred.
+const inrAt = (usd: number, rate: number) => fmtINR(Math.round((usd * rate) / 100) * 100)
 // Per-seat prices keep their cents ($7.25), so the sum can be checked.
 const fmtSeat = (n: number) =>
     n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: Number.isInteger(n) ? 0 : 2 })
@@ -38,6 +40,8 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     // licence is about the licence. At 20 it priced the free plan and claimed
     // "70x less" next to a price it was not about (buyer review, 3 Oct 2026).
     const [people, setPeople] = useState(40)
+    const rate = pricing?.usd_rate || DEFAULT_USD_RATE
+    const fmt = (usd: number) => inrAt(usd, rate)
     const [withAi, setWithAi] = useState(true)
 
     // First year, so a licence is included rather than amortised away; a team
@@ -48,9 +52,9 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     )
 
     return (
-        <div className="mx-auto max-w-2xl rounded-lg border border-border bg-canvas-raised p-6 sm:p-8">
+        <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-3">
-                <label htmlFor="team-size" className="text-sm text-foreground/80">
+                <label htmlFor="team-size" className="text-small text-foreground">
                     Our team is
                 </label>
                 <input
@@ -60,15 +64,15 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     max={1000}
                     value={people}
                     onChange={(e) => setPeople(Number(e.target.value) || 1)}
-                    className="w-24 rounded-md border border-border bg-canvas px-3 py-1.5 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-brand/40"
+                    className="h-10 w-24 rounded-md border border-border-strong bg-card px-3 text-base tabular-nums focus:border-brand"
                 />
-                <span className="text-sm text-foreground/80">people.</span>
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground/80">
+                <span className="text-small text-foreground">people.</span>
+                <label className="flex cursor-pointer items-center gap-2 text-small text-foreground">
                     <input
                         type="checkbox"
                         checked={withAi}
                         onChange={(e) => setWithAi(e.target.checked)}
-                        className="h-4 w-4 rounded border-border accent-[var(--brand)]"
+                        className="h-4 w-4 rounded-sm"
                     />
                     We want AI too.
                 </label>
@@ -76,35 +80,33 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-md border border-border p-4">
-                    <div className="text-xs uppercase tracking-wide text-foreground/50">
-                        Slack + Notion + Zoom
-                    </div>
-                    <div className="mt-1 text-3xl font-semibold tabular-nums">{fmt(saasYear)}</div>
-                    <div className="text-xs text-foreground/50">per year, and it grows with the team</div>
-                    <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
+                    <div className="text-small font-medium text-muted-foreground">Slack + Notion + Zoom</div>
+                    <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(saasYear)}</div>
+                    <div className="text-caption text-muted-foreground">per year, and it grows with the team</div>
+                    <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
                         {lines.map((t) => (
                             <li key={t.name}>
                                 {t.name}, {fmtSeat(t.usd)}/user/mo
                             </li>
                         ))}
-                        <li>List prices, billed annually, checked {PRICES_CHECKED}</li>
+                        <li>List prices, billed annually, checked {PRICES_CHECKED}, at today&apos;s rate</li>
                     </ul>
                 </div>
 
-                <div className="rounded-md border border-brand/40 bg-brand/[0.04] p-4">
-                    <div className="text-xs uppercase tracking-wide text-brand">OneCamp, self-hosted</div>
-                    <div className="mt-1 text-3xl font-semibold tabular-nums">{fmt(oneCampYear)}</div>
-                    <div className="text-xs text-foreground/50">first year, and it does not grow with the team</div>
-                    <ul className="mt-3 space-y-0.5 text-xs text-foreground/50">
-                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${fmt(lifetimeUsd)} license, paid once, unlimited users`}</li>
-                        <li>{fmt(SERVER_USD_PER_MONTH)}/mo server that runs it</li>
+                <div className="rounded-md border border-border-strong bg-muted p-4">
+                    <div className="text-small font-medium text-foreground">OneCamp, self-hosted</div>
+                    <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(oneCampYear)}</div>
+                    <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>
+                    <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
+                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${pricing ? fmtINR(pricing.lifetime_inr) : fmt(lifetimeUsd)} licence, paid once, unlimited users`}</li>
+                        <li>About {fmt(SERVER_USD_PER_MONTH)} a month for the server that runs it</li>
                         {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>
                     </ul>
                 </div>
             </div>
 
-            <p className="mt-5 text-sm text-foreground/70">
+            <p className="mt-5 text-small text-foreground">
                 {multiple >= 2 ? (
                     <>
                         At {Math.max(1, Math.min(1000, people))} people that is{" "}
@@ -124,15 +126,15 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                 cost helps close, because the buyer knows and is checking whether you
                 do. Named in ONE line here and answered in full in Switching above,
                 rather than the same paragraph in both places. */}
-            <p className="mt-3 text-xs leading-relaxed text-foreground/50">
-                Not counted: someone has to run the server. What that takes is above.
+            <p className="mt-3 text-caption text-muted-foreground">
+                Not counted: someone has to run the server.
                 {(() => {
                     const cloud = pricing && cloudYearFor(Math.max(1, Math.min(1000, people)), pricing)
                     return cloud ? (
                         <>
                             {" "}Or nobody does:{" "}
                             <Link href={cloud.href} className="underline underline-offset-2 hover:text-foreground">
-                                OneCamp Cloud ({cloud.plan}) is {fmt(cloud.usdYear)} a year
+                                OneCamp Cloud ({cloud.plan}) is {fmtINR(cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr)} a year
                             </Link>
                             , hosted, backed up and updated for you.
                         </>

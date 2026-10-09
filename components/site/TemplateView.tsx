@@ -33,7 +33,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
       <section className="pb-16 pt-8">
         <div className="container-x">
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href={demoTemplateUrl(t.id)} external variant="brandPremium" size="lg">
+            <ButtonLink href={demoTemplateUrl(t.id)} external variant="brand" size="lg">
               Use it in the live demo
             </ButtonLink>
             <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
@@ -54,7 +54,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
             </ol>
 
             <aside className="grid content-start gap-6 lg:sticky lg:top-24">
-              <section aria-labelledby="glance" className="rounded-xl border border-border p-5">
+              <section aria-labelledby="glance" className="rounded-lg border border-border p-5">
                 <h2 id="glance" className="text-sm font-semibold text-foreground">At a glance</h2>
                 <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
                   <div>
@@ -74,7 +74,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                 )}
               </section>
 
-              <section aria-labelledby="how" className="rounded-xl border border-border p-5">
+              <section aria-labelledby="how" className="rounded-lg border border-border p-5">
                 <h2 id="how" className="text-sm font-semibold text-foreground">Start from it in OneCamp</h2>
                 <ol className="mt-3 grid list-decimal gap-2 pl-5 text-sm text-muted-foreground">
                   <li>Open <span className="text-foreground">New project</span> and pick <span className="text-foreground">{t.name}</span> under Start from.</li>
@@ -88,7 +88,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                 </p>
               </section>
 
-              <nav aria-labelledby="more" className="rounded-xl border border-border p-5">
+              <nav aria-labelledby="more" className="rounded-lg border border-border p-5">
                 <h2 id="more" className="text-sm font-semibold text-foreground">More templates</h2>
                 <ul className="mt-3 grid gap-1.5 text-sm">
                   {others.map((o) => (
@@ -118,7 +118,7 @@ function TaskCard({ task }: { task: TemplateTask }) {
         ? `${dayLabel(task.start_day)} to ${dayLabel(task.due_day)}`
         : dayLabel(task.due_day);
   return (
-    <li className="rounded-xl border border-border p-4">
+    <li className="rounded-lg border border-border p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 className="text-sm font-semibold text-foreground">{task.name}</h3>
         <p className="text-xs tabular-nums text-muted-foreground">
