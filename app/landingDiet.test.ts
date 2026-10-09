@@ -103,7 +103,7 @@ describe("landing diet", () => {
   it("shows the product, not a drawing of it", () => {
     // The hero carried a schematic loop and a drawn mockup at once. One real
     // screenshot from the live demo replaced both.
-    expect(page).toContain("<ProductShot");
+    expect(page).toContain("<HeroShot");
     for (const banned of ["HeroLoop", "HeroMedia", "KineticHeadline", "StickyBuyCta", "Reveal", "SectionAmbient", "HeroAmbient"]) {
       expect(page, `${banned} is decoration the 10 Oct redesign removed`).not.toContain(banned);
     }

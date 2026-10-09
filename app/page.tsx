@@ -9,7 +9,7 @@ import { Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
-import { ProductShot, PhoneShot } from "@/components/site/ProductShot";
+import { HeroShot } from "@/components/site/ProductShot";
 import { ProductTabs } from "@/components/site/ProductTabs";
 import { FactsStrip } from "@/components/site/FactsStrip";
 import { RunSpec } from "@/components/site/RunSpec";
@@ -68,16 +68,9 @@ export default async function HomePage() {
           </p>
 
           <div className="mt-12 sm:mt-16">
-            <ProductShot
-              name="channel"
-              priority
-              className="hidden sm:block"
+            <HeroShot
               alt="OneCamp's #engineering channel: a release thread where the Release Captain agent reports checklist status, with the sidebar of channels, projects and docs."
-            />
-            <PhoneShot
-              priority
-              className="mx-auto max-w-sm sm:hidden"
-              alt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
+              phoneAlt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
             />
           </div>
 
