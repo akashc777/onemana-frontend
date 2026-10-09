@@ -26,3 +26,14 @@ describe("addresses people were sent to", () => {
     }
   })
 })
+
+describe("addresses people type", () => {
+  it("take /alternatives to the comparison, and leave the rival pages alone", async () => {
+    expect((await redirectFor("/alternatives"))?.destination).toBe("/compare")
+    expect(await redirectFor("/alternatives/:rival")).toBeUndefined()
+  })
+
+  it("no longer send /pricing to the home page, now that it is a page", async () => {
+    expect(await redirectFor("/pricing")).toBeUndefined()
+  })
+})

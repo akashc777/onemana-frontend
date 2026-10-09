@@ -21,6 +21,9 @@ const nextConfig = {
             // site.demoStartUrl for why it carries start_demo.
             { source: "/demo", destination: `${demoUrl}${demoUrl.includes("?") ? "&" : "?"}start_demo=1`, permanent: false },
             { source: "/contact", destination: "/about#contact", permanent: false },
+            // The per-rival pages live under /alternatives/<rival>; the bare
+            // address was a 404 that people typed and linked.
+            { source: "/alternatives", destination: "/compare", permanent: false },
             { source: "/support", destination: "/about#contact", permanent: false },
         ];
     },

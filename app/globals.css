@@ -214,7 +214,7 @@ body {
   }
 }
 
-/* ── Still used by pages not yet redrawn (StackConvergence on /compare, the feature icons on /for, the launch film). Pruned as those pages move to the new system. */
+/* ── Still used by pages not yet redrawn. Pruned as those pages move to the new system. */
 @layer components {
   .eyebrow-premium {
     @apply eyebrow;
@@ -222,10 +222,6 @@ body {
 
   .card-premium {
     @apply relative;
-  }
-
-  .brand-beam {
-    background: none;
   }
 }
 
@@ -309,20 +305,6 @@ body {
     animation: slack-organize-d 4.2s ease-in-out infinite 0.24s;
   }
 
-  .premium-frame {
-    @apply relative border border-border bg-card;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
-  }
-
-  .dark .premium-frame {
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
-  }
-
-  .premium-frame-ring {
-    @apply pointer-events-none absolute inset-0 rounded-[inherit];
-    box-shadow: inset 0 0 0 1px rgb(var(--border) / 0.5);
-  }
-
   .premium-frame-accent {
     @apply h-0.5 w-full shrink-0;
     background: linear-gradient(90deg, #c84f00, #ff8a00);
@@ -354,103 +336,6 @@ body {
   .card-premium:hover::before,
 .card-premium:focus-within::before {
     opacity: 1;
-  }
-
-  .group:hover .feat-ai-rays,
-.group:focus-within .feat-ai-rays {
-    animation: feat-spin 4s linear infinite;
-    transform-origin: 12px 12px;
-  }
-
-  .group:hover .feat-ai-core,
-.group:focus-within .feat-ai-core {
-    animation: feat-pulse-scale 1.6s ease-in-out infinite;
-    transform-origin: center;
-    transform-box: fill-box;
-  }
-
-  .group:hover .feat-chat-line-a,
-.group:focus-within .feat-chat-line-a {
-    animation: feat-draw 0.6s ease forwards;
-  }
-
-  .group:hover .feat-chat-line-b,
-.group:focus-within .feat-chat-line-b {
-    animation: feat-draw 0.6s ease 0.12s forwards;
-  }
-
-  .group:hover .feat-task-check,
-.group:focus-within .feat-task-check {
-    animation: feat-draw 0.55s ease forwards;
-  }
-
-  .group:hover .feat-task-col,
-.group:focus-within .feat-task-col {
-    animation: feat-bob 2s ease-in-out infinite;
-  }
-
-  .group:hover .feat-doc-fold,
-.group:focus-within .feat-doc-fold {
-    animation: feat-bob 1.8s ease-in-out infinite;
-  }
-
-  .group:hover .feat-doc-line,
-.group:focus-within .feat-doc-line {
-    animation: feat-draw 0.5s ease forwards;
-  }
-
-  .group:hover .feat-video-rec,
-.group:focus-within .feat-video-rec {
-    animation: feat-rec-pulse 1.2s ease-in-out infinite;
-    fill: #c84f00;
-  }
-
-  .group:hover .feat-video-play,
-.group:focus-within .feat-video-play {
-    animation: feat-nudge 1.5s ease-in-out infinite;
-  }
-
-  .group:hover .feat-cal-dot,
-.group:focus-within .feat-cal-dot {
-    animation: feat-blink 1.4s ease-in-out infinite;
-    stroke: #c84f00;
-  }
-
-  .group:hover .feat-team-a,
-.group:focus-within .feat-team-a {
-    animation: feat-bob 2s ease-in-out infinite;
-  }
-
-  .group:hover .feat-team-b,
-.group:focus-within .feat-team-b {
-    animation: feat-bob 2s ease-in-out infinite 0.2s;
-  }
-
-  .group:hover .feat-lock-shackle,
-.group:focus-within .feat-lock-shackle {
-    animation: feat-lock-lift 1.6s ease-in-out infinite;
-  }
-
-  .feat-chat-line,
-.feat-task-check,
-.feat-doc-line {
-    stroke-dasharray: 20;
-    stroke-dashoffset: 20;
-  }
-
-  .pricing-card {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .pricing-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgb(0 0 0 / 0.05);
-    border-color: rgb(var(--border));
-  }
-
-  .dark .pricing-card:hover {
-    box-shadow: 0 4px 20px rgb(0 0 0 / 0.22);
   }
 }
 
@@ -617,96 +502,6 @@ body {
   }
 }
 
-@keyframes feat-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes feat-pulse-scale {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: scale(1.18);
-    opacity: 0.8;
-  }
-}
-
-@keyframes feat-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes feat-bob {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-1.5px);
-  }
-}
-
-@keyframes feat-nudge {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  50% {
-    transform: translateX(1px);
-  }
-}
-
-@keyframes feat-rec-pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.35;
-  }
-}
-
-@keyframes feat-blink {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.35;
-  }
-}
-
-@keyframes feat-lock-lift {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-1.5px);
-  }
-}
-
-.tour-play-ring:hover .grid.place-items-center>span {
-  box-shadow: 0 2px 12px rgb(255 77 0 / 0.25);
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
 *::before,
@@ -747,47 +542,6 @@ body {
 
   .card-premium::before {
     opacity: 0;
-  }
-
-  .pricing-card:hover {
-    transform: none;
-  }
-
-  .group:hover .feat-ai-rays,
-.group:focus-within .feat-ai-rays,
-.group:hover .feat-ai-core,
-.group:focus-within .feat-ai-core,
-.group:hover .feat-chat-line-a,
-.group:focus-within .feat-chat-line-a,
-.group:hover .feat-chat-line-b,
-.group:focus-within .feat-chat-line-b,
-.group:hover .feat-task-check,
-.group:focus-within .feat-task-check,
-.group:hover .feat-task-col,
-.group:focus-within .feat-task-col,
-.group:hover .feat-doc-fold,
-.group:focus-within .feat-doc-fold,
-.group:hover .feat-doc-line,
-.group:focus-within .feat-doc-line,
-.group:hover .feat-video-rec,
-.group:focus-within .feat-video-rec,
-.group:hover .feat-video-play,
-.group:focus-within .feat-video-play,
-.group:hover .feat-cal-dot,
-.group:focus-within .feat-cal-dot,
-.group:hover .feat-team-a,
-.group:focus-within .feat-team-a,
-.group:hover .feat-team-b,
-.group:focus-within .feat-team-b,
-.group:hover .feat-lock-shackle,
-.group:focus-within .feat-lock-shackle {
-    animation: none;
-  }
-
-  .feat-chat-line,
-.feat-task-check,
-.feat-doc-line {
-    stroke-dashoffset: 0;
   }
 }
 

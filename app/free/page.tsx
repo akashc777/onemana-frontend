@@ -10,7 +10,7 @@ import { installerAsks, selfHostNeeds } from "@/lib/content";
 import { cloudBuyHref } from "@/lib/paymentTerms";
 
 const inputCls =
-  "w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 sm:text-sm";
+  "h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm";
 
 type State = { kind: "idle" } | { kind: "sending" } | { kind: "sent"; email: string } | { kind: "error"; msg: string };
 
@@ -20,6 +20,15 @@ interface Instant {
   seat_limit: number;
 }
 
+/**
+ * The free plan, with the install command on the face of the page.
+ *
+ * The command carries a licence key, and a key is minted per click by the
+ * backend (customer and order rows included), so it is not minted on page
+ * load for every visitor and crawler. Instead the command's shape is on the
+ * page from the start, with the key's place shown, and one click fills it
+ * in: no form, no email, no card.
+ */
 export default function FreePage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -91,114 +100,145 @@ export default function FreePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Free plan"
-        title={`Free for up to ${FREE_SEATS} people`}
-        subtitle="Run OneCamp on your own server: chat, docs, tasks, calls and AI teammates. Get the one-line install command right here. No email, no card."
-        align="left"
+        title={`Install OneCamp free, for up to ${FREE_SEATS} people`}
+        subtitle="Chat, docs, tasks, calls and AI teammates on your own server. Paste one command into it. No email, no card."
         className="!pb-0"
-      />
-      <section className="pb-16 sm:pb-20">
-        <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start">
-          <div className="card-premium card bg-card/90 lg:col-start-2 lg:row-start-1">
-            {instant ? (
-              <div role="status" className="space-y-4">
-                <p className="text-lg font-medium text-foreground">Run this on your server</p>
-                <div className="relative">
-                  <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-zinc-950 p-4 pr-20 font-mono text-[13px] leading-relaxed text-zinc-100">{instant.install_command}</pre>
-                  <Button type="button" size="sm" variant="ghost" onClick={copy} className="absolute right-2 top-2 !text-zinc-100 hover:!bg-white/10">
-                    {copied ? "Copied" : "Copy"}
-                  </Button>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  It asks for {installerAsks}, then installs the whole workspace, web app included, for up to {instant.seat_limit} people.
-                  Your licence key is <code className="rounded bg-muted px-1 py-0.5 text-xs text-foreground">{instant.key}</code>; keep it to install again.
-                </p>
-                <ButtonLink href="/docs/installation" variant="ghost" size="sm">Read the install guide</ButtonLink>
-              </div>
-            ) : state.kind === "sent" ? (
-              <div role="status" className="space-y-3">
-                <p className="text-lg font-medium text-foreground">Check your inbox</p>
-                <p className="text-sm text-muted-foreground">
-                  Your licence key and the install command are on their way to <strong className="text-foreground">{state.email}</strong>.
-                  Run the command on your server; it serves the whole workspace, web app included.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Nothing after a few minutes? Look in spam, or submit again and we send the same key.
-                </p>
-                <ButtonLink href="/docs/installation" variant="ghost" size="sm">Read the install guide</ButtonLink>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Button type="button" variant="brandPremium" size="lg" className="w-full" onClick={getInstant} disabled={instantBusy}>
-                  {instantBusy ? "Making your licence…" : "Get the install command"}
-                </Button>
-                {instantError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{instantError}</p>}
-                <p className="text-xs text-muted-foreground">No email or card. You can copy it now and paste it on your server.</p>
-                {!emailOpen ? (
-                  <button type="button" onClick={() => setEmailOpen(true)} className="text-sm font-medium text-foreground underline underline-offset-4">
-                    Or email it to me
-                  </button>
-                ) : (
-              <form onSubmit={submit} className="space-y-4 border-t border-border pt-4" noValidate>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-foreground">Work email</span>
-                  <input
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={inputCls}
-                    placeholder="you@company.com"
-                  />
-                  <span className="mt-1 block text-xs text-muted-foreground">The key is sent here, so use one you can open. See our <a href="/privacy-policy" className="underline underline-offset-2">privacy policy</a>.</span>
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-foreground">Name or team (optional)</span>
-                  <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="organization" className={inputCls} placeholder="Acme" />
-                </label>
-                {state.kind === "error" && (
-                  <p role="alert" className="text-sm text-red-600 dark:text-red-400">{state.msg}</p>
-                )}
-                <Button type="submit" variant="ghost" size="lg" className="w-full" disabled={state.kind === "sending"}>
-                  {state.kind === "sending" ? "Sending…" : "Email me my free licence"}
-                </Button>
-              </form>
-                )}
-              </div>
-            )}
+      >
+        {/* THE COMMAND, ON THE FACE OF THE PAGE. */}
+        <div className="mt-8 max-w-3xl">
+          <div className="overflow-hidden rounded-lg border border-border bg-[#0E0F11] text-[#EDEEF0] dark:bg-card">
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
+              <span className="text-caption text-[#9BA0AA]">Run on your server, as root</span>
+              {instant ? (
+                <button
+                  type="button"
+                  onClick={copy}
+                  className="rounded-sm px-2 py-1 text-caption font-medium text-[#EDEEF0] transition-colors duration-150 hover:bg-white/10"
+                >
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              ) : null}
+            </div>
+            <pre role={instant ? "status" : undefined} className="overflow-x-auto whitespace-pre-wrap break-all p-4 font-mono text-[0.8125rem] leading-6">
+              {instant ? (
+                instant.install_command
+              ) : (
+                <>
+                  /bin/bash -c &quot;$(curl -fsSL {site.backendUrl}/onecamp/download/
+                  <span className="rounded-sm bg-white/10 px-1 text-[#9BA0AA]">your-key</span>)&quot;
+                </>
+              )}
+            </pre>
           </div>
 
-          <aside className="space-y-6 lg:col-start-1 lg:row-start-1">
-            <ul className="space-y-3 text-sm text-foreground">
-              {freeIncludes.map((item) => (
-                <li key={item} className="flex items-start gap-2.5">
-                  <span aria-hidden className="mt-0.5 text-brand">✓</span> {item}
+          {instant ? (
+            <p className="mt-3 text-small text-muted-foreground">
+              It asks for {installerAsks}, then installs the whole workspace, web app included, for up to {instant.seat_limit} people.
+              Your licence key is <code className="rounded-sm bg-muted px-1 py-0.5 font-mono text-caption text-foreground">{instant.key}</code>; keep
+              it to install again.
+            </p>
+          ) : (
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button type="button" variant="brand" size="lg" onClick={getInstant} disabled={instantBusy}>
+                {instantBusy ? "Making your key…" : "Fill in my key"}
+              </Button>
+              <span className="text-small text-muted-foreground">One click makes a free key. Nothing to fill in.</span>
+            </div>
+          )}
+          {instantError && (
+            <p role="alert" className="mt-3 text-small text-danger">
+              {instantError}
+            </p>
+          )}
+        </div>
+      </PageHeader>
+
+      <section className="pb-20 pt-14">
+        <div className="container-x grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <h2 className="text-h3 text-foreground">What you need</h2>
+            <ul className="mt-4 border-t border-border">
+              {selfHostNeeds.map((need) => (
+                <li key={need} className="border-b border-border py-3 text-small text-foreground">
+                  {need}
                 </li>
               ))}
             </ul>
-            <div className="space-y-2 rounded-lg border border-border px-4 py-3">
-              <p className="text-sm font-medium text-foreground">What you need</p>
-              <ul className="space-y-1.5 text-sm text-muted-foreground">
-                {selfHostNeeds.map((need) => (
-                  <li key={need} className="flex items-start gap-2.5">
-                    <span aria-hidden className="mt-0.5">·</span> {need}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-sm text-muted-foreground">
-                No server? <a href={cloudBuyHref("monthly")} className="font-medium text-foreground underline underline-offset-4">OneCamp Cloud</a> runs it for you.
-              </p>
+            <p className="mt-4 text-small text-muted-foreground">
+              No server? <a href={cloudBuyHref("monthly")} className="link">OneCamp Cloud</a> runs it for you.{" "}
+              <a href="/docs/installation" className="link">Read the install guide</a>
+            </p>
+
+            <div className="mt-10">
+              {state.kind === "sent" ? (
+                <div role="status" className="space-y-2">
+                  <p className="font-medium text-foreground">Check your inbox</p>
+                  <p className="text-small text-muted-foreground">
+                    Your licence key and the install command are on their way to <strong className="text-foreground">{state.email}</strong>.
+                    Nothing after a few minutes? Look in spam, or submit again and we send the same key.
+                  </p>
+                </div>
+              ) : !emailOpen ? (
+                <button type="button" onClick={() => setEmailOpen(true)} className="link text-small font-medium">
+                  Or email the key to me
+                </button>
+              ) : (
+                <form onSubmit={submit} className="max-w-md space-y-4" noValidate>
+                  <label className="block">
+                    <span className="mb-1.5 block text-small font-medium text-foreground">Work email</span>
+                    <input
+                      type="email"
+                      required
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={inputCls}
+                      placeholder="you@company.com"
+                    />
+                    <span className="mt-1 block text-caption text-muted-foreground">
+                      The key is sent here, so use one you can open. See our{" "}
+                      <a href="/privacy-policy" className="underline underline-offset-2">privacy policy</a>.
+                    </span>
+                  </label>
+                  <label className="block">
+                    <span className="mb-1.5 block text-small font-medium text-foreground">Name or team (optional)</span>
+                    <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="organization" className={inputCls} placeholder="Acme" />
+                  </label>
+                  {state.kind === "error" && (
+                    <p role="alert" className="text-small text-danger">
+                      {state.msg}
+                    </p>
+                  )}
+                  <Button type="submit" variant="ghost" disabled={state.kind === "sending"}>
+                    {state.kind === "sending" ? "Sending…" : "Email me my free licence"}
+                  </Button>
+                </form>
+              )}
             </div>
-            <p className="text-sm text-muted-foreground">
-              Past {FREE_SEATS} people? A lifetime licence removes the limit, and the workspace you already run keeps working:
+          </div>
+
+          <div>
+            <h2 className="text-h3 text-foreground">What the free plan includes</h2>
+            <ul className="mt-4 border-t border-border">
+              {freeIncludes.map((item) => (
+                <li key={item} className="border-b border-border py-3 text-small text-foreground">
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-small text-muted-foreground">
+              Past {FREE_SEATS} people? A licence removes the limit, and the workspace you already run keeps working:
               re-run the install with the key from your purchase email.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <ButtonLink href={site.demoStartUrl} external variant="ghost" size="sm">Try the live demo first</ButtonLink>
-              <ButtonLink href="/buy" variant="ghost" size="sm">See paid plans</ButtonLink>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ButtonLink href={site.demoStartUrl} external variant="ghost">
+                Try the live demo first
+              </ButtonLink>
+              <ButtonLink href="/pricing" variant="subtle">
+                See paid plans
+              </ButtonLink>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
     </>
