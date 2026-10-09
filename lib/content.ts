@@ -173,7 +173,7 @@ export const installerAsks =
  * installer adds it when the server has none.
  */
 export const selfHostNeeds = [
-  "A Linux server with 4 GB of RAM and 40 GB of disk; the installer adds Docker if it's missing",
+  "An Ubuntu or Debian server with 4 GB of RAM and 40 GB of disk; the installer adds Docker if it's missing",
   "No domain needed: it starts on a free address; add yours later",
   "One command to install. It serves the web app too, so there is nothing else to deploy",
 ];

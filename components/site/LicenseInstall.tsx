@@ -49,7 +49,7 @@ export function LicenseInstall({ licenseKey, isCloud }: { licenseKey: string; is
             {copied === "cmd" ? "Copied" : "Copy"}
           </button>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">Run it on a Linux server with 4 GB of RAM. It asks for {installerAsks}. The installer handles Docker, SSL and the database, plus the AI models if you pick the AI edition, and serves the web app your team opens from the same server.</p>
+        <p className="mt-2 text-xs text-muted-foreground">Run it on an Ubuntu or Debian server with 4 GB of RAM. It asks for {installerAsks}. The installer handles Docker, SSL and the database, plus the AI models if you pick the AI edition, and serves the web app your team opens from the same server.</p>
         <p className="mt-2 text-xs text-muted-foreground">
           <span className="font-medium text-foreground">Both editions come with this key.</span> The installer asks which you want: v2 with AI teammates, or v1 with no AI at all for teams whose policy does not allow it. You can move up to v2 later with the same key.
         </p>

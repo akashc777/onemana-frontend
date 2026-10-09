@@ -81,3 +81,14 @@ describe("what a buyer is told the installer asks", () => {
         expect(selfHostNeeds.join(" ")).toContain("the installer adds Docker")
     })
 })
+
+// The installer installs with apt and refuses a server without it
+// (onecamp_install.sh, require_apt), so the site names the systems it runs on
+// rather than promising any Linux server.
+describe("the systems the installer runs on", () => {
+  it("are named as Ubuntu and Debian, never just Linux", () => {
+    const server = selfHostNeeds.find((n) => /server with/i.test(n)) ?? "";
+    expect(server).toMatch(/Ubuntu or Debian/);
+    expect(server).not.toMatch(/\bLinux\b/);
+  });
+});
