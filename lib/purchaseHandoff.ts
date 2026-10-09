@@ -54,3 +54,21 @@ export function readPurchase(): PurchaseResult | null {
   }
   return held;
 }
+
+/** What older receipt links carried in the address, and must not stay there. */
+const ADDRESS_SECRETS = ["key", "email"];
+
+/**
+ * The receipt's address without the key or email an older link carried (path,
+ * remaining query and hash), or null when there is nothing to take out.
+ *
+ * Links made before the hand-off above, and crafted ones, still put them in the
+ * address. The receipt ignores them, and removes them so they are neither kept
+ * in history nor sent as the referrer of the next page opened from it.
+ */
+export function withoutAddressSecrets(href: string): string | null {
+  const url = new URL(href);
+  if (!ADDRESS_SECRETS.some((p) => url.searchParams.has(p))) return null;
+  for (const p of ADDRESS_SECRETS) url.searchParams.delete(p);
+  return url.pathname + url.search + url.hash;
+}

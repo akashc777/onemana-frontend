@@ -178,11 +178,26 @@ async function send(path: string, referrer: string): Promise<void> {
   applyVerdict(await res.json().catch(() => null));
 }
 
+/**
+ * The referrer as the visit counter may keep it: no query string, no fragment.
+ *
+ * A referrer is the full address of whatever page linked here, and a query
+ * string is where secrets travel. The purchase receipt once carried the buyer's
+ * licence key and email in its address, and a page opened from it in a new tab
+ * sent that whole address here as its referrer, to be stored for 13 months.
+ * Reports only read the host (ClassifyReferrer in the backend), so nothing they
+ * show is lost. Split on the characters rather than parsed as a URL, so
+ * android-app:// and anything unparseable are cut the same way.
+ */
+export function referrerToSend(raw: string): string {
+  return raw.split(/[?#]/, 1)[0];
+}
+
 /** Fire-and-forget anonymous pageview beacon. Never blocks or throws. */
 export function trackPageview(path: string): void {
   try {
     if (optedOut() || isInternal()) return;
-    const referrer = typeof document !== "undefined" ? document.referrer : "";
+    const referrer = typeof document !== "undefined" ? referrerToSend(document.referrer) : "";
     if (getVisitorId() || noStore) {
       void send(path, referrer).catch(() => {});
       return;

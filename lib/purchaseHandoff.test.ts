@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 /**
@@ -63,5 +64,29 @@ describe("the purchase hand-off", () => {
       store.set("om_purchase", raw)
       expect((await load()).readPurchase(), raw).toBeNull()
     }
+  })
+})
+
+describe("an older receipt link", () => {
+  it("has its key and email taken out of the address, and nothing else", async () => {
+    const { withoutAddressSecrets } = await load()
+    expect(withoutAddressSecrets(`https://onemana.dev/buy/success?email=a%40b.example&key=${KEY}`)).toBe("/buy/success")
+    expect(withoutAddressSecrets(`https://onemana.dev/buy/success?email=a%40b.example&key=${KEY}&pending=1`)).toBe(
+      "/buy/success?pending=1",
+    )
+    expect(withoutAddressSecrets("https://onemana.dev/buy/success?email=a%40b.example&cloud=1#top")).toBe("/buy/success?cloud=1#top")
+  })
+
+  it("is left alone when there is nothing to take out", async () => {
+    const { withoutAddressSecrets } = await load()
+    for (const href of ["https://onemana.dev/buy/success", "https://onemana.dev/buy/success?pending=1", "https://onemana.dev/buy/success?cloud=1"]) {
+      expect(withoutAddressSecrets(href), href).toBeNull()
+    }
+  })
+
+  it("is cleaned by the receipt as soon as it opens", () => {
+    const page = readFileSync("app/buy/success/page.tsx", "utf8")
+    expect(page).toContain("withoutAddressSecrets(window.location.href)")
+    expect(page).toMatch(/window\.history\.replaceState\(null, "", clean\)/)
   })
 })

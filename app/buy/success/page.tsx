@@ -1,12 +1,12 @@
 "use client";
 
-import { Suspense, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 import { LicenseInstall } from "@/components/site/LicenseInstall";
 import { parseLicenseKey } from "@/lib/installCommand";
-import { readPurchase } from "@/lib/purchaseHandoff";
+import { readPurchase, withoutAddressSecrets } from "@/lib/purchaseHandoff";
 
 export default function SuccessPage() {
   return (
@@ -30,6 +30,13 @@ function SuccessInner() {
   const purchase = useSyncExternalStore(noUpdates, readPurchase, noResultOnServer);
   const key = parseLicenseKey(purchase?.key);
   const email = purchase?.email || "your email";
+
+  // An older link still carries the key and email: take them out of the
+  // address bar, as the account page does with its sign-in link.
+  useEffect(() => {
+    const clean = withoutAddressSecrets(window.location.href);
+    if (clean) window.history.replaceState(null, "", clean);
+  }, []);
 
   return (
     <section className="py-16 sm:py-20">
