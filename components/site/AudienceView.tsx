@@ -24,7 +24,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
       <section className="pb-14 pt-8 sm:pb-16">
         <div className="container-x">
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg">Try the live demo</ButtonLink>
+            <ButtonLink href={a.demo ? site.demoUrlTo(a.demo) : site.demoStartUrl} external variant="brandPremium" size="lg">Try the live demo</ButtonLink>
             <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
           </div>
 

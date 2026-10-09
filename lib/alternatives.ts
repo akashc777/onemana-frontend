@@ -61,6 +61,8 @@ export const alternatives: Audience[] = [
         "Invite your team, then turn the bridge off when the last person has moved.",
       ],
     },
+    // In the demo: #engineering, mid-conversation.
+    demo: "engineering",
   },
   {
     slug: "basecamp",
@@ -105,6 +107,8 @@ export const alternatives: Audience[] = [
         "Share each project with its client from the globe button, and turn on comments if they used Basecamp's.",
       ],
     },
+    // In the demo: the launch project's board: its work, people and dates.
+    demo: "board",
   },
   {
     slug: "notion",
@@ -149,6 +153,8 @@ export const alternatives: Audience[] = [
         "Recreate key pages as docs; link them from the project they belong to.",
       ],
     },
+    // In the demo: the launch plan, open in the editor.
+    demo: "docs",
   },
   {
     slug: "clickup",
@@ -193,6 +199,8 @@ export const alternatives: Audience[] = [
         "Invite the team; people who were assigned tasks keep them.",
       ],
     },
+    // In the demo: the launch board, ready to drag.
+    demo: "board",
   },
   {
     slug: "asana",
@@ -237,6 +245,8 @@ export const alternatives: Audience[] = [
         "Invite the team; people who were assigned tasks keep them.",
       ],
     },
+    // In the demo: the launch board, ready to drag.
+    demo: "board",
   },
   {
     slug: "monday",
@@ -281,6 +291,8 @@ export const alternatives: Audience[] = [
         "Invite the team; people who were assigned items keep them.",
       ],
     },
+    // In the demo: the launch board, ready to drag.
+    demo: "board",
   },
   {
     slug: "toggl",
@@ -324,6 +336,8 @@ export const alternatives: Audience[] = [
         "Start timers from tasks from now on; the project report replaces the Toggl one.",
       ],
     },
+    // In the demo: the launch project's logged time, billable and not.
+    demo: "time",
   },
 ];
 

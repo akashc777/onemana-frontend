@@ -2,6 +2,17 @@ import { ALTERNATIVE_INDEX } from "@/lib/alternativeIndex";
 // Central site configuration. Values that differ per environment come from
 // NEXT_PUBLIC_* env vars with sensible production defaults.
 
+/**
+ * The places a demo link can name (start_demo), as the demo knows them: its
+ * lib/demoDestination.ts in the web app. A value the demo doesn't know still
+ * starts the demo, on its home screen.
+ */
+export const DEMO_PLACES = [
+  "drill", "templates", "projects", "workload", "goals", "reports",
+  "engineering", "client", "board", "time", "docs",
+] as const;
+export type DemoPlace = (typeof DEMO_PLACES)[number];
+
 export const site = {
   name: "OneCamp",
   company: "OneMana Solutions (OPC) Private Limited",

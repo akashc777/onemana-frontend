@@ -4,6 +4,7 @@
  * page offers records and controls and never claims a regulation is met.
  */
 import type { FeatureIconKey } from "@/lib/content";
+import type { DemoPlace } from "@/lib/site";
 
 export interface AudiencePoint {
   icon: FeatureIconKey;
@@ -40,6 +41,13 @@ export interface Audience {
   };
   /** On an "alternative to" page: the steps that move a team across. */
   move?: { title: string; steps: string[] };
+  /**
+   * Where "Try the live demo" lands this page's visitors: a start_demo value
+   * the demo knows (DEMO_PLACES in lib/site.ts), so someone reading about
+   * client channels arrives in one rather than on a generic home screen.
+   * Absent means the demo's home screen.
+   */
+  demo?: DemoPlace;
 }
 
 export const audiences: Audience[] = [
@@ -115,6 +123,8 @@ export const audiences: Audience[] = [
       },
     ],
     proof: { label: "How channel guests work", href: "/docs/channel-guests" },
+    // The channel the demo shares with a client's people.
+    demo: "client",
   },
   {
     slug: "india",
@@ -235,6 +245,8 @@ export const audiences: Audience[] = [
       },
     ],
     proof: { label: "Verifying a record", href: "/docs/verify-a-record" },
+    // The two-minute proof the page promises: an agent stopped, and the record.
+    demo: "drill",
   },
 ];
 
