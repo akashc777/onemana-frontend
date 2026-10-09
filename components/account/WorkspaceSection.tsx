@@ -11,8 +11,9 @@ import {
   portalApi,
   type PortalInstance,
   type PortalEdition,
+  type PortalSubscription,
 } from "@/lib/portalApi";
-import { stateBadgeClass } from "@/lib/instanceState";
+import { paidWithoutWorkspace, stateBadgeClass } from "@/lib/instanceState";
 import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
 
@@ -26,7 +27,14 @@ import { usePoll } from "@/hooks/usePoll";
 const POLL_MS = 15000;
 
 
-export function WorkspaceSection({ onReload }: { onReload: () => void }) {
+export function WorkspaceSection({
+  onReload,
+  subscriptions = [],
+}: {
+  onReload: () => void;
+  /** The account's subscriptions, to tell "no workspace" from "not created yet". */
+  subscriptions?: PortalSubscription[];
+}) {
   const [instances, setInstances] = useState<PortalInstance[] | null>(null);
   const [err, setErr] = useState("");
 
@@ -43,11 +51,26 @@ export function WorkspaceSection({ onReload }: { onReload: () => void }) {
     void load();
   }, [load]);
 
+  // Paid for, and not created yet: the payment's webhook is on its way, or being
+  // recovered from Razorpay. Said, and looked for again, rather than shown as nothing.
+  const onItsWay = instances !== null && paidWithoutWorkspace(subscriptions, instances.length);
+
   // The backend says which instances are still moving, so this never has to guess.
-  usePoll((instances ?? []).some((i) => i.working), POLL_MS, load);
+  usePoll((instances ?? []).some((i) => i.working) || onItsWay, POLL_MS, load);
 
   if (err) return <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>;
   if (!instances) return <p className="text-sm text-muted-foreground">Loading your workspace…</p>;
+  if (onItsWay) {
+    return (
+      <section className="card">
+        <h2 className="mb-2 font-semibold text-foreground">Your workspace</h2>
+        <p className="text-sm text-muted-foreground">
+          Your payment has reached us and your workspace is being set up. It appears here within a few
+          minutes, and this page checks by itself.
+        </p>
+      </section>
+    );
+  }
   // Nothing to say to a customer who has no managed workspace, and most do not.
   if (instances.length === 0) return null;
 

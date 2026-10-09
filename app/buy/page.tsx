@@ -268,7 +268,11 @@ function BuyInner() {
                 </fieldset>
               </>
             )}
-            <Field label="Email" required hint="Your license key & invoice are sent here.">
+            <Field
+              label="Email"
+              required
+              hint={isCloud ? "You sign in to your workspace with it, and your invoices are sent here." : "Your license key & invoice are sent here."}
+            >
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>
             <Field label="Name">

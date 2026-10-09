@@ -106,7 +106,7 @@ export function AccountDashboard({
       {/* First on the overview, because when a workspace still needs a name this is
           the only thing on the page that matters. Everything else is a record of
           what has already happened. */}
-      {tab === "overview" && <WorkspaceSection onReload={onReload} />}
+      {tab === "overview" && <WorkspaceSection onReload={onReload} subscriptions={overview.subscriptions} />}
       {tab === "overview" && <OverviewTab overview={overview} onManageSubscription={() => setTab("subscription")} />}
       {tab === "invoices" && <InvoicesTab />}
       {tab === "subscription" && <SubscriptionTab initial={overview.subscriptions} onChanged={onReload} />}

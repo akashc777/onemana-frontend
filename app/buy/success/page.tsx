@@ -54,59 +54,50 @@ function SuccessInner() {
           </h1>
 
           {isCloud ? (
-            /* THE FLOW WAITS HERE, ON THE CUSTOMER. A subscription creates the
-               instance in awaiting_setup and nothing is provisioned until an
-               address is chosen. This page used to say only that we would contact
-               them within 12 hours, and linked to the docs and GitHub but never to
-               the one page that unblocks it, so a paying subscriber had no reason
-               to go there and no idea anything was waiting. */
-            address ? (
-              <>
-                <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-                  Thanks for subscribing! Your workspace is fully managed, and building starts as
-                  soon as your payment reaches us, usually within a minute.
-                </p>
-                <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
-                  <p className="font-medium text-foreground">We are setting up {address}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Nothing more is needed from you. We email{" "}
-                    <span className="font-medium text-foreground">{email}</span> the moment it is ready. If
-                    someone took that name in the minutes before your payment, the welcome email says so
-                    and you choose another.
-                  </p>
-                  <ButtonLink href="/account" variant="ghost" className="mt-4">
-                    Follow it on your account page
-                  </ButtonLink>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-                  Thanks for subscribing! Your workspace is fully managed. One quick step from
-                  you and we start building it right away.
-                </p>
-                <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
-                  <p className="font-medium text-foreground">Choose your workspace address</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Free on <span className="font-medium text-foreground">onemana.dev</span>, for example{" "}
-                    <span className="font-mono text-xs">acme.onemana.dev</span>. You can move to a domain
-                    you own later, from the same page, at no extra cost.
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    The welcome email arriving at <span className="font-medium text-foreground">{email}</span> has
-                    a button that signs you straight in. Or continue here with a code:
-                  </p>
-                  <ButtonLink href="/account" variant="brandPremium" className="mt-4">
-                    Choose your address
-                  </ButtonLink>
-                </div>
-                <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
-                  We&apos;ve emailed your included self-host license and GST invoice to{" "}
-                  <span className="font-medium text-foreground">{email}</span>. Prefer us to set it up with
-                  you? Reply to that email and we will.
-                </p>
-              </>
-            )
+            /* WHAT HAPPENS NEXT, AND WHERE TO FOLLOW IT. A buyer who named the
+               workspace on /buy has nothing left to do: the payment names it and
+               building starts. One who did not is asked for the address, the one
+               thing the build waits on. Either way the next place to go is the
+               account page, which is the main button below; this page used to
+               offer the setup docs and GitHub instead, which are for self-hosting. */
+            <>
+              <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+                Thank you for subscribing. We run your workspace for you: set up, backed up and
+                kept up to date.
+              </p>
+              <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
+                {address ? (
+                  <>
+                    <p className="font-medium text-foreground">We are setting up {address}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Nothing more is needed from you. We email{" "}
+                      <span className="font-medium text-foreground">{email}</span> the moment it is ready,
+                      with a link to choose your password; you sign in with that address. If someone
+                      took the name in the minutes before your payment, the welcome email says so and
+                      you choose another.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-medium text-foreground">Choose your workspace address</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Free on <span className="font-medium text-foreground">onemana.dev</span>, for example{" "}
+                      <span className="font-mono text-xs">acme.onemana.dev</span>. Want a domain you own
+                      instead? Reply to the welcome email and we set it up with you.
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      The welcome email arriving at <span className="font-medium text-foreground">{email}</span> has
+                      a button that signs you straight in, or continue below with a code.
+                    </p>
+                  </>
+                )}
+              </div>
+              <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
+                Your GST invoice is on its way to <span className="font-medium text-foreground">{email}</span>.
+                Your plan also includes a self-host license, in the same email and on your account page,
+                should you ever want to run OneCamp yourself.
+              </p>
+            </>
           ) : pending && !key ? (
             <p className="mx-auto mt-3 max-w-md text-muted-foreground">
               Thanks for your purchase! Your license key and setup instructions are being prepared and will arrive at{" "}
@@ -122,8 +113,19 @@ function SuccessInner() {
           {key && <LicenseInstall licenseKey={key} isCloud={isCloud} />}
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/docs" variant="brandPremium">Read the setup docs</ButtonLink>
-            <ButtonLink href={site.githubOrgUrl} external variant="ghost">Open-source on GitHub</ButtonLink>
+            {isCloud ? (
+              <>
+                <ButtonLink href="/account" variant="brandPremium">
+                  {address ? "Go to your account" : "Choose your address"}
+                </ButtonLink>
+                <ButtonLink href="/docs/cloud" variant="ghost">How OneCamp Cloud works</ButtonLink>
+              </>
+            ) : (
+              <>
+                <ButtonLink href="/docs" variant="brandPremium">Read the setup docs</ButtonLink>
+                <ButtonLink href={site.githubOrgUrl} external variant="ghost">Open-source on GitHub</ButtonLink>
+              </>
+            )}
           </div>
         </div>
         <p className="mt-6 text-center text-xs text-muted-foreground">

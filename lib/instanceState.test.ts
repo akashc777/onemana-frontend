@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stateTone, stateBadgeClass, isWorkingState } from "./instanceState";
+import { stateTone, stateBadgeClass, isWorkingState, paidWithoutWorkspace } from "./instanceState";
 
 describe("workspace state presentation", () => {
   // ONE VOCABULARY, TWO VIEWS. The customer's page and the operator's panel each
@@ -35,5 +35,21 @@ describe("workspace state presentation", () => {
     for (const s of ["adopting", "provisioning", "verifying", "migrating"]) {
       expect(isWorkingState(s), s).toBe(true);
     }
+  });
+});
+
+// A buyer who signs in before the payment's webhook has created the workspace
+// used to see no workspace and nothing saying one was coming.
+describe("a paid workspace not created yet", () => {
+  it("is said to be on its way while a subscription is paid and no workspace exists", () => {
+    expect(paidWithoutWorkspace([{ status: "active" }], 0)).toBe(true);
+  });
+
+  it("is not, once the workspace exists, for an unpaid or ended plan, or for an add-on", () => {
+    expect(paidWithoutWorkspace([{ status: "active" }], 1)).toBe(false);
+    expect(paidWithoutWorkspace([{ status: "authenticated" }], 0)).toBe(false);
+    expect(paidWithoutWorkspace([{ status: "cancelled" }], 0)).toBe(false);
+    expect(paidWithoutWorkspace([{ status: "active", instance_id: "w1" }], 0)).toBe(false);
+    expect(paidWithoutWorkspace([], 0)).toBe(false);
   });
 });

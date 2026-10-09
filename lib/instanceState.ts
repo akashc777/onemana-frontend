@@ -49,3 +49,18 @@ export function stateBadgeClass(state: string): string {
 export function isWorkingState(state: string): boolean {
   return stateTone(state) === "working";
 }
+
+/**
+ * Whether the account page should say a workspace is on its way: a Cloud
+ * subscription has been paid for (Razorpay marks it active with its first
+ * charge) and no workspace exists yet, because the payment's webhook has not
+ * reached us or is being recovered. Without this a buyer who signed in quickly
+ * saw no workspace at all, and nothing saying one was coming. Add-ons name the
+ * workspace they extend, so they never count.
+ */
+export function paidWithoutWorkspace(
+  subscriptions: { status: string; instance_id?: string }[],
+  instanceCount: number,
+): boolean {
+  return instanceCount === 0 && subscriptions.some((s) => !s.instance_id && s.status === "active");
+}

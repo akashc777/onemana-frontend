@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { portalApi, PortalAuthError, type PortalOverview } from "@/lib/portalApi";
 import { AccountLogin } from "@/components/account/AccountLogin";
 import { AccountDashboard } from "@/components/account/AccountDashboard";
+import { readPurchase } from "@/lib/purchaseHandoff";
 
 type State =
   | { phase: "loading" }
@@ -72,7 +73,16 @@ export default function AccountPage() {
   }
 
   if (state.phase === "signedOut") {
-    return <AccountLogin onSignedIn={load} initialEmail={linkEmail} initialNotice={linkNotice} />;
+    // A buyer arriving from the receipt in this tab has typed their email once
+    // already; see lib/purchaseHandoff. Only reached in the browser, after the
+    // first request, so the server render never reads it.
+    return (
+      <AccountLogin
+        onSignedIn={load}
+        initialEmail={linkEmail || readPurchase()?.email || ""}
+        initialNotice={linkNotice}
+      />
+    );
   }
 
   return <AccountDashboard overview={state.overview} onLogout={logout} onReload={load} />;

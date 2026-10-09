@@ -51,21 +51,33 @@ function cloudBranch(): string {
 /** The part of the cloud branch for a buyer who named the workspace at checkout. */
 function namedBranch(): string {
   const branch = cloudBranch()
-  const start = branch.indexOf("address ? (")
+  const start = branch.indexOf("{address ? (")
   expect(start, "the cloud branch no longer asks whether an address was chosen").toBeGreaterThan(-1)
   return branch.slice(start, branch.indexOf(") : (", start))
 }
 
+/** The buttons a Cloud buyer is offered, at the foot of the receipt. */
+function cloudButtons(): string {
+  const start = SUCCESS_PAGE.indexOf('<div className="mt-8 flex')
+  expect(start, "the receipt's buttons moved").toBeGreaterThan(-1)
+  const block = SUCCESS_PAGE.slice(start)
+  const cloud = block.indexOf("{isCloud ? (")
+  expect(cloud, "the buttons no longer differ for Cloud").toBeGreaterThan(-1)
+  return block.slice(cloud, block.indexOf(") : (", cloud))
+}
+
 describe("cloud purchase hand-off", () => {
-  it("links a new subscriber to their account, where the address is chosen", () => {
-    expect(
-      cloudBranch(),
-      "nothing provisions until the customer picks an address, and /account is the only place to do it",
-    ).toContain('href="/account"')
+  it("makes the account, where the address is chosen and the build followed, the main button", () => {
+    // The receipt's main button was "Read the setup docs" for everybody: a
+    // self-hosting guide, for a buyer whose workspace we run.
+    const buttons = cloudButtons()
+    expect(buttons).toMatch(/<ButtonLink href="\/account" variant="brandPremium">/)
+    expect(buttons).not.toContain("Read the setup docs")
+    expect(flat(buttons)).toContain('{address ? "go to your account" : "choose your address"}')
   })
 
   it("asks for the address rather than only promising contact", () => {
-    expect(flat(cloudBranch())).toContain("choose your address")
+    expect(flat(cloudBranch())).toContain("choose your workspace address")
   })
 
   it("never tells a subscriber there is nothing to do", () => {
@@ -93,7 +105,14 @@ describe("cloud purchase hand-off", () => {
     const named = flat(namedBranch())
     expect(named).toContain("we are setting up {address}")
     expect(named).not.toContain("choose your address")
-    expect(named).toContain('href="/account"')
+    expect(named).not.toContain("choose your workspace address")
+    expect(named, "the address that signs in to the workspace is said").toContain("you sign in with that address")
+  })
+
+  it("leads with the workspace, and keeps the self-host license for later", () => {
+    const branch = flat(cloudBranch())
+    expect(branch).not.toContain("we've emailed your included self-host license")
+    expect(branch.indexOf("self-host license")).toBeGreaterThan(branch.indexOf("we are setting up"))
   })
 
   it("advertises both domain options before purchase, not only after", () => {
