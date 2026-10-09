@@ -29,6 +29,24 @@ const nextConfig = {
                     { key: "X-Content-Type-Options", value: "nosniff" },
                     { key: "X-Frame-Options", value: "SAMEORIGIN" },
                     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+                    // Only the parts of a content security policy that cannot block
+                    // anything this site loads: no <base> tag can repoint its
+                    // relative links, no plugin content, and no framing by other
+                    // sites (what X-Frame-Options already says, in the newer form).
+                    // Both HTML sinks (lib/markdown, lib/jsonLd) sanitise already;
+                    // this is the floor under them if that ever slips.
+                    //
+                    // NOT script-src, connect-src, frame-src or img-src, on purpose.
+                    // This app router build emits inline scripts, so a policy for
+                    // them needs a nonce from middleware on every request (no more
+                    // static pages) or 'unsafe-inline', which gives most of the
+                    // protection back. And Razorpay Checkout loads its own scripts,
+                    // frames and calls, plus whatever a bank's 3-D Secure page
+                    // needs, none of which can be exercised here without paying.
+                    // A policy that breaks checkout fails silently and costs every
+                    // sale, so it is trialled as Content-Security-Policy-Report-Only
+                    // in a browser first, not shipped blind.
+                    { key: "Content-Security-Policy", value: "base-uri 'self'; object-src 'none'; frame-ancestors 'self'" },
                 ],
             },
         ];
