@@ -243,7 +243,7 @@ function Verdict({ verdict }: { verdict: VerifyReport["rows"][number]["verdict"]
         unhashed: "no hash on this row",
     }[verdict]
     const tone = {
-        verified: "text-success",
+        verified: "text-success-ink",
         mismatch: "text-destructive font-medium",
         redacted: "text-muted-foreground",
         unhashed: "text-muted-foreground",

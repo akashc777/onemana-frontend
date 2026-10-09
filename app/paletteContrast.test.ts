@@ -45,12 +45,33 @@ const PAIRS: [fg: string, bg: string, min: number][] = [
   ["agent", "agent-muted", 4.5],
   // A filled button against the page, and the focus ring: non-text, 3:1.
   ["brand", "background", 3],
-  ["danger", "background", 4.5],
   ["success", "background", 3],
+  // Meaning colours as text: the -ink cuts, on the page and on a card.
+  ["success-ink", "background", 4.8],
+  ["warning-ink", "background", 4.8],
+  ["info-ink", "background", 4.8],
+  ["danger-ink", "background", 4.8],
+  ["success-ink", "card", 4.8],
+  ["warning-ink", "card", 4.8],
+  ["info-ink", "card", 4.8],
+  ["danger-ink", "card", 4.8],
 ]
+
+/** A colour at `alpha` over a ground, as `bg-success/15` paints it. */
+function over(fg: RGB, bg: RGB, alpha: number): RGB {
+  return fg.map((c, i) => Math.round(c * alpha + bg[i] * (1 - alpha))) as RGB
+}
 
 describe("palette contrast", () => {
   for (const theme of ["light", "dark"] as const) {
+    // Status pills and notices: the ink on its own colour's tint (15% over a card, the strongest used).
+    for (const k of ["success", "warning", "info", "danger"]) {
+      it(`${theme}: ${k}-ink on a ${k} tint is at least 4.8:1`, () => {
+        const tint = over(SHARED[theme][k], SHARED[theme].card, 0.15)
+        const ratio = contrast(SHARED[theme][`${k}-ink`], tint)
+        expect(ratio, `${k}-ink on its tint is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.8)
+      })
+    }
     for (const [fg, bg, min] of PAIRS) {
       it(`${theme}: ${fg} on ${bg} is at least ${min}:1`, () => {
         const ratio = contrast(SHARED[theme][fg], SHARED[theme][bg])

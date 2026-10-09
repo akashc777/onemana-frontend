@@ -23,16 +23,16 @@ const TABS: { key: Tab; label: string }[] = [
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
-    active: "bg-success/15 text-success",
-    authenticated: "bg-info/15 text-info",
-    created: "bg-info/15 text-info",
-    paid: "bg-success/15 text-success",
-    paused: "bg-info/15 text-info",
-    pending: "bg-warning/15 text-warning",
-    cancelled: "bg-danger/15 text-danger",
-    halted: "bg-warning/15 text-warning",
+    active: "bg-success/15 text-success-ink",
+    authenticated: "bg-info/15 text-info-ink",
+    created: "bg-info/15 text-info-ink",
+    paid: "bg-success/15 text-success-ink",
+    paused: "bg-info/15 text-info-ink",
+    pending: "bg-warning/15 text-warning-ink",
+    cancelled: "bg-danger/15 text-danger-ink",
+    halted: "bg-warning/15 text-warning-ink",
     completed: "bg-muted-foreground/20 text-foreground/80",
-    failed: "bg-danger/15 text-danger",
+    failed: "bg-danger/15 text-danger-ink",
   };
   return map[status] || "bg-muted-foreground/20 text-foreground/80";
 }
@@ -209,7 +209,7 @@ function Loading() {
 function ErrorState({ msg, onRetry }: { msg: string; onRetry: () => void }) {
   return (
     <div className="py-10 text-center text-sm">
-      <p className="text-danger">{msg}</p>
+      <p className="text-danger-ink">{msg}</p>
       <button onClick={onRetry} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
     </div>
   );
@@ -436,7 +436,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               <button
                 onClick={() => cancel(s)}
                 disabled={busy === s.id}
-                className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger hover:bg-danger/20 disabled:opacity-50"
+                className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger-ink hover:bg-danger/20 disabled:opacity-50"
               >
                 {busy === s.id ? "Cancelling…" : "Cancel subscription"}
               </button>

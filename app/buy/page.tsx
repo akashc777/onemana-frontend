@@ -319,7 +319,7 @@ function BuyInner() {
             </Field>
 
             {error && (
-              <p role="alert" className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-small text-danger">{error}</p>
+              <p role="alert" className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-small text-danger-ink">{error}</p>
             )}
 
             <Button type="submit" disabled={busy} variant="brand" size="lg" className="w-full">
@@ -405,7 +405,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
   return (
     <label className="block">
       <span className="mb-1.5 block text-small font-medium text-foreground">
-        {label} {required && <span className="text-danger">*</span>}
+        {label} {required && <span className="text-danger-ink">*</span>}
       </span>
       {children}
       {hint && <span className="mt-1 block text-caption text-muted-foreground">{hint}</span>}

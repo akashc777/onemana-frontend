@@ -88,7 +88,11 @@ pair a person reads, in both themes. Hairlines are structure and are exempt;
 `faint` is for placeholders and is exempt; nothing else is.
 
 **Colour that carries meaning comes from a token**: `success`, `warning`,
-`danger`, `info`. Never a raw Tailwind hue.
+`danger`, `info`. Never a raw Tailwind hue. Those four are fills (dots,
+borders, `/15` tints); as **text** use `text-success-ink` and its siblings,
+deeper cuts that clear 4.8:1 on the page and on their own tint in light mode
+(`#176B3A`, `#8A5300`, `#2257B5`, `#AE1F33`; in dark mode the fills already
+pass, except danger, whose ink is `#FF8086`).
 
 ## Type
 

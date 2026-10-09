@@ -90,7 +90,7 @@ export function AccountLogin({
               />
               <p className="mt-1.5 text-xs text-muted-foreground">Use the email you purchased with.</p>
             </div>
-            {error && <p className="text-sm text-danger">{error}</p>}
+            {error && <p className="text-sm text-danger-ink">{error}</p>}
             <button disabled={busy || !email.trim()} className="btn-primary w-full">
               {busy ? "Sending…" : "Email me a code"}
             </button>
@@ -113,7 +113,7 @@ export function AccountLogin({
               />
               <p className="mt-1.5 text-xs text-muted-foreground">Sent to {email}. It expires in 10 minutes.</p>
             </div>
-            {error && <p className="text-sm text-danger">{error}</p>}
+            {error && <p className="text-sm text-danger-ink">{error}</p>}
             <button disabled={busy || code.length < CODE_LENGTH} className="btn-primary w-full">
               {busy ? "Verifying…" : "Sign in"}
             </button>

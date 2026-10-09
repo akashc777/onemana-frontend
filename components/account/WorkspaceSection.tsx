@@ -58,7 +58,7 @@ export function WorkspaceSection({
   // The backend says which instances are still moving, so this never has to guess.
   usePoll((instances ?? []).some((i) => i.working) || onItsWay, POLL_MS, load);
 
-  if (err) return <p className="text-sm text-danger">{err}</p>;
+  if (err) return <p className="text-sm text-danger-ink">{err}</p>;
   if (!instances) return <p className="text-sm text-muted-foreground">Loading your workspace…</p>;
   if (onItsWay) {
     return (
@@ -212,7 +212,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
       )}
 
       {inst.state === "live" && capacityLine(inst.capacity_verdict, inst.capacity_reason) && (
-        <p className="text-sm text-warning">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
+        <p className="text-sm text-warning-ink">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
       )}
 
       {moveLine(inst.move) && (
@@ -326,7 +326,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
           email you when it is ready.
         </p>
         {inst.choice_note && (
-          <p role="status" className="mt-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-warning">
+          <p role="status" className="mt-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-warning-ink">
             {inst.choice_note}
           </p>
         )}
@@ -375,7 +375,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
         </fieldset>
       )}
 
-      {err && <p className="text-sm text-danger">{err}</p>}
+      {err && <p className="text-sm text-danger-ink">{err}</p>}
 
       <button
         type="submit"

@@ -176,7 +176,7 @@ export const GovernedDemo: React.FC = () => {
                                 <span
                                     className={
                                         call === "refused"
-                                            ? "rounded-sm bg-danger/10 px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-danger"
+                                            ? "rounded-sm bg-danger/10 px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-danger-ink"
                                             : "rounded-sm bg-agent-muted px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-agent"
                                     }
                                 >

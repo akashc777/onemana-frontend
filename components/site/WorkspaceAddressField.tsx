@@ -61,9 +61,9 @@ export function WorkspaceAddressField({
 
   const tone =
     verdict?.tone === "ok"
-      ? "text-success"
+      ? "text-success-ink"
       : verdict?.tone === "bad"
-        ? "text-danger"
+        ? "text-danger-ink"
         : "text-muted-foreground";
 
   return (

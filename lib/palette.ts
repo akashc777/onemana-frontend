@@ -30,6 +30,10 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     warning: [178, 107, 0],
     danger: [209, 41, 61],
     info: [47, 111, 219],
+    "success-ink": [23, 107, 58],
+    "warning-ink": [138, 83, 0],
+    "info-ink": [34, 87, 181],
+    "danger-ink": [174, 31, 51],
   },
   dark: {
     brand: [255, 122, 51],
@@ -53,5 +57,9 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     warning: [240, 180, 76],
     danger: [242, 85, 90],
     info: [110, 164, 245],
+    "success-ink": [76, 195, 138],
+    "warning-ink": [240, 180, 76],
+    "info-ink": [110, 164, 245],
+    "danger-ink": [255, 128, 134],
   },
 }

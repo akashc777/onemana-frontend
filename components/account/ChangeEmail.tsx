@@ -102,7 +102,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
           </div>
         </>
       )}
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-xs text-danger-ink">{error}</p>}
       <button type="button" onClick={reset} className="text-xs text-muted-foreground hover:text-foreground">
         Cancel
       </button>

@@ -146,7 +146,7 @@ export default function FreePage() {
             </div>
           )}
           {instantError && (
-            <p role="alert" className="mt-3 text-small text-danger">
+            <p role="alert" className="mt-3 text-small text-danger-ink">
               {instantError}
             </p>
           )}
@@ -205,7 +205,7 @@ export default function FreePage() {
                     <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="organization" className={inputCls} placeholder="Acme" />
                   </label>
                   {state.kind === "error" && (
-                    <p role="alert" className="text-small text-danger">
+                    <p role="alert" className="text-small text-danger-ink">
                       {state.msg}
                     </p>
                   )}

@@ -40,6 +40,13 @@
   --warning: 178 107 0;
   --danger: 209 41 61;
   --info: 47 111 219;
+  /* Meaning colours as TEXT. The fills above are for dots, borders and tints;
+     as words they fail AA on the page and on their own 15% tint, so text uses
+     these deeper cuts (4.8:1 or better on both, paletteContrast.test.ts). */
+  --success-ink: 23 107 58;
+  --warning-ink: 138 83 0;
+  --info-ink: 34 87 181;
+  --danger-ink: 174 31 51;
   color-scheme: light;
 }
 
@@ -68,6 +75,10 @@
   --warning: 240 180 76;
   --danger: 242 85 90;
   --info: 110 164 245;
+  --success-ink: 76 195 138;
+  --warning-ink: 240 180 76;
+  --info-ink: 110 164 245;
+  --danger-ink: 255 128 134;
   color-scheme: dark;
 }
 
