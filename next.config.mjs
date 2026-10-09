@@ -13,6 +13,10 @@ const nextConfig = {
             { source: "/governance", destination: "/#governance", permanent: false },
             { source: "/login", destination: "/account", permanent: false },
             { source: "/signin", destination: "/account", permanent: false },
+            // The "choose a name" reminder linked here for a while, and this page
+            // never existed; those emails are in inboxes still.
+            { source: "/portal", destination: "/account", permanent: false },
+            { source: "/portal/:path*", destination: "/account", permanent: false },
             // Addresses people type, or that posts and emails have linked to,
             // for pages that live elsewhere. The demo is on its own host; see
             // site.demoStartUrl for why it carries start_demo.
