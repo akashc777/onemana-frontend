@@ -1,9 +1,12 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
+import { LicenseInstall } from "@/components/site/LicenseInstall";
+import { parseLicenseKey } from "@/lib/installCommand";
+import { readPurchase } from "@/lib/purchaseHandoff";
 
 export default function SuccessPage() {
   return (
@@ -13,25 +16,20 @@ export default function SuccessPage() {
   );
 }
 
+// The checkout's result never changes while this page shows it, so there is
+// nothing to subscribe to; and the server has no result at all.
+const noUpdates = () => () => {};
+const noResultOnServer = () => null;
+
 function SuccessInner() {
   const params = useSearchParams();
-  const key = params.get("key") || "";
   const pending = params.get("pending") === "1";
   const isCloud = params.get("cloud") === "1";
-  const email = params.get("email") || "your email";
-  const [copied, setCopied] = useState("");
-
-  const installCmd = key ? `/bin/bash -c "$(curl -fsSL ${site.backendUrl}/onecamp/download/${key})"` : "";
-
-  const copy = async (text: string, which: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(which);
-      setTimeout(() => setCopied(""), 1800);
-    } catch {
-      /* clipboard unavailable */
-    }
-  };
+  // The key and email come from the checkout in this tab, never from the
+  // address: a ?key= in a link is ignored. See lib/purchaseHandoff.
+  const purchase = useSyncExternalStore(noUpdates, readPurchase, noResultOnServer);
+  const key = parseLicenseKey(purchase?.key);
+  const email = purchase?.email || "your email";
 
   return (
     <section className="py-16 sm:py-20">
@@ -89,34 +87,7 @@ function SuccessInner() {
             </p>
           )}
 
-          {key && (
-            <div className="mt-7 space-y-5 text-left">
-              <div>
-                <p className="mb-1.5 text-xs font-medium text-muted-foreground">
-                  {isCloud ? "Your included license key" : "Your license key"}
-                </p>
-                <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-4 py-3 font-mono text-sm text-foreground">
-                  <span className="flex-1 break-all">{key}</span>
-                  <button onClick={() => copy(key, "key")} className="shrink-0 rounded-md bg-background px-2 py-1 text-xs hover:bg-muted">
-                    {copied === "key" ? "Copied" : "Copy"}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <p className="mb-1.5 text-xs font-medium text-muted-foreground">Install on your own server</p>
-                <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-3 font-mono text-[11px] text-foreground sm:px-4 sm:text-xs">
-                  <span className="flex-1 break-all">{installCmd}</span>
-                  <button onClick={() => copy(installCmd, "cmd")} className="shrink-0 rounded-md bg-background px-2 py-1 text-xs hover:bg-muted">
-                    {copied === "cmd" ? "Copied" : "Copy"}
-                  </button>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">Run it on a Docker-capable server with 4 GB of RAM. It asks for one email and needs no domain to start. The installer handles Docker, SSL and the database, plus the AI models if you pick the AI edition, and serves the web app your team opens from the same server.</p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">Both editions come with this key.</span> The installer asks which you want: v2 with AI teammates, or v1 with no AI at all for teams whose policy does not allow it. You can move up to v2 later with the same key.
-                </p>
-              </div>
-            </div>
-          )}
+          {key && <LicenseInstall licenseKey={key} isCloud={isCloud} />}
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/docs" variant="brandPremium">Read the setup docs</ButtonLink>

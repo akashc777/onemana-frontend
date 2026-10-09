@@ -5,6 +5,7 @@ import { CHECKOUT_THEME } from "@/lib/razorpayCheckout";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cloudCheckoutDescription } from "@/lib/paymentTerms";
+import { savePurchase } from "@/lib/purchaseHandoff";
 import {
   createCheckoutOrder,
   createCloudSubscription,
@@ -79,19 +80,23 @@ export function useCheckout(): CheckoutController {
           handler: async (resp: unknown) => {
             trackEvent("checkout-paid-lifetime");
             const r = resp as RazorpaySuccess;
-            const params = new URLSearchParams({ email: input.email });
+            // The key and email go to the receipt through this tab, not its
+            // address; see lib/purchaseHandoff. Only the flag travels in the URL.
+            let key: string | undefined;
+            let pending = false;
             try {
               const result = await verifyPayment({
                 razorpay_order_id: r.razorpay_order_id,
                 razorpay_payment_id: r.razorpay_payment_id,
                 razorpay_signature: r.razorpay_signature,
               });
-              if (result.license_key) params.set("key", result.license_key);
-              if (result.status === "pending") params.set("pending", "1");
+              key = result.license_key;
+              pending = result.status === "pending";
             } catch {
-              params.set("pending", "1");
+              pending = true;
             }
-            router.push(`/buy/success?${params.toString()}`);
+            savePurchase({ email: input.email, key });
+            router.push(pending ? "/buy/success?pending=1" : "/buy/success");
           },
           modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },
         });
@@ -131,8 +136,8 @@ export function useCheckout(): CheckoutController {
             trackEvent(`checkout-paid-${checkoutKind(input.plan_code)}`);
             // Subscription activation + fulfillment is webhook-driven. Route to
             // a reassuring success page; the welcome email carries the license.
-            const params = new URLSearchParams({ email: input.email, cloud: "1" });
-            router.push(`/buy/success?${params.toString()}`);
+            savePurchase({ email: input.email });
+            router.push("/buy/success?cloud=1");
           },
           modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },
         });

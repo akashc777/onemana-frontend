@@ -20,24 +20,26 @@ import { selfHostNeeds, steps } from "@/lib/content"
  */
 const ROOT = process.cwd()
 const read = (p: string) => readFileSync(join(ROOT, p), "utf8").toLowerCase()
+/** The purchase receipt: the page, and the key and install block it shows. */
+const receipt = () => read("app/buy/success/page.tsx") + read("components/site/LicenseInstall.tsx")
 
 describe("what a buyer is told before they pay", () => {
     it("names the machine floor in the install steps and the needs list", () => {
         expect(steps[0].body).toContain("4 GB")
         expect(selfHostNeeds.join(" ")).toMatch(/4 GB of RAM and 40 GB of disk/)
-        expect(read("app/buy/success/page.tsx")).toContain("4 gb of ram")
+        expect(receipt()).toContain("4 gb of ram")
     })
 
     it("says the install serves the web app, and warns of no second deploy", () => {
         for (const [where, text] of [
             ["install step one", steps[0].body.toLowerCase()],
-            ["the receipt", read("app/buy/success/page.tsx")],
+            ["the receipt", receipt()],
             ["the free page", read("app/free/page.tsx")],
         ] as const) {
             expect(text, `${where} still describes a second deploy`).not.toContain("second deploy")
         }
         expect(steps[0].body.toLowerCase()).toContain("web app")
-        expect(read("app/buy/success/page.tsx")).toContain("web app")
+        expect(receipt()).toContain("web app")
     })
 
     it("shows the free page's visitor what they need before the form", () => {
