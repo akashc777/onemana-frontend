@@ -4,10 +4,11 @@ import { guessCountry } from "@/lib/guessCountry";
 import Script from "next/script";
 import { PlanComparison } from "@/components/site/PlanComparison";
 import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing, billingFromParams } from "@/lib/paymentTerms";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
 import { indianStates } from "@/lib/states";
+import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
@@ -80,10 +81,6 @@ function BuyInner() {
   const business = choice === "business";
   const saving = yearlySaving(pricing);
   const price = choicePrice(choice, pricing);
-  const stateCode = useMemo(
-    () => (isIndia ? indianStates.find((s) => s.name === stateName)?.code ?? "" : ""),
-    [isIndia, stateName],
-  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -91,6 +88,13 @@ function BuyInner() {
       setError("Please enter your email - your license key is sent there.");
       return;
     }
+    // What goes on an Indian tax invoice is checked here, before payment; see lib/gstin.
+    const billing = isIndia ? checkIndianBilling(gstin, stateName) : { ok: true as const, gstin: "", state: "", stateCode: "" };
+    if (!billing.ok) {
+      setError(billing.error);
+      return;
+    }
+    if (isIndia && billing.state !== stateName) setStateName(billing.state);
     if (!scriptReady) {
       setError("Payment library is still loading. Please try again in a moment.");
       return;
@@ -99,9 +103,9 @@ function BuyInner() {
       email: email.trim(),
       name: name.trim(),
       country,
-      gstin: isIndia ? gstin.trim() : "",
-      state: isIndia ? stateName : "",
-      state_code: stateCode,
+      gstin: billing.gstin,
+      state: billing.state,
+      state_code: billing.stateCode,
       phone: contactForCheckout(phone),
     };
     if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice) }, contactForCheckout(phone));
