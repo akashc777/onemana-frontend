@@ -343,7 +343,7 @@ export const cloudBenefits = [
   // "your own subdomain" read as though the customer had to supply one, and the
   // custom-domain move was never mentioned anywhere before purchase even though
   // the portal has supported it for a while. Both are things a buyer weighs.
-  "Free address on onemana.dev, or bring your own domain",
+  "A free address on onemana.dev, or your own domain set up with our help",
   "Your own server. No database shared with anyone",
   "We handle SSL, monitoring, and uptime",
   "AI teammates with a model on your server: no key needed",

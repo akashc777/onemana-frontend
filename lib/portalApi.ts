@@ -113,32 +113,6 @@ export interface PortalEdition {
   default: boolean;
 }
 
-/** One record a customer must create in their own DNS for a custom domain. */
-export interface PortalDNSRecord {
-  host: string;
-  type: string;
-  value: string;
-  proxied: boolean;
-  purpose: string;
-}
-
-export interface PortalDomainPlan {
-  kind: string;
-  from_domain: string;
-  to_domain: string;
-  verify_token?: string;
-  dns_records?: PortalDNSRecord[];
-}
-
-/** A domain move under way, as the check endpoint returns it; see lib/domainMove. */
-export interface PortalDomainChange {
-  to_domain: string;
-  /** pending_dns, verifying, applying, applied, failed or cancelled. */
-  state: string;
-  /** What is still missing while pending, in words the customer can act on. */
-  state_detail: string;
-}
-
 export interface PortalOverview {
   customer: PortalCustomer;
   licenses: PortalLicense[];
@@ -261,37 +235,6 @@ export const portalApi = {
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalBackupLink };
     if (!res.ok || !data?.data?.url) throw new Error(data?.msg || "The download could not be prepared.");
     return data.data;
-  },
-
-  /** Describe what moving to a domain would involve, without starting it. */
-  async planDomain(id: string, kind: string, domain: string, preview = true): Promise<PortalDomainPlan> {
-    const res = await fetch(`${base}/instance/${id}/domain`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind, domain, preview }),
-    });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalDomainPlan };
-    if (!res.ok) throw new Error(data?.msg || "Could not plan that change.");
-    return (data?.data ?? {}) as PortalDomainPlan;
-  },
-
-  /** "I have added the records, look now". A customer cannot otherwise tell us.
-   *  The answer is the change itself: the endpoint sends no message. */
-  async checkDomain(id: string): Promise<PortalDomainChange> {
-    const res = await fetch(`${base}/instance/${id}/domain/check`, {
-      method: "POST",
-      credentials: "include",
-    });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: Partial<PortalDomainChange> };
-    if (!res.ok) throw new Error(data?.msg || "Could not check those records.");
-    return {
-      to_domain: data?.data?.to_domain ?? "",
-      state: data?.data?.state ?? "",
-      state_detail: data?.data?.state_detail ?? "",
-    };
   },
 
   /** Change a subscription's plan; returns what was done, and a checkout when the

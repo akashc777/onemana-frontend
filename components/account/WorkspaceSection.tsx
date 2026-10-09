@@ -11,10 +11,8 @@ import {
   portalApi,
   type PortalInstance,
   type PortalEdition,
-  type PortalDomainPlan,
 } from "@/lib/portalApi";
 import { stateBadgeClass } from "@/lib/instanceState";
-import { checkVerdict, verificationTxtHost, workspaceHost, type CheckVerdict } from "@/lib/domainMove";
 import { usePoll } from "@/hooks/usePoll";
 
 // The customer's view of the workspace their subscription bought.
@@ -218,76 +216,20 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
         </p>
       )}
 
-      {inst.state === "live" && <UseOwnDomain inst={inst} onChanged={onChanged} />}
+      {inst.state === "live" && <UseOwnDomain inst={inst} />}
     </div>
   );
 }
 
 // Moving a live workspace to a domain the customer already owns.
 //
-// SHOWN ONLY ONCE LIVE, because the move reconfigures a running workspace and
-// there is nothing to move until there is one. Nothing here is started by opening
-// it: the first step describes what the change would involve, so somebody can see
-// the seven records they would have to create before committing a working
-// workspace to a change they may not finish.
-function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
+// SET UP WITH A PERSON FOR NOW. The automated move rewrote the server for the
+// new name alone and rebuilt the web app for the old one, so a workspace that
+// went through it would have answered on neither; it is being replaced, and the
+// backend no longer starts it. Until then the panel says how to get it done
+// with us, with the request already written.
+function UseOwnDomain({ inst }: { inst: PortalInstance }) {
   const [open, setOpen] = useState(false);
-  const [domain, setDomain] = useState("");
-  const [plan, setPlan] = useState<PortalDomainPlan | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-  const [note, setNote] = useState("");
-  const [verdict, setVerdict] = useState<CheckVerdict | null>(null);
-
-  async function preview(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setErr("");
-    setNote("");
-    setVerdict(null);
-    try {
-      setPlan(await portalApi.planDomain(inst.id, "custom", domain.trim(), true));
-    } catch (e2) {
-      setErr(e2 instanceof Error ? e2.message : "Could not check that domain.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function start() {
-    setBusy(true);
-    setErr("");
-    setVerdict(null);
-    try {
-      await portalApi.planDomain(inst.id, "custom", domain.trim(), false);
-      // No onChanged() here: it reloads the whole account page, which unmounts
-      // this panel and threw this note away before anyone saw it. Starting a
-      // move changes nothing the workspace card shows.
-      setNote("Started. We look for your records every few minutes, or use Check records to look now.");
-    } catch (e2) {
-      setErr(e2 instanceof Error ? e2.message : "Could not start that change.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function check() {
-    setBusy(true);
-    setErr("");
-    setNote("");
-    try {
-      const change = await portalApi.checkDomain(inst.id);
-      setVerdict(checkVerdict(change));
-      // Only a finished move changes the card (its address). Reloading for
-      // anything else unmounted this panel and lost the answer.
-      if (change.state === "applied") onChanged();
-    } catch (e2) {
-      setErr(e2 instanceof Error ? e2.message : "Could not check those records.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} className="text-sm text-brand underline underline-offset-4">
@@ -295,110 +237,25 @@ function UseOwnDomain({ inst, onChanged }: { inst: PortalInstance; onChanged: ()
       </button>
     );
   }
-
+  const current = inst.address;
+  const subject = `Own domain for ${current}`;
+  const body = `Hello,\n\nPlease move my workspace ${current} to: \n(for example team.yourcompany.com)\n`;
   return (
-    <div className="mt-2 space-y-4 rounded-xl border border-border bg-muted/30 p-4">
-      <form onSubmit={preview} className="space-y-2">
-        <label htmlFor="domain" className="block text-sm font-medium text-foreground/80">
-          Your domain
-        </label>
-        <div className="flex flex-wrap gap-2">
-          <input
-            id="domain"
-            value={domain}
-            onChange={(e) => setDomain(e.target.value.toLowerCase())}
-            placeholder="acme.com"
-            autoComplete="off"
-            spellCheck={false}
-            className="w-full max-w-xs rounded-lg border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/30"
-          />
-          <button
-            type="submit"
-            disabled={busy || domain.trim().length < 3}
-            className="btn-ghost px-3 py-2 text-sm disabled:opacity-40"
-          >
-            {busy ? "…" : "Show me what is involved"}
-          </button>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Nothing changes until you say so. Your current address keeps working either way.
-        </p>
-      </form>
-
-      {err && <p className="text-sm text-rose-600 dark:text-rose-400">{err}</p>}
-      {note && <p className="text-sm text-emerald-700 dark:text-emerald-300">{note}</p>}
-      {verdict && (
-        <p role="status" className={`text-sm ${VERDICT_TONE[verdict.tone]}`}>
-          {verdict.text}
-        </p>
-      )}
-
-      {plan?.dns_records && plan.dns_records.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-sm text-foreground/80">
-            Create these records with whoever runs your DNS. Your workspace will be at{" "}
-            <span className="font-medium">{workspaceHost(plan)}</span>.
-          </p>
-          {plan.verify_token && (
-            <div className="overflow-x-auto rounded-lg border border-border">
-              <table className="w-full text-left text-xs">
-                <tbody>
-                  <tr className="border-b border-border">
-                    <td className="px-3 py-2 font-medium">TXT</td>
-                    <td className="px-3 py-2 font-mono break-all">{verificationTxtHost(plan.to_domain)}</td>
-                    <td className="px-3 py-2 font-mono break-all">{plan.verify_token}</td>
-                    <td className="px-3 py-2 text-muted-foreground">proves it is yours</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
-          <div className="overflow-x-auto rounded-lg border border-border">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="px-3 py-2 font-medium">Type</th>
-                  <th className="px-3 py-2 font-medium">Host</th>
-                  <th className="px-3 py-2 font-medium">Value</th>
-                  <th className="px-3 py-2 font-medium">Proxy</th>
-                </tr>
-              </thead>
-              <tbody>
-                {plan.dns_records.map((r) => (
-                  <tr key={r.host} className="border-t border-border">
-                    <td className="px-3 py-2 font-mono">{r.type}</td>
-                    <td className="px-3 py-2 font-mono break-all">{r.host}</td>
-                    <td className="px-3 py-2 font-mono break-all">{r.value}</td>
-                    <td className="px-3 py-2 text-muted-foreground">
-                      {r.proxied ? "either" : "DNS only"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            The rows marked DNS only must not be proxied. Calls will not connect if they are.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={start} disabled={busy} className="btn-ghost px-3 py-2 text-sm disabled:opacity-40">
-              I have added them, start the move
-            </button>
-            <button onClick={check} disabled={busy} className="btn-ghost px-3 py-2 text-sm disabled:opacity-40">
-              Check records
-            </button>
-          </div>
-        </div>
-      )}
+    <div className="mt-2 space-y-3 rounded-xl border border-border bg-muted/30 p-4 text-sm">
+      <p>
+        Moving to your own domain is set up with our help for now. Tell us the address you want, for example{" "}
+        <span className="font-mono">team.yourcompany.com</span>, and we do it with you.
+      </p>
+      <p className="text-muted-foreground">Your {current} address keeps working throughout.</p>
+      <a
+        href={`mailto:support@onemana.dev?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}
+        className="btn-ghost inline-block px-3 py-2"
+      >
+        Write to support@onemana.dev
+      </a>
     </div>
   );
 }
-
-const VERDICT_TONE: Record<CheckVerdict["tone"], string> = {
-  done: "text-emerald-700 dark:text-emerald-300",
-  waiting: "text-amber-700 dark:text-amber-400",
-  failed: "text-rose-600 dark:text-rose-400",
-};
 
 // The one decision a subscriber makes.
 function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
@@ -466,7 +323,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
           <span className="text-sm text-muted-foreground">.onemana.dev</span>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          Letters, numbers and hyphens. You can move to your own domain later.
+          Letters, numbers and hyphens. You can move to your own domain later, with our help.
         </p>
       </div>
 
