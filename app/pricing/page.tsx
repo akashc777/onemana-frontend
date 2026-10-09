@@ -9,7 +9,7 @@ import { SectionHeading } from "@/components/ui/Section";
 import { lifetimeBenefits } from "@/lib/content";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
-import { fmtINR, getPricing } from "@/lib/pricing";
+import { currencyNote, fmtINR, getPricing } from "@/lib/pricing";
 import { site } from "@/lib/site";
 
 export const revalidate = 300;
@@ -49,7 +49,8 @@ export default async function PricingPage() {
     },
     {
       q: "Which currency am I charged in?",
-      a: "Indian rupees. The dollar figures are the same amount at today's exchange rate, so your card's statement may differ slightly.",
+      // Built from the same charge_usd switch /buy reads, so the two pages cannot disagree.
+      a: currencyNote(pricing),
     },
     {
       q: "Do prices include GST?",

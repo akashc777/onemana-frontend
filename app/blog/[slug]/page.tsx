@@ -102,7 +102,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {cover && (
           <div className="mt-8 overflow-hidden rounded-lg border border-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover} alt="" className="w-full object-cover" />
+            {/* Covers are drawn at the 1200 by 630 share-card size; the attributes reserve
+                that shape before the image loads, so the text below does not jump. */}
+            <img src={cover} alt="" width={1200} height={630} decoding="async" className="h-auto w-full object-cover" />
           </div>
         )}
 
