@@ -20,8 +20,8 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
     release
       ? { term: `${release.version}, ${release.date}`, detail: `${release.last30} releases in the last 30 days` }
       : { term: "Released in the open", detail: "Every release on GitHub" },
-    { term: "Runs on a 4 GB server", detail: "Ubuntu or Debian, one command" },
-    { term: "Your data stays put", detail: "Nothing is sent to us" },
+    { term: "4 GB of RAM minimum", detail: "Ubuntu or Debian, one command" },
+    { term: "Your data stays put", detail: "No telemetry; your messages and files stay on your server" },
   ];
   return (
     <dl className="grid grid-cols-2 gap-x-6 gap-y-5 border-y border-border py-6 lg:grid-cols-4">

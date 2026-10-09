@@ -54,14 +54,14 @@ export function teamCost(
  * Every line is a plan someone can buy today. AI is not an add-on any more:
  * Notion AI comes only with Notion Business, so wanting AI swaps Notion Plus
  * ($10) for Business ($20) rather than adding a retired $10 add-on (buyer
- * review, 4 Oct 2026). Where sources disagree, the lower price is used: Zoom
- * Pro moved twice in 2026, so $13.33.
+ * review, 4 Oct 2026). Zoom Pro is $14.16 a user a month billed annually,
+ * as zoom.us/pricing lists it (read 10 Oct 2026; it moved twice in 2026).
  */
 export const SEAT_COSTS: readonly SeatCost[] = [
     { name: "Slack Pro", usd: 7.25, when: "always" },
     { name: "Notion Plus", usd: 10, when: "noAi" },
     { name: "Notion Business, which includes Notion AI", usd: 20, when: "ai" },
-    { name: "Zoom Pro", usd: 13.33, when: "always" },
+    { name: "Zoom Pro", usd: 14.16, when: "always" },
 ]
 
 export const PRICES_CHECKED = "October 2026"

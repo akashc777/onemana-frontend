@@ -6,7 +6,7 @@ const COSTS = [
   { name: "Slack Pro", usd: 7.25, when: "always" },
   { name: "Notion Plus", usd: 10, when: "noAi" },
   { name: "Notion Business, AI included", usd: 20, when: "ai" },
-  { name: "Zoom Pro", usd: 13.33, when: "always" },
+  { name: "Zoom Pro", usd: 14.16, when: "always" },
 ] as const;
 
 describe("teamCost", () => {
@@ -22,8 +22,8 @@ describe("teamCost", () => {
     expect(c.oneCampYear).toBe(260 + 144);
   });
   it("swaps to the plan that includes AI only when asked", () => {
-    expect(teamCost(10, true, 260, 12, COSTS).saasYear).toBeCloseTo((7.25 + 20 + 13.33) * 10 * 12);
-    expect(teamCost(10, false, 260, 12, COSTS).saasYear).toBeCloseTo((7.25 + 10 + 13.33) * 10 * 12);
+    expect(teamCost(10, true, 260, 12, COSTS).saasYear).toBeCloseTo((7.25 + 20 + 14.16) * 10 * 12);
+    expect(teamCost(10, false, 260, 12, COSTS).saasYear).toBeCloseTo((7.25 + 10 + 14.16) * 10 * 12);
     expect(teamCost(10, true, 260, 12, COSTS).lines.map((l) => l.name)).not.toContain("Notion Plus");
   });
   it("bounds silly input", () => {

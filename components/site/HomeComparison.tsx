@@ -27,8 +27,8 @@ function rows(p: Pricing): Row[] {
       cells: [
         `${fmtINR(p.lifetime_inr)} once, plus your server`,
         stack > 0 ? `About ${fmtINR(stack)}` : "Per seat, per tool",
-        "Quoted by sales",
-        "Free to self-host",
+        "Free Team edition; paid editions quoted by sales",
+        "Free to self-host (EPL-2.0, community-maintained fork)",
       ],
     },
     {
@@ -42,10 +42,10 @@ function rows(p: Pricing): Row[] {
     },
     {
       label: "Record of what agents did",
-      cells: ["Every action and refusal, hash-chained", "Audit logs on enterprise plans", "Audit logs on paid editions", "Not published"],
+      cells: ["Every agent run, with what it did and what it was refused, in a hash-chained log", "Audit logs on top-tier plans (Zoom from Pro)", "Audit logs on Enterprise editions", "Not published"],
     },
-    { label: "Guests in a channel", cells: ["Yes", "Yes, on paid plans", "Yes, on paid editions", "Not published"] },
-    { label: "Video calls", cells: ["Yes, on your server", "Yes, in Zoom", "Yes", "Yes"] },
+    { label: "Guests in a channel", cells: ["Yes", "Yes, on paid plans", "Yes, on Professional and up", "Not published"] },
+    { label: "Video calls", cells: ["Yes, on your server", "Yes, in Zoom", "Yes; group calls on paid editions", "Yes"] },
     {
       label: "Ready-made integrations",
       cells: ["A few: Slack, Gmail, Google Calendar, MCP, webhooks", "Thousands", "A plugin marketplace", "GitHub sync and a few more"],
@@ -83,7 +83,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
               <tr key={r.label} className="border-b border-border">
                 <th scope="row" className="py-3.5 pr-4 align-top font-normal text-muted-foreground">
                   {r.label}
-                  {r.loses && <span className="mt-0.5 block text-caption text-faint">Where OneCamp loses</span>}
+                  {r.loses && <span className="mt-0.5 block text-caption text-muted-foreground">Where OneCamp loses</span>}
                 </th>
                 {r.cells.map((cell, i) => (
                   <td key={i} className={`py-3.5 pr-4 align-top ${i === 0 ? "font-medium text-foreground" : "text-muted-foreground"}`}>

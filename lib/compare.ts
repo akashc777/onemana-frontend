@@ -44,8 +44,8 @@ export interface Rival {
 export const rivals: Rival[] = [
     {
         name: "Huly",
-        what: "Open-source everything-app: tracker, docs, chat, virtual office",
-        billing: "Free to self-host. Cloud tiers from free to $399.99 a month",
+        what: "Open-source everything-app: tracker, docs, chat, virtual office. The original project is frozen; development continues in a community fork",
+        billing: "Free to self-host (EPL-2.0), from the community-maintained fork",
         agents: "Pricing page lists AI as TBD on every tier",
         theyWin: "Far more users, first-class GitHub issue sync, and no licence gate at all",
         source: "https://huly.io/pricing",
