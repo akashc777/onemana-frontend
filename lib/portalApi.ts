@@ -105,6 +105,12 @@ export interface PortalInstance {
   chosen_slug?: string;
   chosen_edition?: string;
   choice_note?: string;
+  /** How long the rest takes, while on its way: the backend's one estimate. */
+  estimate?: string;
+  /** A failed step: when it is tried again automatically (absent once the
+   *  tries have run out), and how many tries there are; see failedLine. */
+  retry_at?: string;
+  max_attempts?: number;
 }
 
 export type PortalMove = { to_size: string; label: string; when?: string; can_move_now: boolean };

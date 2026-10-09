@@ -13,7 +13,7 @@ import {
   type PortalEdition,
   type PortalSubscription,
 } from "@/lib/portalApi";
-import { paidWithoutWorkspace, stateBadgeClass } from "@/lib/instanceState";
+import { failedLine, paidWithoutWorkspace, stateBadgeClass } from "@/lib/instanceState";
 import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
 
@@ -226,18 +226,13 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
 
       {inst.working && (
         <p className="text-xs text-muted-foreground">
-          {inst.state === "awaiting_hardware"
-            ? "Most workspaces are ready within a few hours."
-            : "This usually takes under an hour."}{" "}
+          {inst.estimate && `${inst.estimate} `}
           We will email you when it is ready, and there is nothing for you to do until then.
         </p>
       )}
 
       {inst.state === "failed" && (
-        <p className="text-sm text-muted-foreground">
-          Something went wrong and we have been alerted. We retry automatically, and will
-          email you when it is sorted.
-        </p>
+        <p className="text-sm text-muted-foreground">{failedLine(inst.retry_at, inst.max_attempts)}</p>
       )}
 
       {inst.state === "live" && <UseOwnDomain inst={inst} />}

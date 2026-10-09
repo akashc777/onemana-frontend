@@ -60,8 +60,10 @@ describe("the purchase hand-off", () => {
 
   it("carries the workspace address chosen at checkout, and only a real one", async () => {
     const { readPurchase, savePurchase } = await load()
-    savePurchase({ email: "buyer@example.com", slug: "acme-labs" })
-    expect(readPurchase()).toEqual({ email: "buyer@example.com", slug: "acme-labs" })
+    savePurchase({ email: "buyer@example.com", slug: "acme-labs", size: "business" })
+    expect(readPurchase()).toEqual({ email: "buyer@example.com", slug: "acme-labs", size: "business" })
+    store.set("om_purchase", JSON.stringify({ email: "buyer@example.com", size: "huge" }))
+    expect((await load()).readPurchase(), "an unknown size").toEqual({ email: "buyer@example.com" })
     for (const slug of ["<b>x</b>", "a", "acme.evil.example", ""]) {
       store.set("om_purchase", JSON.stringify({ email: "buyer@example.com", slug }))
       expect((await load()).readPurchase(), slug).toEqual({ email: "buyer@example.com" })

@@ -137,7 +137,7 @@ export function useCheckout(): CheckoutController {
             // Subscription activation + fulfillment is webhook-driven. Route to
             // a reassuring success page; the welcome email carries the license.
             // The address chosen goes with it, so the receipt can name it.
-            savePurchase({ email: input.email, slug: input.slug });
+            savePurchase({ email: input.email, slug: input.slug, size: input.plan_code === "onecamp_cloud_business" ? "business" : "team" });
             router.push("/buy/success?cloud=1");
           },
           modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },

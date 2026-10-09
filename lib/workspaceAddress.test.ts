@@ -104,7 +104,7 @@ describe("the checkout asks for both before paying", () => {
 
   it("hands the chosen address to the receipt", () => {
     const checkout = readFileSync("hooks/useCheckout.ts", "utf8")
-    expect(checkout).toContain("savePurchase({ email: input.email, slug: input.slug })")
+    expect(checkout).toContain("savePurchase({ email: input.email, slug: input.slug,")
   })
 })
 

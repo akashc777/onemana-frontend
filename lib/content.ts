@@ -348,7 +348,9 @@ export const cloudBenefits = [
   "We handle SSL, monitoring, and uptime",
   "AI teammates with a model on your server: no key needed",
   "Includes a self-host license. Switch anytime",
-  "We set everything up, usually within a day",
+  // No time here: how long is the backend's one estimate (setupEstimate.go),
+  // which /buy shows beside this list and which depends on a free machine.
+  "We set everything up for you",
 ];
 
 /**

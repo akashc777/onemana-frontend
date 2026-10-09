@@ -64,3 +64,19 @@ export function paidWithoutWorkspace(
 ): boolean {
   return instanceCount === 0 && subscriptions.some((s) => !s.instance_id && s.status === "active");
 }
+
+/**
+ * What a failed setup does next, as it really happens: the step is tried again
+ * automatically, three times at most, and then a person takes over. It used to
+ * say "we retry automatically" whatever was left, including when nothing was.
+ * The time is the reader's own.
+ */
+export function failedLine(retryAt: string | undefined, maxAttempts: number | undefined, locale?: string): string {
+  const tries = maxAttempts && maxAttempts > 0 ? maxAttempts : 3;
+  const when = retryAt ? new Date(retryAt) : null;
+  if (when && !Number.isNaN(when.getTime())) {
+    const at = when.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+    return `Something went wrong and we have been alerted. We try that step again automatically at ${at}, ${tries} times at most; if the last try fails too, one of us takes over and emails you.`;
+  }
+  return "Something went wrong and our automatic tries have run out, so one of us is fixing it by hand. We will email you when it is done.";
+}

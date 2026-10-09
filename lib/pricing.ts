@@ -43,6 +43,27 @@ export interface Pricing {
   business_configured: boolean;
   /** Buyers outside India are charged the dollar price for the licence (the backend's charge_usd). */
   charge_usd: boolean;
+  /** How long a new workspace of each size takes, from the backend's one estimate
+   *  (business/onecamp/setupEstimate.go). Absent until the backend answers: the
+   *  pages then say no time at all rather than a guess of their own. */
+  cloud_setup?: SetupEstimate;
+  business_setup?: SetupEstimate;
+}
+
+/** How long a new Cloud workspace takes; see setupEstimateFor. */
+export interface SetupEstimate {
+  /** A free machine of the size is in the pool now. */
+  spare: boolean;
+  /** Fits in a phrase: "about an hour", "usually within a day". */
+  short: string;
+  /** Says it whole. */
+  sentence: string;
+}
+
+/** The estimate for the plan being bought, or null when the backend has not said. */
+export function setupEstimateFor(p: Pricing, business: boolean): SetupEstimate | null {
+  const e = business ? p.business_setup : p.cloud_setup;
+  return e && e.sentence ? e : null;
 }
 
 /**

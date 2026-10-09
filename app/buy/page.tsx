@@ -12,7 +12,7 @@ import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, dual, currencyNote, type Pricing } from "@/lib/pricing";
+import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, dual, currencyNote, setupEstimateFor, type Pricing } from "@/lib/pricing";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -144,7 +144,8 @@ function BuyInner() {
         title="Get OneCamp"
         subtitle={
           isCloud
-            ? "Managed hosting, set up for you. Usually live within a day; we email you the moment it is."
+            ? // How long, from the backend's one estimate; nothing of its own here.
+              `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.sentence ?? "We email you the moment it is live."}`
             : "Self-hosted workspace. Lifetime license, unlimited users."
         }
         align="left"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
@@ -8,6 +8,7 @@ import { LicenseInstall } from "@/components/site/LicenseInstall";
 import { parseLicenseKey } from "@/lib/installCommand";
 import { readPurchase, withoutAddressSecrets } from "@/lib/purchaseHandoff";
 import { WORKSPACE_ZONE } from "@/lib/workspaceAddress";
+import { fetchPricingClient, setupEstimateFor, type SetupEstimate } from "@/lib/pricing";
 
 export default function SuccessPage() {
   return (
@@ -42,6 +43,19 @@ function SuccessInner() {
     if (clean) window.history.replaceState(null, "", clean);
   }, []);
 
+  // How long, from the backend's one estimate for the size bought.
+  const [estimate, setEstimate] = useState<SetupEstimate | null>(null);
+  useEffect(() => {
+    if (!isCloud) return;
+    let alive = true;
+    fetchPricingClient().then((p) => {
+      if (alive) setEstimate(setupEstimateFor(p, purchase?.size === "business"));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [isCloud, purchase?.size]);
+
   return (
     <section className="py-16 sm:py-20">
       <div className="container-x mx-auto max-w-2xl">
@@ -69,6 +83,7 @@ function SuccessInner() {
                 {address ? (
                   <>
                     <p className="font-medium text-foreground">We are setting up {address}</p>
+                    {estimate && <p className="mt-1 text-sm text-foreground/80">{estimate.sentence}</p>}
                     <p className="mt-1 text-sm text-muted-foreground">
                       Nothing more is needed from you. We email{" "}
                       <span className="font-medium text-foreground">{email}</span> the moment it is ready,
@@ -85,6 +100,7 @@ function SuccessInner() {
                       <span className="font-mono text-xs">acme.onemana.dev</span>. Want a domain you own
                       instead? Reply to the welcome email and we set it up with you.
                     </p>
+                    {estimate && <p className="mt-2 text-sm text-foreground/80">{estimate.sentence}</p>}
                     <p className="mt-2 text-sm text-muted-foreground">
                       The welcome email arriving at <span className="font-medium text-foreground">{email}</span> has
                       a button that signs you straight in, or continue below with a code.
