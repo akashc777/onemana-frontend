@@ -3,7 +3,7 @@ import { join } from "node:path"
 
 import { describe, expect, it } from "vitest"
 
-import { selfHostNeeds, steps } from "@/lib/content"
+import { installerAsks, selfHostNeeds, steps } from "@/lib/content"
 
 /**
  * What a buyer is told before they pay, or claim a free key, must match what
@@ -44,5 +44,40 @@ describe("what a buyer is told before they pay", () => {
 
     it("shows the free page's visitor what they need before the form", () => {
         expect(read("app/free/page.tsx")).toContain("selfhostneeds")
+    })
+})
+
+/**
+ * What the installer asks, said once and the same everywhere. The site said
+ * it "asks one email" and needed no domain, and the receipt that the server had
+ * to be "Docker-capable"; the installer asks for a domain first (Enter gives a
+ * free address), then the edition, then the first admin's email, and installs
+ * Docker itself.
+ */
+describe("what a buyer is told the installer asks", () => {
+    it("is the same words in the steps, the receipt and the free page", () => {
+        expect(steps[0].body).toContain(installerAsks)
+        expect(read("components/site/LicenseInstall.tsx")).toContain("{installerasks}")
+        expect(read("app/free/page.tsx")).toContain("{installerasks}")
+    })
+
+    it("names the questions in the order the installer asks them", () => {
+        const at = (w: string) => installerAsks.indexOf(w)
+        expect(at("a domain")).toBeGreaterThanOrEqual(0)
+        expect(at("a domain")).toBeLessThan(at("the edition"))
+        expect(at("the edition")).toBeLessThan(at("first admin's email"))
+        expect(installerAsks).toContain("press Enter")
+    })
+
+    it("no longer says it asks only an email, or that Docker must be there first", () => {
+        for (const [where, text] of [
+            ["install step one", steps[0].body.toLowerCase()],
+            ["the needs list", selfHostNeeds.join(" ").toLowerCase()],
+            ["the receipt", receipt()],
+            ["the free page", read("app/free/page.tsx")],
+        ] as const) {
+            expect(text, where).not.toMatch(/asks (for )?(one|your) email|docker-capable|with docker,/)
+        }
+        expect(selfHostNeeds.join(" ")).toContain("the installer adds Docker")
     })
 })

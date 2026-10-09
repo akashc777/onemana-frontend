@@ -6,7 +6,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { site } from "@/lib/site";
 import { trackEvent } from "@/lib/track";
 import { FREE_SEATS, freeClaimPayload, freeIncludes } from "@/lib/freePlan";
-import { selfHostNeeds } from "@/lib/content";
+import { installerAsks, selfHostNeeds } from "@/lib/content";
 import { cloudBuyHref } from "@/lib/paymentTerms";
 
 const inputCls =
@@ -110,7 +110,7 @@ export default function FreePage() {
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  It asks for your email, then installs the whole workspace, web app included, for up to {instant.seat_limit} people.
+                  It asks for {installerAsks}, then installs the whole workspace, web app included, for up to {instant.seat_limit} people.
                   Your licence key is <code className="rounded bg-muted px-1 py-0.5 text-xs text-foreground">{instant.key}</code>; keep it to install again.
                 </p>
                 <ButtonLink href="/docs/installation" variant="ghost" size="sm">Read the install guide</ButtonLink>

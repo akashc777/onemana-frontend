@@ -157,12 +157,23 @@ export const features: { icon: FeatureIconKey; title: string; body: string }[] =
 ];
 
 /**
+ * What the installer asks on a first install, in the order it asks
+ * (onecamp_install.sh: choose_domain, choose_edition, then the first admin).
+ * The steps, the receipt and the free page say it in these words, and the
+ * demo's free-licence prompt says the same in its own copy. "It asks one
+ * email" was the claim before, which met a visitor with a domain prompt first.
+ */
+export const installerAsks =
+  "a domain (press Enter to start on a free address), the edition (with AI or without) and the first admin's email";
+
+/**
  * What running OneCamp yourself takes, said before anyone pays or claims a key.
  * The floor is the one the managed service checks a machine against (docs:
- * scale-self-hosted); change both together.
+ * scale-self-hosted); change both together. Docker is not a requirement: the
+ * installer adds it when the server has none.
  */
 export const selfHostNeeds = [
-  "A Linux server with Docker, 4 GB of RAM and 40 GB of disk",
+  "A Linux server with 4 GB of RAM and 40 GB of disk; the installer adds Docker if it's missing",
   "No domain needed: it starts on a free address; add yours later",
   "One command to install. It serves the web app too, so there is nothing else to deploy",
 ];
@@ -175,7 +186,7 @@ export const steps = [
   // second deploy to warn about, and saying there is one costs a buyer for
   // nothing. Kept in step with selfHostNeeds below and pinned by
   // installExpectation.test.ts.
-  { n: "1", title: "Run one command", body: "SSH into a server with 4 GB of RAM and run the installer. It asks one email, then sets up SSL, the database and your team's web app. No domain needed." },
+  { n: "1", title: "Run one command", body: `SSH into a server with 4 GB of RAM and run the installer. It asks for ${installerAsks}, then sets up Docker, SSL, the database and your team's web app.` },
   { n: "2", title: "Invite your team", body: "Send email invites. With a licence, connect your company sign-in instead." },
   { n: "3", title: "Give the AI a job", body: "Connect a model, build an agent, and read its audit log." },
 ];
