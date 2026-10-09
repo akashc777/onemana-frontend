@@ -99,6 +99,12 @@ export interface PortalInstance {
   size?: string;
   /** Set while the workspace is moving between machines; see moveLine. */
   move?: PortalMove;
+  /** The address and edition chosen at checkout, for a workspace still waiting
+   *  for its name: the form starts filled in with them, and choice_note says
+   *  why it is asking (being confirmed, or taken before the payment arrived). */
+  chosen_slug?: string;
+  chosen_edition?: string;
+  choice_note?: string;
 }
 
 export type PortalMove = { to_size: string; label: string; when?: string; can_move_now: boolean };

@@ -13,6 +13,7 @@ import {
   type PortalEdition,
 } from "@/lib/portalApi";
 import { stateBadgeClass } from "@/lib/instanceState";
+import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
 
 // The customer's view of the workspace their subscription bought.
@@ -142,7 +143,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
         </span>
         {inst.edition && (
           <span className="text-xs text-muted-foreground">
-            {sizeLabel(inst.size)} · {inst.edition} · {inst.has_ai ? "with AI" : "without AI"}
+            {sizeLabel(inst.size)} · {editionLabel(inst.has_ai)}
           </span>
         )}
       </div>
@@ -259,7 +260,9 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
 
 // The one decision a subscriber makes.
 function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
-  const [slug, setSlug] = useState("");
+  // Filled in with what was chosen at checkout, when that could not be given
+  // to the workspace as the payment arrived; choice_note says why.
+  const [slug, setSlug] = useState(inst.chosen_slug ?? "");
   const [edition, setEdition] = useState("");
   const [editions, setEditions] = useState<PortalEdition[]>([]);
   const [busy, setBusy] = useState(false);
@@ -273,10 +276,11 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
       .editions()
       .then((list) => {
         setEditions(list);
-        setEdition(list.find((e) => e.default)?.name ?? list[0]?.name ?? "");
+        const chosen = list.find((e) => e.name === inst.chosen_edition);
+        setEdition(chosen?.name ?? list.find((e) => e.default)?.name ?? list[0]?.name ?? "");
       })
       .catch(() => setEditions([]));
-  }, []);
+  }, [inst.chosen_edition]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -303,6 +307,11 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
           One step left. Everything after this is automatic: we build your workspace and
           email you when it is ready.
         </p>
+        {inst.choice_note && (
+          <p role="status" className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
+            {inst.choice_note}
+          </p>
+        )}
       </div>
 
       <div>
@@ -314,13 +323,13 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
             id="slug"
             ref={inputRef}
             value={slug}
-            onChange={(e) => setSlug(e.target.value.toLowerCase())}
+            onChange={(e) => setSlug(slugFromInput(e.target.value))}
             placeholder="your-company"
             autoComplete="off"
             spellCheck={false}
             className="w-full max-w-xs rounded-lg border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/30"
           />
-          <span className="text-sm text-muted-foreground">.onemana.dev</span>
+          <span className="text-sm text-muted-foreground">.{WORKSPACE_ZONE}</span>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
           Letters, numbers and hyphens. You can move to your own domain later, with our help.
@@ -329,7 +338,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
 
       {editions.length > 1 && (
         <fieldset>
-          <legend className="mb-1 block text-sm font-medium text-foreground/80">Edition</legend>
+          <legend className="mb-1 block text-sm font-medium text-foreground/80">AI features</legend>
           <div className="space-y-2">
             {editions.map((e) => (
               <label key={e.name} className="flex items-start gap-2 text-sm">
@@ -341,12 +350,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
                   onChange={() => setEdition(e.name)}
                   className="mt-1"
                 />
-                <span>
-                  <span className="font-medium">{e.name}</span>{" "}
-                  <span className="text-muted-foreground">
-                    {e.has_ai ? "with AI features" : "without AI"}
-                  </span>
-                </span>
+                <span className="font-medium">{editionLabel(e.has_ai)}</span>
               </label>
             ))}
           </div>

@@ -19,6 +19,8 @@ import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
+import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
+import { EDITION_CHOICES, type EditionChoice, type SlugVerdict } from "@/lib/workspaceAddress";
 
 type Plan = "lifetime" | "cloud";
 
@@ -50,6 +52,11 @@ function BuyInner() {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  // Cloud: the workspace's address and whether it has AI, chosen before paying
+  // so building starts from the payment itself. See lib/workspaceAddress.
+  const [slug, setSlug] = useState("");
+  const [addressVerdict, setAddressVerdict] = useState<SlugVerdict | null>(null);
+  const [edition, setEdition] = useState<EditionChoice>("ai");
   // A first guess from the browser, replaced on mount; see lib/guessCountry.
   const [country, setCountry] = useState("US");
   const [gstin, setGstin] = useState("");
@@ -88,6 +95,17 @@ function BuyInner() {
       setError("Please enter your email - your license key is sent there.");
       return;
     }
+    // A name the check refused is said here, before the payment window opens.
+    // One still being checked goes ahead: the backend checks it again before
+    // the window opens, and once more when the payment arrives.
+    if (isCloud && slug.length < 3) {
+      setError("Choose an address for your workspace: at least 3 letters or numbers.");
+      return;
+    }
+    if (isCloud && addressVerdict && !addressVerdict.canPay) {
+      setError(addressVerdict.text);
+      return;
+    }
     // What goes on an Indian tax invoice is checked here, before payment; see lib/gstin.
     const billing = isIndia ? checkIndianBilling(gstin, stateName) : { ok: true as const, gstin: "", state: "", stateCode: "" };
     if (!billing.ok) {
@@ -108,7 +126,7 @@ function BuyInner() {
       state_code: billing.stateCode,
       phone: contactForCheckout(phone),
     };
-    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice) }, contactForCheckout(phone));
+    if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice), slug, edition }, contactForCheckout(phone));
     else await start(input, contactForCheckout(phone));
   }
 
@@ -225,6 +243,31 @@ function BuyInner() {
           </aside>
 
           <form onSubmit={handleSubmit} className="card-premium card h-fit space-y-4 bg-card/90 lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
+            {isCloud && (
+              <>
+                <Field label="Workspace address" required>
+                  <WorkspaceAddressField value={slug} onChange={setSlug} onVerdict={setAddressVerdict} inputClassName={inputCls} />
+                </Field>
+                <fieldset>
+                  <legend className="mb-1.5 block text-sm font-medium text-foreground">AI features</legend>
+                  <div role="radiogroup" aria-label="AI features" className="grid gap-2 sm:grid-cols-2">
+                    {EDITION_CHOICES.map((c) => (
+                      <button
+                        key={c.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={edition === c.value}
+                        onClick={() => setEdition(c.value)}
+                        className={`rounded-lg border px-3.5 py-2.5 text-left transition ${edition === c.value ? "border-foreground/40 bg-background shadow-sm" : "border-border bg-muted/40 hover:border-foreground/20"}`}
+                      >
+                        <span className="block text-sm font-medium text-foreground">{c.label}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{c.hint}</span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              </>
+            )}
             <Field label="Email" required hint="Your license key & invoice are sent here.">
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>

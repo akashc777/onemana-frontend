@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { LicenseInstall } from "@/components/site/LicenseInstall";
 import { parseLicenseKey } from "@/lib/installCommand";
 import { readPurchase, withoutAddressSecrets } from "@/lib/purchaseHandoff";
+import { WORKSPACE_ZONE } from "@/lib/workspaceAddress";
 
 export default function SuccessPage() {
   return (
@@ -30,6 +31,9 @@ function SuccessInner() {
   const purchase = useSyncExternalStore(noUpdates, readPurchase, noResultOnServer);
   const key = parseLicenseKey(purchase?.key);
   const email = purchase?.email || "your email";
+  // Chosen at checkout: the payment names the workspace, so there is nothing
+  // to choose here. See lib/workspaceAddress.
+  const address = purchase?.slug ? `${purchase.slug}.${WORKSPACE_ZONE}` : "";
 
   // An older link still carries the key and email: take them out of the
   // address bar, as the account page does with its sign-in link.
@@ -56,32 +60,53 @@ function SuccessInner() {
                them within 12 hours, and linked to the docs and GitHub but never to
                the one page that unblocks it, so a paying subscriber had no reason
                to go there and no idea anything was waiting. */
-            <>
-              <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-                Thanks for subscribing! Your workspace is fully managed. One quick step from
-                you and we start building it right away.
-              </p>
-              <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
-                <p className="font-medium text-foreground">Choose your workspace address</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Free on <span className="font-medium text-foreground">onemana.dev</span>, for example{" "}
-                  <span className="font-mono text-xs">acme.onemana.dev</span>. You can move to a domain
-                  you own later, from the same page, at no extra cost.
+            address ? (
+              <>
+                <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+                  Thanks for subscribing! Your workspace is fully managed, and building starts as
+                  soon as your payment reaches us, usually within a minute.
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  The welcome email arriving at <span className="font-medium text-foreground">{email}</span> has
-                  a button that signs you straight in. Or continue here with a code:
+                <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
+                  <p className="font-medium text-foreground">We are setting up {address}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Nothing more is needed from you. We email{" "}
+                    <span className="font-medium text-foreground">{email}</span> the moment it is ready. If
+                    someone took that name in the minutes before your payment, the welcome email says so
+                    and you choose another.
+                  </p>
+                  <ButtonLink href="/account" variant="ghost" className="mt-4">
+                    Follow it on your account page
+                  </ButtonLink>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+                  Thanks for subscribing! Your workspace is fully managed. One quick step from
+                  you and we start building it right away.
                 </p>
-                <ButtonLink href="/account" variant="brandPremium" className="mt-4">
-                  Choose your address
-                </ButtonLink>
-              </div>
-              <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
-                We&apos;ve emailed your included self-host license and GST invoice to{" "}
-                <span className="font-medium text-foreground">{email}</span>. Prefer us to set it up with
-                you? Reply to that email and we will.
-              </p>
-            </>
+                <div className="mt-6 rounded-xl border border-border bg-muted/40 p-5 text-left">
+                  <p className="font-medium text-foreground">Choose your workspace address</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Free on <span className="font-medium text-foreground">onemana.dev</span>, for example{" "}
+                    <span className="font-mono text-xs">acme.onemana.dev</span>. You can move to a domain
+                    you own later, from the same page, at no extra cost.
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    The welcome email arriving at <span className="font-medium text-foreground">{email}</span> has
+                    a button that signs you straight in. Or continue here with a code:
+                  </p>
+                  <ButtonLink href="/account" variant="brandPremium" className="mt-4">
+                    Choose your address
+                  </ButtonLink>
+                </div>
+                <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
+                  We&apos;ve emailed your included self-host license and GST invoice to{" "}
+                  <span className="font-medium text-foreground">{email}</span>. Prefer us to set it up with
+                  you? Reply to that email and we will.
+                </p>
+              </>
+            )
           ) : pending && !key ? (
             <p className="mx-auto mt-3 max-w-md text-muted-foreground">
               Thanks for your purchase! Your license key and setup instructions are being prepared and will arrive at{" "}

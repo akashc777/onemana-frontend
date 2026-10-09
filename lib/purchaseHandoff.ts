@@ -17,6 +17,8 @@
 export interface PurchaseResult {
   email: string;
   key?: string;
+  /** Cloud: the workspace address chosen at checkout, without its zone. */
+  slug?: string;
 }
 
 const STORE = "om_purchase";
@@ -28,9 +30,13 @@ let held: PurchaseResult | null | undefined;
 
 function shape(v: unknown): PurchaseResult | null {
   if (!v || typeof v !== "object") return null;
-  const { email, key } = v as { email?: unknown; key?: unknown };
+  const { email, key, slug } = v as { email?: unknown; key?: unknown; slug?: unknown };
   if (typeof email !== "string") return null;
-  return typeof key === "string" && key ? { email, key } : { email };
+  const out: PurchaseResult = { email };
+  if (typeof key === "string" && key) out.key = key;
+  // Only the characters an address can have: the receipt prints it.
+  if (typeof slug === "string" && /^[a-z0-9-]{3,30}$/.test(slug)) out.slug = slug;
+  return out;
 }
 
 /** Called by the checkout just before it opens the receipt. */

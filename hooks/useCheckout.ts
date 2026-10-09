@@ -136,7 +136,8 @@ export function useCheckout(): CheckoutController {
             trackEvent(`checkout-paid-${checkoutKind(input.plan_code)}`);
             // Subscription activation + fulfillment is webhook-driven. Route to
             // a reassuring success page; the welcome email carries the license.
-            savePurchase({ email: input.email });
+            // The address chosen goes with it, so the receipt can name it.
+            savePurchase({ email: input.email, slug: input.slug });
             router.push("/buy/success?cloud=1");
           },
           modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },

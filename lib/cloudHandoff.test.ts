@@ -48,6 +48,14 @@ function cloudBranch(): string {
   return SUCCESS_PAGE.slice(start, end)
 }
 
+/** The part of the cloud branch for a buyer who named the workspace at checkout. */
+function namedBranch(): string {
+  const branch = cloudBranch()
+  const start = branch.indexOf("address ? (")
+  expect(start, "the cloud branch no longer asks whether an address was chosen").toBeGreaterThan(-1)
+  return branch.slice(start, branch.indexOf(") : (", start))
+}
+
 describe("cloud purchase hand-off", () => {
   it("links a new subscriber to their account, where the address is chosen", () => {
     expect(
@@ -77,6 +85,15 @@ describe("cloud purchase hand-off", () => {
     const branch = flat(cloudBranch())
     expect(branch).toContain("onemana.dev")
     expect(branch).toContain("domain you own")
+  })
+
+  it("names the address chosen at checkout instead of asking for one again", () => {
+    // The payment names the workspace, so a buyer who chose on /buy has nothing
+    // to choose here; asking again would read as if the choice were lost.
+    const named = flat(namedBranch())
+    expect(named).toContain("we are setting up {address}")
+    expect(named).not.toContain("choose your address")
+    expect(named).toContain('href="/account"')
   })
 
   it("advertises both domain options before purchase, not only after", () => {
