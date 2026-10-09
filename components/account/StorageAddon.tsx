@@ -78,7 +78,7 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
           type="button"
           onClick={() => void buy()}
           disabled={busy}
-          className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground disabled:opacity-60"
         >
           {busy ? "Opening checkout…" : `Add ${pricing.storage_addon_gb} GB`}
         </button>

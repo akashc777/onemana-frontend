@@ -12,9 +12,12 @@ const config: Config = {
           DEFAULT: "rgb(var(--muted) / <alpha-value>)",
           foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
         },
+        /** Placeholders and disabled text only: it is not body-text contrast. */
+        faint: "rgb(var(--faint) / <alpha-value>)",
         border: {
           DEFAULT: "rgb(var(--border) / <alpha-value>)",
           subtle: "rgb(var(--border) / 0.6)",
+          strong: "rgb(var(--border-strong) / <alpha-value>)",
         },
         accent: {
           DEFAULT: "rgb(var(--accent) / <alpha-value>)",
@@ -27,22 +30,25 @@ const config: Config = {
           muted: "rgb(var(--agent-muted) / <alpha-value>)",
         },
         ring: "rgb(var(--ring) / <alpha-value>)",
-        // Pointed at the tokens rather than hardcoded.
-        //
-        // These were four literal hexes, so every bg-brand and text-brand in the
-        // site bypassed the CSS variables entirely: changing the palette in
-        // globals.css changed nothing a visitor could see, and the two files
-        // disagreed about what the brand colour even was. One source of truth
-        // now, and it is the one the product shares.
+        // Pointed at the tokens, never hardcoded, so the palette in globals.css
+        // is the one source of truth and the one the product shares.
         brand: {
           DEFAULT: "rgb(var(--brand) / <alpha-value>)",
-          // Derived from the one value rather than picked alongside it, so the
-          // hover state cannot drift away from the thing it is a hover state
-          // for. Eight call sites still use these two.
-          dark: "color-mix(in oklab, rgb(var(--brand)) 84%, black)",
+          /** Text on a brand fill: white in light mode, near black in dark. */
+          foreground: "rgb(var(--brand-foreground) / <alpha-value>)",
+          /** The accent as text (links): a step deeper than the fill, for AA. */
+          ink: "rgb(var(--brand-ink) / <alpha-value>)",
+          /** A selected background. */
+          soft: "rgb(var(--brand-soft) / <alpha-value>)",
+          // Derived from the one value, so a hover cannot drift from its button.
+          dark: "color-mix(in oklab, rgb(var(--brand)) 88%, black)",
           light: "color-mix(in oklab, rgb(var(--brand)) 76%, white)",
           subtle: "rgb(var(--brand) / 0.10)",
         },
+        success: "rgb(var(--success) / <alpha-value>)",
+        warning: "rgb(var(--warning) / <alpha-value>)",
+        danger: "rgb(var(--danger) / <alpha-value>)",
+        info: "rgb(var(--info) / <alpha-value>)",
         ink: "rgb(var(--foreground) / <alpha-value>)",
         canvas: {
           DEFAULT: "rgb(var(--background) / <alpha-value>)",
@@ -55,20 +61,43 @@ const config: Config = {
         display: ["var(--font-display-face)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
+      // The marketing scale (DESIGN.md, Type). Size / line height / tracking.
+      fontSize: {
+        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: "-0.035em" }],
+        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: "-0.03em" }],
+        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: "-0.02em" }],
+        h3: ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em" }],
+        "body-lg": ["1.125rem", { lineHeight: "1.75rem" }],
+        body: ["1rem", { lineHeight: "1.625rem" }],
+        small: ["0.875rem", { lineHeight: "1.25rem" }],
+        caption: ["0.8125rem", { lineHeight: "1.125rem" }],
+      },
       maxWidth: {
-        content: "1200px",
+        content: "1120px",
         prose: "720px",
       },
+      // Four radii. 4: chips, kbd, checkboxes. 6: buttons, inputs. 10: cards,
+      // popovers, menus. 14: dialogs and sheets. Full is for avatars and dots.
       borderRadius: {
-        DEFAULT: "0.5rem",
+        sm: "0.25rem",
+        DEFAULT: "0.375rem",
+        md: "0.375rem",
         lg: "0.625rem",
-        xl: "0.75rem",
+        xl: "0.625rem",
+        "2xl": "0.875rem",
       },
+      // Shadows only for things that float. Cards, inputs and buttons have none:
+      // structure is a hairline.
       boxShadow: {
-        sm: "0 1px 2px rgba(0,0,0,0.04)",
-        card: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
-        elevated: "0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)",
-        product: "0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)",
+        sm: "none",
+        card: "none",
+        product: "none",
+        elevated: "0 4px 16px rgb(0 0 0 / 0.08)",
+        popover: "0 4px 16px rgb(0 0 0 / 0.08)",
+        dialog: "0 16px 48px rgb(0 0 0 / 0.16)",
+      },
+      transitionTimingFunction: {
+        DEFAULT: "cubic-bezier(.2,.8,.2,1)",
       },
       keyframes: {
         "fade-up": {

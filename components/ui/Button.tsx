@@ -4,21 +4,27 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 type Variant = "primary" | "brand" | "brandPremium" | "ghost" | "subtle";
 type Size = "sm" | "md" | "lg";
 
+// Radius 6, no shadow, and the focus ring comes from the global :focus-visible
+// rule (globals.css), so every control shows the same one.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-foreground text-background hover:opacity-90 focus-visible:ring-ring/30",
-  brand: "bg-brand text-white hover:bg-brand-dark focus-visible:ring-brand/40",
-  brandPremium: "btn-brand-premium bg-brand text-white hover:bg-brand-dark focus-visible:ring-brand/40",
-  ghost: "border border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring/20",
-  subtle: "text-muted-foreground hover:text-foreground hover:bg-muted",
+  /** Neutral fill, for an action that matters but is not the page's one primary. */
+  primary: "bg-foreground text-background hover:bg-foreground/90",
+  /** The accent fill. One per view: it is the thing the page wants you to do. */
+  brand: "bg-brand text-brand-foreground hover:bg-brand-dark",
+  /** Kept as a name for older call sites; it is the same as brand now. */
+  brandPremium: "bg-brand text-brand-foreground hover:bg-brand-dark",
+  /** Outline: the secondary action beside a primary one. */
+  ghost: "border border-border-strong bg-card text-foreground hover:bg-muted",
+  subtle: "text-muted-foreground hover:bg-muted hover:text-foreground",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "px-3.5 py-2 text-sm",
-  md: "px-5 py-2.5 text-sm",
-  lg: "px-6 py-3 text-sm",
+  sm: "h-8 px-3 text-sm",
+  md: "h-10 px-4 text-sm",
+  lg: "h-11 px-5 text-[0.9375rem]",
 };
 
 interface CommonProps {

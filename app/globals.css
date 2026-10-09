@@ -2,71 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* THE ONECAMP PALETTE (DESIGN.md, Colour). Shared with the product: the page a
+   visitor reads before paying must look like the app they get after, and
+   app/sharedTokens.test.ts pins these numbers against the workspace's.
+
+   Cool graphite neutrals (hue about 250, almost no chroma) under one signal
+   orange. Orange on graphite reads like an instrument panel; the warm cream
+   these replaced read like a bakery, and made the orange look like decoration
+   rather than a signal. Every pair a person reads is measured in
+   app/paletteContrast.test.ts.
+
+   Values are space-separated sRGB so Tailwind can add alpha. */
 :root {
-  /* Shared with the product. This used to be described as "Cloudflare inspired"
-     and it was: the accent was Cloudflare's orange, on cool grey neutrals, while
-     the app it sells was shadcn's achromatic grey. A visitor met one company on
-     the marketing site and a different one after paying, which is the single
-     most expensive thing a small product can get wrong about its own look.
-
-     These values are the exact sRGB of the app's OKLCH tokens. Same ground, same
-     ink, same hairline, same accent. See app/globals.css in the workspace;
-     app/sharedTokens.test.ts fails if either side drifts. */
-  --background: 254 253 252;
-  --foreground: 22 19 16;
-  --muted: 246 244 241;
-  --muted-foreground: 111 105 99;
-  --border: 230 227 224;
-  --accent: 246 243 240;
-  --accent-foreground: 29 26 22;
-  --card: 255 255 254;
-  --ring: 185 74 0;
-  --grid-line: 230 227 224;
-  --dot-grid: 213 208 202;
-  --surface-raised: 249 247 245;
-  /* The accent, and the only place saturation is spent. Deeper than the orange
-     it replaces, which was a borrowed neon; this one clears WCAG AA both as text
-     on the page and as a ground under white, which the old one did not. */
-  --brand: 185 74 0;
-  --glow-brand: 185 74 0;
-  /* Agents have a colour of their own, the same as in the product: the accent
-     marks links and calls to action, and an agent is neither. */
-  --agent: 81 82 193;
-  --agent-foreground: 251 251 255;
-  --agent-muted: 236 239 255;
+  --background: 252 252 253;        /* page */
+  --card: 255 255 255;              /* panels, cards, inputs */
+  --muted: 245 246 247;             /* sidebar, table header, hover */
+  --accent: 237 238 240;            /* pressed, selected row */
+  --border: 228 229 232;            /* hairlines: structure only */
+  --border-strong: 211 213 218;     /* input borders */
+  --foreground: 20 22 26;           /* primary text */
+  --accent-foreground: 20 22 26;
+  --muted-foreground: 95 100 112;   /* secondary text */
+  --faint: 138 143 153;             /* placeholders and disabled only */
+  /* The accent, and the only place saturation is spent: one primary button per
+     view, the focus ring, the current selection, links and the logo. */
+  --brand: 204 74 11;               /* fill, with white text */
+  --brand-foreground: 255 255 255;
+  --brand-ink: 194 65 12;           /* links and accent text */
+  --brand-soft: 255 241 232;        /* selected background */
+  --ring: 204 74 11;
+  /* Agents have a colour of their own, as in the product: the accent marks
+     links and actions, and an agent is neither. Agent tags only. */
+  --agent: 79 91 213;
+  --agent-foreground: 255 255 255;
+  --agent-muted: 238 240 253;
+  --success: 31 138 76;
+  --warning: 178 107 0;
+  --danger: 209 41 61;
+  --info: 47 111 219;
+  color-scheme: light;
 }
-
 
 .dark {
-  --background: 18 15 12;
-  --foreground: 248 247 244;
-  --muted: 41 38 34;
-  --muted-foreground: 168 162 155;
-  --border: 42 39 35;
-  --accent: 44 40 36;
-  --accent-foreground: 248 247 244;
-  --card: 25 22 18;
-  --ring: 242 140 92;
-  --grid-line: 42 39 35;
-  --dot-grid: 56 51 46;
-  --surface-raised: 32 28 24;
-  /* The accent lifts on a dark ground rather than reusing the light value, for
-     the same reason it does in the product: the deep orange that reads as
-     confident on paper reads as mud on near black. */
-  --brand: 242 140 92;
-  --glow-brand: 242 140 92;
-  --agent: 167 176 253;
-  --agent-foreground: 18 20 40;
-  --agent-muted: 38 41 68;
+  --background: 14 15 17;
+  --card: 22 24 28;
+  --muted: 29 32 37;
+  --accent: 37 40 46;
+  --border: 38 40 45;
+  --border-strong: 51 54 61;
+  --foreground: 237 238 240;
+  --accent-foreground: 237 238 240;
+  --muted-foreground: 155 160 170;
+  --faint: 107 112 122;
+  /* Lifted, not reused: the orange that is confident on paper is mud on near
+     black. Dark text on it, because white on this orange fails AA. */
+  --brand: 255 122 51;
+  --brand-foreground: 14 15 17;
+  --brand-ink: 255 138 76;
+  --brand-soft: 42 26 16;
+  --ring: 255 122 51;
+  --agent: 163 171 245;
+  --agent-foreground: 14 15 17;
+  --agent-muted: 30 33 64;
+  --success: 76 195 138;
+  --warning: 240 180 76;
+  --danger: 242 85 90;
+  --info: 110 164 245;
+  color-scheme: dark;
 }
 
-
-/* Headings take the display face, matching the product. One typeface was doing
-   the hero, the section headings, the body copy and the fine print alike, which
-   leaves nothing to build hierarchy out of once the decoration comes off. */
+/* Headings take the display face, as the product's do: which face is a
+   heading is a system decision, not one for each component to remember.
+   Inter Tight at 600, never 700: calm comes from a light display weight. */
 h1, h2, h3 {
   font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.018em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 html {
@@ -76,13 +87,21 @@ html {
 
 body {
   @apply bg-background font-sans text-foreground antialiased;
-  font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "ss01" 1;
+  font-feature-settings: "cv11" 1, "ss01" 1;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: rgba(255, 77, 0, 0.18);
+  background: rgb(var(--brand) / 0.18);
   color: rgb(var(--foreground));
+}
+
+/* One visible focus state for everything a keyboard can reach, in the accent:
+   the ring is one of the few places the accent is allowed. */
+:focus-visible {
+  outline: 2px solid rgb(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar {
@@ -91,185 +110,137 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.25);
+  background: rgb(var(--muted-foreground) / 0.3);
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.4);
-}
-
 @layer components {
+  /* 1120px of content, 16px gutters on a phone. */
   .container-x {
-    @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
   }
 
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-colors duration-150 hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-colors duration-150 hover:bg-foreground/90 disabled:opacity-60;
   }
 
   .btn-brand {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-brand-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-brand-foreground transition-colors duration-150 hover:bg-brand-dark disabled:opacity-60;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border-strong bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted;
   }
 
+  /* Structure is a hairline, never a shadow. */
   .card {
-    @apply rounded-lg border border-border bg-card p-6 transition-colors duration-150;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-  }
-
-  .dark .card {
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+    @apply rounded-lg border border-border bg-card p-6;
   }
 
   .card-hover {
-    @apply hover:border-brand/25 hover:bg-muted/60;
+    @apply transition-colors duration-150 hover:bg-muted/60;
   }
 
   .pill {
-    @apply inline-flex items-center gap-2 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground;
+    @apply inline-flex items-center gap-1.5 rounded-sm border border-border bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground;
   }
 
-  .pill-premium {
-    @apply inline-flex items-center gap-2 rounded-md border border-brand/30 bg-brand/[0.06] px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-brand;
+  /* Grey, sentence case, and rare: at most two sections a page. */
+  .eyebrow {
+    @apply mb-3 block text-sm font-medium text-muted-foreground;
   }
 
-  .dark .pill-premium {
-    @apply border-brand/35 bg-brand/[0.1] text-brand;
-  }
-
-  .eyebrow-premium {
-    @apply mb-3 inline-flex items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-brand;
-  }
-
-  .eyebrow-premium::before {
-    content: "";
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 1px;
-    background: rgb(var(--glow-brand));
-    opacity: 0.9;
+  .link {
+    @apply text-brand-ink underline decoration-brand-ink/40 underline-offset-4 transition-colors duration-150 hover:decoration-brand-ink;
   }
 
   .section-divider {
     @apply h-px w-full border-0 bg-border;
   }
 
-  .glass-nav {
-    background: rgb(var(--background) / 0.92);
-    backdrop-filter: blur(12px) saturate(1.2);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    border-bottom: 1px solid rgb(var(--border));
-  }
-
-  /* Cloudflare-style line grid */
-  .line-grid {
-    background-image:
-      linear-gradient(rgb(var(--grid-line) / 0.55) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--grid-line) / 0.55) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  .brand-beam {
-    background: radial-gradient(ellipse 90% 70% at 50% -20%,
-        rgb(var(--glow-brand) / 0.14),
-        transparent 62%);
-  }
-
-  .dark .brand-beam {
-    background: radial-gradient(ellipse 90% 70% at 50% -20%,
-        rgb(var(--glow-brand) / 0.18),
-        transparent 62%);
-  }
-
-  .section-grid {
-    background-image:
-      linear-gradient(rgb(var(--grid-line) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--grid-line) / 0.4) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent 72%);
-    opacity: 0.55;
-  }
-
-  .dark .section-grid {
-    opacity: 0.3;
-  }
-
-  .footer-grid {
-    background-image:
-      linear-gradient(rgb(var(--grid-line) / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--grid-line) / 0.35) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
-    opacity: 0.4;
-  }
-
-  .dark .footer-grid {
-    opacity: 0.22;
-  }
-
-  .hero-spotlight {
-    background: radial-gradient(ellipse 70% 55% at 50% 42%,
-        rgb(var(--glow-brand) / 0.09),
-        transparent 68%);
-  }
-
-  .dark .hero-spotlight {
-    background: radial-gradient(ellipse 70% 55% at 50% 42%,
-        rgb(var(--glow-brand) / 0.14),
-        transparent 68%);
-  }
-
-  .future-mesh {
-    background-image:
-      radial-gradient(ellipse 90% 60% at 50% -10%, rgb(var(--glow-brand) / 0.07), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 100% 0%, rgb(var(--glow-brand) / 0.04), transparent 50%),
-      radial-gradient(ellipse 40% 35% at 0% 20%, rgb(var(--glow-brand) / 0.03), transparent 45%);
-  }
-
-  .dark .future-mesh {
-    background-image:
-      radial-gradient(ellipse 90% 60% at 50% -10%, rgb(var(--glow-brand) / 0.1), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 100% 0%, rgb(var(--glow-brand) / 0.06), transparent 50%),
-      radial-gradient(ellipse 40% 35% at 0% 20%, rgb(var(--glow-brand) / 0.05), transparent 45%);
-  }
-
-  /* Theme-aware typography (blog, docs, legal, admin previews) */
+  /* Theme-aware typography (blog, docs, legal, admin previews). */
   .prose,
   .prose.prose-neutral {
     font-family: inherit;
-    --tw-prose-body: rgb(var(--foreground) / 0.92);
+    --tw-prose-body: rgb(var(--foreground) / 0.9);
     --tw-prose-headings: rgb(var(--foreground));
     --tw-prose-lead: rgb(var(--muted-foreground));
-    --tw-prose-links: #c84f00;
+    --tw-prose-links: rgb(var(--brand-ink));
     --tw-prose-bold: rgb(var(--foreground));
     --tw-prose-counters: rgb(var(--muted-foreground));
-    --tw-prose-bullets: rgb(var(--muted-foreground));
+    --tw-prose-bullets: rgb(var(--faint));
     --tw-prose-hr: rgb(var(--border));
     --tw-prose-quotes: rgb(var(--muted-foreground));
-    --tw-prose-quote-borders: #c84f00;
+    --tw-prose-quote-borders: rgb(var(--border-strong));
     --tw-prose-captions: rgb(var(--muted-foreground));
     --tw-prose-code: rgb(var(--foreground));
     --tw-prose-pre-code: rgb(var(--foreground));
     --tw-prose-pre-bg: rgb(var(--muted));
-    --tw-prose-th-borders: rgb(var(--border));
+    --tw-prose-th-borders: rgb(var(--border-strong));
     --tw-prose-td-borders: rgb(var(--border));
+  }
+
+  .prose :where(h1, h2, h3, h4):not(:where([class~="not-prose"] *)) {
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
 
   .prose :where(code):not(:where(pre *)) {
     background-color: rgb(var(--muted));
     color: rgb(var(--foreground));
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+    font-weight: 400;
+  }
+
+  .prose :where(code):not(:where(pre *))::before,
+  .prose :where(code):not(:where(pre *))::after {
+    content: none;
   }
 
   .prose :where(pre, pre code, kbd, samp) {
     @apply font-mono;
   }
 
+  .prose :where(pre) {
+    border: 1px solid rgb(var(--border));
+    border-radius: 10px;
+  }
+
   .prose :where(a):not(:where([class~="not-prose"] *)) {
-    color: #c84f00;
+    color: rgb(var(--brand-ink));
+    text-decoration-color: rgb(var(--brand-ink) / 0.4);
+    text-underline-offset: 4px;
+  }
+}
+
+/* ── Legacy: the old landing page's decoration. Deleted with the components
+   that use it, in the home page rewrite. ───────────────────────────────── */
+@layer components {
+  .glass-nav {
+    background: rgb(var(--background));
+    border-bottom: 1px solid rgb(var(--border));
+  }
+
+  .eyebrow-premium {
+    @apply eyebrow;
+  }
+
+  .pill-premium {
+    @apply pill;
+  }
+
+  .card-premium {
+    @apply relative;
+  }
+
+  .line-grid,
+  .brand-beam,
+  .section-grid,
+  .footer-grid,
+  .hero-spotlight,
+  .future-mesh {
+    background: none;
   }
 }
 
