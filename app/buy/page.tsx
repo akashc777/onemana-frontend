@@ -12,7 +12,7 @@ import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, dual, currencyNote, setupEstimateFor, type Pricing } from "@/lib/pricing";
+import { fetchPricingClient, defaultPricing, fmtUSD, fmtINR, dual, currencyNote, setupEstimateFor, usdEstimate, type Pricing } from "@/lib/pricing";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -140,15 +140,13 @@ function BuyInner() {
         onLoad={() => setScriptReady(true)}
       />
       <PageHeader
-        eyebrow="Checkout"
-        title="Get OneCamp"
+        title="Buy OneCamp"
         subtitle={
           isCloud
             ? // How long, from the backend's one estimate; nothing of its own here.
               `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.sentence ?? "We email you the moment it is live."}`
             : "Self-hosted workspace. Lifetime license, unlimited users."
         }
-        align="left"
         className="!pb-0"
       />
       <section className="pb-16 sm:pb-20">
@@ -156,12 +154,12 @@ function BuyInner() {
           <aside className="lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
-            <div className="grid grid-cols-2 gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-sm">
+            <div className="grid grid-cols-2 gap-0.5 rounded-md border border-border bg-muted p-0.5 text-small">
               <button
                 type="button"
                 onClick={() => setPlan("lifetime")}
                 aria-pressed={!isCloud}
-                className={`relative rounded-md px-3 py-2 font-medium transition ${!isCloud ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Lifetime · self-host
               </button>
@@ -169,7 +167,7 @@ function BuyInner() {
                 type="button"
                 onClick={() => setPlan("cloud")}
                 aria-pressed={isCloud}
-                className={`rounded-md px-3 py-2 font-medium transition ${isCloud ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Cloud · managed
               </button>
@@ -182,41 +180,46 @@ function BuyInner() {
                 same offer used to sit below the form, four screens down on a
                 phone. The licence card below says what paying adds. */}
             {!isCloud && (
-              <p className="mt-4 rounded-lg border border-border bg-muted/40 px-3.5 py-2.5 text-sm text-muted-foreground">
+              <p className="mt-4 rounded-md bg-muted px-4 py-3 text-small text-muted-foreground">
                 Fewer than {FREE_SEATS} people? OneCamp is free for you.{" "}
-                <a href="/free" className="font-medium text-foreground underline underline-offset-4 hover:text-brand">
+                <a href="/free" className="link font-medium">
                   Get the install command
                 </a>
                 , no card or email needed.
               </p>
             )}
 
-            <div className="card-premium card mt-4 bg-card/90">
+            <div className="mt-4 rounded-lg border border-border bg-card p-6">
               <div className="flex items-baseline justify-between">
-                <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp Lifetime"}</span>
-                <span className="text-2xl font-semibold text-foreground">
-                  {fmtUSD(isCloud ? price.usd : pricing.lifetime_usd)}
-                  {isCloud && <span className="text-sm font-normal text-muted-foreground">{" " + price.per}</span>}
+                <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}</span>
+                {/* Rupees are the price: they are what is charged. The licence
+                    abroad is the one exception, once the backend charges dollars. */}
+                <span className="font-display text-h3 font-semibold text-foreground">
+                  {!isCloud && pricing.charge_usd && !isIndia ? fmtUSD(pricing.lifetime_usd) : fmtINR(isCloud ? price.inr : pricing.lifetime_inr)}
+                  {isCloud && <span className="font-sans text-small font-normal text-muted-foreground">{" " + price.per}</span>}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {/* The charge itself, beside the dollars above; currencyNote
-                    below the pay button says why the two can differ. */}
+              <p className="mt-1 text-caption text-muted-foreground">
+                {/* A dollar estimate only for buyers outside India; currencyNote
+                    under the pay button says why it can differ from the card. */}
+                {!isIndia && !(pricing.charge_usd && !isCloud) && usdEstimate(isCloud ? price.usd : pricing.lifetime_usd)
+                  ? `${usdEstimate(isCloud ? price.usd : pricing.lifetime_usd)} · `
+                  : ""}
                 {isCloud
                   ? business
-                    ? `${fmtINR(pricing.business_inr)}/mo billed in INR · ${pricing.business_seats} users included · a larger machine · includes a self-host license`
+                    ? `${pricing.business_seats} users included · a larger machine · includes a self-host license`
                     : yearly
-                      ? `${fmtINR(pricing.cloud_yearly_inr)}/yr billed in INR${saving ? ` · ${saving}` : ""} · ${pricing.cloud_seats} users included · includes a self-host license`
-                      : `${fmtINR(pricing.cloud_inr)}/mo billed in INR · ${pricing.cloud_seats} users included · includes a self-host license`
+                      ? `${saving ? `${saving} · ` : ""}${pricing.cloud_seats} users included · includes a self-host license`
+                      : `${pricing.cloud_seats} users included · includes a self-host license`
                   : pricing.charge_usd && !isIndia
                     ? "Charged in US dollars · one-time · unlimited users"
-                    : `${fmtINR(pricing.lifetime_inr)} billed in INR · one-time · all taxes included · unlimited users`}
+                    : "One-time · GST included · unlimited users"}
               </p>
               {showChoices && (
                 <div
                   role="radiogroup"
                   aria-label="Plan"
-                  className={`mt-4 grid gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-xs ${choices.length === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2"}`}
+                  className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2"}`}
                 >
                   {choices.map((b) => (
                     <button
@@ -225,32 +228,40 @@ function BuyInner() {
                       role="radio"
                       aria-checked={choice === b}
                       onClick={() => setBilling(b)}
-                      className={`rounded-md px-3 py-1.5 font-medium transition ${choice === b ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      className={`rounded-sm px-3 py-1.5 font-medium transition-colors duration-150 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                     >
                       {choiceLabel(b, pricing)}
                     </button>
                   ))}
                 </div>
               )}
-              <ul className="mt-5 space-y-2 text-sm text-foreground">
+              <ul className="mt-5 space-y-2 text-small text-foreground">
                 {benefits.map((b) => (
                   <li key={b} className="flex items-start gap-2">
-                    <span className="mt-0.5 text-brand">✓</span>
+                    <span aria-hidden className="mt-0.5 text-muted-foreground">✓</span>
                     {b}
                   </li>
                 ))}
               </ul>
             </div>
+            {/* THE MONEY RULE, BEFORE THE FORM. No trials and no refunds is a
+                standing decision; said here, as the reason the demo and the free
+                plan exist, rather than as small print under the pay button. */}
+            <p className="mt-4 text-small text-foreground">
+              No trials or refunds: try the{" "}
+              <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">live demo</a>{" "}
+              and the <a href="/free" className="link">free plan</a> first.
+            </p>
           </aside>
 
-          <form onSubmit={handleSubmit} className="card-premium card h-fit space-y-4 bg-card/90 lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
+          <form onSubmit={handleSubmit} className="h-fit space-y-4 rounded-lg border border-border bg-card p-6 lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
             {isCloud && (
               <>
                 <Field label="Workspace address" required>
                   <WorkspaceAddressField value={slug} onChange={setSlug} onVerdict={setAddressVerdict} inputClassName={inputCls} />
                 </Field>
                 <fieldset>
-                  <legend className="mb-1.5 block text-sm font-medium text-foreground">AI features</legend>
+                  <legend className="mb-1.5 block text-small font-medium text-foreground">AI features</legend>
                   <div role="radiogroup" aria-label="AI features" className="grid gap-2 sm:grid-cols-2">
                     {EDITION_CHOICES.map((c) => (
                       <button
@@ -259,10 +270,10 @@ function BuyInner() {
                         role="radio"
                         aria-checked={edition === c.value}
                         onClick={() => setEdition(c.value)}
-                        className={`rounded-lg border px-3.5 py-2.5 text-left transition ${edition === c.value ? "border-foreground/40 bg-background shadow-sm" : "border-border bg-muted/40 hover:border-foreground/20"}`}
+                        className={`rounded-md border px-3.5 py-2.5 text-left transition-colors duration-150 ${edition === c.value ? "border-brand bg-brand-soft" : "border-border-strong bg-card hover:bg-muted"}`}
                       >
-                        <span className="block text-sm font-medium text-foreground">{c.label}</span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{c.hint}</span>
+                        <span className="block text-small font-medium text-foreground">{c.label}</span>
+                        <span className="mt-0.5 block text-caption text-muted-foreground">{c.hint}</span>
                       </button>
                     ))}
                   </div>
@@ -308,10 +319,10 @@ function BuyInner() {
             </Field>
 
             {error && (
-              <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>
+              <p role="alert" className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-small text-danger">{error}</p>
             )}
 
-            <Button type="submit" disabled={busy} variant="brandPremium" size="lg" className="w-full">
+            <Button type="submit" disabled={busy} variant="brand" size="lg" className="w-full">
               {busy
                 ? "Processing…"
                 : isCloud
@@ -319,18 +330,18 @@ function BuyInner() {
                     `Subscribe - ${dual(price.usd, price.inr, price.per)}`
                   : pricing.charge_usd
                     ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
-                    : `Pay ${dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
+                    : `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
             </Button>
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
-            <p className="text-center text-xs text-foreground/80">
+            <p className="text-caption text-foreground">
               {paymentTerms(isCloud ? choice : "lifetime")}
             </p>
-            <p className="text-center text-xs text-muted-foreground">{currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}</p>
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="text-caption text-muted-foreground">{currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}</p>
+            <p className="text-caption text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
-              <a href="/terms-of-service" className="underline hover:text-foreground">Terms</a> and{" "}
-              <a href="/refund-policy" className="underline hover:text-foreground">Refund Policy</a>.
+              <a href="/terms-of-service" className="underline underline-offset-2 hover:text-foreground">Terms</a> and{" "}
+              <a href="/refund-policy" className="underline underline-offset-2 hover:text-foreground">Refund Policy</a>.
             </p>
           </form>
 
@@ -347,9 +358,9 @@ function BuyInner() {
                 their own server. The demo already exists and is clicked from every
                 other page; it was missing from the only page where the decision is
                 actually made. */}
-            <div className="card border-brand/30 bg-brand/[0.04]">
+            <div className="rounded-lg border border-border p-6">
               <p className="font-medium text-foreground">Try it before you pay</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 text-small text-muted-foreground">
                 The live demo is the real product with sample data. Nothing to install and no
                 account needed.
               </p>
@@ -360,14 +371,14 @@ function BuyInner() {
               </div>
             </div>
 
-            <p className="mt-4 text-xs text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>
+            <p className="mt-4 text-caption text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>
 
             {/* Only one of the thirty ever came back on another day, so there is no
                 consideration cycle to catch them in later. Either we can reach them
                 or they are gone. */}
-            <div className="card mt-4">
+            <div className="mt-4 rounded-lg border border-border p-6">
               <p className="font-medium text-foreground">Not buying today?</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 text-small text-muted-foreground">
                 Leave your address and we will tell you when the price or the license terms
                 change, and when something ships that you asked for.
               </p>
@@ -388,16 +399,16 @@ function BuyInner() {
 }
 
 const inputCls =
-  "w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 sm:text-sm";
+  "h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm";
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-foreground">
-        {label} {required && <span className="text-red-600 dark:text-red-400">*</span>}
+      <span className="mb-1.5 block text-small font-medium text-foreground">
+        {label} {required && <span className="text-danger">*</span>}
       </span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-muted-foreground">{hint}</span>}
+      {hint && <span className="mt-1 block text-caption text-muted-foreground">{hint}</span>}
     </label>
   );
 }

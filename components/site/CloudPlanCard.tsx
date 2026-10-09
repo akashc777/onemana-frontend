@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { choiceLabel, choicePrice, cloudBuyHref, cloudChoices, storageOffered, type Billing } from "@/lib/paymentTerms";
 import { cloudBenefits } from "@/lib/content";
-import { dual, fmtINR, fmtUSD, type Pricing } from "@/lib/pricing";
+import { dual, fmtINR, usdEstimate, type Pricing } from "@/lib/pricing";
 
 /**
  * The Cloud card, one plan at a time.
@@ -22,14 +22,14 @@ export function CloudPlanCard({ pricing }: { pricing: Pricing }) {
   const seats = choice === "business" ? pricing.business_seats : pricing.cloud_seats;
 
   return (
-    <div className="pricing-card card relative flex h-full flex-col border border-border p-6 sm:p-7">
+    <div className="flex flex-col rounded-lg border border-border bg-card p-6 sm:p-8">
       <header>
-        <p className="text-sm font-medium text-muted-foreground">OneCamp Cloud · Managed</p>
+        <p className="text-small font-medium text-muted-foreground">OneCamp Cloud, run by us</p>
         {choices.length > 1 && (
           <div
             role="radiogroup"
             aria-label="Cloud plan"
-            className={`mt-4 grid gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-xs ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
+            className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
           >
             {choices.map((b) => (
               <button
@@ -38,39 +38,40 @@ export function CloudPlanCard({ pricing }: { pricing: Pricing }) {
                 role="radio"
                 aria-checked={choice === b}
                 onClick={() => setChoice(b)}
-                className={`rounded-md px-2 py-1.5 font-medium transition-colors ${choice === b ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                className={`rounded-sm px-2 py-1.5 font-medium transition-colors duration-150 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {choiceLabel(b, pricing).split(" · ")[0]}
               </button>
             ))}
           </div>
         )}
-        <div className="mt-5 flex items-baseline gap-2">
-          <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-[2.75rem]">{fmtUSD(price.usd)}</span>
-          <span className="text-sm text-muted-foreground">{price.per === "/yr" ? "/ year" : "/ month"}</span>
-        </div>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {fmtINR(price.inr)}
-          {price.per} billed in INR · {seats} users included
+        <p className="mt-5 flex items-baseline gap-2">
+          <span className="font-display text-h2 font-semibold text-foreground">{fmtINR(price.inr)}</span>
+          <span className="text-small text-muted-foreground">{price.per === "/yr" ? "a year" : "a month"}</span>
+        </p>
+        <p className="mt-1.5 text-caption text-muted-foreground">
+          {usdEstimate(price.usd)}
+          {price.usd > 0 ? " · " : ""}
+          {seats} people included
           {choice === "yearly" && pricing.cloud_yearly_free_months > 0 ? ` · ${pricing.cloud_yearly_free_months} months free` : ""}
           {choice === "business" ? " · a larger machine" : ""}
         </p>
       </header>
-      <ul className="mt-8 flex-1 space-y-3 text-sm text-foreground">
+      <ul className="mt-6 space-y-2.5 text-small text-foreground">
         {cloudBenefits.map((b) => (
           <li key={b} className="flex items-start gap-2.5">
-            <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+            <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
               <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             {b}
           </li>
         ))}
       </ul>
-      <footer className="mt-8 border-t border-border/60 pt-6">
-        <ButtonLink href={cloudBuyHref(choice)} variant="ghost" size="lg" className="w-full">
+      <footer className="mt-8 border-t border-border pt-6">
+        <ButtonLink href={cloudBuyHref(choice)} variant="ghost" className="w-full">
           Start with OneCamp Cloud
         </ButtonLink>
-        <p className="mt-3 text-center text-xs text-muted-foreground">
+        <p className="mt-3 text-caption text-muted-foreground">
           Move between plans any time from your account.
           {storageOffered(pricing) ? ` Add ${pricing.storage_addon_gb} GB for ${dual(pricing.storage_addon_usd, pricing.storage_addon_inr)} a month when you need it.` : ""}
         </p>

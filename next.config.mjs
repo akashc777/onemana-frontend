@@ -5,11 +5,10 @@ const demoUrl = (process.env.NEXT_PUBLIC_DEMO_URL || "https://onecamp.onemana.de
 const nextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
-    // Addresses people type or search engines guess. /pricing was a 404, and
-    // the pricing lives on the home page.
+    // Addresses people type or search engines guess. /pricing is a page of its
+    // own since 10 Oct 2026, so it no longer redirects to the home page.
     async redirects() {
         return [
-            { source: "/pricing", destination: "/#pricing", permanent: false },
             { source: "/governance", destination: "/#governance", permanent: false },
             { source: "/login", destination: "/account", permanent: false },
             { source: "/signin", destination: "/account", permanent: false },

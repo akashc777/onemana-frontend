@@ -1,74 +1,41 @@
 import type { ReactNode } from "react";
 
 interface PageHeaderProps {
+  /** Grey, sentence case; most pages need none. */
   eyebrow?: string;
   title: ReactNode;
   subtitle?: ReactNode;
+  /** Left by default. Centred headers are kept only for call sites that ask. */
   align?: "center" | "left";
+  /** A hairline under the header. */
   divider?: boolean;
   className?: string;
+  /** Anything that belongs beside the title block: a primary action, say. */
+  children?: ReactNode;
 }
 
-/** Consistent inner-page hero - matches home SectionHeading rhythm. */
-export function PageHeader({
-  eyebrow,
-  title,
-  subtitle,
-  align = "center",
-  divider = false,
-  className = "",
-}: PageHeaderProps) {
-  const centered = align === "center";
-
+/**
+ * An inner page's opening: the title, one line under it, and nothing behind
+ * it. The orange beam and the orange eyebrow it used to carry were the
+ * template's signature; the page's own content is enough.
+ */
+export function PageHeader({ eyebrow, title, subtitle, align = "left", divider = false, className = "", children }: PageHeaderProps) {
+  const centred = align === "center";
   return (
-    <section className={`relative overflow-hidden pt-14 sm:pt-16 ${className}`}>
-      <div aria-hidden className="brand-beam pointer-events-none absolute inset-x-0 top-0 h-48 opacity-60" />
-      <div className={`container-x relative z-10 ${divider ? "pb-6" : "pb-10"} ${centered ? "text-center" : ""}`}>
-        {eyebrow && (
-          <div>
-            <p className={`eyebrow-premium ${centered ? "mx-auto w-fit" : ""}`}>{eyebrow}</p>
-          </div>
-        )}
-        <div>
-          <h1
-            className={`text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl ${
-              eyebrow ? "mt-4" : ""
-            }`}
-          >
-            {title}
-          </h1>
-        </div>
+    <section className={`pt-12 sm:pt-16 ${className}`}>
+      <div className={`container-x ${divider ? "" : "pb-10"} ${centred ? "text-center" : ""}`}>
+        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+        <h1 className={`text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1 ${centred ? "mx-auto max-w-3xl" : "max-w-3xl"}`}>
+          {title}
+        </h1>
         {subtitle && (
-          <div>
-            <p
-              className={`mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground ${
-                centered ? "mx-auto" : ""
-              }`}
-            >
-              {subtitle}
-            </p>
-          </div>
+          <p className={`mt-4 max-w-2xl text-body-lg text-muted-foreground ${centred ? "mx-auto" : ""}`}>{subtitle}</p>
         )}
+        {children}
       </div>
       {divider && (
-        <div className="container-x mt-2 pb-8">
-          {/* 
-            Alignment fix: 
-            - For centered headers (e.g. /blog, /about), the divider line is constrained to max-w-2xl
-              (via mx-auto max-w-2xl on the line) to visually align with the subtitle + title block
-              rather than spanning the full 1200px container-x while the readable text is narrower.
-              This matches SectionHeading's max-w-2xl, the subtitle's cap, and the old content/about.md
-              Divider blocks which specified max_width:800.
-            - Left-aligned headers (docs, buy internals) keep the full container width.
-            - Vertical spacing: reduced preceding pb-6 on header text + explicit mt/pb here for 
-              consistent rhythm between header copy and the rule, before body content begins.
-            - The line is now "owned" by the header block visually.
-          */}
-          <div
-            className={`section-divider ${centered ? "mx-auto max-w-2xl" : ""}`}
-            role="separator"
-            aria-hidden
-          />
+        <div className="container-x pb-10 pt-10">
+          <div className="section-divider" role="separator" aria-hidden />
         </div>
       )}
     </section>

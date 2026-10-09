@@ -4,7 +4,8 @@ import { loadOgFonts } from "@/lib/og-fonts";
 
 export const runtime = "edge";
 // alt cannot be async, and a price in it would be a constant that outlives
-// the price: dollars move with the exchange rate every day. So it names the
+// the price. Rupees on the card (the charge), written "INR" because the OG
+// font subset has no rupee sign. So it names the
 // choice, and the image below carries the live figures.
 export const alt = "Get OneCamp: buy once, or let us host it";
 export const size = { width: 1200, height: 630 };
@@ -50,11 +51,11 @@ export default async function BuyOpenGraphImage() {
             right: 0,
             height: 4,
             display: "flex",
-            background: "#c84f00",
+            background: "#CC4A0B",
           }}
         />
 
-        <div style={{ display: "flex", fontSize: 18, fontWeight: 600, color: "#c84f00", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        <div style={{ display: "flex", fontSize: 18, fontWeight: 600, color: "#CC4A0B", letterSpacing: "0.08em", textTransform: "uppercase" }}>
           Get OneCamp
         </div>
         <div style={{ display: "flex", marginTop: 28, fontSize: 60, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
@@ -69,13 +70,13 @@ export default async function BuyOpenGraphImage() {
               display: "flex",
               padding: "12px 22px",
               borderRadius: 8,
-              background: "#c84f00",
+              background: "#CC4A0B",
               fontSize: 24,
               fontWeight: 600,
               color: "#ffffff",
             }}
           >
-            ${pricing.lifetime_usd} lifetime
+            INR {pricing.lifetime_inr.toLocaleString("en-IN")} once
           </div>
           <div
             style={{
@@ -88,10 +89,10 @@ export default async function BuyOpenGraphImage() {
               color: "#5f6368",
             }}
           >
-            ${pricing.cloud_usd}/mo cloud
+            INR {pricing.cloud_inr.toLocaleString("en-IN")} a month, hosted
           </div>
         </div>
-        <div style={{ display: "flex", marginTop: 40, fontSize: 20, fontWeight: 600, color: "#c84f00" }}>
+        <div style={{ display: "flex", marginTop: 40, fontSize: 20, fontWeight: 600, color: "#CC4A0B" }}>
           onemana.dev/buy
         </div>
       </div>

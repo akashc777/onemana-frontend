@@ -10,24 +10,24 @@ import { PLAN_ROWS, planOptions } from "@/lib/plans";
 export function PlanComparison({ pricing }: { pricing: Pricing }) {
   const plans = planOptions(pricing);
   return (
-    <section aria-labelledby="plans-heading" className="container-x py-12 sm:py-16">
-      <h2 id="plans-heading" className="text-2xl font-semibold tracking-[-0.02em] text-foreground">
+    <section aria-labelledby="plans-heading" className="container-x py-16 sm:py-20">
+      <h2 id="plans-heading" className="text-h2 text-foreground">
         Which OneCamp is for you
       </h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+      <p className="mt-3 max-w-2xl text-body text-muted-foreground">
         Every option has chat, docs, tasks, calls and AI teammates. They differ in who installs and updates it, how
         many people it covers, the licence, and whether company controls come with it.
       </p>
 
       <div className="mt-8 hidden overflow-x-auto md:block">
-        <table className="w-full border-collapse text-sm">
+        <table className="w-full border-collapse text-small">
           <thead>
             <tr>
               <th className="w-36" />
               {plans.map((p) => (
                 <th key={p.key} scope="col" className="px-3 pb-3 text-left align-top">
                   <span className="block font-semibold text-foreground">{p.name}</span>
-                  <span className="mt-1 block text-xs font-normal text-muted-foreground">{p.summary}</span>
+                  <span className="mt-1 block text-caption font-normal text-muted-foreground">{p.summary}</span>
                 </th>
               ))}
             </tr>
@@ -35,7 +35,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
           <tbody>
             {PLAN_ROWS.map((row) => (
               <tr key={row.key} className="border-t border-border">
-                <th scope="row" className="py-3 pr-3 text-left font-medium text-muted-foreground">
+                <th scope="row" className="py-3 pr-3 text-left align-top font-normal text-muted-foreground">
                   {row.label}
                 </th>
                 {plans.map((p) => (
@@ -57,12 +57,12 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
         </table>
       </div>
 
-      <div className="mt-6 grid gap-4 md:hidden">
+      <div className="mt-8 grid gap-8 md:hidden">
         {plans.map((p) => (
-          <div key={p.key} className="card">
+          <div key={p.key} className="border-t border-border pt-5">
             <p className="font-semibold text-foreground">{p.name}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{p.summary}</p>
-            <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1.5 text-sm">
+            <p className="mt-1 text-small text-muted-foreground">{p.summary}</p>
+            <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1.5 text-small">
               {PLAN_ROWS.map((row) => (
                 <div key={row.key} className="contents">
                   <dt className="text-muted-foreground">{row.label}</dt>
@@ -81,7 +81,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
 }
 
 function PlanLink({ cta }: { cta: { label: string; href: string; external?: boolean } }) {
-  const cls = "text-sm font-medium text-brand underline underline-offset-4";
+  const cls = "link text-small font-medium";
   return cta.external ? (
     <a href={cta.href} target="_blank" rel="noopener noreferrer" className={cls}>
       {cta.label}

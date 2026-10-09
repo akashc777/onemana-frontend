@@ -113,15 +113,15 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-background px-3.5 py-2.5 text-left text-sm text-foreground outline-none transition focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 disabled:opacity-50"
+        className="flex h-10 w-full items-center justify-between gap-2 rounded-md border border-border-strong bg-card px-3 text-left text-sm text-foreground transition-colors duration-150 focus:border-brand disabled:opacity-50"
       >
-        <span className={selected ? "text-foreground" : "text-muted-foreground"}>{selected ? selected.label : placeholder}</span>
+        <span className={selected ? "text-foreground" : "text-faint"}>{selected ? selected.label : placeholder}</span>
         <svg
           className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`}
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="1.5"
         >
           <path d="M5 8l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -133,7 +133,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
           role="listbox"
           aria-labelledby={labelId}
           tabIndex={-1}
-          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-border bg-background p-1 shadow-elevated"
+          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-border bg-card p-1 shadow-popover"
         >
           {options.map((opt, i) => {
             const isSelected = opt.value === value;
@@ -151,7 +151,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
               >
                 <span className="truncate">{opt.label}</span>
                 {isSelected && (
-                  <svg className="h-4 w-4 flex-shrink-0 text-brand" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <svg className="h-4 w-4 flex-shrink-0 text-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
