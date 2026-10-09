@@ -211,18 +211,15 @@ export const portalApi = {
   invoices: () => req<Invoice[]>("/invoices").then((d) => d ?? []),
   subscriptions: () => req<PortalSubscription[]>("/subscriptions").then((d) => d ?? []),
 
-  /** The managed workspaces behind this customer's subscriptions. */
-  async instances(): Promise<PortalInstance[]> {
-    const data = await req<{ data?: PortalInstance[] }>("/instances");
-    return data?.data ?? [];
-  },
+  /** The managed workspaces behind this customer's subscriptions. req already
+   *  returns the envelope's data: unwrapping it again gave [] to everyone, so
+   *  no paid Cloud subscription ever showed the form that names its workspace,
+   *  and nothing was ever built. */
+  instances: () => req<PortalInstance[]>("/instances").then((d) => d ?? []),
 
   /** The editions a workspace can be built as. Served from the same table the
    *  provisioner builds from, so the choice can never be one that cannot be made. */
-  async editions(): Promise<PortalEdition[]> {
-    const data = await req<{ data?: PortalEdition[] }>("/editions");
-    return data?.data ?? [];
-  },
+  editions: () => req<PortalEdition[]>("/editions").then((d) => d ?? []),
 
   /** Name a workspace and choose its edition. The single action that turns a paid
    *  subscription into something being built. */
