@@ -15,7 +15,7 @@ export interface ReleaseFacts {
   last30: number;
 }
 
-interface GithubRelease {
+export interface GithubRelease {
   tag_name?: string;
   published_at?: string;
   draft?: boolean;
@@ -41,18 +41,60 @@ export function summariseReleases(list: GithubRelease[], now: Date): ReleaseFact
   };
 }
 
+/** The URL a GitHub `Link` header gives as rel="next", or null. */
+export function nextLink(header: string | null): string | null {
+  if (!header) return null;
+  for (const part of header.split(",")) {
+    const m = part.match(/<([^>]+)>\s*;\s*rel="next"/);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+export const MAX_RELEASE_PAGES = 5;
+
+/**
+ * Every release back to 30 days before `now`, following rel="next" so the
+ * count cannot quietly shrink when a month holds more releases than one page
+ * (the repository also tags the web app, so pages fill twice as fast). Stops
+ * at the first page that reaches past the window, or after MAX_RELEASE_PAGES.
+ */
+export async function collectReleases(
+  firstUrl: string,
+  fetchPage: (url: string) => Promise<{ list: GithubRelease[]; next: string | null } | null>,
+  now: Date,
+): Promise<GithubRelease[] | null> {
+  const since = now.getTime() - 30 * 24 * 3600 * 1000;
+  const all: GithubRelease[] = [];
+  let url: string | null = firstUrl;
+  for (let page = 0; url && page < MAX_RELEASE_PAGES; page++) {
+    const got = await fetchPage(url);
+    if (!got) return page === 0 ? null : all;
+    all.push(...got.list);
+    const reachesPast = got.list.some((r) => r.published_at && Date.parse(r.published_at) < since);
+    if (reachesPast || got.list.length === 0) break;
+    url = got.next;
+  }
+  return all;
+}
+
 /** Cached for an hour on the server, like the star count, and null on any failure. */
 export async function getReleaseFacts(): Promise<ReleaseFacts | null> {
   const headers: Record<string, string> = { Accept: "application/vnd.github+json", "User-Agent": "onemana-site" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   try {
     const repo = site.serverGithubUrl.replace("https://github.com/", "");
-    const res = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=100`, {
-      headers,
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    return summariseReleases((await res.json()) as GithubRelease[], new Date());
+    const now = new Date();
+    const list = await collectReleases(
+      `https://api.github.com/repos/${repo}/releases?per_page=100`,
+      async (url) => {
+        const res = await fetch(url, { headers, next: { revalidate: 3600 } });
+        if (!res.ok) return null;
+        return { list: (await res.json()) as GithubRelease[], next: nextLink(res.headers.get("link")) };
+      },
+      now,
+    );
+    return list ? summariseReleases(list, now) : null;
   } catch {
     return null;
   }
