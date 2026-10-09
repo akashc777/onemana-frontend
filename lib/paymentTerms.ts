@@ -103,6 +103,16 @@ export function cloudBuyHref(b: Billing): string {
   return "/buy?plan=cloud";
 }
 
+/**
+ * Which plan the checkout opens on: Cloud when the link says plan=cloud (the
+ * Cloud buttons here, and the demo's "No server? We host it"), the lifetime
+ * licence otherwise. A link that asks for Cloud and lands on the licence makes
+ * a visitor who wanted hosting look for it.
+ */
+export function planFromParams(plan: string | null): "lifetime" | "cloud" {
+  return plan === "cloud" ? "cloud" : "lifetime";
+}
+
 /** The Cloud choice a checkout link names; cloudBuyHref's inverse. */
 export function billingFromParams(size: string | null, billing: string | null): Billing {
   if (size === "business") return "business";

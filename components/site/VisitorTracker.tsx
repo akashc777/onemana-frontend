@@ -4,8 +4,9 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 import {
+  adoptCarriedVisitorId,
+  currentVisitorId,
   demoClickEvent,
-  getVisitorId,
   opensDemo,
   trackEvent,
   trackPageview,
@@ -24,6 +25,11 @@ export function refEvent(search: string): string | null {
 
 export function VisitorTracker() {
   const pathname = usePathname();
+  // Before the first pageview, which is the next effect: an id the demo
+  // carried back (?vid=) has to be in hand for it. See adoptCarriedVisitorId.
+  useEffect(() => {
+    adoptCarriedVisitorId();
+  }, []);
   useEffect(() => {
     if (!pathname || pathname.startsWith("/admin")) return;
     trackPageview(pathname);
@@ -78,7 +84,7 @@ export function VisitorTracker() {
       const a = demoAnchor(e);
       if (!a) return;
       tag(a); // a keyboard Enter sends no pointerdown, so this is its only tag
-      trackEvent(demoClickEvent(Boolean(getVisitorId())));
+      trackEvent(demoClickEvent(Boolean(currentVisitorId())));
     };
 
     document.addEventListener("pointerdown", onDown, true);

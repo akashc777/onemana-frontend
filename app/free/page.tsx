@@ -7,6 +7,7 @@ import { site } from "@/lib/site";
 import { trackEvent } from "@/lib/track";
 import { FREE_SEATS, freeClaimPayload, freeIncludes } from "@/lib/freePlan";
 import { selfHostNeeds } from "@/lib/content";
+import { cloudBuyHref } from "@/lib/paymentTerms";
 
 const inputCls =
   "w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-foreground/10 sm:text-sm";
@@ -186,7 +187,7 @@ export default function FreePage() {
                 ))}
               </ul>
               <p className="text-sm text-muted-foreground">
-                No server? <a href="/buy" className="font-medium text-foreground underline underline-offset-4">OneCamp Cloud</a> runs it for you.
+                No server? <a href={cloudBuyHref("monthly")} className="font-medium text-foreground underline underline-offset-4">OneCamp Cloud</a> runs it for you.
               </p>
             </div>
             <p className="text-sm text-muted-foreground">

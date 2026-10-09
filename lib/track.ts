@@ -36,6 +36,15 @@ export function getVisitorId(): string {
   }
 }
 
+// A visitor id the demo carried back here (?vid=), used only while this
+// browser holds none of its own. See adoptCarriedVisitorId.
+let carried = "";
+
+/** The id beacons carry: this browser's own, else one carried back from the demo, else "". */
+export function currentVisitorId(): string {
+  return getVisitorId() || carried;
+}
+
 /** The browser asked not to be tracked (Global Privacy Control, Do Not Track). */
 export function optedOut(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -73,7 +82,11 @@ export function applyVerdict(body: unknown): void {
   try {
     if (v.store === true && typeof v.visitor_id === "string" && VID_SHAPE.test(v.visitor_id)) {
       s.setItem(VID_KEY, v.visitor_id);
+      carried = "";
     } else if (v.store === false) {
+      // Nothing may be kept here (EEA, UK, Switzerland), including an id the
+      // demo carried back.
+      carried = "";
       s.removeItem(VID_KEY);
       noStore = true;
     }
@@ -99,7 +112,7 @@ export const VISITOR_PARAM = "vid";
  * there is no id to add, which is the case in a browser with storage disabled.
  */
 export function withVisitorId(href: string): string {
-  const id = getVisitorId();
+  const id = currentVisitorId();
   if (!id) return href;
   try {
     const url = new URL(href);
@@ -108,6 +121,56 @@ export function withVisitorId(href: string): string {
   } catch {
     return href;
   }
+}
+
+/**
+ * The visitor id a link carried in (?vid=) and the address without it, or null
+ * when the link carries none. An id in any shape the server would not have
+ * issued comes back as "", still to be taken out of the address. Pure.
+ */
+export function carriedVisitorId(href: string): { vid: string; rest: string } | null {
+  let url: URL;
+  try {
+    url = new URL(href);
+  } catch {
+    return null;
+  }
+  if (!url.searchParams.has(VISITOR_PARAM)) return null;
+  const vid = url.searchParams.get(VISITOR_PARAM) ?? "";
+  url.searchParams.delete(VISITOR_PARAM);
+  return { vid: VID_SHAPE.test(vid) ? vid : "", rest: url.pathname + url.search + url.hash };
+}
+
+/**
+ * Takes the visitor id the demo carried back here, and takes it out of the
+ * address. Call once, before the first pageview.
+ *
+ * THE RETURN TRIP. The demo is a different origin and cannot read the id this
+ * site keeps, so its links back (the checkout, from "No server? We host it")
+ * carry it the way this site's demo links carry it there. Then a purchase joins
+ * the demo visit that led to it.
+ *
+ * Used only by a browser that holds no id of its own (storage cleared since it
+ * opened the demo, say), and only as the id its beacons send: the server still
+ * decides whether anything may be kept, so a visitor in the EEA, the UK or
+ * Switzerland keeps nothing. Nothing at all for a browser with Global Privacy
+ * Control or Do Not Track, or one of the operator's own.
+ *
+ * OUT OF THE ADDRESS, as the demo does with the id it receives: a checkout link
+ * copied from the address bar and sent to a colleague must not attribute their
+ * visit to this one.
+ */
+export function adoptCarriedVisitorId(): void {
+  if (typeof window === "undefined") return;
+  const found = carriedVisitorId(window.location.href);
+  if (!found) return;
+  try {
+    window.history.replaceState(null, "", found.rest);
+  } catch {
+    /* it stays in the address, which only affects a copied link */
+  }
+  if (!found.vid || optedOut() || isInternal() || getVisitorId()) return;
+  carried = found.vid;
 }
 
 /**
@@ -172,7 +235,7 @@ async function send(path: string, referrer: string): Promise<void> {
   const res = await fetch(`${site.backendUrl}/onecamp/track`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ visitor_id: getVisitorId(), path, referrer }),
+    body: JSON.stringify({ visitor_id: currentVisitorId(), path, referrer }),
     keepalive: true,
   });
   applyVerdict(await res.json().catch(() => null));
@@ -198,7 +261,7 @@ export function trackPageview(path: string): void {
   try {
     if (optedOut() || isInternal()) return;
     const referrer = typeof document !== "undefined" ? referrerToSend(document.referrer) : "";
-    if (getVisitorId() || noStore) {
+    if (currentVisitorId() || noStore) {
       void send(path, referrer).catch(() => {});
       return;
     }

@@ -3,7 +3,7 @@
 import { guessCountry } from "@/lib/guessCountry";
 import Script from "next/script";
 import { PlanComparison } from "@/components/site/PlanComparison";
-import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing, billingFromParams } from "@/lib/paymentTerms";
+import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing, billingFromParams, planFromParams } from "@/lib/paymentTerms";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCheckout } from "@/hooks/useCheckout";
@@ -32,7 +32,7 @@ export default function BuyPage() {
 
 function BuyInner() {
   const params = useSearchParams();
-  const initialPlan: Plan = params.get("plan") === "cloud" ? "cloud" : "lifetime";
+  const initialPlan: Plan = planFromParams(params.get("plan"));
 
   const { busy, error, setError, start, startCloud } = useCheckout();
   const [scriptReady, setScriptReady] = useState(false);
