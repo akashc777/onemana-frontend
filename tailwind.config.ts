@@ -63,9 +63,9 @@ const config: Config = {
       },
       // The marketing scale (DESIGN.md, Type). Size / line height / tracking.
       fontSize: {
-        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: "-0.035em" }],
-        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: "-0.03em" }],
-        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: "-0.02em" }],
+        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: "-0.028em" }],
+        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: "-0.024em" }],
+        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: "-0.016em" }],
         h3: ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em" }],
         "body-lg": ["1.125rem", { lineHeight: "1.75rem" }],
         body: ["1rem", { lineHeight: "1.625rem" }],

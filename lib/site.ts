@@ -78,37 +78,37 @@ export const site = {
   twitter: "https://twitter.com/akashc777",
 };
 
+// Five links and no more. "Live demo" and "Install free" sit at the right of
+// the nav on their own (components/site/Nav.tsx); the nav no longer sends a
+// cold visitor to checkout, which 46 of 48 September visitors abandoned.
 export const navLinks = [
-  { label: "Tour", href: "/#tour" },
-  // Named "Safe AI" (was "Governance", 3 Oct 2026): a first-time visitor knows what safe AI means; "governance" needs explaining. Not "Security": that reads as a trust page full of badges; this is a
-  // product argument, and it is the reason to choose OneCamp over an AI workspace that is easier to buy.
+  { label: "Product", href: "/#product" },
+  // "Safe AI" (was "Governance", 3 Oct 2026): a first-time visitor knows what
+  // safe AI means; "governance" needs explaining.
   { label: "Safe AI", href: "/#governance" },
-  // The quickest answer to "what would we use it for": a project with its plan already in it.
-  { label: "Templates", href: "/templates" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Compare", href: "/compare" },
   { label: "Docs", href: "/docs" },
 ];
 
 export const footerLinks = {
   Product: [
-    { label: "Product tour", href: "/#tour" },
+    { label: "Live demo", href: site.demoStartUrl, external: true },
+    { label: "Install free", href: "/free" },
+    { label: "Pricing", href: "/pricing" },
     // The homepage stopped arguing "replaces Slack, Notion, Asana, Zoom" on
-    // purpose. /compare is where that argument moved, so it has to be reachable
-    // from somewhere or it is a page only a search engine ever sees.
+    // purpose. /compare is where that argument moved.
     { label: "Compare", href: "/compare" },
+    { label: "Launch film", href: "/tour" },
     { label: "Project templates", href: "/templates" },
-    { label: "For agencies", href: "/for/agencies" },
-    { label: "For teams in India", href: "/for/india" },
-    { label: "For regulated teams", href: "/for/compliance" },
-    { label: "Safe AI", href: "/#governance" },
-    { label: "Enterprise controls", href: "/#enterprise" },
-    { label: "Features", href: "/#features" },
-    { label: "Pricing", href: "/#pricing" },
-    { label: "FAQ", href: "/#faq" },
+    { label: "Docs", href: "/docs" },
     { label: "Blog", href: "/blog" },
-    { label: "Live Demo", href: site.demoStartUrl, external: true },
-    { label: "Setup Docs", href: "/docs" },
     { label: "GitHub", href: site.githubOrgUrl, external: true },
+  ],
+  "Made for": [
+    { label: "Agencies", href: "/for/agencies" },
+    { label: "Teams in India", href: "/for/india" },
+    { label: "Regulated teams", href: "/for/compliance" },
   ],
   // One link per "alternative to" page, from the pages' own data.
   "Switch from": ALTERNATIVE_INDEX.map((a) => ({ label: a.label, href: `/alternatives/${a.slug}` })),

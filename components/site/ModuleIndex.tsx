@@ -23,7 +23,6 @@
 
 import React from "react"
 
-import { Reveal } from "@/components/site/Reveal"
 
 export interface Module {
     title: string
@@ -34,12 +33,12 @@ export const ModuleIndex: React.FC<{ items: readonly Module[] }> = ({ items }) =
     <div className="mt-12 border-t border-border">
         <dl className="m-0 grid gap-x-12 md:grid-cols-2">
             {items.map((m, i) => (
-                <Reveal key={m.title} delay={Math.min(i, 6) * 40}>
+                <div key={m.title}>
                     <div className="grid grid-cols-[minmax(6.5rem,8rem)_1fr] items-baseline gap-x-4 border-b border-border py-4 sm:gap-x-6">
                         <dt className="text-sm font-semibold tracking-[-0.01em] text-foreground">{m.title}</dt>
                         <dd className="m-0 text-sm leading-relaxed text-muted-foreground">{m.body}</dd>
                     </div>
-                </Reveal>
+                </div>
             ))}
         </dl>
     </div>

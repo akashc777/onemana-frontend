@@ -106,14 +106,17 @@ template-built site.
 
 | Step | Size / line height | Tracking |
 |---|---|---|
-| Display | 64 / 68 | −0.035em, weight 600 |
-| H1 | 48 / 52 | −0.03em |
-| H2 | 32 / 38 | −0.02em |
+| Display | 64 / 68 | −0.028em, weight 600 |
+| H1 | 48 / 52 | −0.024em |
+| H2 | 32 / 38 | −0.016em |
 | H3 | 20 / 28 | −0.01em |
 | Body-lg | 18 / 28 | |
 | Body | 16 / 26 | |
 | Small | 14 / 20 | |
 | Caption | 13 / 18 | |
+
+Inter Tight is already set tight, so the direction's −0.035em on top of it made
+letters touch at 64 px; the tracking above is that, eased off until they do not.
 
 **App scale:**
 

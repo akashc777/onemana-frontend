@@ -2,12 +2,11 @@ import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
 import { mediaUrl } from "@/lib/blog";
 import { formatDate } from "@/lib/format";
-import { Reveal } from "@/components/site/Reveal";
 
 export function PostCard({ post, index = 0, featured = false }: { post: BlogPost; index?: number; featured?: boolean }) {
   const cover = mediaUrl(post.cover_image);
   return (
-    <Reveal delay={(index % 3) * 60} className={featured ? "sm:col-span-2 lg:col-span-3" : ""}>
+    <div className={featured ? "sm:col-span-2 lg:col-span-3" : ""}>
       <Link
         href={`/blog/${post.slug}`}
         className="card card-hover group block h-full overflow-hidden bg-card/90 transition-colors duration-150"
@@ -51,6 +50,6 @@ export function PostCard({ post, index = 0, featured = false }: { post: BlogPost
           </div>
         </div>
       </Link>
-    </Reveal>
+    </div>
   );
 }

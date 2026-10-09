@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Reveal } from "@/components/site/Reveal";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 
@@ -19,7 +18,7 @@ export function AboutView() {
       />
 
       <article className="container-x mx-auto max-w-prose pb-20">
-        <Reveal>
+        <div>
           <div className="prose max-w-none prose-headings:tracking-[-0.02em] prose-headings:text-foreground prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-brand">
             <h2>The story</h2>
             <p>
@@ -50,9 +49,9 @@ export function AboutView() {
               you. That is the deal.
             </p>
           </div>
-        </Reveal>
+        </div>
 
-        <Reveal delay={80}>
+        <div>
           <div className="card-premium card mt-12 bg-card/90 p-8 text-center sm:p-10">
             <div className="premium-frame-accent mx-auto mb-6 h-px w-16" aria-hidden />
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -82,9 +81,9 @@ export function AboutView() {
               </ButtonLink>
             </div>
           </div>
-        </Reveal>
+        </div>
 
-        <Reveal delay={120} className="mt-10 text-center text-sm text-muted-foreground">
+        <div className="mt-10 text-center text-sm text-muted-foreground">
           <p id="contact" className="scroll-mt-24">
             Questions?{" "}
             <a href="mailto:support@onemana.dev" className="font-medium text-brand hover:underline">
@@ -100,7 +99,7 @@ export function AboutView() {
               Try the live demo
             </Link>
           </p>
-        </Reveal>
+        </div>
       </article>
     </>
   );

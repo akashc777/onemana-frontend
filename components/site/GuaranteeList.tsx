@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * GuaranteeList — the governance claims as a specification, not a card grid.
  *
@@ -24,35 +22,23 @@
 
 import React from "react"
 
-import { Reveal } from "@/components/site/Reveal"
-
 export interface Guarantee {
     title: string
     body: string
 }
 
-export const GuaranteeList: React.FC<{ items: readonly Guarantee[] }> = ({ items }) => (
-    <ol className="mx-auto mt-12 max-w-3xl list-none border-t border-border p-0">
+// The number is neutral: the accent is for actions, not for list markers.
+export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string }> = ({ items, className = "" }) => (
+    <ol className={`list-none border-t border-border p-0 ${className}`}>
         {items.map((g, i) => (
-            <li key={g.title} className="border-b border-border">
-                <Reveal delay={Math.min(i, 4) * 50}>
-                    <div className="grid grid-cols-[2.5rem_1fr] gap-x-4 py-6 sm:grid-cols-[3.5rem_1fr] sm:gap-x-6 sm:py-7">
-                        <span
-                            aria-hidden
-                            className="pt-1 font-mono text-sm tabular-nums text-brand"
-                        >
-                            {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <div className="min-w-0">
-                            <h3 className="text-lg font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-xl">
-                                {g.title}
-                            </h3>
-                            <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground sm:text-base">
-                                {g.body}
-                            </p>
-                        </div>
-                    </div>
-                </Reveal>
+            <li key={g.title} className="grid grid-cols-[2rem_1fr] gap-x-3 border-b border-border py-5">
+                <span aria-hidden className="pt-0.5 font-mono text-small tabular-nums text-muted-foreground">
+                    {i + 1}
+                </span>
+                <div className="min-w-0">
+                    <h3 className="text-h3 text-foreground">{g.title}</h3>
+                    <p className="mt-1.5 text-small text-muted-foreground sm:text-body">{g.body}</p>
+                </div>
             </li>
         ))}
     </ol>

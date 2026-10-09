@@ -45,3 +45,43 @@ export function teamCost(
     const oneCampYear = licenceUsd + serverUsdPerMonth * 12
     return { seats, saasYear, licenceUsd, oneCampYear, free, multiple: saasYear / oneCampYear, lines }
 }
+
+/**
+ * List prices per user per month, billed annually, for the tools OneCamp is
+ * most often bought instead of. Facts about other companies' prices, stated so
+ * the arithmetic can be checked; checked October 2026 (PRICES_CHECKED).
+ *
+ * Every line is a plan someone can buy today. AI is not an add-on any more:
+ * Notion AI comes only with Notion Business, so wanting AI swaps Notion Plus
+ * ($10) for Business ($20) rather than adding a retired $10 add-on (buyer
+ * review, 4 Oct 2026). Where sources disagree, the lower price is used: Zoom
+ * Pro moved twice in 2026, so $13.33.
+ */
+export const SEAT_COSTS: readonly SeatCost[] = [
+    { name: "Slack Pro", usd: 7.25, when: "always" },
+    { name: "Notion Plus", usd: 10, when: "noAi" },
+    { name: "Notion Business, which includes Notion AI", usd: 20, when: "ai" },
+    { name: "Zoom Pro", usd: 13.33, when: "always" },
+]
+
+export const PRICES_CHECKED = "October 2026"
+
+/** Where each list price above can be checked. */
+export const SEAT_COST_SOURCES = [
+    { name: "Slack", href: "https://slack.com/pricing" },
+    { name: "Notion", href: "https://www.notion.com/pricing" },
+    { name: "Zoom", href: "https://zoom.us/pricing" },
+] as const
+
+/** A VPS that comfortably runs a team of this size, from the hardware FAQ. */
+export const SERVER_USD_PER_MONTH = 12
+
+/**
+ * What the per-seat stack costs a team for a year, in rupees at the day's
+ * rate, rounded to the thousand: an estimate, and it says so where it is shown.
+ */
+export function stackYearInr(people: number, withAi: boolean, usdRate: number): number {
+    const lines = SEAT_COSTS.filter((t) => t.when === "always" || (t.when === "ai") === withAi)
+    const usd = lines.reduce((n, t) => n + t.usd, 0) * people * 12
+    return Math.round((usd * usdRate) / 1000) * 1000
+}

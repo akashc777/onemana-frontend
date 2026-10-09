@@ -7,8 +7,6 @@ import { jsonLdScript } from "@/lib/jsonLd";
 import { defaultOgImages, defaultTwitterImages, OG_DESCRIPTION, OG_TITLE } from "@/lib/og-card";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
-import { SiteBackground } from "@/components/site/SiteBackground";
-import { ScrollProgress } from "@/components/site/ScrollProgress";
 import { VisitorTracker } from "@/components/site/VisitorTracker";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 export const metadata: Metadata = {
@@ -103,17 +101,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${fontSans.className} flex min-h-screen flex-col font-sans antialiased`}>
         <ThemeProvider>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
-          <SiteBackground />
-          <ScrollProgress />
           <VisitorTracker />
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
           >
             Skip to content
           </a>
           <Nav />
-          <main id="main" className="flex-1 pb-20">
+          <main id="main" className="flex-1">
             {children}
           </main>
           <Footer />

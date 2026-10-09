@@ -133,36 +133,36 @@ export const GovernedDemo: React.FC = () => {
 
     return (
         <figure
-            className="m-0 overflow-hidden rounded-lg border border-border bg-canvas-raised"
+            className="m-0 overflow-hidden rounded-lg border border-border bg-card"
             onKeyDown={onKeyDown}
         >
             <figcaption className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2.5">
-                <span className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-foreground/45">
+                <span className="text-caption font-medium text-foreground">
                     Interactive walkthrough
                 </span>
-                <span className="font-mono text-[0.65rem] text-foreground/35">
-                    same permission rules as production
+                <span className="text-caption text-muted-foreground">
+                    Same permission rules as production
                 </span>
             </figcaption>
 
             <div className="grid gap-px bg-border md:grid-cols-2">
                 {/* The conversation. */}
-                <div className="min-w-0 bg-canvas-raised p-4">
-                    <p className="m-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-foreground/40">
+                <div className="min-w-0 bg-card p-4">
+                    <p className="m-0 text-caption font-medium text-muted-foreground">
                         #finance
                     </p>
                     <ol className="m-0 mt-3 list-none space-y-3 p-0">
                         {said.map((s, i) => (
                             <li key={i} className="min-w-0">
                                 <span className="flex flex-wrap items-baseline gap-x-2">
-                                    <span className="text-[0.78rem] font-medium text-foreground/80">{s.who}</span>
+                                    <span className="text-small font-medium text-foreground">{s.who}</span>
                                     {s.agent && (
-                                        <span className="rounded-sm bg-agent-muted px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-agent">
-                                            agent
+                                        <span className="rounded-sm bg-agent-muted px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-agent">
+                                            Agent
                                         </span>
                                     )}
                                 </span>
-                                <span className="mt-0.5 block text-[0.82rem] leading-snug text-foreground/60">
+                                <span className="mt-0.5 block text-small text-muted-foreground">
                                     {s.text}
                                 </span>
                             </li>
@@ -170,20 +170,20 @@ export const GovernedDemo: React.FC = () => {
                     </ol>
 
                     {call && (
-                        <div className="mt-4 rounded-md border border-border/70 px-3 py-2.5">
+                        <div className="mt-4 rounded-md border border-border px-3 py-2.5">
                             <span className="flex flex-wrap items-baseline gap-x-2">
-                                <span className="font-mono text-[0.72rem] text-foreground/80">channel.post</span>
+                                <span className="font-mono text-caption text-foreground">channel.post</span>
                                 <span
                                     className={
                                         call === "refused"
-                                            ? "rounded-sm bg-brand/10 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-brand"
-                                            : "rounded-sm bg-agent-muted px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-agent"
+                                            ? "rounded-sm bg-danger/10 px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-danger"
+                                            : "rounded-sm bg-agent-muted px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-agent"
                                     }
                                 >
-                                    {call === "refused" ? "refused" : "checking"}
+                                    {call === "refused" ? "Refused" : "Checking"}
                                 </span>
                             </span>
-                            <span className="mt-1 block text-[0.75rem] leading-snug text-foreground/55">
+                            <span className="mt-1 block text-caption text-muted-foreground">
                                 {call === "refused"
                                     ? "You are not a member of this channel."
                                     : "Checking Priya's membership, now, not when the agent was set up."}
@@ -193,34 +193,34 @@ export const GovernedDemo: React.FC = () => {
                 </div>
 
                 {/* The record. */}
-                <div className="min-w-0 bg-canvas-raised p-4">
-                    <p className="m-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-foreground/40">
+                <div className="min-w-0 bg-card p-4">
+                    <p className="m-0 text-caption font-medium text-muted-foreground">
                         Audit log
                     </p>
                     {step >= AUDIT_FROM ? (
                         <div className="mt-3 min-w-0">
                             <span className="flex flex-wrap items-baseline gap-x-2">
-                                <span className="font-mono text-[0.72rem] text-foreground/80">
+                                <span className="font-mono text-caption text-foreground">
                                     {AUDIT_ROW.action}
                                 </span>
-                                <span className="font-mono text-[0.65rem] tabular-nums text-foreground/40">
+                                <span className="font-mono text-caption tabular-nums text-muted-foreground">
                                     {AUDIT_ROW.seq}
                                 </span>
                             </span>
                             <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
                                 {AUDIT_ROW.fields.map(([k, v]) => (
                                     <React.Fragment key={k}>
-                                        <dt className="font-mono text-[0.65rem] text-foreground/35">{k}</dt>
-                                        <dd className="m-0 min-w-0 truncate text-[0.75rem] text-foreground/60">{v}</dd>
+                                        <dt className="font-mono text-caption text-muted-foreground">{k}</dt>
+                                        <dd className="m-0 min-w-0 truncate text-caption text-foreground">{v}</dd>
                                     </React.Fragment>
                                 ))}
                             </dl>
-                            <p className="m-0 mt-2.5 font-mono text-[0.65rem] leading-relaxed text-foreground/35">
+                            <p className="m-0 mt-2.5 break-all font-mono text-caption text-muted-foreground">
                                 {AUDIT_ROW.hashes}
                             </p>
                         </div>
                     ) : (
-                        <p className="m-0 mt-3 text-[0.75rem] leading-snug text-foreground/40">
+                        <p className="m-0 mt-3 text-caption text-muted-foreground">
                             The decision is written here before the tool runs. If it cannot be
                             written, the call does not happen.
                         </p>
@@ -236,7 +236,7 @@ export const GovernedDemo: React.FC = () => {
                         if (step >= STEPS.length - 1) setStep(0)
                         setPlaying((p) => !p)
                     }}
-                    className="rounded-md border border-border px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-wider text-foreground/60 transition-colors hover:border-brand/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                    className="h-8 rounded-md border border-border-strong px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted"
                 >
                     {playing ? "Pause" : step >= STEPS.length - 1 ? "Replay" : "Play"}
                 </button>
@@ -252,8 +252,8 @@ export const GovernedDemo: React.FC = () => {
                                     setPlaying(false)
                                     setStep(i)
                                 }}
-                                className={`h-2.5 w-2.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 ${
-                                    i <= step ? "bg-brand" : "bg-foreground/15 hover:bg-foreground/30"
+                                className={`h-2 w-2 rounded-full transition-colors duration-150 ${
+                                    i <= step ? "bg-foreground" : "bg-foreground/20 hover:bg-foreground/40"
                                 }`}
                             />
                         </li>
@@ -261,7 +261,7 @@ export const GovernedDemo: React.FC = () => {
                 </ol>
 
                 {/* The step's name, announced as it changes rather than only drawn. */}
-                <p aria-live="polite" className="m-0 text-[0.72rem] text-foreground/45">
+                <p aria-live="polite" className="m-0 text-caption text-muted-foreground">
                     {STEPS[step].label}
                 </p>
             </div>

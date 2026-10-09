@@ -17,7 +17,6 @@
 
 import React from "react"
 
-import { Reveal } from "@/components/site/Reveal"
 
 export interface ControlGroupData {
     label: string
@@ -27,7 +26,7 @@ export interface ControlGroupData {
 export const ControlIndex: React.FC<{ groups: readonly ControlGroupData[] }> = ({ groups }) => (
     <div className="mx-auto mt-12 max-w-3xl border-t border-border">
         {groups.map((g, i) => (
-            <Reveal key={g.label} delay={Math.min(i, 4) * 50}>
+            <div key={g.label}>
                 <section className="grid grid-cols-1 gap-x-6 border-b border-border py-4 sm:grid-cols-[9rem_1fr] sm:py-7">
                     <h3 className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-brand sm:pt-0.5">
                         {g.label}
@@ -40,7 +39,7 @@ export const ControlIndex: React.FC<{ groups: readonly ControlGroupData[] }> = (
                         ))}
                     </ul>
                 </section>
-            </Reveal>
+            </div>
         ))}
     </div>
 )

@@ -46,7 +46,7 @@ describe("the governed walkthrough", () => {
     it("says what it is, and does not claim to be the live app", () => {
         const html = renderToString(<GovernedDemo />)
         expect(html).toContain("Interactive walkthrough")
-        expect(html).toContain("same permission rules as production")
+        expect(html).toMatch(/same permission rules as production/i)
         expect(html).not.toMatch(/live app/i)
     })
 

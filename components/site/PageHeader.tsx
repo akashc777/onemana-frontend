@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Reveal } from "@/components/site/Reveal";
 
 interface PageHeaderProps {
   eyebrow?: string;
@@ -26,11 +25,11 @@ export function PageHeader({
       <div aria-hidden className="brand-beam pointer-events-none absolute inset-x-0 top-0 h-48 opacity-60" />
       <div className={`container-x relative z-10 ${divider ? "pb-6" : "pb-10"} ${centered ? "text-center" : ""}`}>
         {eyebrow && (
-          <Reveal>
+          <div>
             <p className={`eyebrow-premium ${centered ? "mx-auto w-fit" : ""}`}>{eyebrow}</p>
-          </Reveal>
+          </div>
         )}
-        <Reveal delay={eyebrow ? 60 : 0}>
+        <div>
           <h1
             className={`text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl ${
               eyebrow ? "mt-4" : ""
@@ -38,9 +37,9 @@ export function PageHeader({
           >
             {title}
           </h1>
-        </Reveal>
+        </div>
         {subtitle && (
-          <Reveal delay={eyebrow ? 120 : 60}>
+          <div>
             <p
               className={`mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground ${
                 centered ? "mx-auto" : ""
@@ -48,7 +47,7 @@ export function PageHeader({
             >
               {subtitle}
             </p>
-          </Reveal>
+          </div>
         )}
       </div>
       {divider && (

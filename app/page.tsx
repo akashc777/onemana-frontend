@@ -1,381 +1,167 @@
 import Link from "next/link";
-import { KineticHeadline } from "@/components/site/KineticHeadline"
-import CostCalculator from "@/components/site/CostCalculator";
-import SwitchingCosts from "@/components/site/SwitchingCosts";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
-import { features, MODULES_ON_HOMEPAGE, steps, faqs, requirements, trustPoints, governance, enterpriseControls } from "@/lib/content";
+import { faqs, governance } from "@/lib/content";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { getPricing } from "@/lib/pricing";
-import { getGithubStars } from "@/lib/github";
+import { fmtINR, getPricing } from "@/lib/pricing";
+import { getReleaseFacts } from "@/lib/releases";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { Reveal } from "@/components/site/Reveal";
-import { Pricing } from "@/components/site/Pricing";
-import { GitHubStars } from "@/components/site/GitHubStars";
-import { HeroMedia } from "@/components/site/HeroMedia";
-import { HeroLoop } from "@/components/site/HeroLoop";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
-import { ModuleIndex } from "@/components/site/ModuleIndex";
-import { ControlIndex } from "@/components/site/ControlIndex";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
-import { HeroProductVideo } from "@/components/site/HeroProductVideo";
-
-import { WorkspaceShowcase } from "@/components/site/showcase/WorkspaceShowcase";
-import { StepCard, FaqItem } from "@/components/site/marketing";
-import { StepsConnector } from "@/components/site/StepsConnector";
-import { HeroAmbient, ShimmerText, TrustStrip } from "@/components/site/PremiumVisuals";
-import { StickyBuyCta } from "@/components/site/StickyBuyCta";
-import { TemplateStrip } from "@/components/site/TemplateStrip";
-import { SocialProof } from "@/components/site/SocialProof";
-import { SectionAmbient } from "@/components/site/SectionAmbient";
-import { Fold } from "@/components/site/Fold";
+import { ProductShot, PhoneShot } from "@/components/site/ProductShot";
+import { ProductTabs } from "@/components/site/ProductTabs";
+import { FactsStrip } from "@/components/site/FactsStrip";
+import { RunSpec } from "@/components/site/RunSpec";
+import { HomeComparison } from "@/components/site/HomeComparison";
+import { PlanColumns } from "@/components/site/PlanColumns";
+import { FaqItem } from "@/components/site/marketing";
 
 export const revalidate = 300;
 
+/**
+ * The home page tells one story in seven parts (design direction, 10 Oct 2026):
+ * what it is, with the product itself; the facts; the product by surface; the
+ * argument, shown rather than told; what running it involves; how it compares;
+ * and the price. It used to be eleven sections from one template and 12,700 px
+ * tall, with a drawn mockup, a beam grid, scroll reveals, a sticky buy bar and
+ * four calls to action at once.
+ *
+ * Calls to action, in rank: the live demo (filled), Install free (outline),
+ * then buying, as a text link. Nothing is centred but the final call.
+ */
 export default async function HomePage() {
-  const pricing = await getPricing();
-  const stars = await getGithubStars();
+  const [pricing, release] = await Promise.all([getPricing(), getReleaseFacts()]);
 
   return (
     <>
-      <StickyBuyCta />
-
-      {/* Hero */}
-      <section className="relative overflow-hidden pb-8 pt-14 sm:pb-12 sm:pt-20">
-        <HeroAmbient />
-        {/* No WebGL. The particle sphere was the one thing on the page that
-            explained nothing about the product, and it pulled three + gsap onto
-            the critical path of a site whose whole job is to load fast. */}
+      {/* 1. What it is, and the product itself. */}
+      <section className="pt-14 sm:pt-20">
         <div className="container-x">
-          {/* TEXT, THE HEADLINE ACTED OUT, THEN THE PRODUCT (3 Oct 2026).
-              The right column used to be an audit-log table: task.create,
-              doc.read, channel.post REFUSED. Beside a headline that now says
-              what OneCamp is, it read as a developer's terminal, and its story
-              is told properly twice further down (Safe AI, and the stopped-agent
-              walkthrough). So the hero says what it is, then shows it. */}
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,540px)]">
-            <div className="max-w-2xl">
-              <Reveal>
-                <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brand">
-                  Open source · Free for teams up to 25
-                </p>
-              </Reveal>
-              {/* Its own entrance (KineticHeadline); Reveal would hide it while it moves. */}
-              <KineticHeadline
-                className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.4rem]"
-                before="Your team's chat, docs, tasks and calls,"
-                emphasis="in one app you own"
-                after="."
-              />
-              <Reveal delay={120}>
-                <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
-                  Like Slack, Notion and Zoom in one place, running on your own server, so your
-                  company&apos;s data stays yours. Its AI agents do work for you, and can only do what
-                  you are allowed to do.
-                </p>
-              </Reveal>
-              <Reveal delay={180}>
-                <div className="mt-8 flex w-full flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center">
-                  {/* The demo leads: of thirty visitors who reached checkout in
-                      sixty days none bought, and the demo is the step that needs
-                      no card and no server. Buying is one click further on. */}
-                  <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg" className="w-full sm:w-auto">
-                    Try the live demo
-                  </ButtonLink>
-                  {/* Free, not "Get OneCamp": of 48 who reached the buy page in
-                      September two opened the payment window. The free plan
-                      lets a team use it for real before anyone pays. */}
-                  <ButtonLink href="/free" variant="ghost" size="lg" className="w-full sm:w-auto">
-                    Start free
-                  </ButtonLink>
-                  <span className="hidden text-xs text-muted-foreground sm:ml-1 sm:inline-flex">
-                    <GitHubStars className="!py-1.5" stars={stars} />
-                  </span>
-                </div>
-                {/* The two things a launch visitor checks first, and the hero
-                    named neither: is it open, and can a team use it for free. */}
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Free for up to {FREE_SEATS} people, no card.{" "}
-                  <a href={site.githubOrgUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">
-                    Open source on GitHub
-                  </a>
-                  , AGPL-3.0.
-                </p>
-              </Reveal>
-            </div>
+          <h1 className="max-w-4xl text-balance text-[2.5rem] leading-[1.08] tracking-[-0.024em] text-foreground sm:text-h1 lg:text-display">
+            Slack, Notion and Zoom in one app, on your own server.
+          </h1>
+          <p className="mt-6 max-w-2xl text-body-lg text-muted-foreground">
+            OneCamp is an open-source workspace for chat, docs, tasks and calls. Its AI agents can do only what
+            the person asking could do, and every attempt is on the record. Free for up to {FREE_SEATS} people.
+          </p>
 
-            {/* The headline acted out: four things in one window, and an agent
-                turning a conversation into tasks. Wide screens only, where the
-                space beside the text was empty; on a phone the product screen
-                below follows the text directly. */}
-            <div className="hidden lg:block">
-              <HeroLoop />
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start">
+            <div className="flex flex-col gap-1.5">
+              <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
+                Try the live demo
+              </ButtonLink>
+              <span className="text-caption text-muted-foreground sm:text-center">No sign-up, 2 minutes</span>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <ButtonLink href="/free" variant="ghost" size="lg">
+                Install free
+              </ButtonLink>
+              <span className="text-caption text-muted-foreground sm:text-center">Up to {FREE_SEATS} people, no card</span>
             </div>
           </div>
+          <p className="mt-6 text-small text-muted-foreground">
+            Ready to buy?{" "}
+            <Link href="/buy" className="link">
+              Buy a licence, {fmtINR(pricing.lifetime_inr)} once
+            </Link>
+          </p>
 
-          {/* The product itself, on every screen: it is what the headline
-              describes, so it is the first thing after it. */}
-          <Reveal delay={200} direction="scale" className="mx-auto mt-12 w-full max-w-6xl sm:mt-16">
-            <HeroMedia />
-          </Reveal>
+          <div className="mt-12 sm:mt-16">
+            <ProductShot
+              name="channel"
+              priority
+              className="hidden sm:block"
+              alt="OneCamp's #engineering channel: a release thread where the Release Captain agent reports checklist status, with the sidebar of channels, projects and docs."
+            />
+            <PhoneShot
+              priority
+              className="mx-auto max-w-sm sm:hidden"
+              alt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
+            />
+          </div>
+
+          {/* 2. Facts, where a logo wall would go. */}
+          <div className="mt-12">
+            <FactsStrip release={release} />
+          </div>
         </div>
       </section>
 
-      <Section id="features" divider className="overflow-hidden">
-        <SectionHeading
-          eyebrow="What's inside"
-          title="Everything your team works in"
-          subtitle="Chat, docs, tasks, video calls and AI, in one app."
-        />
-        {/* An index rather than twelve cards. The differentiators are argued
-            above this, so the honest job here is "does it have all the pieces",
-            and that question wants a list somebody can scan, not a grid of
-            equally weighted boxes with twelve pastel chips in twelve colours
-            assigned by position. */}
-        <ModuleIndex items={features.slice(0, MODULES_ON_HOMEPAGE)} />
-        {/* The remaining modules are NAMED rather than hidden. A reader scanning
-            for "does it do whiteboards" must not conclude it does not, and a
-            "+5 more" with no names invites exactly that. */}
-        <p className="mt-6 text-sm text-muted-foreground">
-          Also{" "}
-          {features.slice(MODULES_ON_HOMEPAGE).map((f, i, a) => (
-            <span key={f.title}>
-              {f.title.toLowerCase()}
-              {i < a.length - 2 ? ", " : i === a.length - 2 ? " and " : ""}
-            </span>
-          ))}
-          .{" "}
-          <Link href="/docs" className="underline underline-offset-4 hover:text-foreground">
-            All of it in the docs
-          </Link>
-        </p>
+      {/* 3. The product, by surface. Old links to #features and #tour land here. */}
+      <Section id="product">
+        <span id="features" aria-hidden />
+        <span id="tour" aria-hidden />
+        <SectionHeading title="Everything your team works in" subtitle="Real screens from the live demo, in your theme." className="mb-8" />
+        <ProductTabs />
       </Section>
 
-      <Section divider className="overflow-hidden">
-        <SectionAmbient variant="product" />
-        <SectionHeading
-          eyebrow="Inside the product"
-          title="What it actually looks like"
-          subtitle="Ask the AI to brainstorm a mind map on the whiteboard, or build a table from a sentence. Calendars with a live now-line. Docs with someone else's cursor in them. The same UI we use at OneMana."
-        />
-        <Reveal direction="left" className="mt-12">
-          <WorkspaceShowcase />
-        </Reveal>
-      </Section>
-
-      {/*
-        The difference, straight after the product. ORDER (3 Oct 2026): what it is, what it
-        looks like, why it is different, the proof, then setup, IT and price. It used to lead with
-        this argument and reach the modules seventh, so a newcomer met "governance" and SAML before
-        learning what the app does. The modules are stated plainly rather than argued against each
-        category leader, which keeps the comparison the earlier ordering was avoiding off the page.
-      */}
-      <Section id="governance" divider className="overflow-hidden">
-        <SectionAmbient variant="features" />
-        <SectionHeading
-          eyebrow={governance.eyebrow}
-          title={governance.title}
-          subtitle={governance.subtitle}
-        />
-        {/* A specification, not a card grid. These are guarantees that hold
-            together and a reader can refer to one of them, so numbering is true
-            rather than decorative. The pastel icon chips carried no information:
-            a shield beside "an agent can only do what its author could" said
-            nothing the sentence had not already said. */}
-        <GuaranteeList items={governance.points} />
-        {/* What used to be four more numbered essays. One line, because the
-            three above carry the argument and seven of equal weight flattened
-            them. The detail is a click away rather than a scroll away. */}
-        <p className="mt-8 text-center text-sm text-muted-foreground">
-          {governance.alsoShipped}{" "}
-          <Link href={governance.alsoShippedHref} className="underline underline-offset-4 hover:text-foreground">
-            Read the docs
-          </Link>
-        </p>
-      </Section>
-
-      {/* Section 5 of the redesign plan's IA: one path, Channel to Agent to
-          Refusal to Audit. The critique's finding was a mismatch, that the site
-          sells a refusal on the record and the demo it linked to opened on a
-          chatbot panel, so the claim was argued in prose and then not shown.
-          This is the claim itself, on the page that makes it, with the action
-          name and the refusal sentence the product actually produces. */}
+      {/* 4. The argument, shown. The id is the one the nav's "Safe AI" and old links use. */}
       <Section id="demo" divider>
-        <SectionHeading
-          eyebrow="See it happen"
-          title="Watch an agent get stopped"
-          subtitle="Priya can't post in #finance. Neither can her AI agent, and the attempt is written down."
-        />
-        <Reveal className="mt-10">
-          <GovernedDemo />
-        </Reveal>
-        {/* THE SAME PROOF PATH THE COMPARE PAGE HAS, on the page people
-            actually see. Of the last 400 visitors, 361 opened this page and
-            nothing else, so a route that only exists on /compare is a route
-            almost nobody is offered. The drill link lands on the drill and runs
-            it, rather than signing somebody in and leaving them on a home
-            screen to find it; the second link is what makes the refusal
-            checkable by the reader instead of asserted at them.
-
-            On the word budget: these are link labels and clauses, all under the
-            twelve-word prose floor, so app/landingWordBudget.test.ts does not
-            see them and its proxy does not move. That is the systematic
-            under-count its own header describes, not headroom. The rendered
-            addition is about twenty words against a hand measurement of 1,042
-            prose words and an aim of 1,150-1,600, so the page stays inside the
-            plan's budget on the measure that counts. */}
-        <p className="mt-6 text-sm text-muted-foreground">
-          The live demo runs the same check.{" "}
-          <Link
-            href={site.demoDrillUrl()}
-            className="underline underline-offset-4 hover:text-foreground"
-          >
-            Run the drill yourself
-          </Link>
-          , then{" "}
-          <Link href="/verify" className="underline underline-offset-4 hover:text-foreground">
-            check the record it wrote
-          </Link>
-          . No account, nothing to install.
-        </p>
-      </Section>
-
-      {/* Evidence after the claim and its walkthrough: two buyers in their own
-          words and the one checkable fact about who runs it. */}
-      <Section divider spacing="compact">
-        <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          What buyers say
-        </p>
-        <SocialProof />
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          OneMana runs its own workspace on this: {requirements[0].spec}.
-        </p>
-      </Section>
-
-      <Section id="tour" divider className="overflow-hidden">
-        <SectionAmbient variant="tour" />
-        <SectionHeading
-          eyebrow="Launch film"
-          title="See it before you commit"
-          subtitle="An AI agent stopped from overstepping, then the app: chat, docs, tasks, on your server."
-        />
-        <Reveal direction="scale" className="mt-12">
-          <div className="tour-video-glow relative">
-            <HeroProductVideo />
+        <span id="governance" aria-hidden />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
+          <div>
+            <SectionHeading
+              eyebrow="Safe AI"
+              title="Watch an agent get stopped"
+              subtitle="Priya can't post in #finance. Neither can her AI agent, and the attempt is written down."
+            />
+            <GuaranteeList items={governance.points} className="mt-8" />
           </div>
-        </Reveal>
-      </Section>
-
-      <Section divider>
-        <SectionHeading
-          eyebrow="Getting started"
-          title="One person installs. Everyone else logs in."
-          subtitle="The first install takes 10 to 20 minutes."
-        />
-        <div className="relative mt-12 grid gap-5 md:grid-cols-3">
-          <StepsConnector />
-          {steps.map((s, i) => (
-            <StepCard key={s.n} n={s.n} title={s.title} body={s.body} index={i} />
-          ))}
-        </div>
-        <Reveal className="mx-auto mt-10 max-w-2xl">
-          <div className="rounded-lg border border-border bg-muted/30 px-5 py-4 text-center text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Works on every device.</span> Web, a desktop app, and phones.
+          <div className="lg:sticky lg:top-24 lg:self-start lg:pt-2">
+            <GovernedDemo />
+            {/* The proof path: run the same refusal in the demo, then check its record yourself. */}
+            <p className="mt-4 text-small text-muted-foreground">
+              The live demo runs the same check.{" "}
+              <Link href={site.demoDrillUrl()} className="link">
+                Run the drill yourself
+              </Link>
+              , then{" "}
+              <Link href="/verify" className="link">
+                check the record it wrote
+              </Link>
+              . No account, nothing to install.
+            </p>
           </div>
-        </Reveal>
-      </Section>
-
-      {/* Day one, after the install: a project that starts with its plan.
-          The gallery was linked only from the footer, so the templates (the
-          quickest way to see what OneCamp is for) were a page almost nobody
-          reached. Names and sizes here; each plan is read on its own page. */}
-      <Section id="templates" divider>
-        <SectionHeading
-          eyebrow="Project templates"
-          title="Start a project with its plan already in it"
-          subtitle="Every task, what done looks like, and its date."
-        />
-        <TemplateStrip />
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
-          <ButtonLink href={site.demoUrlTo("templates")} external variant="brandPremium">
-            Try them in the live demo
-          </ButtonLink>
-          <Link href="/templates" className="text-muted-foreground underline underline-offset-4 hover:text-foreground">
-            See every plan, week by week
-          </Link>
         </div>
       </Section>
 
-      <Section id="enterprise" divider>
+      {/* 5. What running it involves. Old links to #enterprise land here. */}
+      <Section id="run" divider>
+        <span id="enterprise" aria-hidden />
         <SectionHeading
-          eyebrow={enterpriseControls.eyebrow}
-          title={enterpriseControls.title}
-          subtitle={enterpriseControls.subtitle}
+          title="What you are signing up to run"
+          subtitle="Self-hosting means somebody on your team looks after a server. This is what that involves."
+          className="mb-8"
         />
-        {/* The heading above this is "the boxes procurement makes you tick",
-            which describes a checklist rather than four cards compressed into
-            narrow columns. The ticks are gone with the cards: in a section
-            titled "already in the box", a tick beside every line contrasts with
-            nothing. */}
-        <ControlIndex groups={enterpriseControls.groups} />
+        <RunSpec />
       </Section>
 
-      <Section id="switching" divider>
-        <SectionHeading
-          eyebrow="Switching"
-          title="The two things that actually stop teams moving"
-          subtitle="Neither is price. You would lose your history, and somebody has to run it."
-        />
-        <SwitchingCosts />
+      {/* 6. How it compares, including where it loses. */}
+      <Section id="compare" divider>
+        <SectionHeading title="How it compares" subtitle="Facts, not ticks, and one row where OneCamp loses." className="mb-8" />
+        <HomeComparison pricing={pricing} />
       </Section>
 
-      <Section id="pricing" divider className="overflow-hidden">
-        <SectionAmbient variant="pricing" />
+      {/* 7. The price, and the questions people ask before paying. */}
+      <Section id="pricing" divider>
         <SectionHeading
           eyebrow="Pricing"
           title="Free for small teams. Pay once when you grow."
-          subtitle="Run it on your own server, or let us host it for you."
+          className="mb-8"
         />
-        <Pricing pricing={pricing} />
-
-        {/* The comparison used to live as prose in the twelfth FAQ item. Cost at
-            scale is the first reason teams leave per-seat tools, and what
-            converts is specific arithmetic rather than adjectives, so it belongs
-            under the price with the visitor's own headcount in it. */}
-        <div className="container-x mt-10">
-          <Fold summary="Compare the cost for your team" className="mx-auto max-w-2xl">
-            <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />
-          </Fold>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Sizing: {requirements.map((r) => `${r.label.toLowerCase()}, ${r.spec}`).join("; ")}.{" "}
-            <Link href="/docs/scale-self-hosted" className="underline underline-offset-4 hover:text-foreground">
-              How it grows
-            </Link>
-          </p>
-        </div>
-
-        {/* Right after the price, where somebody who just decided not to buy
-            today is still on the page. That is the whole audience this list
-            is for: interested, not yet convinced. */}
-        <div className="container-x mt-10 max-w-xl">
-          <SubscribeForm
-            source="pricing"
-            cta="Email me updates"
-            hint="Occasional product announcements, such as new releases and price changes. Unsubscribe in one click."
-          />
-        </div>
+        <PlanColumns pricing={pricing} />
+        <p className="mt-6 text-small">
+          <Link href="/pricing" className="link">
+            Compare every plan, side by side
+          </Link>
+        </p>
       </Section>
 
       <Section id="faq" divider>
-        <div className="mx-auto max-w-2xl">
-          <SectionHeading
-            eyebrow="Questions"
-            title="Before you buy"
-            subtitle="The emails we actually get. Short answers."
-          />
-          <div className="mt-12 space-y-3">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
+          <SectionHeading title="Before you buy" subtitle="The questions we are actually asked." />
+          <div className="border-t border-border">
             {faqs.map((f) => (
               <FaqItem key={f.q} q={f.q} a={f.a} />
             ))}
@@ -383,48 +169,41 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <Section>
-        <Reveal>
-          <div className="premium-cta px-8 py-16 text-center sm:px-12">
-            <div className="premium-cta-mesh" aria-hidden />
-            <h2 className="relative text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-              If you can&apos;t say what your AI is allowed to do, this is for you.
-            </h2>
-            {/* Specified verbatim by the redesign plan's §3.4, which is why it is here
-                and not cut. It WAS cut, as "the thesis a fourth time", and that was a
-                word-count decision overriding the brief: at the close, the reader who
-                scrolled past the hero without reading it needs the claim once more,
-                and the plan says so. */}
-            <p className="relative mx-auto mt-4 max-w-md text-muted-foreground">
-              It can only do what you can. It writes down everything it does. It runs on your own server.
-            </p>
-            <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <ButtonLink href={site.demoStartUrl} external variant="brandPremium" size="lg">
-                Try the live demo
-              </ButtonLink>
-              <ButtonLink href="/buy" variant="ghost" size="lg">
-                Get OneCamp
-              </ButtonLink>
-            </div>
-            <p className="relative mt-4 text-xs text-muted-foreground">
-              <Link href="#pricing" className="underline-offset-2 hover:text-foreground hover:underline">
-                See pricing
-              </Link>
-              {" "}
-              for lifetime and cloud plans
-            </p>
-            {/* No refund claim here. This line used to advertise a "30-day refund
-                policy" and link to /refund-policy, which says in its first
-                sentence that we do not provide refunds. A promise on the page a
-                buyer decides from, contradicted by the page it links to, is worse
-                than no promise. Unlimited users is true and is the thing that
-                actually distinguishes this from per-seat pricing. */}
-            <p className="relative mt-5 text-xs text-muted-foreground">
-              Instant license key · GST invoice · Unlimited users
-            </p>
+      {/* The one centred block on the page: the close. */}
+      <Section divider>
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-balance text-h2 text-foreground">
+            If you can&apos;t say what your AI is allowed to do, this is for you.
+          </h2>
+          {/* Specified verbatim by the redesign plan's §3.4 (landingDiet.test.ts pins it). */}
+          <p className="mt-4 text-body-lg text-muted-foreground">
+            It can only do what you can. It writes down everything it does. It runs on your own server.
+          </p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
+              Try the live demo
+            </ButtonLink>
+            <ButtonLink href="/free" variant="ghost" size="lg">
+              Install free
+            </ButtonLink>
           </div>
-        </Reveal>
+        </div>
       </Section>
+
+      {/* Updates by email, as the last thing on the page rather than mid-way through it. */}
+      <section className="border-t border-border">
+        <div className="container-x grid gap-4 py-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center md:gap-12">
+          <div>
+            <h2 className="font-sans text-small font-medium tracking-normal text-foreground">Release notes by email</h2>
+            <p className="mt-1 text-small text-muted-foreground">New releases and price changes, a few times a year.</p>
+          </div>
+          <SubscribeForm
+            source="pricing"
+            cta="Email me updates"
+            hint="Occasional product announcements, such as new releases and price changes. Unsubscribe in one click."
+          />
+        </div>
+      </section>
     </>
   );
 }

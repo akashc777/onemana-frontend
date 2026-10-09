@@ -215,10 +215,6 @@ export const faqs = [
     a: "One license key, unlimited users, no annual renewal. Everything is included: agents, local AI, SSO, LDAP, SCIM and audit export. Cloud plans include a self-host license so you can switch later.",
   },
   {
-    q: "Can we import Slack?",
-    a: "Yes: channels and messages via the built-in importer, with a plan shown before anything is written and a rollback afterwards. What it will not bring is listed in Switching above. Plan a weekend cutover; do not expect a magic mirror.",
-  },
-  {
     q: "What if OneMana shuts down?",
     a: "The code is open source: server AGPL-3.0, web app MIT. Your instance does not phone home. It keeps running on your hardware.",
   },

@@ -9,6 +9,7 @@ import { templates } from "@/lib/templates";
 const STATIC_ROUTES = [
   "",
   "/buy",
+  "/tour",
   "/compare",
   "/verify",
   "/docs",

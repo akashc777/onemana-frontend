@@ -55,7 +55,7 @@ describe("landing diet", () => {
   it("does not claim 'no mockups'", () => {
     // Only true if every surface is literally the live app. It was not, and
     // DESIGN.md's own rule is to say what is not true too.
-    const sources = ["app/page.tsx", "lib/content.ts", "components/site/HeroProductVideo.tsx"]
+    const sources = ["app/page.tsx", "lib/content.ts", "components/site/HeroProductVideo.tsx", "components/site/ProductTabs.tsx"]
       .map((f) => readFileSync(join(root, f), "utf8"))
       .join("\n");
     expect(sources.toLowerCase()).not.toMatch(/no (slick )?mockups/);
@@ -80,27 +80,33 @@ describe("landing diet", () => {
     }
   });
 
-  it("does not auto-rotate the workspace showcase", () => {
-    // It advanced every 8 seconds. DESIGN.md bans infinite decorative loops and
-    // the redesign plan's motion allowlist forbids anything that runs forever;
-    // a reader also experiences it as the surface changing while they are still
-    // reading the one they chose.
-    const showcase = readFileSync(join(root, "components/site/showcase/WorkspaceShowcase.tsx"), "utf8");
-    expect(showcase, "setInterval is an auto-advancing carousel").not.toMatch(/setInterval/);
+  it("does not auto-rotate the product tabs", () => {
+    // The showcase these tabs replaced advanced every 8 seconds. DESIGN.md bans
+    // infinite decorative loops and anything that runs forever; a reader also
+    // experiences it as the surface changing while they are still reading the
+    // one they chose.
+    const tabs = readFileSync(join(root, "components/site/ProductTabs.tsx"), "utf8");
+    expect(tabs, "setInterval is an auto-advancing carousel").not.toMatch(/setInterval|setTimeout/);
   });
 
-  it("renders only the active showcase panel", () => {
-    // All five rendered at once with the inactive ones at opacity-0. That put
-    // five surfaces of simulated UI into the server HTML, mounted five
-    // showcases on the client, and left four invisible workspaces in the
-    // keyboard tab order.
-    const showcase = readFileSync(join(root, "components/site/showcase/WorkspaceShowcase.tsx"), "utf8");
-    const panelRegion = showcase.slice(showcase.indexOf("min-h-[min(420px"));
-    expect(
-      panelRegion,
-      "the panel region maps over every tab, so all of them render",
-    ).not.toMatch(/TABS\.map/);
-    expect(panelRegion).toMatch(/TABS\[active\]/);
+  it("renders only the active product panel", () => {
+    // The old showcase rendered all five panels at once with the inactive ones
+    // at opacity-0: five surfaces in the server HTML, and four invisible
+    // workspaces in the keyboard tab order.
+    const tabs = readFileSync(join(root, "components/site/ProductTabs.tsx"), "utf8");
+    const panelRegion = tabs.slice(tabs.indexOf("Only the chosen panel renders"));
+    expect(panelRegion.length, "the panel marker comment is gone").toBeGreaterThan(40);
+    expect(panelRegion, "the panel region maps over every tab, so all of them render").not.toMatch(/TABS\.map/);
+    expect(tabs).toMatch(/const tab = TABS\[active\]/);
+  });
+
+  it("shows the product, not a drawing of it", () => {
+    // The hero carried a schematic loop and a drawn mockup at once. One real
+    // screenshot from the live demo replaced both.
+    expect(page).toContain("<ProductShot");
+    for (const banned of ["HeroLoop", "HeroMedia", "KineticHeadline", "StickyBuyCta", "Reveal", "SectionAmbient", "HeroAmbient"]) {
+      expect(page, `${banned} is decoration the 10 Oct redesign removed`).not.toContain(banned);
+    }
   });
 
   it("does not put shine or halo chrome on the marketing cards", () => {

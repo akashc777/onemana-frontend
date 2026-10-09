@@ -4,9 +4,10 @@
 // backend's daily exchange rate (usd_rate), rounded to the dollar. None is
 // typed in anywhere: the two that used to be ($299 and $99) were 14% high
 // and 5% low against what a US card was actually charged, and yearly,
-// Business and storage had none. Shown dollars first, because the buyers are
-// mostly in the US, with the rupee charge beside it and currencyNote()
-// wherever money is paid. See business/onecamp/usdRate.go in onemana-backend.
+// Business and storage had none. Rupees first since 10 Oct 2026: the charge
+// is in rupees, so showing dollars large and rupees small put the estimate
+// above the fact. currencyNote() goes wherever money is paid. See
+// business/onecamp/usdRate.go in onemana-backend.
 
 import { site } from "./site";
 
@@ -152,9 +153,18 @@ export function fmtINR(n: number): string {
   return inr.format(n || 0);
 }
 
-/** A price in running text: "$105/mo (₹9,999)", dollars first, the charge beside it. */
+/**
+ * A price in running text: "₹9,999/mo (about $105)". The rupee amount is the
+ * price, because it is what is charged; the dollar figure is the same charge
+ * at today's rate, an estimate for readers who think in dollars.
+ */
 export function dual(usdAmount: number, inrAmount: number, per = ""): string {
-  return `${fmtUSD(usdAmount)}${per} (${fmtINR(inrAmount)})`;
+  return usdAmount > 0 ? `${fmtINR(inrAmount)}${per} (about ${fmtUSD(usdAmount)})` : `${fmtINR(inrAmount)}${per}`;
+}
+
+/** The dollar estimate on its own, for the line under a rupee price: "≈ $263 at today's rate". */
+export function usdEstimate(usdAmount: number): string {
+  return usdAmount > 0 ? `≈ ${fmtUSD(usdAmount)} at today's rate` : "";
 }
 
 /**
