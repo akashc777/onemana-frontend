@@ -18,7 +18,7 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
         href="/docs"
         aria-current={activeSlug ? undefined : "page"}
         className={`mb-4 flex min-h-11 items-center rounded-md px-2.5 lg:min-h-8 transition-colors ${
-          activeSlug ? "text-muted-foreground hover:bg-muted hover:text-foreground" : "bg-brand-soft font-medium text-foreground"
+          activeSlug ? "nav-idle" : "nav-active font-medium"
         }`}
       >
         All guides
@@ -38,7 +38,7 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
                     href={`/docs/${item.slug}`}
                     aria-current={active ? "page" : undefined}
                     className={`flex min-h-11 items-center rounded-md px-2.5 py-1 leading-5 lg:min-h-8 transition-colors ${
-                      active ? "bg-brand-soft font-medium text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      active ? "nav-active font-medium" : "nav-idle"
                     }`}
                   >
                     {item.title}

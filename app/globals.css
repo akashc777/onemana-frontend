@@ -52,14 +52,14 @@ a, button, summary, label, [role="tab"] {
 
 html {
   scroll-behavior: smooth;
-  /* The sticky nav is 56 px: anything scrolled to, by a link or by focus,
+  /* The sticky nav is 48 px: anything scrolled to, by a link or by focus,
      stops below it rather than under it. */
   scroll-padding-top: 4.5rem;
-  background-color: rgb(var(--background));
+  background-color: rgb(var(--canvas));
 }
 
 body {
-  @apply bg-background font-sans text-foreground antialiased;
+  @apply bg-canvas font-sans text-foreground antialiased;
   /* Inter as the app draws it: its own glyphs, contextual alternates off. */
   font-feature-settings: "calt" 0;
   text-rendering: optimizeLegibility;
@@ -94,6 +94,48 @@ body {
 }
 
 @layer components {
+  /* THE SHEET (the app's .app-sheet): the page, on the canvas. From md it
+     stands 8px in from the window's sides and bottom, with a hairline and a
+     10px radius, and no shadow: it is the page, not something floating over
+     it. Clipped, not hidden, so a sticky column inside it still sticks. On a
+     phone it is the full width, as the app's page is. */
+  .site-sheet {
+    @apply bg-background;
+  }
+  @media (min-width: 768px) {
+    .site-sheet {
+      @apply mx-2 mb-2 rounded-lg border border-border;
+      overflow: clip;
+    }
+  }
+
+  /* The app's navigation marks (its globals.css .nav-active and .nav-idle):
+     the current place is the soft accent ground taken a step deeper with the
+     accent, and a 2px bar of the accent at its start; hover is a step of
+     ink over the canvas. */
+  .nav-active {
+    position: relative;
+    background: color-mix(in oklab, rgb(var(--brand)) 12%, rgb(var(--brand-soft)));
+    color: rgb(var(--foreground));
+  }
+  .nav-active::before {
+    content: "";
+    position: absolute;
+    inset-block: 6px;
+    inset-inline-start: 0;
+    width: 2px;
+    border-start-end-radius: 2px;
+    border-end-end-radius: 2px;
+    background: rgb(var(--brand));
+  }
+  .nav-idle {
+    color: rgb(var(--muted-foreground));
+  }
+  .nav-idle:hover {
+    background: color-mix(in oklab, rgb(var(--foreground)) 6%, rgb(var(--canvas)));
+    color: rgb(var(--foreground));
+  }
+
   /* 1120px of content, 16px gutters on a phone. */
   .container-x {
     @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;

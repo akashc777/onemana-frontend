@@ -200,3 +200,21 @@ describe("the logo is the app's mark", () => {
     expect(icon).not.toContain("<rect")
   })
 })
+
+describe("the frame is the app's", () => {
+  it("the nav is the app's top bar: its height, on the canvas", () => {
+    const nav = read("components/site/Nav.tsx")
+    expect(nav).toMatch(/<header className="[^"]*\bbg-canvas\b/)
+    expect(nav).toContain(`h-${APP.topBar.height / 4} `)
+    expect(nav).not.toMatch(/<header className="[^"]*\bborder-b\b/)
+  })
+
+  it("the page is a sheet on the canvas", () => {
+    expect(read("app/layout.tsx")).toMatch(/className="site-sheet[\s"]/)
+    expect(read("app/layout.tsx")).toMatch(/<body className="[^"]*\bbg-canvas\b/)
+    const css = read("app/globals.css")
+    const at = css.indexOf("@media (min-width: 768px) {\n    .site-sheet")
+    expect(at, "the sheet's md rule").toBeGreaterThan(-1)
+    expect(css.slice(at, css.indexOf("}", at))).toMatch(/rounded-lg border border-border/)
+  })
+})

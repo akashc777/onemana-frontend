@@ -14,8 +14,8 @@ const LOOKS = {
   /** A link in the desktop bar. */
   bar: {
     base: "rounded-md px-2.5 py-1.5 text-small transition-colors",
-    current: "font-medium text-foreground",
-    other: "text-muted-foreground hover:text-foreground",
+    current: "nav-active font-medium",
+    other: "nav-idle",
   },
   /** A row in the phone menu. */
   menu: {
@@ -26,8 +26,8 @@ const LOOKS = {
   /** Pricing, beside the menu button on a phone. */
   compact: {
     base: "inline-flex min-h-11 items-center rounded-md px-2.5 text-small transition-colors",
-    current: "font-medium text-foreground",
-    other: "text-muted-foreground hover:text-foreground",
+    current: "nav-active font-medium",
+    other: "nav-idle",
   },
 } as const;
 

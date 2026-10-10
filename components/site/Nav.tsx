@@ -17,9 +17,9 @@ import { MobileMenu, NavLink } from "@/components/site/NavParts";
  */
 export function Nav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background">
-      <nav className="container-x flex h-14 items-center justify-between gap-6" aria-label="Primary">
-        <Link href="/" className="flex min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-foreground">
+    <header className="sticky top-0 z-50 bg-canvas">
+      <nav className="container-x flex h-12 items-center justify-between gap-6" aria-label="Primary">
+        <Link href="/" className="flex min-h-11 items-center gap-2 text-sm font-semibold text-foreground">
           <OneCampLogo className="h-6 w-6" />
           {site.name}
         </Link>
@@ -40,7 +40,7 @@ export function Nav() {
             href={site.demoStartUrl}
             target="_blank"
             rel="noreferrer"
-            className="rounded-md px-2.5 py-1.5 text-small font-medium text-foreground transition-colors hover:text-brand-ink"
+            className="nav-idle rounded-md px-2.5 py-1.5 text-small font-medium"
           >
             Live demo
           </a>
