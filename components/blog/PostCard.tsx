@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
+import { blogTopic } from "@/lib/blogTopics";
 import { formatDayMonth } from "@/lib/format";
 import { readingTime } from "@/lib/markdown";
+import { TopicLabel } from "./Topic";
 
 /**
  * One post in the blog index: the title, two lines of its excerpt, then the
@@ -11,20 +13,27 @@ import { readingTime } from "@/lib/markdown";
  * times. The <time> keeps the full timestamp for anything that reads it.
  * Two lines, not the whole excerpt, and only for the newest few: the index
  * was 20,000 px tall when all eighty-odd posts ran their excerpts in full.
+ * Each post carries its topic (lib/blogTopics.ts): a square in the topic's
+ * hue and its name, so the list can be read by colour down its length.
  */
 export function PostCard({ post, compact = false }: { post: BlogPost; compact?: boolean }) {
   const mins = post.content ? readingTime(post.content) : 0;
-  // Older posts are one line each: the title, and the date at the end of it.
+  const topic = blogTopic(post.tags, post.title);
+  const date = post.published_at ? (
+    <time dateTime={post.published_at} className="text-caption tabular-nums text-muted-foreground">
+      {formatDayMonth(post.published_at)}
+    </time>
+  ) : null;
+  // Older posts are one line each on a wide screen: the title, then its topic and day.
   if (compact) {
     return (
       <li className="border-b border-border last:border-b-0">
-        <Link href={`/blog/${post.slug}`} className="group flex items-baseline justify-between gap-6 py-3">
+        <Link href={`/blog/${post.slug}`} className="group flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <span className="min-w-0 text-body text-foreground transition-colors duration-150 group-hover:text-brand-ink">{post.title}</span>
-          {post.published_at ? (
-            <time dateTime={post.published_at} className="shrink-0 text-caption tabular-nums text-muted-foreground">
-              {formatDayMonth(post.published_at)}
-            </time>
-          ) : null}
+          <span className="flex shrink-0 items-center gap-3">
+            <TopicLabel topic={topic} />
+            {date}
+          </span>
         </Link>
       </li>
     );
@@ -36,9 +45,10 @@ export function PostCard({ post, compact = false }: { post: BlogPost; compact?: 
           {post.title}
         </span>
         {post.excerpt && <span className="mt-2 line-clamp-2 max-w-2xl text-body text-muted-foreground">{post.excerpt}</span>}
-        <span className="mt-2 block text-caption text-muted-foreground">
-          {post.published_at ? <time dateTime={post.published_at}>{formatDayMonth(post.published_at)}</time> : null}
-          {mins ? `, ${mins} min read` : ""}
+        <span className="mt-3 flex items-center gap-3">
+          <TopicLabel topic={topic} />
+          {date}
+          {mins ? <span className="text-caption text-muted-foreground">{mins} min read</span> : null}
         </span>
       </Link>
     </li>
