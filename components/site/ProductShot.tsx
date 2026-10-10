@@ -103,19 +103,43 @@ function Notes({ notes }: { notes: ShotNote[] }) {
 }
 
 /**
+ * The two hero images, phone and wide, for one theme. Each is its own <img>
+ * with its own alt: a <picture> could pick the file by width, but a <source>
+ * cannot carry an alt, so a phone reader heard the desktop description
+ * (sidebar and all) for a phone screenshot that has no sidebar.
+ */
+const HERO = {
+  desktop: { file: "channel", width: 2240, height: 1400, sizes: "(min-width: 1120px) 1120px, 100vw", show: "hidden sm:block" },
+  phone: { file: "channel-phone", width: 780, height: 1180, sizes: "384px", show: "block sm:hidden" },
+} as const;
+
+// React 18 knows the attribute only in lower case (next/image does the same).
+const HIGH_PRIORITY = { fetchpriority: "high" } as Record<string, string>;
+
+function HeroImage({ theme, kind, alt }: { theme: "light" | "dark"; kind: keyof typeof HERO; alt: string }) {
+  const v = HERO[kind];
+  const { props } = getImageProps({ src: `/product/${v.file}-${theme}.webp`, width: v.width, height: v.height, sizes: v.sizes, alt });
+  return (
+    // eslint-disable-next-line jsx-a11y/alt-text -- alt comes from getImageProps
+    <img {...props} {...HIGH_PRIORITY} loading="lazy" className={`${v.show} h-auto w-full rounded-md border border-border bg-card`} />
+  );
+}
+
+/**
  * The hero: the #engineering channel, wide on a wide screen and the app's own
  * phone layout below 640 px, in the reader's theme. Exactly one file is
- * fetched per visit:
- * - each theme is a <picture> whose <source> picks phone or desktop by
- *   width, so a phone never downloads the desktop shot or the reverse;
- * - the theme not in use is display:none and lazy, so it is never fetched
- *   (the theme is a class from next-themes, not prefers-color-scheme, so a
- *   media query cannot choose it);
+ * fetched per visit, and the one a reader meets is described for what it
+ * shows:
+ * - four <img>, one per theme and width, each with its own alt (the phone
+ *   one says phone);
+ * - CSS shows one of them: the theme wrapper is display:none for the theme
+ *   not in use (a next-themes class, not prefers-color-scheme, so a media
+ *   query cannot choose it) and a breakpoint class hides the other width;
+ * - all four are lazy, and a lazy image that is display:none is never
+ *   fetched, so only the shown one downloads. display:none also takes the
+ *   other three out of the accessibility tree, so one description is heard;
  * - nothing is preloaded: a preload link cannot carry these conditions, and
  *   preloading all four was what fetched every variant on every visit.
- *
- * Both themes carry the alt, as in ProductShot: the hidden picture is out of
- * the accessibility tree because it is display:none, not because it is mute.
  */
 export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt: string; notes?: ShotNote[] }) {
   return (
@@ -124,34 +148,12 @@ export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt:
         {/* Markers are placed on the wide screenshot only; on a phone the
             app's phone layout is shown and the notes stand as a list. */}
         <div className="relative">
-          {(["light", "dark"] as const).map((theme) => {
-            const desktop = getImageProps({
-              src: `/product/channel-${theme}.webp`,
-              width: 2240,
-              height: 1400,
-              sizes: "(min-width: 1120px) 1120px, 100vw",
-              alt,
-            }).props;
-            const phone = getImageProps({
-              src: `/product/channel-phone-${theme}.webp`,
-              width: 780,
-              height: 1180,
-              sizes: "384px",
-              alt: phoneAlt,
-            }).props;
-            return (
-              <picture key={theme} className={theme === "light" ? "block dark:hidden" : "hidden dark:block"}>
-                <source media="(max-width: 639px)" srcSet={phone.srcSet} sizes={phone.sizes} width={780} height={1180} />
-                {/* eslint-disable-next-line jsx-a11y/alt-text -- alt comes from getImageProps */}
-                <img
-                  {...desktop}
-                  loading="lazy"
-                  fetchPriority="high"
-                  className="block h-auto w-full rounded-md border border-border bg-card"
-                />
-              </picture>
-            );
-          })}
+          {(["light", "dark"] as const).map((theme) => (
+            <div key={theme} className={theme === "light" ? "dark:hidden" : "hidden dark:block"}>
+              <HeroImage theme={theme} kind="phone" alt={phoneAlt} />
+              <HeroImage theme={theme} kind="desktop" alt={alt} />
+            </div>
+          ))}
           <div className="hidden sm:block">
             {notes.map((note, i) => (
               <Marker key={note.text} n={i + 1} x={note.x} y={note.y} />
