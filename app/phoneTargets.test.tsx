@@ -48,7 +48,7 @@ function expectTall(classes: string[], what: string) {
 describe("a phone's targets", () => {
   it("the shared standalone-link class is 44 px below sm", () => {
     const css = readFileSync(join(__dirname, "globals.css"), "utf8")
-    expect(css).toMatch(/\.tap-target\s*\{\s*@apply inline-flex min-h-11 items-center sm:min-h-0;\s*\}/)
+    expect(css).toMatch(/\.tap-target\s*\{\s*@apply inline-flex min-h-11 min-w-11 items-center sm:min-h-0 sm:min-w-0;\s*\}/)
   })
 
   it("the nav: the logo, Pricing, the menu button and the theme switch", () => {
@@ -66,6 +66,8 @@ describe("a phone's targets", () => {
     const html = renderToString(<Footer />)
     const links = classesOf(html, /<a [^>]*>/g).filter((c) => !c.includes("link"))
     expectTall(links, "footer links")
+    // Wide as well as tall: a one-word link ("Blog") is the column's width.
+    for (const c of links.filter((l) => l.includes("text-small"))) expect(c).toMatch(/(^|\s)w-full(\s|$)/)
   })
 
   it("fields: the update form's address and a select", () => {
@@ -102,6 +104,8 @@ describe("a phone's targets", () => {
     const about = renderToString(<AboutView />)
     const founder = about.slice(about.indexOf("Akash Hadagali"))
     expectTall(classesOf(founder, /<a[^>]*>(?=GitHub<|X \(Twitter\)<|The blog<)/g), "the founder's links")
+    const guide = readFileSync(join(__dirname, "docs/[slug]/page.tsx"), "utf8")
+    expect(guide).toContain('<Link href="/docs" className="tap-target')
     const facts = renderToString(<FactsStrip release={null} />)
     expectTall(classesOf(facts, /<a[^>]*>/g), "the facts strip's link")
   })

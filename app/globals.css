@@ -250,7 +250,7 @@ body {
      44 px target on a phone and as tall as its words from sm. A link in
      running text keeps its line: WCAG's inline exception. */
   .tap-target {
-    @apply inline-flex min-h-11 items-center sm:min-h-0;
+    @apply inline-flex min-h-11 min-w-11 items-center sm:min-h-0 sm:min-w-0;
   }
 
   /* On a camp band the orange ink falls just under 4.5:1 on three of the six
