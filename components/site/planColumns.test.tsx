@@ -77,10 +77,12 @@ describe("a plan's colour follows it", () => {
 describe("the free plan's card on a phone", () => {
     it("has no blank line for the estimate it does not have", () => {
         const html = renderToString(<PlanColumns pricing={defaultPricing} />)
-        const estimates = html.match(/<p class="mt-1 px-6 text-caption[^"]*">[^<]*<\/p>/g) ?? []
+        // The line is the estimate in the reader's currency (RegionalMoney),
+        // in the text colour; Free's is empty.
+        const estimates = html.match(/<p class="mt-1 px-6 text-small text-foreground[^"]*">/g) ?? []
         expect(estimates).toHaveLength(3)
         for (const e of estimates) expect(e).toContain("empty:hidden md:empty:block")
-        expect(estimates[0]).toMatch(/"><\/p>$/)
+        expect(html).toMatch(/<p class="mt-1 px-6 text-small text-foreground empty:hidden md:empty:block"><\/p>/)
         expect(html).not.toContain("min-h-5 px-6")
     })
 })

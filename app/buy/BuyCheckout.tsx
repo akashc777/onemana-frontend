@@ -10,7 +10,11 @@ import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, dual, currencyNote, setupEstimateFor, usdEstimate, type Pricing } from "@/lib/pricing";
+import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, currencyNote, localEstimate, setupEstimateFor, type Pricing } from "@/lib/pricing";
+import { regionFor } from "@/lib/visitorCurrency";
+import { taxIdLabel } from "@/lib/invoiceFields";
+import { RegionProvider } from "@/hooks/useVisitorRegion";
+import { PriceEstimate } from "@/components/site/RegionalMoney";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -46,10 +50,13 @@ export function BuyCheckout({
   initialPlan,
   initialBilling,
   initialPricing,
+  initialCountry,
 }: {
   initialPlan: Plan;
   initialBilling: Billing;
   initialPricing: Pricing;
+  /** The country to open on, instead of guessing it in the browser (tests render each region with it). */
+  initialCountry?: string;
 }) {
   const { busy, error, setError, start, startCloud } = useCheckout();
   const [scriptReady, setScriptReady] = useState(false);
@@ -78,16 +85,24 @@ export function BuyCheckout({
   const [addressVerdict, setAddressVerdict] = useState<SlugVerdict | null>(null);
   const [edition, setEdition] = useState<EditionChoice>("ai");
   // A first guess from the browser, replaced on mount; see lib/guessCountry.
-  const [country, setCountry] = useState("US");
+  const [country, setCountry] = useState(initialCountry ?? "US");
   const [gstin, setGstin] = useState("");
   const [stateName, setStateName] = useState("");
   // Starts with the buyer's calling code; see lib/dialCodes.
-  const [phone, setPhone] = useState(dialPrefix("US"));
+  const [phone, setPhone] = useState(dialPrefix(initialCountry ?? "US"));
+  // Outside India, optional, for the invoice (lib/invoiceFields).
+  const [company, setCompany] = useState("");
+  const [address, setAddress] = useState("");
+  const [taxId, setTaxId] = useState("");
+  // The reader's language, for digit grouping in the estimate; set on mount.
+  const [locale, setLocale] = useState("en-US");
   const changeCountry = (next: string) => {
     setPhone((current) => phoneForCountry(current, country, next));
     setCountry(next);
   };
   useEffect(() => {
+    setLocale(navigator.languages?.[0] || navigator.language || "en-US");
+    if (initialCountry) return;
     const guessed = guessCountry(
       Intl.DateTimeFormat().resolvedOptions().timeZone,
       navigator.languages ?? [navigator.language],
@@ -95,9 +110,12 @@ export function BuyCheckout({
     );
     setPhone((current) => phoneForCountry(current, "US", guessed));
     setCountry(guessed);
-  }, []);
+  }, [initialCountry]);
 
   const isIndia = country === "IN";
+  // The money words follow the country chosen here, not a guess: the
+  // estimate's currency, and GST only for India (lib/pricing taxWords).
+  const region = regionFor(country, locale);
   const isCloud = plan === "cloud";
   const choices = cloudChoices(pricing);
   // A choice that is not on sale (a stale link, a plan removed) falls back to
@@ -145,6 +163,8 @@ export function BuyCheckout({
       state: billing.state,
       state_code: billing.stateCode,
       phone: contactForCheckout(phone),
+      // Abroad only; the backend keeps none of them for India.
+      ...(isIndia ? {} : { company: company.trim(), address_line: address.trim(), tax_id: taxId.trim() }),
     };
     if (isCloud) await startCloud({ ...input, plan_code: cloudPlanCode(choice), slug, edition }, contactForCheckout(phone));
     else await start(input, contactForCheckout(phone));
@@ -231,14 +251,18 @@ export function BuyCheckout({
                   {isCloud && <span className="font-sans text-small font-normal text-muted-foreground">{" " + price.per}</span>}
                 </span>
               </div>
+              {/* Under the rupee price, the estimate in the buyer's own money
+                  and that the charge is in rupees (plan A1), in the text
+                  colour; nothing in India. The licence abroad is the one
+                  exception, once the backend charges dollars (charge_usd). */}
+              {!(pricing.charge_usd && !isCloud) && (
+                <RegionProvider region={region}>
+                  <p className="mt-1 text-small text-foreground empty:hidden">
+                    <PriceEstimate pricing={pricing} inr={isCloud ? price.inr : pricing.lifetime_inr} why="/pricing#currency" />
+                  </p>
+                </RegionProvider>
+              )}
               <p className="mt-1 text-caption text-muted-foreground">
-                {/* A dollar estimate only for buyers outside India; currencyNote
-                    under the pay button says why it can differ from the card.
-                    One middle dot at most, after the estimate; the terms
-                    themselves are a list with commas. */}
-                {!isIndia && !(pricing.charge_usd && !isCloud) && usdEstimate(isCloud ? price.usd : pricing.lifetime_usd)
-                  ? `${usdEstimate(isCloud ? price.usd : pricing.lifetime_usd)} · `
-                  : ""}
                 {isCloud
                   ? business
                     ? `${pricing.business_seats} users, a larger machine and a self-host licence included`
@@ -247,7 +271,9 @@ export function BuyCheckout({
                       : `${pricing.cloud_seats} users and a self-host licence included`
                   : pricing.charge_usd && !isIndia
                     ? "Charged in US dollars, one-time, unlimited users"
-                    : "One-time, GST included, unlimited users"}
+                    : isIndia
+                      ? "One-time, GST included, unlimited users"
+                      : "One-time, no tax added at checkout, unlimited users"}
               </p>
               {showChoices && (
                 <div
@@ -352,9 +378,39 @@ export function BuyCheckout({
                 </Field>
               </>
             )}
+            {!isIndia && (
+              /* Optional, folded away: most buyers pay as themselves. A
+                 company abroad needs its name, address and tax number on the
+                 invoice to expense it (owner decision D2). */
+              <details className="rounded-md border border-border px-3.5 py-2.5" open={Boolean(company || address || taxId)}>
+                <summary className="cursor-pointer text-small font-medium text-foreground">Add company details for the invoice</summary>
+                <div className="mt-3 space-y-4">
+                  <Field label="Company name">
+                    <input value={company} onChange={(e) => setCompany(e.target.value)} className={inputCls} maxLength={120} autoComplete="organization" />
+                  </Field>
+                  <Field label="Billing address">
+                    <input value={address} onChange={(e) => setAddress(e.target.value)} className={inputCls} maxLength={300} autoComplete="street-address" />
+                  </Field>
+                  <Field label={`${taxIdLabel(country)} (optional)`}>
+                    <input value={taxId} onChange={(e) => setTaxId(e.target.value.toUpperCase())} className={inputCls} maxLength={32} />
+                  </Field>
+                </div>
+              </details>
+            )}
             <Field label="Mobile (optional)" hint="The payment window asks for one; give it here and it opens filled in.">
               <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="With country code, e.g. +1 415 555 0100" autoComplete="tel" inputMode="tel" />
             </Field>
+
+            {/* What the payment window will show, said before it opens (plan
+                A7): the rupee amount, and a bank that may ask to approve a
+                payment to an Indian company. Both stop a buyer abroad when
+                they come as a surprise. */}
+            {!isIndia && !(pricing.charge_usd && !isCloud) && (
+              <p className="text-small text-foreground">
+                Razorpay shows the amount in rupees ({fmtINR(isCloud ? price.inr : pricing.lifetime_inr)}). Your bank may ask you to
+                approve a payment to an Indian company; that&apos;s expected.
+              </p>
+            )}
 
             {error && (
               <p role="alert" className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-small text-danger-ink">{error}</p>
@@ -365,10 +421,11 @@ export function BuyCheckout({
                 ? "Processing…"
                 : isCloud
                   ? // The chosen plan's own price: Business once read Team's here.
-                    `Subscribe for ${dual(price.usd, price.inr, price.per)}`
+                    // The rupees first, the figure on Razorpay's window (plan A6).
+                    `Subscribe for ${withEstimate(fmtINR(price.inr) + price.per, localEstimate(pricing, price.inr, region))}`
                   : pricing.charge_usd
                     ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
-                    : `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
+                    : `Pay ${withEstimate(fmtINR(pricing.lifetime_inr), localEstimate(pricing, pricing.lifetime_inr, region))} and get your key`}
             </Button>
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
@@ -433,6 +490,11 @@ export function BuyCheckout({
       </section>
     </>
   );
+}
+
+/** "₹24,999 (≈ $258)", or the rupees alone when there is no estimate (India). */
+function withEstimate(rupees: string, estimate: string): string {
+  return estimate ? `${rupees} (${estimate})` : rupees;
 }
 
 const inputCls =

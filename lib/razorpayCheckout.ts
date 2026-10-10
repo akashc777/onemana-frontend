@@ -1,3 +1,5 @@
+import { checkoutFailure } from "./checkoutFailure";
+
 /**
  * Opening Razorpay's window for a subscription the backend has created.
  *
@@ -28,7 +30,7 @@ export function openSubscriptionCheckout(
     handler: on.paid,
     modal: { ondismiss: on.closed },
   });
-  rzp.on("payment.failed", () => on.failed("Payment failed or was cancelled. You have not been charged."));
+  rzp.on("payment.failed", (resp: unknown) => on.failed(checkoutFailure(resp).message));
   rzp.open();
 }
 /** The brand orange (DESIGN.md), so every payment window looks like ours. */

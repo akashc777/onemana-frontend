@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/site/PageHeader";
 import { PlanColumns } from "@/components/site/PlanColumns";
-import { CloudPlanCard } from "@/components/site/CloudPlanCard";
-import { LicencePlanCard } from "@/components/site/LicencePlanCard";
 import { PlanComparison } from "@/components/site/PlanComparison";
 import { QuestionList } from "@/components/site/marketing";
+import { TaxQuestion } from "@/components/site/RegionalMoney";
 import { SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { currencyNote, fmtINR, getPricing } from "@/lib/pricing";
+import { whyRupees } from "@/lib/content";
 import { site } from "@/lib/site";
 
 export const revalidate = 300;
@@ -29,8 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Pricing, as a page of its own. It used to redirect to the bottom of a
- * 12,700 px home page. Three ways to have OneCamp, then each paid one in
- * detail, then the table from /buy that compares all four on what differs.
+ * 12,700 px home page. Three ways to have OneCamp, each with what it includes
+ * (one block of prices: the paid plans' matched cards below it said the same
+ * prices again), then the table from /buy that compares all four on what
+ * differs.
  * Every amount comes from /onecamp/pricing; rupees are the price and dollars
  * an estimate. Nothing here offers a trial or a refund: the demo and the free
  * plan are how somebody tries it.
@@ -46,15 +48,11 @@ export default async function PricingPage() {
       q: "What happens when we pass the free plan's limit?",
       a: "Buy a licence and re-run the install with the key from your purchase email. The workspace you already run keeps its data and carries on.",
     },
-    {
-      q: "Which currency am I charged in?",
-      // Built from the same charge_usd switch /buy reads, so the two pages cannot disagree.
-      a: currencyNote(pricing),
-    },
-    {
-      q: "Do prices include GST?",
-      a: "Yes. The price you see is the price you pay, and the GST invoice splits the tax out of it.",
-    },
+    // Every price line links here (#currency). Dollar charges are off; were
+    // they switched on, the note built from the same switch /buy reads says so.
+    pricing.charge_usd ? { id: whyRupees.id, q: "Which currency am I charged in?", a: currencyNote(pricing) } : whyRupees,
+    // GST only for a reader in India; see lib/pricing taxWords.
+    { id: "tax", q: <TaxQuestion part="q" />, a: <TaxQuestion part="a" /> },
   ];
 
   return (
@@ -66,25 +64,9 @@ export default async function PricingPage() {
 
       <section className={SECTION_END}>
         <div className="container-x">
-          <PlanColumns pricing={pricing} headingLevel="h2" />
+          <PlanColumns pricing={pricing} headingLevel="h2" detailed />
         </div>
       </section>
-
-      {/* The two paid plans in detail, as a matched pair: the licence and
-          Cloud, each the card of its plan in its hue (PlanCard). Side by side
-          the two share one grid, so the prices, the lists and the buttons
-          start on one line: Cloud's plan switch sits with its seats, where
-          the licence says who it is for. */}
-      <Section divider>
-        <SectionHeading
-          title="Own it, or have us run it"
-          subtitle="Both have every part of OneCamp and the company controls. They differ in who looks after the server."
-        />
-        <div className="mt-10 grid items-stretch gap-4 lg:grid-cols-2 lg:gap-y-0">
-          <LicencePlanCard pricing={pricing} aligned />
-          <CloudPlanCard pricing={pricing} aligned />
-        </div>
-      </Section>
 
       <PlanComparison pricing={pricing} />
 

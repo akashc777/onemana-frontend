@@ -21,6 +21,8 @@ export interface PurchaseResult {
   slug?: string;
   /** Cloud: the size bought, for the receipt's estimate. */
   size?: "team" | "business";
+  /** The country chosen at checkout, so the receipt names the right invoice. */
+  country?: string;
 }
 
 const STORE = "om_purchase";
@@ -32,13 +34,14 @@ let held: PurchaseResult | null | undefined;
 
 function shape(v: unknown): PurchaseResult | null {
   if (!v || typeof v !== "object") return null;
-  const { email, key, slug, size } = v as { email?: unknown; key?: unknown; slug?: unknown; size?: unknown };
+  const { email, key, slug, size, country } = v as { email?: unknown; key?: unknown; slug?: unknown; size?: unknown; country?: unknown };
   if (typeof email !== "string") return null;
   const out: PurchaseResult = { email };
   if (typeof key === "string" && key) out.key = key;
   // Only the characters an address can have: the receipt prints it.
   if (typeof slug === "string" && /^[a-z0-9-]{3,30}$/.test(slug)) out.slug = slug;
   if (size === "team" || size === "business") out.size = size;
+  if (typeof country === "string" && /^[A-Z]{2}$/.test(country)) out.country = country;
   return out;
 }
 

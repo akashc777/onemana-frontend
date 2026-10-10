@@ -1,3 +1,4 @@
+import { TaxText } from "@/components/site/RegionalMoney";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SECTION_END } from "@/components/ui/Section";
@@ -53,7 +54,9 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
           running if OneMana stops.
         </li>
         <li>OneMana runs its own work on OneCamp, every day.</li>
-        <li>You pay {site.company}, the registered company, through Razorpay, and get a GST invoice.</li>
+        <li>
+          You pay {site.company}, the registered company, through Razorpay, and get <TaxText kind="invoice" />.
+        </li>
       </ul>
     ),
   },

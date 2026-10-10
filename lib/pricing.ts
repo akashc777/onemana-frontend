@@ -10,12 +10,18 @@
 // business/onecamp/usdRate.go in onemana-backend.
 
 import { site } from "./site";
+import { fmtLocal, type DisplayCurrency, type Region } from "./visitorCurrency";
 
 export interface Pricing {
   currency: string;
   /** Rupees to the dollar every *_usd was worked out at, and when it was fetched. */
   usd_rate: number;
   usd_rate_at: string;
+  /** Rupees to one unit of the dollar and of each display currency (EUR,
+   *  GBP, SGD, AUD, CAD), from the same daily fetch, and when. Absent from an
+   *  older backend: estimates are then in dollars. See lib/visitorCurrency. */
+  rates?: Partial<Record<DisplayCurrency, number>>;
+  rates_at?: string;
   lifetime_inr: number;
   lifetime_usd: number;
   lifetime_paise: number;
@@ -183,4 +189,77 @@ export function currencyNote(p: Pricing, ctx: { inIndia?: boolean; cloud?: boole
   if (ctx.inIndia === true) return "You pay in Indian rupees, with a GST invoice.";
   if (ctx.inIndia === false) return "Charged in US dollars: the price shown is the amount on your card.";
   return `The licence is charged in US dollars outside India and in rupees in India. OneCamp Cloud is billed in rupees: ${rupees.charAt(0).toLowerCase()}${rupees.slice(1)}`;
+}
+
+/**
+ * Rupees in a reader's grouping: en-IN ("₹14,60,000") for India and the
+ * international grouping ("₹1,460,000") for everyone else, who would read a
+ * lakh comma as a typo. The amount is the same.
+ */
+const inrIntl = new Intl.NumberFormat("en-US", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+export function fmtINRFor(n: number, region: Region | null): string {
+  return region?.inIndia ? fmtINR(n) : inrIntl.format(n || 0);
+}
+
+/** Rupees to one unit of a currency today, or 0 when the backend has not said. */
+function rupeesPer(p: Pricing, currency: DisplayCurrency): number {
+  if (currency === "USD") return p.rates?.USD || p.usd_rate || 0;
+  return p.rates?.[currency] || 0;
+}
+
+/**
+ * A rupee amount in the reader's own currency, at the day's rate: "≈ €224".
+ * Dollars when the region is not known yet (the server's HTML) or its
+ * currency has no rate. "" in India, where the rupee is home, and when there
+ * is no amount or no rate at all. Worked out, never typed.
+ */
+export function localEstimate(p: Pricing, inr: number, region: Region | null): string {
+  if (region?.inIndia || !(inr > 0)) return "";
+  let currency: DisplayCurrency = region?.currency ?? "USD";
+  if (!rupeesPer(p, currency)) currency = "USD";
+  const rate = rupeesPer(p, currency);
+  if (!rate) return "";
+  return `≈ ${fmtLocal(inr / rate, currency, region?.locale ?? "en-US")}`;
+}
+
+/**
+ * A US-dollar amount (a rival's list price) in the reader's currency, through
+ * the day's rupee rates: the dollar figure itself when the reader is in a
+ * dollar country or their currency has no rate. Rupees for India.
+ */
+export function fromUsd(p: Pricing, usd: number, region: Region | null): string {
+  // Round as a reader would say it: a year of a stack to the hundred (the
+  // thousand in rupees), a server's month to the unit.
+  const round = (n: number, step: number) => (n >= step * 10 ? Math.round(n / step) * step : Math.round(n));
+  if (region?.inIndia) return fmtINR(round(usd * (p.usd_rate || DEFAULT_USD_RATE), 1000));
+  const currency = region?.currency ?? "USD";
+  const usdRate = rupeesPer(p, "USD");
+  const target = rupeesPer(p, currency);
+  if (currency === "USD" || !usdRate || !target) return fmtLocal(round(usd, 100), "USD", region?.locale);
+  return fmtLocal(round((usd * usdRate) / target, 100), currency, region?.locale);
+}
+
+/** What the line under a rupee price says beside the estimate (A1). */
+export const BILLED_IN_RUPEES = "billed in Indian rupees, your card converts";
+
+/**
+ * The words about tax that depend on where the buyer is. India's are about
+ * GST. Elsewhere, and on the server before the visitor is known, they make no
+ * claim about the buyer's own country's tax at all: the price is the total
+ * charged, and the invoice comes from an Indian company. Never a VAT claim.
+ */
+export function taxWords(inIndia: boolean | undefined) {
+  return inIndia
+    ? {
+        priceLine: "GST included",
+        invoice: "a GST invoice",
+        faqQ: "Do prices include GST?",
+        faqA: "Yes. The price you see is the price you pay, and the GST invoice splits the tax out of it.",
+      }
+    : {
+        priceLine: "No tax added at checkout",
+        invoice: "an invoice from our Indian company",
+        faqQ: "Is tax added at checkout?",
+        faqA: "No. The price shown is the total charged. The invoice comes from OneMana Solutions in India, in rupees.",
+      };
 }

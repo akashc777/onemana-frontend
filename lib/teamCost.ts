@@ -77,11 +77,13 @@ export const SEAT_COST_SOURCES = [
 export const SERVER_USD_PER_MONTH = 12
 
 /**
- * What the per-seat stack costs a team for a year, in rupees at the day's
- * rate, rounded to the thousand: an estimate, and it says so where it is shown.
+ * What the per-seat stack costs a team for a year at the rivals' own list
+ * prices, in US dollars: the currency those prices are set in, and what a
+ * reader outside India is shown (converted to their own currency through the
+ * day's rates, lib/pricing fromUsd). Readers in India see it in rupees at the
+ * day's rate, rounded to the thousand, also through fromUsd.
  */
-export function stackYearInr(people: number, withAi: boolean, usdRate: number): number {
+export function stackYearUsd(people: number, withAi: boolean): number {
     const lines = SEAT_COSTS.filter((t) => t.when === "always" || (t.when === "ai") === withAi)
-    const usd = lines.reduce((n, t) => n + t.usd, 0) * people * 12
-    return Math.round((usd * usdRate) / 1000) * 1000
+    return lines.reduce((n, t) => n + t.usd, 0) * people * 12
 }

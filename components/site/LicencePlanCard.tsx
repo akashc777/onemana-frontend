@@ -4,6 +4,7 @@ import { PlanBenefit, PlanCard } from "@/components/site/PlanCard";
 import { PLAN_HUE } from "@/components/site/planHues";
 import { lifetimeBenefits } from "@/lib/content";
 import { fmtINR, usdEstimate, type Pricing } from "@/lib/pricing";
+import { TaxText } from "@/components/site/RegionalMoney";
 
 /**
  * The licence, in detail: the licence's plan card (PlanCard, in its sun), the
@@ -30,7 +31,7 @@ export function LicencePlanCard({ pricing, aligned = false }: { pricing: Pricing
           Buy a licence
         </ButtonLink>
       </div>
-      <p className="mt-3 text-caption text-muted-foreground">The key and a GST invoice arrive by email straight away.</p>
+      <p className="mt-3 text-caption text-muted-foreground">The key and <TaxText kind="invoice" /> arrive by email straight away.</p>
     </PlanCard>
   );
 }

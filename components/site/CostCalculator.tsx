@@ -28,12 +28,16 @@ import React, { useMemo, useState } from "react"
 import Link from "next/link"
 import type { Pricing } from "@/lib/pricing"
 import { cloudYearFor } from "@/lib/cloudYear"
-import { DEFAULT_USD_RATE, fmtINR } from "@/lib/pricing"
+import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fmtINRFor, fromUsd, localEstimate } from "@/lib/pricing"
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
+import { useVisitorRegion } from "@/hooks/useVisitorRegion"
 
-// Totals are shown in rupees, the currency OneCamp charges: the rivals' dollar
+// The totals are in the reader's money. In India, rupees: the rivals' dollar
 // list prices at the day's rate (pricing.usd_rate), rounded to the hundred.
+// Elsewhere the rivals' prices are dollars to begin with, so a dollar reader
+// sees them as they are and a euro or pound reader at the day's rate, never
+// in lakh-grouped rupees they would have to convert back (plan A4).
 const inrAt = (usd: number, rate: number) => fmtINR(Math.round((usd * rate) / 100) * 100)
 // Per-seat prices keep their cents ($7.25), so the sum can be checked.
 const fmtSeat = (n: number) =>
@@ -45,7 +49,13 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     // "70x less" next to a price it was not about (buyer review, 3 Oct 2026).
     const [people, setPeople] = useState(40)
     const rate = pricing?.usd_rate || DEFAULT_USD_RATE
-    const fmt = (usd: number) => inrAt(usd, rate)
+    const region = useVisitorRegion()
+    const p = pricing ?? defaultPricing
+    const fmt = (usd: number) => (region?.inIndia ? inrAt(usd, rate) : fromUsd(p, usd, region))
+    // OneCamp's own price stays in rupees, the charge, with the estimate beside it.
+    const licence = pricing
+        ? `${fmtINRFor(pricing.lifetime_inr, region)}${region?.inIndia ? "" : ` (${localEstimate(pricing, pricing.lifetime_inr, region)})`}`
+        : fmt(lifetimeUsd)
     const [withAi, setWithAi] = useState(true)
 
     // First year, so a licence is included rather than amortised away; a team
@@ -93,7 +103,10 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                                 {t.name}, {fmtSeat(t.usd)}/user/mo
                             </li>
                         ))}
-                        <li>List prices, billed annually, checked {PRICES_CHECKED}, at today&apos;s rate</li>
+                        <li>
+                            List prices, billed annually, checked {PRICES_CHECKED}
+                            {region?.inIndia || (region && region.currency !== "USD") ? ", at today's rate" : ""}
+                        </li>
                     </ul>
                 </div>
 
@@ -102,7 +115,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>
                     <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
-                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${pricing ? fmtINR(pricing.lifetime_inr) : fmt(lifetimeUsd)} licence, paid once, unlimited users`}</li>
+                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${licence} licence, paid once, unlimited users`}</li>
                         <li>About {fmt(SERVER_USD_PER_MONTH)} a month for the server that runs it</li>
                         {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>
@@ -138,7 +151,11 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                         <>
                             {" "}Or nobody does:{" "}
                             <Link href={cloud.href} className="underline underline-offset-2 hover:text-foreground">
-                                OneCamp Cloud ({cloud.plan}) is {fmtINR(cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr)} a year
+                                OneCamp Cloud ({cloud.plan}) is {(() => {
+                                    const inr = cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr
+                                    const est = localEstimate(pricing, inr, region)
+                                    return `${fmtINRFor(inr, region)}${est ? ` (${est})` : ""}`
+                                })()} a year
                             </Link>
                             , hosted, backed up and updated for you.
                         </>
