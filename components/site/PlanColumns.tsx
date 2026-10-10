@@ -3,7 +3,8 @@ import type { ComponentType, SVGProps } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { CloudGlyph, KeyGlyph, PeopleGlyph } from "@/components/site/Glyphs";
 import { PLAN_HUE } from "@/components/site/planHues";
-import { PlanCard } from "@/components/site/PlanCard";
+import { PlanCardHeader } from "@/components/site/PlanCard";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import type { CampHue } from "@/lib/campHue";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { cloudBuyHref } from "@/lib/paymentTerms";
@@ -96,21 +97,31 @@ export function PlanColumns({ pricing, headingLevel = "h3" }: { pricing: Pricing
 
   return (
     <div>
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Side by side, the cards share one subgrid of seven rows (header,
+          price, estimate, who it is for, what it is, what you get, button),
+          so each row lines up across the three whatever wraps: at 768 px the
+          headers and descriptions wrap differently and the prices and "You
+          get" lines drifted. Stacked on a phone, each card is a plain column. */}
+      <div className="grid gap-4 md:grid-cols-3 md:gap-y-0">
         {plans.map((p) => (
-          <PlanCard key={p.name} hue={p.hue} Glyph={p.Glyph} title={p.name} fits={p.fits} titleAs={H}>
-            <p className="flex flex-wrap items-baseline gap-x-2">
+          <div
+            key={p.name}
+            className={`${HUE_CLASS[p.hue]} flex flex-col overflow-hidden rounded-lg border border-border bg-card md:row-span-7 md:grid md:grid-rows-subgrid md:gap-y-0`}
+          >
+            <PlanCardHeader Glyph={p.Glyph} title={p.name} titleAs={H} />
+            <p className="flex flex-wrap items-baseline gap-x-2 px-6 pt-5">
               <span className="font-display text-h2 font-semibold tabular-nums text-foreground">{p.price}</span>
               {p.per && <span className="text-small text-muted-foreground">{p.per}</span>}
             </p>
-            <p className="mt-1 min-h-5 text-caption text-muted-foreground">{p.estimate}</p>
-            <p className="mt-4 text-small text-muted-foreground">{p.body}</p>
-            <p className="mt-4 flex-1 border-t border-border pt-4 text-small text-foreground">
+            <p className="mt-1 min-h-5 px-6 text-caption text-muted-foreground">{p.estimate}</p>
+            <p className="mt-2 px-6 text-small font-medium text-foreground">{p.fits}</p>
+            <p className="mt-3 px-6 text-small text-muted-foreground">{p.body}</p>
+            <p className="mx-6 mt-4 border-t border-border pt-4 text-small text-foreground">
               <span className="text-muted-foreground">You get: </span>
               {p.gets}
             </p>
-            <div className="mt-6">{p.cta}</div>
-          </PlanCard>
+            <div className="px-6 pb-6 pt-6">{p.cta}</div>
+          </div>
         ))}
       </div>
       <p className="mt-6 text-body text-foreground">

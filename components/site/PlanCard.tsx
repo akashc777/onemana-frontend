@@ -3,10 +3,35 @@ import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import type { CampHue } from "@/lib/campHue";
 
 /**
- * A plan's card: a header in the plan's camp hue (planHues.ts) with its glyph,
- * its name and who it is for, then the body. The plan columns on the home
- * page and /pricing, and the licence and Cloud details under them, share it,
- * so a plan looks like itself wherever it appears.
+ * A plan card's header: the plan's camp hue (planHues.ts) behind its glyph,
+ * its name and, when given, who it is for. One line, so headers side by side
+ * are the same height.
+ */
+export function PlanCardHeader({
+  Glyph,
+  title,
+  fits,
+  titleAs: H = "h3",
+}: {
+  Glyph: ComponentType<SVGProps<SVGSVGElement>>;
+  title: ReactNode;
+  fits?: ReactNode;
+  titleAs?: "h2" | "h3" | "p";
+}) {
+  return (
+    <div className="flex items-center gap-2.5 bg-hue-tint px-6 py-3.5">
+      <Glyph className="size-5 shrink-0 text-hue" />
+      <H className="font-sans text-small font-semibold tracking-normal text-hue-ink">{title}</H>
+      {fits && <span className="ml-auto text-right text-caption text-hue-ink">{fits}</span>}
+    </div>
+  );
+}
+
+/**
+ * A plan's card: the header in the plan's hue, then the body. The plan
+ * columns on the home page and /pricing (which lay their parts on a shared
+ * subgrid instead) and the licence and Cloud details share the look, so a plan
+ * looks like itself wherever it appears.
  */
 export function PlanCard({
   hue,
@@ -28,11 +53,7 @@ export function PlanCard({
 }) {
   return (
     <div className={`${HUE_CLASS[hue]} flex flex-col overflow-hidden rounded-lg border border-border bg-card ${className}`}>
-      <div className="flex items-center gap-2.5 bg-hue-tint px-6 py-3.5">
-        <Glyph className="size-5 shrink-0 text-hue" />
-        <H className="font-sans text-small font-semibold tracking-normal text-hue-ink">{title}</H>
-        {fits && <span className="ml-auto text-right text-caption text-hue-ink">{fits}</span>}
-      </div>
+      <PlanCardHeader Glyph={Glyph} title={title} fits={fits} titleAs={H} />
       <div className="flex flex-1 flex-col px-6 pb-6 pt-5">{children}</div>
     </div>
   );

@@ -28,9 +28,22 @@ describe("the plan cards", () => {
         expect(html).not.toContain(fmtINR(defaultPricing.lifetime_inr))
     })
 
-    it("say what each plan delivers, with the buttons on one line at the foot", () => {
+    it("say what each plan delivers", () => {
         expect(html.match(/You get: /g)).toHaveLength(3)
-        expect(html.match(/flex-1 border-t/g)).toHaveLength(3)
+    })
+
+    // At 768 px the headers and descriptions wrapped to different heights and
+    // the prices and "You get" lines drifted out of line. Side by side, the
+    // cards now share a subgrid of seven rows, one per part, so each part
+    // lines up across the three whatever wraps.
+    it("share one row grid side by side, a row per part", () => {
+        const cards = html.match(/<div class="hue-[a-z]+ flex flex-col[^"]*"/g) ?? []
+        expect(cards).toHaveLength(3)
+        for (const c of cards) expect(c).toContain("md:row-span-7 md:grid md:grid-rows-subgrid md:gap-y-0")
+        const first = html.slice(html.indexOf(cards[0]), html.indexOf(cards[1]))
+        // header, price, estimate, who it is for, what it is, what you get, button
+        expect(first.match(/^<div class="hue-[^"]*">(<div|<p)/)).not.toBeNull()
+        expect((first.match(/<\/p><(p|div) class=/g) ?? []).length + 1).toBeGreaterThanOrEqual(6)
     })
 })
 
