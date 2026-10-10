@@ -20,7 +20,7 @@ export function PlanCardHeader({
 }) {
   return (
     <div className="flex items-center gap-2.5 bg-hue-tint px-6 py-3.5">
-      <Glyph className="size-5 shrink-0 text-hue" />
+      <Glyph className="size-4 shrink-0 text-hue" />
       <H className="font-sans text-small font-semibold tracking-normal text-hue-ink">{title}</H>
       {fits && <span className="ml-auto text-right text-caption text-hue-ink">{fits}</span>}
     </div>
@@ -75,7 +75,7 @@ export function PlanCard({
 export function PlanBenefit({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <svg className="mt-0.5 size-4 shrink-0 text-hue" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+      <svg className="mt-0.5 size-4 shrink-0 text-hue" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.46" aria-hidden="true">
         <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       {children}

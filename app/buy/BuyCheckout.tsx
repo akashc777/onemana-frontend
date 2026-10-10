@@ -221,7 +221,7 @@ export function BuyCheckout({
             <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} mt-6 border-t border-border pt-6`}>
               <div className="flex items-baseline justify-between">
                 <span className="flex items-center gap-2 self-center font-medium text-foreground">
-                  {isCloud ? <CloudGlyph className="size-5 shrink-0 text-hue" /> : <KeyGlyph className="size-5 shrink-0 text-hue" />}
+                  {isCloud ? <CloudGlyph className="size-4 shrink-0 text-hue" /> : <KeyGlyph className="size-4 shrink-0 text-hue" />}
                   {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
                 </span>
                 {/* Rupees are the price: they are what is charged. The licence

@@ -2,8 +2,8 @@ import type { SVGProps } from "react";
 
 /**
  * The few glyphs the storefront's tiles hold: one per product surface and one
- * per way to have OneCamp. Drawn on the 24 grid with a 1.5 stroke and round
- * ends, the line the site's other marks use (the menu, the theme switch), so
+ * per way to have OneCamp. Drawn on the 24 grid with a 1.75 stroke and round
+ * ends, the one stroke every icon on the site has (iconStroke.test.ts), so
  * they sit with the app's icons. Each is decorative: it sits in a Tile beside
  * the words it illustrates, and draws in currentColor, which the Tile sets to
  * its hue's strong cut.
@@ -17,7 +17,7 @@ function Glyph({ children, ...rest }: SVGProps<SVGSVGElement>) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1.75"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

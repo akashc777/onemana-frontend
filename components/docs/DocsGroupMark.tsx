@@ -16,16 +16,17 @@ function glyph(category: string) {
   const name = category.trim().toLowerCase();
   if (/deploy|server|host|install/.test(name)) {
     return (
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.17" strokeLinecap="round">
         <rect x="2.75" y="2.75" width="10.5" height="4.5" rx="1.25" />
         <rect x="2.75" y="8.75" width="10.5" height="4.5" rx="1.25" />
-        <path d="M5.25 5h.01M5.25 11h.01" strokeWidth="2" />
+        <circle cx="5.25" cy="5" r="0.75" fill="currentColor" stroke="none" />
+        <circle cx="5.25" cy="11" r="0.75" fill="currentColor" stroke="none" />
       </svg>
     );
   }
   if (/setup|flow|use|using|feature/.test(name)) {
     return (
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.17" strokeLinecap="round">
         <path d="M2.75 4.5h10.5M2.75 11.5h10.5" />
         <circle cx="10.5" cy="4.5" r="1.75" fill="rgb(var(--hue-tint))" />
         <circle cx="5.5" cy="11.5" r="1.75" fill="rgb(var(--hue-tint))" />
