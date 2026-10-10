@@ -13,7 +13,9 @@ import {
   type PortalEdition,
   type PortalSubscription,
 } from "@/lib/portalApi";
-import { failedLine, paidWithoutWorkspace, stateBadgeClass } from "@/lib/instanceState";
+import { failedLine, paidWithoutWorkspace, stateTone } from "@/lib/instanceState";
+import { StatusDot, glyphs } from "@/components/account/AccountParts";
+import { Tile } from "@/components/ui/graphics/Tile";
 import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
 
@@ -30,12 +32,16 @@ const POLL_MS = 15000;
 export function WorkspaceSection({
   onReload,
   subscriptions = [],
+  initial = null,
 }: {
   onReload: () => void;
   /** The account's subscriptions, to tell "no workspace" from "not created yet". */
   subscriptions?: PortalSubscription[];
+  /** The workspaces as the page read them with the overview: shown at once,
+   *  so nothing below them moves when they arrive. */
+  initial?: PortalInstance[] | null;
 }) {
-  const [instances, setInstances] = useState<PortalInstance[] | null>(null);
+  const [instances, setInstances] = useState<PortalInstance[] | null>(initial);
   const [err, setErr] = useState("");
 
   const load = useCallback(async () => {
@@ -48,8 +54,8 @@ export function WorkspaceSection({
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (initial === null) void load();
+  }, [load, initial]);
 
   // Paid for, and not created yet: the payment's webhook is on its way, or being
   // recovered from Razorpay. Said, and looked for again, rather than shown as nothing.
@@ -58,13 +64,19 @@ export function WorkspaceSection({
   // The backend says which instances are still moving, so this never has to guess.
   usePoll((instances ?? []).some((i) => i.working) || onItsWay, POLL_MS, load);
 
-  if (err) return <p className="text-sm text-danger-ink">{err}</p>;
-  if (!instances) return <p className="text-sm text-muted-foreground">Loading your workspace…</p>;
+  if (err) {
+    return (
+      <p role="alert" className="mb-10 text-small text-danger-ink">
+        {err}
+      </p>
+    );
+  }
+  if (!instances) return <div role="status" aria-label="Loading your workspace…" className="mb-10 h-40 rounded-lg bg-muted" />;
   if (onItsWay) {
     return (
-      <section className="card">
-        <h2 className="mb-2 font-semibold text-foreground">Your workspace</h2>
-        <p className="text-sm text-muted-foreground">
+      <section className="mb-10 rounded-lg border border-border bg-card p-5">
+        <WorkspaceHeading />
+        <p className="mt-3 text-small text-muted-foreground">
           Your payment has reached us and your workspace is being set up. It appears here within a few
           minutes, and this page checks by itself.
         </p>
@@ -75,9 +87,9 @@ export function WorkspaceSection({
   if (instances.length === 0) return null;
 
   return (
-    <section className="card">
-      <h2 className="mb-4 font-semibold text-foreground">Your workspace</h2>
-      <div className="space-y-6">
+    <section className="mb-10 rounded-lg border border-border bg-card p-5 sm:p-6">
+      <WorkspaceHeading />
+      <div className="mt-5 space-y-6">
         {instances.map((inst) => (
           <Workspace
             key={inst.id}
@@ -93,6 +105,18 @@ export function WorkspaceSection({
   );
 }
 
+/** The workspace card's heading: its tile (Cloud's lake, as on the overview) and its name. */
+function WorkspaceHeading() {
+  return (
+    <div className="flex items-center gap-3">
+      <Tile hue="lake" size="md">
+        {glyphs.cloud}
+      </Tile>
+      <h2 className="text-body font-semibold text-foreground">Your workspace</h2>
+    </div>
+  );
+}
+
 /** Fetches a short-lived link on click and opens it. The link is signed per
  *  request, so nothing about the store is in the page until the owner asks. */
 function BackupDownload({ id }: { id: string }) {
@@ -103,7 +127,7 @@ function BackupDownload({ id }: { id: string }) {
       <button
         type="button"
         disabled={busy}
-        className="font-medium text-brand-ink underline underline-offset-4 disabled:opacity-60"
+        className="font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] hover:decoration-brand-ink disabled:opacity-60"
         onClick={async () => {
           setBusy(true);
           setErr("");
@@ -119,7 +143,7 @@ function BackupDownload({ id }: { id: string }) {
       >
         {busy ? "Preparing download…" : "Download the copy"}
       </button>
-      {err && <span className="ml-2 text-destructive">{err}</span>}
+      {err && <span className="ml-2 text-danger-ink">{err}</span>}
     </>
   );
 }
@@ -134,7 +158,7 @@ function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void })
       <button
         type="button"
         disabled={busy}
-        className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-60"
+        className="h-8 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted disabled:opacity-60"
         onClick={async () => {
           if (!window.confirm("Move now? Your workspace pauses while the last backup is copied and restored, usually 10 to 30 minutes, then carries on at the same address.")) return;
           setBusy(true);
@@ -150,7 +174,7 @@ function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void })
       >
         {busy ? "Starting…" : "Move now"}
       </button>
-      {msg && <span className="text-sm text-muted-foreground">{msg}</span>}
+      {msg && <span className="text-small text-muted-foreground">{msg}</span>}
     </>
   );
 }
@@ -160,47 +184,45 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${stateBadgeClass(inst.state)}`}>
-          {inst.status}
-        </span>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <StatusDot tone={stateTone(inst.state)}>{inst.status}</StatusDot>
         {inst.edition && (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-caption text-muted-foreground">
             {sizeLabel(inst.size)} · {editionLabel(inst.has_ai)}
           </span>
         )}
       </div>
 
       {inst.state === "live" ? (
-        <p className="text-sm">
+        <p className="text-body">
           <a
             href={`https://${inst.address}`}
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-brand-ink underline underline-offset-4"
+            className="font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] hover:decoration-brand-ink"
           >
             {inst.address}
           </a>
         </p>
       ) : (
-        <p className="text-sm text-foreground/80">{inst.address}</p>
+        <p className="text-body text-foreground/80">{inst.address}</p>
       )}
 
       {/* Only ever what the backend judged safe to show. */}
-      {inst.detail && <p className="text-sm text-muted-foreground">{inst.detail}</p>}
+      {inst.detail && <p className="text-small text-muted-foreground">{inst.detail}</p>}
 
       {inst.state === "live" && seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of) && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-small text-muted-foreground">
           {seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of)}
         </p>
       )}
 
       {inst.state === "live" && diskLine(inst.disk_used_pct) && (
-        <p className="text-sm text-muted-foreground">{diskLine(inst.disk_used_pct)}</p>
+        <p className="text-small text-muted-foreground">{diskLine(inst.disk_used_pct)}</p>
       )}
 
       {backupLine(inst.backups_nightly, inst.offsite_configured, inst.offsite_backup_at) && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-small text-muted-foreground">
           {backupLine(inst.backups_nightly, inst.offsite_configured, inst.offsite_backup_at)}
           {inst.offsite_backup_at && (
             <>
@@ -212,12 +234,12 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
       )}
 
       {inst.state === "live" && capacityLine(inst.capacity_verdict, inst.capacity_reason) && (
-        <p className="text-sm text-warning-ink">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
+        <p className="text-small text-warning-ink">{capacityLine(inst.capacity_verdict, inst.capacity_reason)}</p>
       )}
 
       {moveLine(inst.move) && (
         <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm text-foreground">{moveLine(inst.move)}</p>
+          <p className="text-small text-foreground">{moveLine(inst.move)}</p>
           {inst.move?.can_move_now && <MoveNowButton id={inst.id} onChanged={onChanged} />}
         </div>
       )}
@@ -225,14 +247,14 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
       <StorageAddon inst={inst} onChanged={onChanged} />
 
       {inst.working && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption text-muted-foreground">
           {inst.estimate && `${inst.estimate} `}
           We will email you when it is ready, and there is nothing for you to do until then.
         </p>
       )}
 
       {inst.state === "failed" && (
-        <p className="text-sm text-muted-foreground">{failedLine(inst.retry_at, inst.max_attempts)}</p>
+        <p className="text-small text-muted-foreground">{failedLine(inst.retry_at, inst.max_attempts)}</p>
       )}
 
       {inst.state === "live" && <UseOwnDomain inst={inst} />}
@@ -251,7 +273,7 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
   const [open, setOpen] = useState(false);
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="text-sm text-brand-ink underline underline-offset-4">
+      <button onClick={() => setOpen(true)} className="text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] hover:decoration-brand-ink">
         Use my own domain
       </button>
     );
@@ -260,7 +282,7 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
   const subject = `Own domain for ${current}`;
   const body = `Hello,\n\nPlease move my workspace ${current} to: \n(for example team.yourcompany.com)\n`;
   return (
-    <div className="mt-2 space-y-3 rounded-lg border border-border bg-muted/30 p-4 text-sm">
+    <div className="mt-2 space-y-3 rounded-lg border border-border bg-muted p-4 text-small">
       <p>
         Moving to your own domain is set up with our help for now. Tell us the address you want, for example{" "}
         <span className="font-mono">team.yourcompany.com</span>, and we do it with you.
@@ -268,7 +290,7 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
       <p className="text-muted-foreground">Your {current} address keeps working throughout.</p>
       <a
         href={`mailto:support@onemana.dev?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}
-        className="btn-ghost inline-block px-3 py-2"
+        className="btn-ghost h-9 px-3.5 py-0"
       >
         Write to support@onemana.dev
       </a>
@@ -320,20 +342,20 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <h3 className="font-medium text-foreground">Choose your workspace address</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h3 className="text-small font-semibold text-foreground">Choose your workspace address</h3>
+        <p className="mt-1 text-small text-muted-foreground">
           One step left. Everything after this is automatic: we build your workspace and
           email you when it is ready.
         </p>
         {inst.choice_note && (
-          <p role="status" className="mt-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-warning-ink">
+          <p role="status" className="mt-3 rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-small text-warning-ink">
             {inst.choice_note}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="slug" className="mb-1 block text-sm font-medium text-foreground/80">
+        <label htmlFor="slug" className="mb-1.5 block text-small font-medium text-foreground">
           Address
         </label>
         <div className="flex items-center gap-2">
@@ -345,28 +367,28 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
             placeholder="your-company"
             autoComplete="off"
             spellCheck={false}
-            className="w-full max-w-xs rounded-lg border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/30"
+            className="h-10 w-full max-w-xs rounded-md border border-border-strong bg-card px-3 text-base text-foreground placeholder:text-faint sm:text-small"
           />
-          <span className="text-sm text-muted-foreground">.{WORKSPACE_ZONE}</span>
+          <span className="text-small text-muted-foreground">.{WORKSPACE_ZONE}</span>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-1.5 text-caption text-muted-foreground">
           Letters, numbers and hyphens. You can move to your own domain later, with our help.
         </p>
       </div>
 
       {editions.length > 1 && (
         <fieldset>
-          <legend className="mb-1 block text-sm font-medium text-foreground/80">AI features</legend>
+          <legend className="mb-1.5 block text-small font-medium text-foreground">AI features</legend>
           <div className="space-y-2">
             {editions.map((e) => (
-              <label key={e.name} className="flex items-start gap-2 text-sm">
+              <label key={e.name} className="flex min-h-8 items-center gap-2 text-small">
                 <input
                   type="radio"
                   name="edition"
                   value={e.name}
                   checked={edition === e.name}
                   onChange={() => setEdition(e.name)}
-                  className="mt-1"
+                  className="size-4"
                 />
                 <span className="font-medium">{editionLabel(e.has_ai)}</span>
               </label>
@@ -375,13 +397,13 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
         </fieldset>
       )}
 
-      {err && <p className="text-sm text-danger-ink">{err}</p>}
+      {err && (
+        <p role="alert" className="text-small text-danger-ink">
+          {err}
+        </p>
+      )}
 
-      <button
-        type="submit"
-        disabled={busy || slug.trim().length < 3}
-        className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-40"
-      >
+      <button type="submit" disabled={busy || slug.trim().length < 3} className="btn-brand h-10 px-4 py-0 disabled:opacity-40">
         {busy ? "Setting up…" : "Create my workspace"}
       </button>
     </form>
