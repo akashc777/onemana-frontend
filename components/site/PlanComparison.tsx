@@ -90,7 +90,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
 }
 
 function PlanLink({ cta }: { cta: { label: string; href: string; external?: boolean } }) {
-  const cls = "link text-small font-medium";
+  const cls = "link tap-target text-small font-medium";
   return cta.external ? (
     <a href={cta.href} target="_blank" rel="noopener noreferrer" className={cls}>
       {cta.label}

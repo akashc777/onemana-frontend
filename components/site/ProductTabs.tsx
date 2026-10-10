@@ -193,7 +193,7 @@ export function ProductTabs() {
       <div id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} className="min-w-0 lg:col-span-9">
         <div className="mb-5 flex flex-col gap-3 lg:hidden">
           <p className="text-body text-muted-foreground">{tab.text}</p>
-          <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="link self-start text-small font-medium">
+          <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="link tap-target self-start text-small font-medium">
             Open it in the live demo
           </a>
         </div>

@@ -16,7 +16,7 @@ export function OnThisPageDisclosure({ headings, className = "" }: { headings: A
       <ul className="pb-3 text-small">
         {headings.map((h) => (
           <li key={h.id}>
-            <a href={`#${h.id}`} className={`block py-1.5 text-muted-foreground hover:text-foreground ${h.level === 3 ? "pl-4" : ""}`}>
+            <a href={`#${h.id}`} className={`flex min-h-11 items-center py-1.5 text-muted-foreground hover:text-foreground ${h.level === 3 ? "pl-4" : ""}`}>
               {h.text}
             </a>
           </li>

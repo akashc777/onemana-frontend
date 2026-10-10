@@ -91,17 +91,17 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
 
               <nav aria-labelledby="more" className="rounded-lg border border-border p-5">
                 <h2 id="more" className="text-small font-semibold text-foreground">More templates</h2>
-                <ul className="mt-3 grid gap-1.5 text-small">
+                <ul className="mt-3 grid text-small sm:gap-1.5">
                   {others.map((o) => (
                     <li key={o.id}>
-                      <Link href={`/templates/${o.id}`} className="inline-flex items-center gap-2 text-muted-foreground transition-colors duration-150 hover:text-foreground">
+                      <Link href={`/templates/${o.id}`} className="tap-target gap-2 text-muted-foreground transition-colors duration-150 hover:text-foreground">
                         <IdentityMark id={o.id} variant="square" />
                         {o.name}
                       </Link>
                     </li>
                   ))}
                   <li>
-                    <Link href="/templates" className="text-muted-foreground hover:text-foreground">All templates</Link>
+                    <Link href="/templates" className="tap-target text-muted-foreground transition-colors duration-150 hover:text-foreground">All templates</Link>
                   </li>
                 </ul>
               </nav>

@@ -162,7 +162,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                 </div>
               )}
               <div>
-                <Link href="/pricing" className="link text-small font-medium">
+                <Link href="/pricing" className="link tap-target text-small font-medium">
                   See every plan
                 </Link>
               </div>

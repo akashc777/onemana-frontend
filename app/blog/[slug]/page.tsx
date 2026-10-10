@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <div className="container-x max-w-prose pt-10 sm:pt-16">
-        <Link href="/blog" className="text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
+        <Link href="/blog" className="tap-target text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
           ← All posts
         </Link>
 

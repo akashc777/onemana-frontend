@@ -168,7 +168,7 @@ export function FreeEmailKey() {
           </p>
         </div>
       ) : !emailOpen ? (
-        <button type="button" onClick={() => setEmailOpen(true)} className="link text-small font-medium">
+        <button type="button" onClick={() => setEmailOpen(true)} className="link tap-target text-small font-medium">
           Or email the key to me
         </button>
       ) : (

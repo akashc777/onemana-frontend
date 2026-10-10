@@ -95,13 +95,13 @@ export function AboutView() {
                 Founder of OneMana. Writes the code, ships the releases and reads the support email.
               </p>
               <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-small">
-                <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link">
+                <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link tap-target">
                   GitHub
                 </a>
-                <a href={site.twitter} target="_blank" rel="noreferrer" className="link">
+                <a href={site.twitter} target="_blank" rel="noreferrer" className="link tap-target">
                   X (Twitter)
                 </a>
-                <Link href="/blog" className="link">
+                <Link href="/blog" className="link tap-target">
                   The blog
                 </Link>
               </p>

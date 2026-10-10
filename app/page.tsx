@@ -89,7 +89,7 @@ export default async function HomePage() {
                 {/* Tertiary, and only a text link: for the visitor who came to
                     see what it costs. Without it the first way to pay was the
                     plan columns, about 5,000 px down. Level with the buttons. */}
-                <Link href="/pricing" className="link self-start text-small font-medium sm:inline-flex sm:min-h-11 sm:items-center">
+                <Link href="/pricing" className="link inline-flex min-h-11 items-center self-start text-small font-medium">
                   See pricing
                 </Link>
               </div>
@@ -208,7 +208,7 @@ export default async function HomePage() {
         />
         <PlanColumns pricing={pricing} />
         <p className="mt-6 text-small">
-          <Link href="/pricing" className="link">
+          <Link href="/pricing" className="link tap-target">
             Compare every plan, side by side
           </Link>
         </p>

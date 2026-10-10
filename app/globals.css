@@ -245,6 +245,14 @@ body {
     @apply text-brand-ink underline decoration-brand-ink/40 underline-offset-4 transition-colors duration-150 hover:decoration-brand-ink;
   }
 
+  /* A link or text button that stands on its own line, not inside a
+     sentence ("See every plan", a list of guides, a footer column), is a
+     44 px target on a phone and as tall as its words from sm. A link in
+     running text keeps its line: WCAG's inline exception. */
+  .tap-target {
+    @apply inline-flex min-h-11 items-center sm:min-h-0;
+  }
+
   /* On a camp band the orange ink falls just under 4.5:1 on three of the six
      tints (sky, dusk, berry in light mode, app/bandContrast.test.ts), so a link
      there reads in the text colour and keeps the accent in its underline,
@@ -490,6 +498,18 @@ body {
     font-weight: 500;
     line-height: 1.625rem;
     transition: color 120ms cubic-bezier(.2, .8, .2, 1), background-color 120ms cubic-bezier(.2, .8, .2, 1);
+  }
+  /* On a touch screen the button's hit area reaches 44 px; the 8 px around
+     it is the code block's own margin, so nothing else is under it. */
+  @media (pointer: coarse) {
+    .reading .code-copy {
+      position: relative;
+    }
+    .reading .code-copy::after {
+      content: "";
+      position: absolute;
+      inset: -0.5rem;
+    }
   }
   .reading .code-copy:hover {
     color: rgb(var(--foreground));

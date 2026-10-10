@@ -114,7 +114,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                                                     href={r.source}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
+                                                    className="tap-target underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
                                                 >
                                                     {r.name}
                                                 </a>
@@ -222,7 +222,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                                                 href={a.source}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
+                                                className="tap-target underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
                                             >
                                                 {a.name}
                                             </a>

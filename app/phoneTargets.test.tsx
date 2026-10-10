@@ -3,14 +3,23 @@ import { join } from "node:path"
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
+import { DocsNav } from "@/components/docs/DocsShell"
+import { OnThisPageDisclosure } from "@/components/reading/OnThisPageDisclosure"
+import { AboutView } from "@/components/site/AboutView"
+import { AudienceView } from "@/components/site/AudienceView"
 import { CloudPlanCard } from "@/components/site/CloudPlanCard"
+import { FactsStrip } from "@/components/site/FactsStrip"
 import { Footer } from "@/components/site/Footer"
 import { GovernedDemo } from "@/components/site/GovernedDemo"
 import { Nav } from "@/components/site/Nav"
+import { PlanComparison } from "@/components/site/PlanComparison"
 import { ProductTabs } from "@/components/site/ProductTabs"
 import { SubscribeForm } from "@/components/site/SubscribeForm"
+import { TemplateView } from "@/components/site/TemplateView"
 import { Select } from "@/components/ui/Select"
+import { alternatives } from "@/lib/alternatives"
 import { defaultPricing } from "@/lib/pricing"
+import { templates } from "@/lib/templates"
 
 /**
  * Everything a finger presses on a phone is a 44 px target: the nav, every
@@ -37,6 +46,11 @@ function expectTall(classes: string[], what: string) {
 }
 
 describe("a phone's targets", () => {
+  it("the shared standalone-link class is 44 px below sm", () => {
+    const css = readFileSync(join(__dirname, "globals.css"), "utf8")
+    expect(css).toMatch(/\.tap-target\s*\{\s*@apply inline-flex min-h-11 items-center sm:min-h-0;\s*\}/)
+  })
+
   it("the nav: the logo, Pricing, the menu button and the theme switch", () => {
     const html = renderToString(<Nav />)
     // The bar a phone shows: from the last lg:hidden block to the menu panel.
@@ -72,5 +86,26 @@ describe("a phone's targets", () => {
     expectTall(classesOf(demo, /<button type="button" class="[^"]*border-border-strong[^"]*"[^>]*>/g), "walkthrough play")
     const buy = readFileSync(join(__dirname, "../app/buy/BuyCheckout.tsx"), "utf8")
     expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(3)
+  })
+
+  it("links that stand alone", () => {
+    const tabs = renderToString(<ProductTabs />)
+    expectTall(classesOf(tabs, /<a[^>]*class="link[^"]*self-start[^"]*"[^>]*>/g), "Open it in the live demo")
+    expectTall(classesOf(renderToString(<PlanComparison pricing={defaultPricing} />), /<a[^>]*class="link[^"]*"[^>]*>/g), "plan table links")
+    expectTall(classesOf(renderToString(<AudienceView a={alternatives[0]!} pricing={defaultPricing} />), /<a[^>]*href="\/pricing"[^>]*>(?=See every plan)/g), "See every plan")
+    const t = renderToString(<TemplateView t={templates[0]!} />)
+    expectTall(classesOf(t, /<a[^>]*href="\/templates(\/[a-z-]+)?"[^>]*>/g), "the templates list")
+    const about = renderToString(<AboutView />)
+    const founder = about.slice(about.indexOf("Akash Hadagali"))
+    expectTall(classesOf(founder, /<a[^>]*>(?=GitHub<|X \(Twitter\)<|The blog<)/g), "the founder's links")
+    const facts = renderToString(<FactsStrip release={null} />)
+    expectTall(classesOf(facts, /<a[^>]*>/g), "the facts strip's link")
+  })
+
+  it("the docs: every guide in the list, and 'On this page' folded on a phone", () => {
+    const nav = renderToString(<DocsNav groups={[{ category: "Setup", items: [{ slug: "a", title: "A" } as never] }]} activeSlug="a" />)
+    expectTall(classesOf(nav, /<a[^>]*>/g), "guides list")
+    const toc = renderToString(<OnThisPageDisclosure headings={[{ id: "one", text: "One", level: 2 }]} />)
+    expectTall(classesOf(toc, /<a[^>]*href="#one"[^>]*>/g), "On this page")
   })
 })
