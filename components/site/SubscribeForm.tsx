@@ -94,7 +94,7 @@ export function SubscribeForm({
           {state === "sending" ? "Adding…" : cta}
         </button>
       </div>
-      <p aria-live="polite" className="mt-2 text-xs text-muted-foreground">
+      <p aria-live="polite" className="mt-2 text-caption text-muted-foreground">
         {state === "error" ? (
           <span className="text-danger-ink">{msg}</span>
         ) : (

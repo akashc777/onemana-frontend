@@ -32,6 +32,23 @@ describe("the type scale", () => {
     }
   })
 
+  // Body text too: nothing below the caption step (13 px), and no line height
+  // the scale does not set. /compare's notes were 14 px on Tailwind's relaxed
+  // line, its source line 12 px, and the update forms' hints 12 px. The drawn
+  // marks (components/ui/graphics) set their own small labels.
+  it("no text below the caption, and no line height off the scale", () => {
+    const offenders: string[] = []
+    const files = [...tsx(join(ROOT, "app")), ...tsx(join(ROOT, "components"))].filter(
+      (f) => !/components\/(ui\/graphics|admin|account)\//.test(f),
+    )
+    for (const f of files) {
+      for (const m of readFileSync(f, "utf8").matchAll(/\b(text-xs|leading-(?:relaxed|snug|loose|tight))\b/g)) {
+        offenders.push(`${f.slice(ROOT.length + 1)}: ${m[1]}`)
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
   it("no heading, and no display-face text, takes an arbitrary size", () => {
     const offenders: string[] = []
     for (const f of [...tsx(join(ROOT, "app")), ...tsx(join(ROOT, "components"))]) {

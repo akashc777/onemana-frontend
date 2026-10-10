@@ -135,7 +135,7 @@ function TaskCard({ task }: { task: TemplateTask }) {
       </div>
       {blocks.map((b, i) =>
         typeof b === "string" ? (
-          <p key={i} className="mt-1.5 whitespace-pre-line text-small leading-relaxed text-muted-foreground">{b}</p>
+          <p key={i} className="mt-1.5 whitespace-pre-line text-small text-muted-foreground">{b}</p>
         ) : (
           <ul key={i} className="mt-2 grid gap-1 text-small text-muted-foreground">
             {b.map((item, j) => <li key={j} className="flex gap-2"><span aria-hidden>·</span>{item}</li>)}

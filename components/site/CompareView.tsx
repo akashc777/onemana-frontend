@@ -66,7 +66,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                             <dt className="font-medium text-foreground">
                                 <ProductName name={r.name} />
                             </dt>
-                            <dd className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{r.theyWin}</dd>
+                            <dd className="max-w-2xl text-small text-muted-foreground sm:text-body">{r.theyWin}</dd>
                         </div>
                     ))}
                 </dl>
@@ -146,7 +146,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         </table>
                     </div>
                 </div>
-                <p className="mt-4 text-xs text-muted-foreground">
+                <p className="mt-4 text-caption text-muted-foreground">
                     Each rival&apos;s name links to the page its row was read from, in {CLAIMS_CHECKED}. If one of these
                     is out of date, it is our error and worth telling us about.
                 </p>
@@ -166,7 +166,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     </blockquote>
                 </div>
                 <div className="mt-6">
-                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    <p className="max-w-2xl text-body text-muted-foreground">
                         OneCamp answers yes, and the demo shows it: the drill sends an agent at a channel its person is
                         not in, and hands back the refusal with its position in the chain and the hash of the row before
                         it. The row is written to the same log an admin exports.
@@ -177,7 +177,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     watch is still a claim; this is the one place on the site
                     where they can settle it themselves. */}
                 <div className="mt-4">
-                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    <p className="max-w-2xl text-body text-muted-foreground">
                         Then take it away and check it. Download the record from the demo and drop it on{" "}
                         <a href="/verify" className="underline underline-offset-4 hover:text-foreground">
                             the verifier
@@ -235,7 +235,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         </table>
                     </div>
                 </div>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-4 max-w-2xl text-small text-muted-foreground">
                     No token to paste: the agent signs in, and whoever approves it picks the agent it acts as and what
                     it may do. OneCamp itself is one licence with unlimited people, so an agent is never another seat.
                     Checked {AGENTS_CHECKED}.
@@ -278,7 +278,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     </div>
                 </div>
                 <div className="mt-6">
-                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    <p className="max-w-2xl text-small text-muted-foreground">
                         No software can make you compliant. Compliance is a property of your deployment
                         and what you use it for, and anyone selling you the word is selling you
                         something they cannot deliver. Every line in the right-hand column is a thing
@@ -321,7 +321,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     ))}
                 </div>
                 <div className="mt-8">
-                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    <p className="max-w-2xl text-small text-muted-foreground">
                         If your team lives in one of those tools and nothing else, buy that tool. OneCamp is worth it
                         when the work crosses four of them and you want one set of permissions over the lot, including
                         the permissions an agent inherits.{" "}
