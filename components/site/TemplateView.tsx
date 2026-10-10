@@ -93,17 +93,19 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
 
               <nav aria-labelledby="more" className="rounded-lg border border-border p-5">
                 <h2 id="more" className="text-small font-semibold text-foreground">More templates</h2>
+                {/* A stacked list: each row is 44 px on a phone, as the
+                    footer's are, so neighbouring targets never overlap. */}
                 <ul className="mt-3 grid text-small sm:gap-1.5">
                   {others.map((o) => (
                     <li key={o.id}>
-                      <Link href={`/templates/${o.id}`} className="tap-target gap-2 text-muted-foreground transition-colors duration-150 hover:text-foreground">
+                      <Link href={`/templates/${o.id}`} className="inline-flex min-h-11 items-center gap-2 text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0">
                         <IdentityMark id={o.id} variant="square" />
                         {o.name}
                       </Link>
                     </li>
                   ))}
                   <li>
-                    <Link href="/templates" className="tap-target text-muted-foreground transition-colors duration-150 hover:text-foreground">All templates</Link>
+                    <Link href="/templates" className="inline-flex min-h-11 items-center text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0">All templates</Link>
                   </li>
                 </ul>
               </nav>

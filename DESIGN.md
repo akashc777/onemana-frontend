@@ -249,7 +249,10 @@ Motion confirms a state change. It never decorates.
   their own box, never the page.
 - On a phone everything a finger presses is a 44 px target: medium and large
   buttons, fields and selects, switches and tabs, and a link that stands on its
-  own line (`.tap-target`). A link inside a sentence keeps its line.
+  own line. A link alone (`.tap-target`) gets a hit area drawn round its words,
+  so the rhythm around it does not move; links stacked in a list make each row
+  44 px instead, so hit areas never overlap. A link inside a sentence keeps its
+  line.
 
 ## Copy
 

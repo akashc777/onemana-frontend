@@ -46,9 +46,15 @@ function expectTall(classes: string[], what: string) {
 }
 
 describe("a phone's targets", () => {
-  it("the shared standalone-link class is 44 px below sm", () => {
+  it("the shared standalone-link class answers 44 px below sm and adds nothing to the layout", () => {
     const css = readFileSync(join(__dirname, "globals.css"), "utf8")
-    expect(css).toMatch(/\.tap-target\s*\{\s*@apply inline-flex min-h-11 min-w-11 items-center sm:min-h-0 sm:min-w-0;\s*\}/)
+    // As a 44 px box the link set its words 12 px off the section rhythm, so
+    // the box keeps the words' size and an ::after draws the hit area.
+    expect(css).toMatch(/\.tap-target\s*\{\s*@apply relative inline-flex items-center;\s*\}/)
+    const hit = /@media not all and \(min-width: 640px\)\s*\{\s*\.tap-target::after\s*\{([^}]*)\}/.exec(css)?.[1] ?? ""
+    expect(hit).toContain("position: absolute")
+    expect(hit).toContain("width: max(100%, 2.75rem)")
+    expect(hit).toContain("height: max(100%, 2.75rem)")
   })
 
   it("the nav: the logo, Pricing, the menu button and the theme switch", () => {
@@ -86,12 +92,18 @@ describe("a phone's targets", () => {
     const demo = renderToString(<GovernedDemo />)
     expectTall(classesOf(demo, /<button[^>]*aria-label="Step[^>]*>/g), "walkthrough steps")
     expectTall(classesOf(demo, /<button type="button" class="[^"]*border-border-strong[^"]*"[^>]*>/g), "walkthrough play")
-    // /free's Copy, drawn 28 px tall in the command's header, hits 44.
-    const free = readFileSync(join(__dirname, "free/FreeInstall.tsx"), "utf8")
-    expect(free).toContain("after:absolute after:-inset-2 after:content-['']")
     const buy = readFileSync(join(__dirname, "../app/buy/BuyCheckout.tsx"), "utf8")
     expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(2)
     expect(buy).toContain("className={`flex min-h-11 flex-col")
+  })
+
+  it("the two Copy buttons, drawn 28 px tall, answer 44", () => {
+    // An ::after's inset counts from inside the button's 1 px border: 8 px
+    // round the code blocks' Copy and /free's drew hit areas 42 px tall.
+    const css = readFileSync(join(__dirname, "globals.css"), "utf8")
+    expect(css).toMatch(/\.reading \.code-copy::after\s*\{[^}]*inset: calc\(-0\.5rem - 1px\);/)
+    const free = readFileSync(join(__dirname, "free/FreeInstall.tsx"), "utf8")
+    expect(free).toContain("after:absolute after:-inset-[9px] after:content-['']")
   })
 
   it("links that stand alone", () => {
@@ -100,7 +112,11 @@ describe("a phone's targets", () => {
     expectTall(classesOf(renderToString(<PlanComparison pricing={defaultPricing} />), /<a[^>]*class="link[^"]*"[^>]*>/g), "plan table links")
     expectTall(classesOf(renderToString(<AudienceView a={alternatives[0]!} pricing={defaultPricing} />), /<a[^>]*href="\/pricing"[^>]*>(?=See every plan)/g), "See every plan")
     const t = renderToString(<TemplateView t={templates[0]!} />)
-    expectTall(classesOf(t, /<a[^>]*href="\/templates(\/[a-z-]+)?"[^>]*>/g), "the templates list")
+    const list = t.slice(t.indexOf('id="more"'))
+    expectTall(classesOf(list, /<a[^>]*href="\/templates(\/[a-z-]+)?"[^>]*>/g), "the templates list")
+    // A stacked list grows its rows: hit areas drawn round 20 px rows with no
+    // gap between them would lie over each other.
+    for (const c of classesOf(list, /<a[^>]*href="\/templates(\/[a-z-]+)?"[^>]*>/g)) expect(c).toMatch(/(^|\s)min-h-11(\s|$)/)
     const about = renderToString(<AboutView />)
     const founder = about.slice(about.indexOf("Akash Hadagali"))
     expectTall(classesOf(founder, /<a[^>]*>(?=GitHub<|X \(Twitter\)<|The blog<)/g), "the founder's links")
