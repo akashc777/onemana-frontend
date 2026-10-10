@@ -33,3 +33,19 @@ describe("planOptions", () => {
     expect(lifetime.licence).toMatch(/no AGPL obligations/);
   });
 });
+
+/**
+ * A row's label fits its column on one line (16 characters fit a phone's
+ * 128 px label column at 14 px); what it covers goes in its note. The
+ * controls row's label, with its list in brackets, was four lines of one or
+ * two words on a phone.
+ */
+describe("the plan table's labels", () => {
+  it("are short, and put what they cover in a note", () => {
+    for (const row of PLAN_ROWS) {
+      expect(row.label.length, row.label).toBeLessThanOrEqual(16)
+      expect(row.label, row.label).not.toMatch(/[()]/)
+    }
+    expect(PLAN_ROWS.find((r) => r.key === "controls")?.note).toBe("SSO, LDAP, SCIM, audit export")
+  })
+})

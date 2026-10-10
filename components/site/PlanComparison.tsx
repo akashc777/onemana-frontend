@@ -43,6 +43,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               <tr key={row.key} className="border-t border-border">
                 <th scope="row" className="py-3 pr-3 text-left align-top font-normal text-muted-foreground">
                   {row.label}
+                  {row.note && <span className="mt-0.5 block text-caption">{row.note}</span>}
                 </th>
                 {plans.map((p) => (
                   <td key={p.key} className="px-3 py-3 align-top text-foreground">
@@ -71,10 +72,13 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               {p.name}
             </p>
             <p className="mt-1 text-small text-muted-foreground">{p.summary}</p>
-            <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1.5 text-small">
+            <dl className="mt-3 grid grid-cols-[8rem_1fr] gap-x-3 gap-y-1.5 text-small">
               {PLAN_ROWS.map((row) => (
                 <div key={row.key} className="contents">
-                  <dt className="text-muted-foreground">{row.label}</dt>
+                  <dt className="text-muted-foreground">
+                    {row.label}
+                    {row.note && <span className="mt-0.5 block text-caption">{row.note}</span>}
+                  </dt>
                   <dd className="text-foreground">{p[row.key]}</dd>
                 </div>
               ))}
