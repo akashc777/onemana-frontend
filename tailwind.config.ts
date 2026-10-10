@@ -49,6 +49,25 @@ const config: Config = {
         warning: { DEFAULT: "rgb(var(--warning) / <alpha-value>)", ink: "rgb(var(--warning-ink) / <alpha-value>)" },
         danger: { DEFAULT: "rgb(var(--danger) / <alpha-value>)", ink: "rgb(var(--danger-ink) / <alpha-value>)" },
         info: { DEFAULT: "rgb(var(--info) / <alpha-value>)", ink: "rgb(var(--info-ink) / <alpha-value>)" },
+        // The camp palette, six identity hues in three cuts (globals.css):
+        // bg-camp-sky-tint, text-camp-sky-ink, fill-camp-sky and so on.
+        camp: Object.fromEntries(
+          ["sun", "moss", "lake", "sky", "dusk", "berry"].map((hue) => [
+            hue,
+            {
+              DEFAULT: `rgb(var(--camp-${hue}) / <alpha-value>)`,
+              tint: `rgb(var(--camp-${hue}-tint) / <alpha-value>)`,
+              ink: `rgb(var(--camp-${hue}-ink) / <alpha-value>)`,
+            },
+          ]),
+        ),
+        // The current hue, set by a hue-* class (globals.css): bg-hue-tint,
+        // text-hue-ink, fill-hue, stroke-hue.
+        hue: {
+          DEFAULT: "rgb(var(--hue) / <alpha-value>)",
+          tint: "rgb(var(--hue-tint) / <alpha-value>)",
+          ink: "rgb(var(--hue-ink) / <alpha-value>)",
+        },
         ink: "rgb(var(--foreground) / <alpha-value>)",
         canvas: {
           DEFAULT: "rgb(var(--background) / <alpha-value>)",
@@ -98,6 +117,8 @@ const config: Config = {
       },
       transitionTimingFunction: {
         DEFAULT: "cubic-bezier(.2,.8,.2,1)",
+        // A knob that travels lands with a slight overshoot (ease-spring).
+        spring: "cubic-bezier(0.3,1.35,0.5,1)",
       },
       keyframes: {
         "fade-up": {
@@ -117,12 +138,18 @@ const config: Config = {
           "50%": { transform: "scale(1.06)" },
           "100%": { transform: "scale(1)" },
         },
+        // The springy check (the playful layer): 1 -> 1.12 -> 1, as the app's.
+        "spring-pop": {
+          "0%, 100%": { scale: "1" },
+          "45%": { scale: "1.12" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
         "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",
         "icon-pop": "icon-pop 0.35s ease-out",
+        spring: "spring-pop 220ms cubic-bezier(0.2,0.8,0.2,1)",
       },
     },
   },

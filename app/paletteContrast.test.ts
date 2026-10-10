@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { SHARED } from "@/lib/palette"
+import { CAMP, SHARED, hexToTriple } from "@/lib/palette"
 
 /**
  * Every pair a visitor reads clears WCAG AA, in both themes.
@@ -87,5 +87,34 @@ describe("palette contrast", () => {
       const ratio = contrast(mark, SHARED[theme].background)
       expect(ratio, `the chain marks are ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(3)
     })
+
+    // The camp palette (the playful layer). The ink is text: 4.5:1 on its own
+    // tint (a tag, a tile, initials) and on the page and a card. The strong cut
+    // is a graphic: 3:1 on the page, a card, the muted ground of a band and its
+    // own tint, where a tile puts its icon. Sun is the tightest in light mode.
+    for (const hue of ["sun", "moss", "lake", "sky", "dusk", "berry"]) {
+      const camp = (name: string) => hexToTriple(CAMP[theme][name])
+      it(`${theme}: camp ${hue} ink reads on its tint, the page and a card`, () => {
+        for (const [ground, rgb] of [
+          ["its tint", camp(`camp-${hue}-tint`)],
+          ["the page", SHARED[theme].background],
+          ["a card", SHARED[theme].card],
+        ] as const) {
+          const ratio = contrast(camp(`camp-${hue}-ink`), rgb)
+          expect(ratio, `camp-${hue}-ink on ${ground} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+        }
+      })
+      it(`${theme}: camp ${hue} strong is a visible mark on the page, a card, muted and its tint`, () => {
+        for (const [ground, rgb] of [
+          ["the page", SHARED[theme].background],
+          ["a card", SHARED[theme].card],
+          ["muted", SHARED[theme].muted],
+          ["its tint", camp(`camp-${hue}-tint`)],
+        ] as const) {
+          const ratio = contrast(camp(`camp-${hue}`), rgb)
+          expect(ratio, `camp-${hue} on ${ground} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(3)
+        }
+      })
+    }
   }
 })

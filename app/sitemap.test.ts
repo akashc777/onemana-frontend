@@ -13,8 +13,9 @@ import { describe, expect, it } from "vitest"
  * listed by the sitemap from that data and are not checked here.
  */
 const APP = join(process.cwd(), "app")
-/** Signed-in or after-payment pages, kept out of search on purpose. */
-const PRIVATE = new Set(["admin", "account", "buy/success"])
+/** Signed-in or after-payment pages, kept out of search on purpose, and the
+ *  design showcase, which is a 404 in every production build. */
+const PRIVATE = new Set(["admin", "account", "buy/success", "playful-dev"])
 
 function pages(dir: string, out: string[] = []): string[] {
     for (const entry of readdirSync(dir)) {
