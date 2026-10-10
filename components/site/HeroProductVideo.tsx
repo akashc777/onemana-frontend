@@ -33,13 +33,17 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            {/* Bottom-left, not centred: a centred button sat on the film's wordmark. */}
-            <span className="absolute bottom-3 left-3 inline-flex h-10 items-center gap-2 rounded-md bg-brand px-4 text-small font-medium text-brand-foreground transition-colors duration-150 group-hover:bg-brand-dark sm:bottom-5 sm:left-5">
+            {/* Bottom-left, not centred: a centred button sat on the film's
+                wordmark. White on the film's dark frame, as a player's own
+                control is: in the accent it was a second filled orange
+                button in view beside "Try the live demo", and its "1:32"
+                at 80% white on orange read at 3.5:1. */}
+            <span className="absolute bottom-3 left-3 inline-flex h-11 items-center gap-2 rounded-md bg-white px-4 text-small font-medium text-black/90 transition-colors duration-150 group-hover:bg-white/90 sm:bottom-5 sm:left-5 sm:h-10">
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
                 <path d="M8 5v14l11-7L8 5z" />
               </svg>
               Watch the film
-              <span className="font-normal tabular-nums opacity-80">1:32</span>
+              <span className="font-normal tabular-nums text-black/60">1:32</span>
             </span>
           </button>
         )}
