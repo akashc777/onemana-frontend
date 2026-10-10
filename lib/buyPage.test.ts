@@ -178,3 +178,13 @@ describe("a failed pricing refresh on /buy", () => {
     expect(checkout).not.toContain("fetchPricingClient().then(setPricing)")
   })
 })
+
+describe("the plan switch on a narrow phone", () => {
+  // At 360 px "Licence, self-hosted" wrapped to two lines beside a one-line
+  // "Cloud, run by us". Below 380 px the qualifiers are read, not shown.
+  it("keeps both labels to one line and their full names for a screen reader", () => {
+    const checkout = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
+    expect(checkout).toContain('Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span>')
+    expect(checkout).toContain('Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>')
+  })
+})

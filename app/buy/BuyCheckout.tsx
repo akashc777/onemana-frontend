@@ -180,7 +180,10 @@ export function BuyCheckout({
                 aria-pressed={!isCloud}
                 className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Licence, self-hosted
+                {/* Below 380 px the two labels do not fit side by side, and one
+                    wrapped while the other did not: the qualifier is then read
+                    but not shown. */}
+                Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span>
               </button>
               <button
                 type="button"
@@ -188,7 +191,7 @@ export function BuyCheckout({
                 aria-pressed={isCloud}
                 className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Cloud, run by us
+                Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>
               </button>
             </div>
 

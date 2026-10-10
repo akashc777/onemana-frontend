@@ -40,7 +40,7 @@ describe("the plan cards", () => {
         const cards = html.match(/<div class="hue-[a-z]+ flex flex-col[^"]*"/g) ?? []
         expect(cards).toHaveLength(3)
         for (const c of cards) expect(c).toContain("md:row-span-7 md:grid md:grid-rows-subgrid md:gap-y-0")
-        const first = html.slice(html.indexOf(cards[0]), html.indexOf(cards[1]))
+        const first = html.slice(html.indexOf(cards[0]!), html.indexOf(cards[1]!))
         // header, price, estimate, who it is for, what it is, what you get, button
         expect(first.match(/^<div class="hue-[^"]*">(<div|<p)/)).not.toBeNull()
         expect((first.match(/<\/p><(p|div) class=/g) ?? []).length + 1).toBeGreaterThanOrEqual(6)
