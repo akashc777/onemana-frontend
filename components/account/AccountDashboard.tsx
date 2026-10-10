@@ -348,7 +348,7 @@ function InvoicesTab() {
               <div className="min-w-0">
                 <p className="text-small font-medium text-foreground">{inv.invoice_no}</p>
                 <p className="mt-0.5 text-caption text-muted-foreground">
-                  {formatDate(inv.issued_at)}{"\u00a0· "}GST {gst(inv)}
+                  {formatDate(inv.issued_at)}{"\u00a0· GST\u00a0"}{gst(inv)}
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-2">

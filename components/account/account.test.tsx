@@ -86,5 +86,7 @@ it("lists invoices on a phone with each one's download in reach, and keeps the t
   for (const piece of ["{inv.invoice_no}", "formatDate(inv.issued_at)", "gst(inv)", "formatINR(inv.gross_amount)", "downloadButton(inv)", "failed(inv)"]) {
     expect(list).toContain(piece);
   }
+  // "GST" stays with its figure when the line wraps on a 360 px phone.
+  expect(list).toContain('{"\\u00a0· GST\\u00a0"}{gst(inv)}');
   expect(body).toMatch(/className="relative hidden [^"]*sm:block"[\s\S]*<table/);
 });
