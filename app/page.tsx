@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ShotNote } from "@/components/site/ProductShot";
+import type { OrbitThing } from "@/components/ui/graphics/HeroOrbit";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { faqs, governance } from "@/lib/content";
 import { site } from "@/lib/site";
@@ -18,6 +19,7 @@ import { HomeComparison } from "@/components/site/HomeComparison";
 import { PlanColumns } from "@/components/site/PlanColumns";
 import { QuestionList } from "@/components/site/marketing";
 import { RecordRows } from "@/components/site/RecordRows";
+import { SpotWelcome } from "@/components/ui/graphics/spots";
 import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
 
 export const revalidate = 300;
@@ -47,6 +49,13 @@ const HERO_NOTES: ShotNote[] = [
   // The demo's check-in runs Monday to Friday (oneCamp business/DemoSeed/checkins.go).
   { x: 35.6, y: 65.8, text: "A check-in asks the channel every weekday, and the answers collect in one thread." },
 ];
+/** Real things in the hero's screenshot, named on its canvas: the channel, a person in the thread, and the agent. */
+const HERO_THINGS: OrbitThing[] = [
+  { label: "#engineering", kind: "channel" },
+  { label: "Maya Chen", kind: "person" },
+  { label: "Release Captain", kind: "agent" },
+];
+
 export default async function HomePage() {
   const [pricing, release] = await Promise.all([getPricing(), getReleaseFacts()]);
 
@@ -104,10 +113,14 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-16 sm:mt-20">
+            {/* The canvas is #engineering's own hue (hueFor gives it sky, as the
+                app does), and the three things named on it are in the shot. */}
             <HeroShot
               alt="OneCamp's #engineering channel: a release thread where the Release Captain agent reports checklist status, with the sidebar of channels, projects and docs."
               phoneAlt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
               notes={HERO_NOTES}
+              hue="sky"
+              things={HERO_THINGS}
             />
           </div>
 
@@ -213,6 +226,9 @@ export default async function HomePage() {
       <Section id="start" band="sky">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-7">
+            {/* The workspace's ring with its people and channels round it: the
+                close's spot, on the band it sits on. */}
+            <SpotWelcome size={72} className="mb-6" />
             <h2 className="text-balance text-h2 text-foreground">
               If you can&apos;t say what your AI is allowed to do, this is for you.
             </h2>

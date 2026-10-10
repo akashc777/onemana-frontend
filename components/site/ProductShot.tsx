@@ -1,6 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import type { CampHue } from "@/lib/campHue";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { HeroOrbit, type OrbitThing } from "@/components/ui/graphics/HeroOrbit";
 
 /**
  * A real screenshot of the product, in the reader's theme.
@@ -119,8 +120,11 @@ function Notes({ notes }: { notes: ShotNote[] }) {
  * cannot carry an alt, so a phone reader heard the desktop description
  * (sidebar and all) for a phone screenshot that has no sidebar.
  */
+// The wide shot sits inside the hero's canvas (HeroOrbit: px-10 from sm up,
+// inside the page's gutters), so it is drawn about 128 px narrower than the
+// window, and at most 976 px wide.
 const HERO = {
-  desktop: { file: "channel", width: 2240, height: 1400, sizes: "(min-width: 1120px) 1120px, 100vw", show: "hidden sm:block" },
+  desktop: { file: "channel", width: 2240, height: 1400, sizes: "(min-width: 1120px) 976px, calc(100vw - 128px)", show: "hidden sm:block" },
   phone: { file: "channel-phone", width: 780, height: 1180, sizes: "384px", show: "block sm:hidden" },
 } as const;
 
@@ -133,7 +137,7 @@ function HeroImage({ theme, kind, alt }: { theme: "light" | "dark"; kind: keyof 
   return (
     // getImageProps gives the optimised srcSet and the alt; a plain <img> is how it is used.
     // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
-    <img {...props} {...HIGH_PRIORITY} loading="lazy" className={`${v.show} h-auto w-full rounded-md border border-border bg-card`} />
+    <img {...props} {...HIGH_PRIORITY} loading="lazy" className={`${v.show} h-auto w-full rounded-md border border-border bg-card shadow-popover`} />
   );
 }
 
@@ -152,14 +156,33 @@ function HeroImage({ theme, kind, alt }: { theme: "light" | "dark"; kind: keyof 
  *   other three out of the accessibility tree, so one description is heard;
  * - nothing is preloaded: a preload link cannot carry these conditions, and
  *   preloading all four was what fetched every variant on every visit.
+ *
+ * It sits on the hero's canvas (the playful layer's HeroOrbit): a camp tint
+ * with the logo's ring and a dotted orbit turning slowly behind the shot, and
+ * a few real things from the shot named on it. The notes stay under the
+ * canvas, where the chips cannot cover them.
  */
-export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt: string; notes?: ShotNote[] }) {
+export function HeroShot({
+  alt,
+  phoneAlt,
+  notes = [],
+  things = [],
+  hue = "sky",
+}: {
+  alt: string;
+  phoneAlt: string;
+  notes?: ShotNote[];
+  /** Real things from the screenshot, named on the canvas (at most three). */
+  things?: OrbitThing[];
+  /** The canvas's camp hue. */
+  hue?: CampHue;
+}) {
   return (
     <figure className="m-0">
-      <Stage className="mx-auto max-w-sm sm:max-w-none">
+      <HeroOrbit hue={hue} things={things}>
         {/* Markers are placed on the wide screenshot only; on a phone the
             app's phone layout is shown and the notes stand as a list. */}
-        <div className="relative">
+        <div className="relative mx-auto max-w-sm sm:max-w-none">
           {(["light", "dark"] as const).map((theme) => (
             <div key={theme} className={theme === "light" ? "dark:hidden" : "hidden dark:block"}>
               <HeroImage theme={theme} kind="phone" alt={phoneAlt} />
@@ -172,7 +195,7 @@ export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt:
             ))}
           </div>
         </div>
-      </Stage>
+      </HeroOrbit>
       {notes.length > 0 && (
         <figcaption>
           <Notes notes={notes} />

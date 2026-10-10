@@ -12,12 +12,18 @@ import { describe, expect, it } from "vitest"
  * them as the quieter option.
  */
 const page = readFileSync(join(process.cwd(), "app/page.tsx"), "utf8")
-const close = page.slice(page.indexOf('<Section id="start">'))
+const close = page.slice(page.indexOf('<Section id="start"'))
 
 describe("the close of the home page", () => {
     it("is one section, left-aligned, with nothing centred", () => {
         expect(close.length, "no close section").toBeGreaterThan(100)
         expect(page).not.toMatch(/text-center|justify-center/)
+    })
+
+    it("sits on a band with the welcome spot, the workspace's ring and its people", () => {
+        expect(page).toMatch(/<Section id="start" band="[a-z]+">/)
+        expect(close.indexOf("<SpotWelcome")).toBeGreaterThan(-1)
+        expect(close.indexOf("<SpotWelcome")).toBeLessThan(close.indexOf("this is for you."))
     })
 
     it("holds the claim, both ways in and the email form, in that order", () => {

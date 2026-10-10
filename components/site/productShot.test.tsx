@@ -78,3 +78,39 @@ describe("the hero on a phone and on a wide screen", () => {
         expect(html).toMatch(/<div class="hidden dark:block">/)
     })
 })
+
+/**
+ * The hero sits on its canvas: the camp tint with the ring and orbit turning
+ * behind the shot, and real things from the shot named on it. The notes stay
+ * under the canvas, where the chips cannot cover them.
+ */
+describe("the hero's canvas", () => {
+    const html = renderToString(
+        <HeroShot
+            alt="The #engineering channel."
+            phoneAlt="The channel on a phone."
+            hue="sky"
+            notes={[{ x: 10, y: 10, text: "A note." }]}
+            things={[
+                { label: "#engineering", kind: "channel" },
+                { label: "Maya Chen", kind: "person" },
+                { label: "Release Captain", kind: "agent" },
+            ]}
+        />,
+    )
+
+    it("frames the shot on the orbit, in the hue it is given", () => {
+        expect(html).toMatch(/class="hue-sky relative isolate overflow-hidden rounded-2xl bg-hue-tint/)
+        expect(html).toContain("orbit-turn")
+    })
+
+    it("names the shot's own things on it", () => {
+        for (const t of ["#engineering", "Maya Chen", "Release Captain"]) expect(html).toContain(t)
+    })
+
+    it("keeps the notes outside the canvas", () => {
+        const canvasEnd = html.lastIndexOf("</div>", html.indexOf("<figcaption"))
+        expect(html.indexOf("<figcaption")).toBeGreaterThan(canvasEnd)
+        expect(html.slice(html.indexOf("<figcaption"))).toContain("A note.")
+    })
+})
