@@ -92,7 +92,7 @@ function BuyInner() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) {
-      setError("Please enter your email - your license key is sent there.");
+      setError("Please enter your email: your licence key is sent there.");
       return;
     }
     // A name the check refused is said here, before the payment window opens.
@@ -181,7 +181,7 @@ function BuyInner() {
                 phone. The licence card below says what paying adds. */}
             {!isCloud && (
               <p className="mt-4 border-l-2 border-border-strong pl-4 text-small text-muted-foreground">
-                Fewer than {FREE_SEATS} people? OneCamp is free for you.{" "}
+                Up to {FREE_SEATS} people? OneCamp is free for you.{" "}
                 <a href="/free" className="link font-medium">
                   Get the install command
                 </a>
@@ -201,19 +201,21 @@ function BuyInner() {
               </div>
               <p className="mt-1 text-caption text-muted-foreground">
                 {/* A dollar estimate only for buyers outside India; currencyNote
-                    under the pay button says why it can differ from the card. */}
+                    under the pay button says why it can differ from the card.
+                    One middle dot at most, after the estimate; the terms
+                    themselves are a list with commas. */}
                 {!isIndia && !(pricing.charge_usd && !isCloud) && usdEstimate(isCloud ? price.usd : pricing.lifetime_usd)
                   ? `${usdEstimate(isCloud ? price.usd : pricing.lifetime_usd)} · `
                   : ""}
                 {isCloud
                   ? business
-                    ? `${pricing.business_seats} users included · a larger machine · includes a self-host license`
+                    ? `${pricing.business_seats} users, a larger machine and a self-host licence included`
                     : yearly
-                      ? `${saving ? `${saving} · ` : ""}${pricing.cloud_seats} users included · includes a self-host license`
-                      : `${pricing.cloud_seats} users included · includes a self-host license`
+                      ? `${saving ? `${saving}, ` : ""}${pricing.cloud_seats} users and a self-host licence included`
+                      : `${pricing.cloud_seats} users and a self-host licence included`
                   : pricing.charge_usd && !isIndia
-                    ? "Charged in US dollars · one-time · unlimited users"
-                    : "One-time · GST included · unlimited users"}
+                    ? "Charged in US dollars, one-time, unlimited users"
+                    : "One-time, GST included, unlimited users"}
               </p>
               {showChoices && (
                 <div
@@ -283,7 +285,7 @@ function BuyInner() {
             <Field
               label="Email"
               required
-              hint={isCloud ? "You sign in to your workspace with it, and your invoices are sent here." : "Your license key & invoice are sent here."}
+              hint={isCloud ? "You sign in to your workspace with it, and your invoices are sent here." : "Your licence key and invoice are sent here."}
             >
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>
@@ -379,14 +381,14 @@ function BuyInner() {
             <div className="mt-8 border-t border-border pt-6">
               <p className="font-medium text-foreground">Not buying today?</p>
               <p className="mt-1 text-small text-muted-foreground">
-                Leave your address and we will tell you when the price or the license terms
+                Leave your address and we will tell you when the price or the licence terms
                 change, and when something ships that you asked for.
               </p>
               <div className="mt-3">
                 <SubscribeForm
                   source="buy"
                   cta="Email me updates"
-                  hint="Only product announcements: new releases, and changes to the price or license terms. Unsubscribe in one click."
+                  hint="Only product announcements: new releases, and changes to the price or licence terms. Unsubscribe in one click."
                 />
               </div>
             </div>

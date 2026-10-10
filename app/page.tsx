@@ -43,7 +43,8 @@ export const revalidate = 300;
 const HERO_NOTES: ShotNote[] = [
   { x: 40, y: 32.9, text: "Release Captain is an agent, and every message it posts says so." },
   { x: 94.6, y: 35.4, text: "It reports what is done and leaves the load test open until someone posts the numbers." },
-  { x: 35.6, y: 65.8, text: "A check-in asks the channel each day, and the answers collect in one thread." },
+  // The demo's check-in runs Monday to Friday (oneCamp business/DemoSeed/checkins.go).
+  { x: 35.6, y: 65.8, text: "A check-in asks the channel every weekday, and the answers collect in one thread." },
 ];
 export default async function HomePage() {
   const [pricing, release] = await Promise.all([getPricing(), getReleaseFacts()]);
@@ -170,7 +171,7 @@ export default async function HomePage() {
       {/* 6. How it compares, including where it loses. */}
       <Section id="compare">
         <SectionHeading
-          title="Against Slack, Mattermost and Huly, row by row"
+          title="Against a Slack, Notion and Zoom stack, Mattermost and Huly"
           subtitle="The last row is the one OneCamp loses."
           className="mb-10"
         />

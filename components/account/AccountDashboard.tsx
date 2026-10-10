@@ -130,7 +130,7 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Licenses" value={String(overview.licenses.length)} />
+        <StatCard label="Licences" value={String(overview.licenses.length)} />
         <StatCard label="Orders" value={String(overview.order_count)} />
         <StatCard label="Invoices" value={String(overview.invoice_count)} />
         <StatCard
@@ -141,10 +141,10 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-foreground">Your licenses</h2>
+        <h2 className="mb-3 text-sm font-semibold text-foreground">Your licences</h2>
         {overview.licenses.length === 0 ? (
           <p className="rounded-lg border border-border bg-muted/30 p-5 text-sm text-muted-foreground">
-            No licenses yet. Once your payment is processed, your license key appears here.
+            No licences yet. Once your payment is processed, your licence key appears here.
           </p>
         ) : (
           <div className="space-y-3">
@@ -155,8 +155,8 @@ function OverviewTab({ overview, onManageSubscription }: { overview: PortalOverv
                     {l.product_type === "saas_subscription"
                       ? "Cloud (includes self-host)"
                       : l.plan_code === FREE_PLAN_CODE
-                        ? `Free self-host license (up to ${FREE_SEATS} people)`
-                        : "Lifetime self-host license"}
+                        ? `Free self-host licence (up to ${FREE_SEATS} people)`
+                        : "Lifetime self-host licence"}
                   </span>
                   <span className="text-xs text-muted-foreground">Issued {formatDate(l.issued_at)}</span>
                 </div>
@@ -387,7 +387,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   if (subs.length === 0)
     return (
       <div className="rounded-lg border border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
-        You don&apos;t have any subscriptions. The lifetime license is a one-time purchase with nothing to manage here.
+        You don&apos;t have any subscriptions. The lifetime licence is a one-time purchase with nothing to manage here.
       </div>
     );
 

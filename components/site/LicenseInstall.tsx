@@ -32,7 +32,7 @@ export function LicenseInstall({ licenseKey, isCloud }: { licenseKey: string; is
     <div className="mt-7 space-y-5 text-left">
       <div>
         <p className="mb-1.5 text-xs font-medium text-muted-foreground">
-          {isCloud ? "Your included license key" : "Your license key"}
+          {isCloud ? "Your included licence key" : "Your licence key"}
         </p>
         <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-4 py-3 font-mono text-sm text-foreground">
           <span className="flex-1 break-all">{licenseKey}</span>

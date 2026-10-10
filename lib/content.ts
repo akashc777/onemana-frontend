@@ -212,7 +212,7 @@ export const faqs = [
   },
   {
     q: "I pay once. What is included?",
-    a: "One license key, unlimited users, no annual renewal. Everything is included: agents, local AI, SSO, LDAP, SCIM and audit export. Cloud plans include a self-host license so you can switch later.",
+    a: "One licence key, unlimited users, no annual renewal. Everything is included: agents, local AI, SSO, LDAP, SCIM and audit export. Cloud plans include a self-host licence so you can switch later.",
   },
   {
     q: "What if OneMana shuts down?",
@@ -354,7 +354,7 @@ export const cloudBenefits = [
   "Your own server. No database shared with anyone",
   "We handle SSL, monitoring, and uptime",
   "AI teammates with a model on your server: no key needed",
-  "Includes a self-host license. Switch anytime",
+  "Includes a self-host licence. Switch anytime",
   // No time here: how long is the backend's one estimate (setupEstimate.go),
   // which /buy shows beside this list and which depends on a free machine.
   "We set everything up for you",
@@ -365,13 +365,16 @@ export const cloudBenefits = [
  * answered with facts a buyer can check rather than quotes we do not have
  * (buyer review, 4 Oct 2026: "the trust gap is the part that still matters").
  *   Run it first     the free plan is the same app (helpers/seatLimit.go)
- *   Read the code    github.com/OneMana-Soft/OneCamp, AGPL-3.0
+ *   Read the code    github.com/OneMana-Soft: the server AGPL-3.0, the web app MIT
  *   Nothing to stop  no licence server: a paid build has no cap stamped in
  *   Who you pay      the registered company, Razorpay, GST invoice
  */
 export const beforeYouPay = [
   { title: "Run it first", body: `The free plan is the same app for up to ${FREE_SEATS} people. Pay when you outgrow it.` },
-  { title: "Read the code", body: "Every line is public under AGPL-3.0.", href: "https://github.com/OneMana-Soft/OneCamp", link: "See it on GitHub" },
+  // Two licences, not one: "every line is public under AGPL-3.0" was wrong
+  // about the web app, which is MIT (the FAQ above says so). The link is the
+  // organisation, where both repositories are.
+  { title: "Read the code", body: "The server is public under AGPL-3.0, and the web app under MIT.", href: "https://github.com/OneMana-Soft", link: "See it on GitHub" },
   { title: "Nothing to switch off", body: "No licence server and no phone-home. A paid build has no cap, so it keeps running if we stop." },
   { title: "Who you pay", body: "OneMana Solutions (OPC) Private Limited, Bangalore. Razorpay takes the card; you get a GST invoice.", href: "mailto:support@onemana.dev", link: "Ask first" },
 ] as const;

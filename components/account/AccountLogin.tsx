@@ -65,7 +65,7 @@ export function AccountLogin({
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-foreground">Your OneCamp account</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to download invoices, view your license, and manage your subscription.
+            Sign in to download invoices, view your licence, and manage your subscription.
           </p>
         </div>
 

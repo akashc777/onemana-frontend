@@ -85,7 +85,7 @@ function buildJsonLd(lifetimeInr: number, lifetimeUsd: number, cloudInr: number,
         operatingSystem: "Docker, Linux",
         description: site.description,
         offers: [
-          { "@type": "Offer", price: String(lifetimeInr), priceCurrency: "INR", name: `Lifetime self-host license (≈ $${lifetimeUsd})` },
+          { "@type": "Offer", price: String(lifetimeInr), priceCurrency: "INR", name: `Lifetime self-host licence (≈ $${lifetimeUsd})` },
           { "@type": "Offer", price: String(cloudInr), priceCurrency: "INR", name: `OneCamp Cloud - managed hosting, monthly (≈ $${cloudUsd})` },
         ],
       },

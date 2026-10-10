@@ -110,13 +110,13 @@ function SuccessInner() {
               </div>
               <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
                 Your GST invoice is on its way to <span className="font-medium text-foreground">{email}</span>.
-                Your plan also includes a self-host license, in the same email and on your account page,
+                Your plan also includes a self-host licence, in the same email and on your account page,
                 should you ever want to run OneCamp yourself.
               </p>
             </>
           ) : pending && !key ? (
             <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-              Thanks for your purchase! Your license key and setup instructions are being prepared and will arrive at{" "}
+              Thanks for your purchase! Your licence key and setup instructions are being prepared and will arrive at{" "}
               <span className="font-medium text-foreground">{email}</span> within a minute. Your GST invoice is attached.
             </p>
           ) : (

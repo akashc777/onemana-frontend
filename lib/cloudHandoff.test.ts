@@ -109,10 +109,10 @@ describe("cloud purchase hand-off", () => {
     expect(named, "the address that signs in to the workspace is said").toContain("you sign in with that address")
   })
 
-  it("leads with the workspace, and keeps the self-host license for later", () => {
+  it("leads with the workspace, and keeps the self-host licence for later", () => {
     const branch = flat(cloudBranch())
-    expect(branch).not.toContain("we've emailed your included self-host license")
-    expect(branch.indexOf("self-host license")).toBeGreaterThan(branch.indexOf("we are setting up"))
+    expect(branch).not.toContain("we've emailed your included self-host licence")
+    expect(branch.indexOf("self-host licence")).toBeGreaterThan(branch.indexOf("we are setting up"))
   })
 
   it("advertises both domain options before purchase, not only after", () => {
