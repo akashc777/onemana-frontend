@@ -70,6 +70,15 @@ export function DocsSearch({ className = "" }: { className?: string }) {
     return () => document.removeEventListener("pointerdown", away);
   }, [showing]);
 
+  // Enter opens the first result, so once the typing pauses, that one guide
+  // is fetched ahead; the rest wait for a pointer or the keyboard.
+  const first = showing ? hits[0]?.href : undefined;
+  useEffect(() => {
+    if (!first) return;
+    const t = window.setTimeout(() => router.prefetch(first), 300);
+    return () => window.clearTimeout(t);
+  }, [first, router]);
+
   const done = () => {
     setOpen(false);
     setQuery("");
@@ -179,8 +188,14 @@ export function DocsSearch({ className = "" }: { className?: string }) {
             <ul ref={results} onKeyDown={onListKey} className="max-h-[min(26rem,65vh)] overflow-y-auto overscroll-contain">
               {hits.map((h) => (
                 <li key={h.href}>
+                  {/* Fetched ahead on intent only: in view, every result of
+                      every keystroke was fetched ahead, 64 KB of guides nobody
+                      chose while typing "saml cert". */}
                   <Link
                     href={h.href}
+                    prefetch={false}
+                    onPointerEnter={() => router.prefetch(h.href)}
+                    onFocus={() => router.prefetch(h.href)}
                     onClick={done}
                     className="block rounded-md px-3 py-2 outline-offset-0 transition-colors duration-150 hover:bg-muted focus-visible:bg-muted"
                   >
