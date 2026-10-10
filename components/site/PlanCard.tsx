@@ -32,13 +32,21 @@ export function PlanCardHeader({
  * columns on the home page and /pricing (which lay their parts on a shared
  * subgrid instead) and the licence and Cloud details share the look, so a plan
  * looks like itself wherever it appears.
+ *
+ * `aligned`: side by side from lg, the card and its body lay their parts on
+ * the row's grid, the header and then six parts (price, estimate, who it is
+ * for, the list, the button, the note), so each part of a pair starts on one
+ * line whatever wraps. The parent grid gives each card `lg:row-span-7`'s rows.
  */
+export const PLAN_CARD_PARTS = 6;
+
 export function PlanCard({
   hue,
   Glyph,
   title,
   fits,
   titleAs: H = "h3",
+  aligned = false,
   children,
   className = "",
 }: {
@@ -48,13 +56,17 @@ export function PlanCard({
   /** Who it is for, at the right of the header. */
   fits?: ReactNode;
   titleAs?: "h2" | "h3" | "p";
+  /** Lay the header and six body parts on the row's subgrid from lg. */
+  aligned?: boolean;
   children: ReactNode;
   className?: string;
 }) {
   return (
-    <div className={`${HUE_CLASS[hue]} flex flex-col overflow-hidden rounded-lg border border-border bg-card ${className}`}>
+    <div
+      className={`${HUE_CLASS[hue]} flex flex-col overflow-hidden rounded-lg border border-border bg-card ${aligned ? "lg:row-span-7 lg:grid lg:grid-rows-subgrid lg:gap-y-0" : ""} ${className}`}
+    >
       <PlanCardHeader Glyph={Glyph} title={title} fits={fits} titleAs={H} />
-      <div className="flex flex-1 flex-col px-6 pb-6 pt-5">{children}</div>
+      <div className={`flex flex-1 flex-col px-6 pb-6 pt-5 ${aligned ? "lg:row-span-6 lg:grid lg:grid-rows-subgrid lg:gap-y-0" : ""}`}>{children}</div>
     </div>
   );
 }
