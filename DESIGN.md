@@ -113,13 +113,22 @@ template-built site.
 | Step | Size / line height | Tracking |
 |---|---|---|
 | Display | 64 / 68 | −0.028em, weight 600 |
+| Display, tablet and phone | 56 / 59 and 44 / 46 | −0.03em |
 | H1 | 48 / 52 | −0.024em |
+| Title | 36 / 42 | −0.024em: a page's title on a phone; a reading page's title (a guide, a policy, the account, the receipt) from sm |
+| Title small | 30 / 36 | −0.022em: a reading page's title on a phone |
 | H2 | 32 / 38 | −0.016em |
 | H3 | 20 / 28 | −0.01em |
 | Body-lg | 18 / 28 | |
 | Body | 16 / 26 | |
 | Small | 14 / 20 | |
 | Caption | 13 / 18 | |
+
+Every heading takes a step from this table (`text-display` to `text-caption`,
+with `text-title`, `text-title-sm`, `text-display-md` and `text-display-sm`
+for the smaller screens); `typeScale.test.ts` refuses an arbitrary size on a
+heading. A heading set at a text size (Body, Small, Caption) is drawn in
+Inter at normal tracking, by one rule in `globals.css`.
 
 Inter Tight is already set tight, so the direction's −0.035em on top of it made
 letters touch at 64 px; the tracking above is that, eased off until they do not.

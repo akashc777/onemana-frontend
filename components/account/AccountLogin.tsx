@@ -73,7 +73,7 @@ export function AccountLogin({
   return (
     <div className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-14">
       <div className="max-w-sm">
-        <h1 className="text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+        <h1 className="text-title-sm text-foreground sm:text-title">
           Your OneCamp account
         </h1>
         <p className="mt-3 text-body text-muted-foreground">

@@ -162,7 +162,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 />
                 <div className="mt-10 max-w-3xl border-l-2 border-foreground pl-6">
                     <blockquote className="m-0">
-                        <p className="text-balance font-display text-[1.5rem] leading-[2rem] tracking-[-0.01em] text-foreground sm:text-[1.75rem] sm:leading-[2.25rem]">{killQuestion}</p>
+                        <p className="text-balance font-display text-h3 text-foreground sm:text-h2">{killQuestion}</p>
                     </blockquote>
                 </div>
                 <div className="mt-6">

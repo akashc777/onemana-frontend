@@ -93,7 +93,7 @@ export function AccountDashboard({
     <div className="container-x pb-24 pt-10 sm:pt-14">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+          <h1 className="text-title-sm text-foreground sm:text-title">
             {c.name ? `Hi, ${c.name.split(" ")[0]}` : "Your account"}
           </h1>
           <p className="mt-1 truncate text-small text-muted-foreground">{c.email}</p>

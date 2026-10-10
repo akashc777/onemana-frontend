@@ -96,11 +96,15 @@ export function Margin({ aside, children, className = "" }: { aside: ReactNode; 
   );
 }
 
-/** A heading for the margin: smaller than a section heading, because the margin is narrow. */
+/**
+ * A heading for the margin: a section heading, at the section heading's size
+ * (h2, 32 px). It was 28 px, a step of its own, so "What you are signing up
+ * to run" sat beside "About paying" on /pricing a size apart.
+ */
 export function MarginHeading({ title, subtitle, id }: { title: ReactNode; subtitle?: ReactNode; id?: string }) {
   return (
     <div className="lg:sticky lg:top-24">
-      <h2 id={id} className="text-balance text-[1.75rem] leading-[2.125rem] tracking-[-0.016em] text-foreground">
+      <h2 id={id} className="text-balance text-h2 text-foreground">
         {title}
       </h2>
       {subtitle && <p className="mt-3 text-body text-muted-foreground">{subtitle}</p>}

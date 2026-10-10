@@ -28,7 +28,7 @@ export default function NotFound() {
       <div className="grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16">
         <div>
           <SpotError size={88} className="mb-6 md:hidden" />
-          <h1 className="text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">There is no page here</h1>
+          <h1 className="text-title text-foreground sm:text-h1">There is no page here</h1>
           <p className="mt-4 max-w-xl text-body-lg text-muted-foreground">The address may be mistyped, or the page may have moved.</p>
 
           <div className="mt-10 max-w-2xl border-y border-border py-4">

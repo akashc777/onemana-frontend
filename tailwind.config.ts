@@ -83,9 +83,16 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       // The marketing scale (DESIGN.md, Type). Size / line height / tracking.
+      // The display headline steps down on a tablet and a phone; a page's
+      // title (h1) is "title" on a phone; a reading page's title (a guide, a
+      // policy, the account) is title-sm on a phone and title from sm.
       fontSize: {
         display: ["4rem", { lineHeight: "4.25rem", letterSpacing: "-0.032em" }],
+        "display-md": ["3.5rem", { lineHeight: "3.6875rem", letterSpacing: "-0.03em" }],
+        "display-sm": ["2.75rem", { lineHeight: "2.875rem", letterSpacing: "-0.03em" }],
         h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: "-0.026em" }],
+        title: ["2.25rem", { lineHeight: "2.625rem", letterSpacing: "-0.024em" }],
+        "title-sm": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: "-0.022em" }],
         h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: "-0.016em" }],
         h3: ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em" }],
         "body-lg": ["1.125rem", { lineHeight: "1.75rem" }],

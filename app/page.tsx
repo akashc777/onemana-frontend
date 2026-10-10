@@ -64,7 +64,7 @@ export default async function HomePage() {
       {/* 1. What it is, with the evidence beside it. */}
       <section className="pt-14 sm:pt-20 lg:pt-24">
         <div className="container-x">
-          <h1 className="max-w-[16ch] text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:max-w-[20ch] sm:text-[3.5rem] lg:max-w-none lg:text-display">
+          <h1 className="max-w-[16ch] text-display-sm text-foreground sm:max-w-[20ch] sm:text-display-md lg:max-w-none lg:text-display">
             Your team&apos;s chat, docs and calls, on a server you own.
           </h1>
 

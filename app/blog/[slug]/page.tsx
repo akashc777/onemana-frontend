@@ -89,7 +89,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
         <header className="mt-8">
           <TopicChip topic={topic} />
-          <h1 className="mt-4 text-balance text-[2rem] leading-[2.5rem] tracking-[-0.022em] text-foreground sm:text-[2.625rem] sm:leading-[3.125rem]">
+          <h1 className="mt-4 text-balance text-title text-foreground sm:text-h1">
             {post.title}
           </h1>
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-small text-muted-foreground">

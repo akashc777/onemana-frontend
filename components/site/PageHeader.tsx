@@ -31,7 +31,7 @@ export function PageHeader({ eyebrow, title, subtitle, align = "left", divider =
     <section className={`pt-12 sm:pt-16 ${className}`}>
       <div className={`container-x ${divider ? "" : "pb-10"} ${centred ? "text-center" : ""}`}>
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1 className={`text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1 ${centred ? "mx-auto max-w-3xl" : "max-w-3xl"}`}>
+        <h1 className={`text-balance text-title text-foreground sm:text-h1 ${centred ? "mx-auto max-w-3xl" : "max-w-3xl"}`}>
           {title}
         </h1>
         {subtitle && (

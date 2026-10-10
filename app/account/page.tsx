@@ -92,7 +92,7 @@ export default function AccountPage() {
     return (
       <div className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-14">
         <div role="alert" className="max-w-md">
-          <h1 className="text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground">Your account did not load</h1>
+          <h1 className="text-title-sm text-foreground sm:text-title">Your account did not load</h1>
           <p className="mt-3 text-body text-muted-foreground">{state.message}</p>
           <p className="mt-1 text-small text-muted-foreground">
             Nothing in your account has changed. If it keeps happening, write to support@onemana.dev.
