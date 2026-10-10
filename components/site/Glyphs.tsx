@@ -109,3 +109,76 @@ export function CloudGlyph(p: SVGProps<SVGSVGElement>) {
     </Glyph>
   );
 }
+
+/** A padlock: something kept private. */
+export function LockGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <rect x="5" y="10.5" width="14" height="10" rx="2" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14.5v2" />
+    </Glyph>
+  );
+}
+
+/** A shield with a tick: a rule that holds. */
+export function ShieldGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <path d="M12 3.5l7 2.5v5.5c0 4.3-2.9 7.6-7 9-4.1-1.4-7-4.7-7-9V6z" />
+      <path d="M9 12l2 2 4-4.5" />
+    </Glyph>
+  );
+}
+
+/** The record: rows joined by a chain. */
+export function RecordGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <path d="M10 6h9M10 12h9M10 18h9" />
+      <circle cx="5.5" cy="6" r="1.5" />
+      <circle cx="5.5" cy="12" r="1.5" />
+      <circle cx="5.5" cy="18" r="1.5" />
+      <path d="M5.5 7.5v3M5.5 13.5v3" />
+    </Glyph>
+  );
+}
+
+/** A board: three columns of cards. */
+export function BoardGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <rect x="3.5" y="4" width="4.5" height="12" rx="1.5" />
+      <rect x="9.75" y="4" width="4.5" height="16" rx="1.5" />
+      <rect x="16" y="4" width="4.5" height="8" rx="1.5" />
+    </Glyph>
+  );
+}
+
+/** A table: a grid of cells. */
+export function TableGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+      <path d="M3.5 9.5h17M3.5 14.5h17M9.5 4.5v15" />
+    </Glyph>
+  );
+}
+
+/** Something that runs by itself: a bolt. */
+export function BoltGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <path d="M13 3.5L5.5 13.5H11l-1 7 7.5-10H12z" />
+    </Glyph>
+  );
+}
+
+/** A call: a camera. */
+export function VideoGlyph(p: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...p}>
+      <rect x="3.5" y="6.5" width="12" height="11" rx="2" />
+      <path d="M15.5 10.5l5-3v9l-5-3" />
+    </Glyph>
+  );
+}

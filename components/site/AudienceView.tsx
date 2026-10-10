@@ -1,7 +1,12 @@
 import { PageHeader } from "@/components/site/PageHeader";
 import { QuestionList } from "@/components/site/marketing";
+import { ProductName } from "@/components/site/ProductName";
+import { FEATURE_MARK } from "@/components/site/featureMarks";
+import { PLAN_HUE } from "@/components/site/planHues";
 import { ButtonLink } from "@/components/ui/Button";
-import { SectionHeading } from "@/components/ui/Section";
+import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { Tile } from "@/components/ui/graphics/Tile";
+import { Section, SectionHeading } from "@/components/ui/Section";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { dual, fmtINR, type Pricing } from "@/lib/pricing";
@@ -17,8 +22,12 @@ import Link from "next/link";
  * better (with its pricing page as the source) and how to move.
  *
  * The points are a specification, not a card grid: each is a claim with the
- * mechanism behind it, so the claim sits in the margin and the detail beside
- * it. The six icon chips they used to carry said nothing the titles did not.
+ * mechanism behind it, the claim in the margin and the detail beside it. Each
+ * claim carries a tile in its feature's hue (featureMarks.ts: the same hue for
+ * the same kind of feature on every page), the rival carries its identity
+ * mark (the colour it has in every comparison table), and the two prices
+ * carry their plans' hues. On the compliance page the record sits on the dusk
+ * band, the site's colour for agents and the record.
  */
 export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) {
   const lifetime = a.prices === "inr" ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr);
@@ -37,15 +46,23 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         </div>
       </PageHeader>
 
-      <section className="pb-20 sm:pb-28">
+      <section className="pb-16 sm:pb-20">
         <div className="container-x">
           <dl className="border-t border-border">
-            {a.points.map((p) => (
-              <div key={p.title} className="grid gap-1 border-b border-border py-6 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
-                <dt className="font-display text-h3 font-semibold text-balance text-foreground">{p.title}</dt>
-                <dd className="text-body text-muted-foreground">{p.body}</dd>
-              </div>
-            ))}
+            {a.points.map((p) => {
+              const mark = FEATURE_MARK[p.icon];
+              return (
+                <div key={p.title} className="grid gap-2 border-b border-border py-6 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
+                  <dt className="flex items-start gap-3">
+                    <Tile hue={mark.hue} size="md" className="mt-0.5">
+                      <mark.Glyph />
+                    </Tile>
+                    <span className="font-display text-h3 font-semibold text-balance text-foreground">{p.title}</span>
+                  </dt>
+                  <dd className="text-body text-muted-foreground md:pt-0.5">{p.body}</dd>
+                </div>
+              );
+            })}
           </dl>
 
           {(a.rival || a.move) && (
@@ -53,7 +70,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               {a.rival && (
                 <section aria-labelledby="they-win">
                   <h2 id="they-win" className="text-h3 text-foreground">
-                    Where {a.rival.name} is better
+                    <ProductName name={a.rival.name}>Where {a.rival.name} is better</ProductName>
                   </h2>
                   <ul className="mt-4 border-t border-border">
                     {a.rival.theyWin.map((w) => (
@@ -88,37 +105,50 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               )}
             </div>
           )}
+        </div>
+      </section>
 
-          {/* The evidence, on the page that sells it: rows of the demo's record. */}
-          {a.slug === "compliance" && (
-            <div className="mt-16 grid gap-8 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
-              <h2 className="text-h3 text-foreground">What the record looks like</h2>
-              <RecordRows
-                rows={attemptAndRefusal}
-                caption={
-                  <>
-                    Two rows from the live demo. The second carries the first one&apos;s hash.{" "}
-                    <Link href="/verify" className="link">
-                      Check the file yourself
-                    </Link>
-                  </>
-                }
-              />
-            </div>
-          )}
+      {/* The evidence, on the page that sells it: rows of the demo's record. */}
+      {a.slug === "compliance" && (
+        <Section band="dusk" spacing="compact">
+          <div className="grid gap-8 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
+            <h2 className="text-h3 text-foreground">What the record looks like</h2>
+            <RecordRows
+              rows={attemptAndRefusal}
+              caption={
+                <>
+                  Two rows from the live demo. The second carries the first one&apos;s hash.{" "}
+                  <Link href="/verify" className="link">
+                    Check the file yourself
+                  </Link>
+                </>
+              }
+            />
+          </div>
+        </Section>
+      )}
 
-          {/* The price as two plain figures and a link: a three-cell card with a
-              button in the last cell was a pricing table in miniature. */}
-          <div className="mt-16 border-t border-border pt-8">
+      <section className="pb-20 pt-16 sm:pb-28">
+        <div className="container-x">
+          {/* The price as two plain figures and a link, each with its plan's
+              hue: a three-cell card with a button in the last cell was a
+              pricing table in miniature. */}
+          <div className="border-t border-border pt-8">
             <div className="grid gap-6 sm:grid-cols-[repeat(2,minmax(0,1fr))_auto] sm:items-end sm:gap-10">
               <div>
-                <p className="text-small text-muted-foreground">Own it</p>
+                <p className="flex items-center gap-2 text-small text-muted-foreground">
+                  <IdentityMark hue={PLAN_HUE.lifetime} variant="square" />
+                  Own it
+                </p>
                 <p className="mt-1 font-display text-h3 font-semibold text-foreground">{lifetime} once</p>
                 <p className="mt-0.5 text-small text-muted-foreground">Everyone on your server, for good.</p>
               </div>
               {pricing.cloud_configured && (
                 <div>
-                  <p className="text-small text-muted-foreground">Or we run it</p>
+                  <p className="flex items-center gap-2 text-small text-muted-foreground">
+                    <IdentityMark hue={PLAN_HUE.cloud} variant="square" />
+                    Or we run it
+                  </p>
                   <p className="mt-1 font-display text-h3 font-semibold text-foreground">{cloud}</p>
                   <p className="mt-0.5 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
                 </div>

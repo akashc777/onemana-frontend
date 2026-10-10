@@ -1,0 +1,45 @@
+import { renderToString } from "react-dom/server"
+import { describe, expect, it } from "vitest"
+
+import { AudienceView } from "@/components/site/AudienceView"
+import { FEATURE_MARK } from "@/components/site/featureMarks"
+import { PLAN_HUE } from "@/components/site/planHues"
+import { alternativeBySlug } from "@/lib/alternatives"
+import { audienceBySlug } from "@/lib/audiences"
+import { hueFor } from "@/lib/campHue"
+import { defaultPricing } from "@/lib/pricing"
+
+/**
+ * The /for and /alternatives pages carry colour that means something: each
+ * claim in its feature's hue, the rival in its own identity colour, and each
+ * price in its plan's hue.
+ */
+describe("an alternatives page", () => {
+    const a = alternativeBySlug("slack")!
+    const html = renderToString(<AudienceView a={a} pricing={{ ...defaultPricing, cloud_configured: true }} />)
+
+    it("gives every claim a tile in its feature's hue", () => {
+        const tiles = [...html.matchAll(/<span aria-hidden="true" class="(hue-[a-z]+) inline-flex shrink-0 items-center justify-center bg-hue-tint/g)].map((m) => m[1])
+        expect(tiles).toEqual(a.points.map((p) => `hue-${FEATURE_MARK[p.icon].hue}`))
+    })
+
+    it("marks the rival with the colour it has in every comparison", () => {
+        const heading = html.slice(html.indexOf('id="they-win"'), html.indexOf("</h2>", html.indexOf('id="they-win"')))
+        expect(heading).toContain(`data-hue="${hueFor(a.rival!.name)}"`)
+    })
+
+    it("gives each price its plan's hue", () => {
+        expect(html).toContain(`data-hue="${PLAN_HUE.lifetime}"`)
+        expect(html).toContain(`data-hue="${PLAN_HUE.cloud}"`)
+    })
+})
+
+describe("the compliance page", () => {
+    const html = renderToString(<AudienceView a={audienceBySlug("compliance")!} pricing={defaultPricing} />)
+
+    it("shows the record on the dusk band", () => {
+        const band = html.slice(html.indexOf('data-band="dusk"'))
+        expect(band.length).toBeGreaterThan(0)
+        expect(band.indexOf("What the record looks like")).toBeGreaterThan(-1)
+    })
+})
