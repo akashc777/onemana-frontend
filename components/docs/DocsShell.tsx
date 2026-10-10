@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { DocNavGroup } from "@/lib/docs";
 import { DocsSearch } from "./DocsSearch";
 import { ActiveInView } from "./ActiveInView";
+import { DocsGroupDot } from "./DocsGroupMark";
 
 /**
  * Every guide, grouped, with the open one marked. The same list sits in the
@@ -24,7 +25,10 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
       </Link>
       {groups.map((group) => (
         <div key={group.category} className="mb-5 last:mb-0">
-          <p className="mb-1 px-2.5 text-caption font-medium text-muted-foreground">{group.category}</p>
+          <p className="mb-1 flex items-center gap-2 px-2.5 text-caption font-medium text-muted-foreground">
+            <DocsGroupDot category={group.category} />
+            {group.category}
+          </p>
           <ul className="space-y-px">
             {group.items.map((item) => {
               const active = item.slug === activeSlug;

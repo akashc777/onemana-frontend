@@ -6,6 +6,7 @@ import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { DocsSearch } from "@/components/docs/DocsSearch";
+import { DocsGroupTile } from "@/components/docs/DocsGroupMark";
 
 export const metadata: Metadata = {
   title: "Docs - install & run OneCamp",
@@ -53,10 +54,11 @@ export default async function DocsIndexPage() {
           boxes that all said "Read guide". */}
       <div className="container-x pb-16 pt-10">
         {docs.length === 0 ? (
-          <div className="mx-auto max-w-md py-10 text-center">
-            <h2 className="text-h3 text-foreground">Docs are on the way</h2>
+          <div className="max-w-md py-10">
+            <h2 className="text-h3 text-foreground">The guides could not be loaded</h2>
             <p className="mt-2 text-small text-muted-foreground">
-              Setup guides will appear here soon. Already purchased? Check the email we sent you.
+              Try again in a minute. Your licence email has the install command, and support@onemana.dev answers
+              anything in the meantime.
             </p>
             <ButtonLink href="/free" variant="ghost" className="mt-5">
               Install free
@@ -66,9 +68,17 @@ export default async function DocsIndexPage() {
           <div className="space-y-12">
             {groups.map((group) => (
               <section key={group.category} className="grid gap-4 lg:grid-cols-12 lg:gap-x-8">
-                <h2 className="text-h3 text-foreground lg:sticky lg:top-24 lg:col-span-3 lg:h-fit lg:pt-3">
-                  {group.category}
-                </h2>
+                {/* The group in the margin: its tile (its colour, which its
+                    guides' sidebar repeats), its name and how many guides. */}
+                <div className="flex items-center gap-3 lg:sticky lg:top-24 lg:col-span-3 lg:h-fit lg:flex-col lg:items-start lg:gap-0 lg:pt-4">
+                  <DocsGroupTile category={group.category} />
+                  <div className="lg:mt-3">
+                    <h2 className="text-h3 text-foreground">{group.category}</h2>
+                    <p className="text-caption text-muted-foreground">
+                      {group.items.length} {group.items.length === 1 ? "guide" : "guides"}
+                    </p>
+                  </div>
+                </div>
                 <ul className="divide-y divide-border border-y border-border lg:col-span-9">
                   {group.items.map((item) => (
                     <li key={item.slug}>

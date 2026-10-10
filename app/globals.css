@@ -517,22 +517,67 @@ body {
     content: none;
   }
 
-  /* A note, tip or warning (lib/article.ts, from GitHub's alert syntax). */
+  /* A note, tip or warning (lib/article.ts, from GitHub's alert syntax), in
+     a camp tint with its ink: the body text stays calm, the callout carries
+     the colour. Ink on its tint is 5.9:1 or more (paletteContrast.test.ts),
+     so links and bold inside take the ink too. Note is sky, tip moss,
+     important dusk, warning sun, caution berry. */
   .reading .callout {
+    --hue: var(--camp-sky);
+    --hue-tint: var(--camp-sky-tint);
+    --hue-ink: var(--camp-sky-ink);
     margin: 1.4em 0;
-    padding: 0.85em 1em;
-    border: 1px solid rgb(var(--border));
+    padding: 0.85em 1.1em 0.95em;
+    border: 1px solid rgb(var(--hue) / 0.28);
     border-radius: 10px;
-    background-color: rgb(var(--muted));
-    color: rgb(var(--foreground));
+    background-color: rgb(var(--hue-tint));
+    color: rgb(var(--hue-ink));
+  }
+  .reading .callout[data-callout="tip"] {
+    --hue: var(--camp-moss);
+    --hue-tint: var(--camp-moss-tint);
+    --hue-ink: var(--camp-moss-ink);
+  }
+  .reading .callout[data-callout="important"] {
+    --hue: var(--camp-dusk);
+    --hue-tint: var(--camp-dusk-tint);
+    --hue-ink: var(--camp-dusk-ink);
+  }
+  .reading .callout[data-callout="warning"] {
+    --hue: var(--camp-sun);
+    --hue-tint: var(--camp-sun-tint);
+    --hue-ink: var(--camp-sun-ink);
+  }
+  .reading .callout[data-callout="caution"] {
+    --hue: var(--camp-berry);
+    --hue-tint: var(--camp-berry-tint);
+    --hue-ink: var(--camp-berry-ink);
   }
   .reading .callout > :last-child {
     margin-bottom: 0;
   }
+  .reading .callout :where(a):not(.heading-anchor),
+  .reading .callout :where(strong) {
+    color: inherit;
+  }
+  .reading .callout :where(a):not(.heading-anchor) {
+    text-decoration-color: rgb(var(--hue-ink) / 0.5);
+  }
   .reading .callout-title {
-    margin-bottom: 0.25em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3em;
     font-size: 0.875rem;
     font-weight: 600;
+  }
+  .reading .callout-title::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border-radius: 9999px;
+    background-color: rgb(var(--hue));
   }
 
   .reading :where(hr) {

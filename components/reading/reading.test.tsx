@@ -44,3 +44,13 @@ describe("the reading system", () => {
     expect(formatDay(null)).toBe("-");
   });
 });
+
+describe("callouts", () => {
+  it("take a camp tint with its ink, one hue per kind", () => {
+    const kinds: Record<string, string> = { tip: "moss", important: "dusk", warning: "sun", caution: "berry" };
+    expect(css).toMatch(/\.reading \.callout \{[^}]*--hue-tint: var\(--camp-sky-tint\)[^}]*background-color: rgb\(var\(--hue-tint\)\)[^}]*color: rgb\(var\(--hue-ink\)\)/);
+    for (const [kind, hue] of Object.entries(kinds)) {
+      expect(css).toMatch(new RegExp(`\\.reading \\.callout\\[data-callout="${kind}"\\] \\{[^}]*--hue-ink: var\\(--camp-${hue}-ink\\)`));
+    }
+  });
+});
