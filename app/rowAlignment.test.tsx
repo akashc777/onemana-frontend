@@ -70,7 +70,7 @@ describe("things side by side line up", () => {
 
   it("/verify's two kinds of file share one subgrid", () => {
     const src = readFileSync(join(__dirname, "verify/page.tsx"), "utf8")
-    expect(src).toContain('<dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0">')
+    expect(src).toContain('<dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-0">')
     expect(src.match(/<div className="sm:row-span-2 sm:grid sm:grid-rows-subgrid">/g)).toHaveLength(2)
   })
 

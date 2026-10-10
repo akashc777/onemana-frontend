@@ -30,8 +30,8 @@ export default function FreePage() {
 
       {/* What it takes and what you get, on the free plan's moss band. */}
       <Section band={PLAN_HUE.free} className="mt-10 sm:mt-[4.5rem]">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
+          <div className="lg:col-span-6">
             <h2 className="text-h3 text-foreground">What you need</h2>
             <ul className="mt-4 space-y-3 border-t border-border pt-4">
               {selfHostNeeds.map((need) => (
@@ -48,7 +48,7 @@ export default function FreePage() {
             <FreeEmailKey />
           </div>
 
-          <div>
+          <div className="lg:col-span-6">
             <h2 className="text-h3 text-foreground">What the free plan includes</h2>
             {/* Ticks in the free plan's moss, as on its card on /pricing. */}
             <ul className={`${HUE_CLASS[PLAN_HUE.free]} mt-4 space-y-3 border-t border-border pt-4 text-small text-foreground`}>

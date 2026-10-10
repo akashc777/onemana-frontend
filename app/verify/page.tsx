@@ -57,7 +57,7 @@ export default function VerifyPage() {
             {/* Side by side, each kind takes two rows of one subgrid, so the
                 second's two-line name moves the first's description down
                 with its own and the two start on one line. */}
-            <dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0">
+            <dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-0">
               <div className="sm:row-span-2 sm:grid sm:grid-rows-subgrid">
                 <dt className="font-medium text-foreground">An evidence pack, from an administrator</dt>
                 <dd className="mt-1 text-small text-muted-foreground">

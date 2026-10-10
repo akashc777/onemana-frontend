@@ -39,6 +39,20 @@ describe("one content column", () => {
     expect(offenders).toEqual([])
   })
 
+  // Inside the column, a page's two-column parts sit on one 12-column grid
+  // with 32 px gutters, so their second columns share lines: /alternatives
+  // put a claim's text at 617 px, the prices' second figure at 668 and the
+  // band's second list at 752, each from its own fr split and 40 or 64 px
+  // gutter, where /pricing, /about and the home page start theirs at 555.
+  it("two-column parts sit on the shared 12-column grid", () => {
+    const offenders: string[] = []
+    for (const rel of ["components/site/AudienceView.tsx", "app/free/page.tsx", "app/page.tsx", "app/pricing/page.tsx", "app/verify/page.tsx", "components/site/AboutView.tsx"]) {
+      const src = readFileSync(join(ROOT, rel), "utf8")
+      for (const m of src.matchAll(/\b(?:sm|md|lg):(?:grid-cols-\[[^\]]*fr\)[^\]]*\]|gap-(?:x-)?(?:10|12|16|20)\b|grid-cols-\[repeat)/g)) offenders.push(`${rel}: ${m[0]}`)
+    }
+    expect(offenders).toEqual([])
+  })
+
   it("the film's play control is the player's own, not a second filled orange button in view", () => {
     // /tour showed "Watch the film" and "Try the live demo" filled in the
     // accent in one view, and the "1:32" in 80% white on orange read at 3.5:1.
