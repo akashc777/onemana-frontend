@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
@@ -30,4 +32,20 @@ describe("the post and guide card", () => {
   it("keeps the orange for the address alone, in the link ink", () => {
     expect(html.toLowerCase()).toContain(`color:${OG.link.toLowerCase()}`)
   })
+})
+
+/**
+ * A card for a post or guide that cannot be read (deleted, or the backend
+ * down) still makes a sentence-case card whose line stays clear of the
+ * corner's rings: it read "OneCamp Blog" over the site's whole tagline, which
+ * ran into the rings.
+ */
+describe("the fallback cards", () => {
+  for (const file of ["blog/[slug]/opengraph-image.tsx", "blog/[slug]/twitter-image.tsx", "docs/[slug]/opengraph-image.tsx", "docs/[slug]/twitter-image.tsx"]) {
+    it(`${file} falls back in sentence case, briefly`, () => {
+      const src = readFileSync(join(process.cwd(), "app", file), "utf8")
+      expect(src).not.toMatch(/"OneCamp (Blog|Docs)"/)
+      expect(src).not.toContain("|| site.tagline")
+    })
+  }
 })

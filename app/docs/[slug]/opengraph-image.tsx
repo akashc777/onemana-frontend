@@ -15,7 +15,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
   const doc = await getDoc(params.slug).catch(() => null);
   const fonts = await loadOgFonts();
 
-  const title = doc?.title || "OneCamp Docs";
+  const title = doc?.title || "The OneCamp docs";
   const eyebrow = doc?.category?.trim() || "Docs";
   // The group's hue, as the docs index and sidebar give it (DocsGroupMark's
   // docsGroupHue is this hash). Card 2: the site card's language.
