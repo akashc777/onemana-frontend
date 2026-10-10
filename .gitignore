@@ -27,3 +27,8 @@ yarn-error.log*
 
 # OS
 .DS_Store
+
+# Agent skills: pinned in skills-lock.json, installed locally with
+# `npx skills experimental_install`. Their files are third-party and are not
+# redistributed from this public repository.
+.claude/skills/
