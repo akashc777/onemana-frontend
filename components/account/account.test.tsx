@@ -68,3 +68,10 @@ describe("the account page", () => {
     expect(source("components/account/AccountLogin.tsx")).toContain('matchMedia("(pointer: fine)")');
   });
 });
+
+it("keeps the invoices table's scroll box a containing block, so its hidden header label cannot widen the page", () => {
+  // The "Download" column's sr-only label is absolutely positioned; without a
+  // positioned ancestor inside the scroll box it escaped it and made the page
+  // 429 px wide on a 390 px phone.
+  expect(source("components/account/AccountDashboard.tsx")).toContain('className="relative overflow-x-auto rounded-lg border border-border bg-card"');
+});

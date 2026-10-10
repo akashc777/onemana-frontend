@@ -320,7 +320,10 @@ function InvoicesTab() {
     return <p className="text-small text-muted-foreground">No invoices yet. Each payment&apos;s GST invoice appears here.</p>;
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-border bg-card">
+    // relative: the header's screen-reader label is absolutely positioned, and
+    // without a containing block inside the scroll box it escaped it and
+    // widened the page by 39 px on a phone.
+    <div className="relative overflow-x-auto rounded-lg border border-border bg-card">
       <table className="w-full min-w-[34rem] text-left text-small">
         <thead className="border-b border-border text-caption text-muted-foreground">
           <tr>

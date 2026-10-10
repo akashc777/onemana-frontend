@@ -54,3 +54,10 @@ describe("callouts", () => {
     }
   });
 });
+
+describe("tables in an article", () => {
+  it("scroll in a box that contains everything in them, and keep a code name whole", () => {
+    expect(css).toMatch(/\.reading \.table-scroll \{[^}]*position: relative;[^}]*overflow-x: auto/);
+    expect(css).toMatch(/\.reading \.table-scroll :where\(code\) \{[^}]*white-space: nowrap/);
+  });
+});
