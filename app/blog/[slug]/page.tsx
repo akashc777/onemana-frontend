@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import { SubscribeForm } from "@/components/site/SubscribeForm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPost, listPublishedPosts, mediaUrl } from "@/lib/blog";
+import { SubscribeForm } from "@/components/site/SubscribeForm";
+import { getPost, listPublishedPosts, mediaUrl, type BlogPost } from "@/lib/blog";
 import { renderMarkdown, readingTime } from "@/lib/markdown";
+import { enhanceArticle } from "@/lib/article";
+import { blogTopic, relatedPosts } from "@/lib/blogTopics";
 import { jsonLdScript } from "@/lib/jsonLd";
-import { formatDate } from "@/lib/format";
+import { formatDay } from "@/lib/format";
 import { site } from "@/lib/site";
+import { Prose } from "@/components/reading/Prose";
+import { PostCover } from "@/components/blog/PostCover";
+import { TopicChip, TopicLabel } from "@/components/blog/Topic";
+import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 
 export const revalidate = 120;
 
@@ -46,12 +52,18 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
+  const [post, all] = await Promise.all([
+    getPost(params.slug),
+    listPublishedPosts({ cached: true }).catch((): BlogPost[] => []),
+  ]);
   if (!post) notFound();
 
-  const html = renderMarkdown(post.content);
+  const { html } = enhanceArticle(renderMarkdown(post.content));
   const cover = mediaUrl(post.cover_image);
   const mins = readingTime(post.content);
+  const topic = blogTopic(post.tags, post.title);
+  const next = relatedPosts(all, post);
+  const author = post.author?.trim();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -70,62 +82,83 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
-      <div className="container-x max-w-prose pt-12 sm:pt-20">
+      <div className="container-x max-w-prose pt-10 sm:pt-16">
         <Link href="/blog" className="text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
           ← All posts
         </Link>
 
-        <header className="mt-6">
-          <h1 className="text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{post.title}</h1>
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-small text-muted-foreground">
-            {post.author && <span className="font-medium text-foreground">{post.author}</span>}
-            {post.published_at && <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>}
+        <header className="mt-8">
+          <TopicChip topic={topic} />
+          <h1 className="mt-4 text-balance text-[2rem] leading-[2.5rem] tracking-[-0.022em] text-foreground sm:text-[2.625rem] sm:leading-[3.125rem]">
+            {post.title}
+          </h1>
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-small text-muted-foreground">
+            {author && (
+              <span className="inline-flex items-center gap-2 font-medium text-foreground">
+                <IdentityMark id={author} label={author} variant="avatar" size={24} />
+                {author}
+              </span>
+            )}
+            {post.published_at && <time dateTime={post.published_at}>{formatDay(post.published_at)}</time>}
             <span>{mins} min read</span>
           </div>
         </header>
 
         {cover && (
-          <div className="mt-8 overflow-hidden rounded-lg border border-border">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            {/* Covers are drawn at the 1200 by 630 share-card size; the attributes reserve
-                that shape before the image loads, so the text below does not jump. */}
-            <img src={cover} alt="" width={1200} height={630} decoding="async" className="h-auto w-full object-cover" />
+          <div className="mt-8">
+            <PostCover src={cover} hue={topic.hue} />
           </div>
         )}
 
-        <div
-          className="prose mt-10 max-w-none pb-16 sm:prose-lg
-            prose-headings:scroll-mt-24 prose-headings:text-foreground
-            prose-strong:text-foreground
-            prose-pre:rounded-lg prose-pre:border prose-pre:border-border prose-pre:bg-muted
-            prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-muted-foreground
-            prose-img:rounded-lg prose-img:border prose-img:border-border"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <Prose html={html} kind="post" className="mt-10" />
 
-          {/* AT THE END OF A POST, not in front of it. Somebody who has read to
-              the bottom of a technical write-up is the warmest reader this site
-              gets, and organic search sends more people here than to any other
-              page. Until now they left with no way to hear from us again. */}
-          {/* Tags at the end, as words: as pills above the title they were the
-              first thing a reader met, ahead of the headline. */}
-          {post.tags?.length > 0 && (
-            <p className="mb-8 text-small text-muted-foreground">
-              Filed under {post.tags.join(", ")}.
-            </p>
-          )}
+        {/* Tags at the end, as words: as pills above the title they were the
+            first thing a reader met, ahead of the headline. */}
+        {post.tags?.length > 0 && (
+          <p className="mt-10 text-small text-muted-foreground">Filed under {post.tags.join(", ")}.</p>
+        )}
 
-          <div className="mb-20 border-t border-border pt-8">
-            <p className="text-small font-medium text-foreground">Get the next one</p>
-            <p className="mb-4 mt-1 text-small text-muted-foreground">
-              I write these as I build OneCamp: what broke, what it cost, and what I changed.
-            </p>
-            <SubscribeForm
-              source="blog-post"
-              cta="Email me updates"
-              hint="Occasional emails when something ships or is worth reading. Unsubscribe in one click."
-            />
-          </div>
+        {/* AT THE END OF A POST, not in front of it. Somebody who has read to
+            the bottom of a technical write-up is the warmest reader this site
+            gets, and organic search sends more people here than to any other
+            page. Until now they left with no way to hear from us again. */}
+        <div className="mt-10 border-t border-border pt-8">
+          <p className="text-small font-medium text-foreground">Get the next one</p>
+          <p className="mb-4 mt-1 text-small text-muted-foreground">
+            I write these as I build OneCamp: what broke, what it cost, and what I changed.
+          </p>
+          <SubscribeForm
+            source="blog-post"
+            cta="Email me updates"
+            hint="Occasional emails when something ships or is worth reading. Unsubscribe in one click."
+          />
+        </div>
+
+        {next.length > 0 && (
+          <nav aria-labelledby="read-next" className="mb-24 mt-14">
+            <h2 id="read-next" className="text-small font-medium text-foreground">
+              Read next
+            </h2>
+            <ul className="mt-3 border-t border-border">
+              {next.map((p) => (
+                <li key={p.slug} className="border-b border-border">
+                  <Link href={`/blog/${p.slug}`} className="group flex flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                    <span className="min-w-0 text-body text-foreground transition-colors duration-150 group-hover:text-brand-ink">{p.title}</span>
+                    <span className="flex shrink-0 items-center gap-3">
+                      <TopicLabel topic={blogTopic(p.tags, p.title)} />
+                      {p.published_at ? (
+                        <time dateTime={p.published_at} className="text-caption tabular-nums text-muted-foreground">
+                          {formatDay(p.published_at)}
+                        </time>
+                      ) : null}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        {next.length === 0 && <div className="mb-24" />}
       </div>
     </article>
   );
