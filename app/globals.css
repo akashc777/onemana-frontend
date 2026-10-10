@@ -17,7 +17,16 @@
   --background: 252 252 253;        /* page */
   --card: 255 255 255;              /* panels, cards, inputs */
   --muted: 245 246 247;             /* sidebar, table header, hover */
-  --accent: 237 238 240;            /* pressed, selected row */
+  --accent: 245 246 247;            /* surface-2, as the app's --accent */
+  /* surface-3: the hover and pressed step under a row, a menu item or a ghost
+     button, the app's --sidebar-accent (its bg-highlight). One step past
+     --accent, so a hover on a muted ground still shows. */
+  --highlight: 237 238 240;
+  /* THE FRAME. The app's canvas is the theme's wash (app/themes.css,
+     --brand-wash, oklch(0.972 0.007 65)): the top bar and the gutter round
+     the sheet sit on it, and the page itself is the sheet. The site does the
+     same: the nav and the gutter are the wash, the page is a sheet. */
+  --canvas: 249 245 241;
   --border: 228 229 232;            /* hairlines: structure only */
   --border-strong: 211 213 218;     /* input borders */
   --foreground: 20 22 26;           /* primary text */
@@ -83,7 +92,9 @@
   --background: 14 15 17;
   --card: 22 24 28;
   --muted: 29 32 37;
-  --accent: 37 40 46;
+  --accent: 29 32 37;
+  --highlight: 37 40 46;
+  --canvas: 35 28 23;
   --border: 38 40 45;
   --border-strong: 51 54 61;
   --foreground: 237 238 240;
@@ -531,7 +542,7 @@ body {
   }
   .reading .code-copy:hover {
     color: rgb(var(--foreground));
-    background-color: rgb(var(--accent));
+    background-color: rgb(var(--highlight));
   }
   .reading .code-copy[data-copied] {
     color: rgb(var(--success-ink));

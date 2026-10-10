@@ -19,8 +19,13 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     muted: [245, 246, 247],
     "muted-foreground": [95, 100, 112],
     faint: [138, 143, 153],
-    accent: [237, 238, 240],
+    // The app's --accent is surface-2 (the muted step); its hover step is
+    // --sidebar-accent, bg-highlight there and here.
+    accent: [245, 246, 247],
     "accent-foreground": [20, 22, 26],
+    highlight: [237, 238, 240],
+    // The app's canvas: --brand-wash of the house theme (app/themes.css).
+    canvas: [249, 245, 241],
     border: [228, 229, 232],
     "border-strong": [211, 213, 218],
     "agent": [79, 91, 213],
@@ -46,8 +51,10 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     muted: [29, 32, 37],
     "muted-foreground": [155, 160, 170],
     faint: [107, 112, 122],
-    accent: [37, 40, 46],
+    accent: [29, 32, 37],
     "accent-foreground": [237, 238, 240],
+    highlight: [37, 40, 46],
+    canvas: [35, 28, 23],
     border: [38, 40, 45],
     "border-strong": [51, 54, 61],
     "agent": [163, 171, 245],

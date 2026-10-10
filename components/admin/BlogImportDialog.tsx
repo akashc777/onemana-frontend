@@ -114,7 +114,7 @@ export function BlogImportDialog({ onClose, onImported }: { onClose: () => void;
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-8">
-      <div className="w-full max-w-3xl rounded-2xl border border-border bg-canvas p-5 shadow-xl sm:p-6">
+      <div className="w-full max-w-3xl rounded-2xl border border-border bg-background p-5 shadow-xl sm:p-6">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h2 className="text-lg font-semibold text-foreground">Import posts</h2>

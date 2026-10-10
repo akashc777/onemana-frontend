@@ -24,6 +24,8 @@ const config: Config = {
           foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
         },
         card: "rgb(var(--card) / <alpha-value>)",
+        /** The hover and pressed step, the app's bg-highlight. */
+        highlight: "rgb(var(--highlight) / <alpha-value>)",
         agent: {
           DEFAULT: "rgb(var(--agent) / <alpha-value>)",
           foreground: "rgb(var(--agent-foreground) / <alpha-value>)",
@@ -70,10 +72,16 @@ const config: Config = {
         },
         ink: "rgb(var(--foreground) / <alpha-value>)",
         canvas: {
-          DEFAULT: "rgb(var(--background) / <alpha-value>)",
+          /** The frame: the nav and the gutter round the sheet, the app's bg-canvas. */
+          DEFAULT: "rgb(var(--canvas) / <alpha-value>)",
           soft: "rgb(var(--muted) / <alpha-value>)",
           raised: "rgb(var(--card) / <alpha-value>)",
         },
+      },
+      // A border with no colour of its own is a hairline in the token, as the
+      // app's base layer has it (* { border-border }), not Tailwind's gray-200.
+      borderColor: {
+        DEFAULT: "rgb(var(--border))",
       },
       fontFamily: {
         // The one-glyph rupee faces come first (lib/fonts.ts): their

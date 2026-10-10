@@ -86,7 +86,7 @@ export function FreeCommand() {
               // Drawn 28 px tall in the box's header; its hit area reaches
               // 44 px, inside the header's own padding. The inset counts
               // from inside the 1 px border, hence 9 px for 8 around it.
-              className="relative rounded-sm border border-border-strong bg-card px-2 py-1 text-caption font-medium text-foreground transition-colors duration-150 after:absolute after:-inset-[9px] after:content-[''] hover:bg-accent"
+              className="relative rounded-sm border border-border-strong bg-card px-2 py-1 text-caption font-medium text-foreground transition-colors duration-150 after:absolute after:-inset-[9px] after:content-[''] hover:bg-highlight"
             >
               {copied ? "Copied" : "Copy"}
             </button>
