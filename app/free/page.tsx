@@ -4,6 +4,9 @@ import { site } from "@/lib/site";
 import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
 import { selfHostNeeds } from "@/lib/content";
 import { cloudBuyHref } from "@/lib/paymentTerms";
+import { PlanBenefit } from "@/components/site/PlanCard";
+import { PLAN_HUE } from "@/components/site/planHues";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { FreeCommand, FreeEmailKey } from "./FreeInstall";
 
 /**
@@ -46,11 +49,10 @@ export default function FreePage() {
 
           <div>
             <h2 className="text-h3 text-foreground">What the free plan includes</h2>
-            <ul className="mt-4 space-y-3 border-t border-border pt-4">
+            {/* Ticks in the free plan's moss, as on its card on /pricing. */}
+            <ul className={`${HUE_CLASS[PLAN_HUE.free]} mt-4 space-y-3 border-t border-border pt-4 text-small text-foreground`}>
               {freeIncludes.map((item) => (
-                <li key={item} className="text-small text-foreground">
-                  {item}
-                </li>
+                <PlanBenefit key={item}>{item}</PlanBenefit>
               ))}
             </ul>
             <p className="mt-4 text-small text-muted-foreground">

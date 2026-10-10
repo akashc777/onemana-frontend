@@ -158,7 +158,7 @@ export default async function HomePage() {
             </p>
           </div>
         </div>
-        <GuaranteeList items={governance.points} layout="row" className="mt-16" />
+        <GuaranteeList items={governance.points} layout="row" hue="dusk" className="mt-16" />
       </Section>
 
       {/* 5. What running it involves. Old links to #enterprise land here. */}

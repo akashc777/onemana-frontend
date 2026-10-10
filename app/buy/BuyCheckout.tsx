@@ -19,6 +19,10 @@ import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
 import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
 import { EDITION_CHOICES, type EditionChoice, type SlugVerdict } from "@/lib/workspaceAddress";
+import { CloudGlyph, KeyGlyph } from "@/components/site/Glyphs";
+import { PlanBenefit } from "@/components/site/PlanCard";
+import { PLAN_HUE } from "@/components/site/planHues";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 
 export type Plan = "lifetime" | "cloud";
 
@@ -199,9 +203,14 @@ export function BuyCheckout({
               </p>
             )}
 
-            <div className="mt-6 border-t border-border pt-6">
+            {/* The plan in its hue, the one its card has on /pricing: sun for
+                the licence, sky for Cloud. */}
+            <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} mt-6 border-t border-border pt-6`}>
               <div className="flex items-baseline justify-between">
-                <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}</span>
+                <span className="flex items-center gap-2 self-center font-medium text-foreground">
+                  {isCloud ? <CloudGlyph className="size-5 shrink-0 text-hue" /> : <KeyGlyph className="size-5 shrink-0 text-hue" />}
+                  {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
+                </span>
                 {/* Rupees are the price: they are what is charged. The licence
                     abroad is the one exception, once the backend charges dollars. */}
                 <span className="font-display text-h3 font-semibold text-foreground">
@@ -247,12 +256,9 @@ export function BuyCheckout({
                   ))}
                 </div>
               )}
-              <ul className="mt-5 space-y-2 text-small text-foreground">
+              <ul className="mt-5 space-y-2.5 text-small text-foreground">
                 {benefits.map((b) => (
-                  <li key={b} className="flex items-start gap-2">
-                    <span aria-hidden className="mt-0.5 text-muted-foreground">✓</span>
-                    {b}
-                  </li>
+                  <PlanBenefit key={b}>{b}</PlanBenefit>
                 ))}
               </ul>
             </div>
