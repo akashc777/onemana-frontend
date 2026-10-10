@@ -83,7 +83,7 @@ export function AccountLogin({
         {step === "email" ? (
           <form onSubmit={sendCode} className="mt-8 space-y-4 rounded-lg border border-border bg-card p-5 sm:p-6">
             {notice && (
-              <p role="status" className="rounded-md bg-brand-soft px-3 py-2 text-small text-foreground">
+              <p role="status" className="rounded-md bg-info/10 px-3 py-2 text-small text-info-ink">
                 {notice}
               </p>
             )}
@@ -119,7 +119,7 @@ export function AccountLogin({
         ) : (
           <form onSubmit={verify} className="mt-8 space-y-4 rounded-lg border border-border bg-card p-5 sm:p-6">
             {notice && (
-              <p role="status" className="rounded-md bg-brand-soft px-3 py-2 text-small text-foreground">
+              <p role="status" className="rounded-md bg-info/10 px-3 py-2 text-small text-info-ink">
                 {notice}
               </p>
             )}
