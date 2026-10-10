@@ -6,6 +6,8 @@ import { PLAN_HUE } from "@/components/site/planHues";
 import { ButtonLink } from "@/components/ui/Button";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { SpotImported } from "@/components/ui/graphics/spots";
+import { hueFor } from "@/lib/campHue";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -64,49 +66,55 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               );
             })}
           </dl>
-
-          {(a.rival || a.move) && (
-            <div className="mt-16 grid gap-12 lg:grid-cols-2 lg:gap-16">
-              {a.rival && (
-                <section aria-labelledby="they-win">
-                  <h2 id="they-win" className="text-h3 text-foreground">
-                    <ProductName name={a.rival.name}>Where {a.rival.name} is better</ProductName>
-                  </h2>
-                  <ul className="mt-4 border-t border-border">
-                    {a.rival.theyWin.map((w) => (
-                      <li key={w} className="border-b border-border py-3 text-small text-foreground">
-                        {w}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 text-small text-muted-foreground">
-                    <span className="font-medium text-foreground">How it&apos;s billed:</span> {a.rival.billing}{" "}
-                    <a href={a.rival.source} target="_blank" rel="noopener noreferrer" className="link">
-                      Their pricing
-                    </a>
-                    , read {ALTERNATIVES_CHECKED}.
-                  </p>
-                </section>
-              )}
-              {a.move && (
-                <section aria-labelledby="move">
-                  <h2 id="move" className="text-h3 text-foreground">
-                    {a.move.title}
-                  </h2>
-                  <ol className="mt-4 border-t border-border">
-                    {a.move.steps.map((step, i) => (
-                      <li key={step} className="grid grid-cols-[2rem_1fr] border-b border-border py-3 text-small text-foreground">
-                        <span className="font-mono tabular-nums text-muted-foreground">{i + 1}</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              )}
-            </div>
-          )}
         </div>
       </section>
+
+      {/* Where the rival is better and how to move from it, on the rival's own
+          hue (the colour its mark has in every comparison), with the spot for
+          an import that finished. */}
+      {(a.rival || a.move) && (
+        <Section band={a.rival ? hueFor(a.rival.name) : "moss"} spacing="compact">
+          <SpotImported size={64} hue={a.rival ? hueFor(a.rival.name) : "moss"} className="mb-6" />
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+            {a.rival && (
+              <section aria-labelledby="they-win">
+                <h2 id="they-win" className="text-h3 text-foreground">
+                  <ProductName name={a.rival.name}>Where {a.rival.name} is better</ProductName>
+                </h2>
+                <ul className="mt-4 border-t border-border">
+                  {a.rival.theyWin.map((w) => (
+                    <li key={w} className="border-b border-border py-3 text-small text-foreground">
+                      {w}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-small text-muted-foreground">
+                  <span className="font-medium text-foreground">How it&apos;s billed:</span> {a.rival.billing}{" "}
+                  <a href={a.rival.source} target="_blank" rel="noopener noreferrer" className="link">
+                    Their pricing
+                  </a>
+                  , read {ALTERNATIVES_CHECKED}.
+                </p>
+              </section>
+            )}
+            {a.move && (
+              <section aria-labelledby="move">
+                <h2 id="move" className="text-h3 text-foreground">
+                  {a.move.title}
+                </h2>
+                <ol className="mt-4 border-t border-border">
+                  {a.move.steps.map((step, i) => (
+                    <li key={step} className="grid grid-cols-[2rem_1fr] border-b border-border py-3 text-small text-foreground">
+                      <span className="font-mono tabular-nums text-muted-foreground">{i + 1}</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+          </div>
+        </Section>
+      )}
 
       {/* The evidence, on the page that sells it: rows of the demo's record. */}
       {a.slug === "compliance" && (

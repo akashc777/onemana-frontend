@@ -44,7 +44,7 @@ export default function TemplatesPage() {
               <li key={t.id} className={gallerySpans(templates.length)[i]}>
                 <Link
                   href={`/templates/${t.id}`}
-                  className="group flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-px hover:border-border-strong hover:shadow-popover"
+                  className="hover-lift group flex h-full flex-col rounded-lg border border-border bg-card p-6"
                 >
                   <h2 className="flex items-center gap-2.5 font-sans text-body font-semibold tracking-normal text-foreground">
                     <IdentityMark id={t.id} variant="square" />

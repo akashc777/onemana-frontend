@@ -28,6 +28,13 @@ describe("an alternatives page", () => {
         expect(heading).toContain(`data-hue="${hueFor(a.rival!.name)}"`)
     })
 
+    it("puts where the rival is better, and how to move, on the rival's own band with the import spot", () => {
+        expect(html).toContain(`data-band="${hueFor(a.rival!.name)}"`)
+        const band = html.slice(html.indexOf(`data-band="${hueFor(a.rival!.name)}"`))
+        expect(band.indexOf('id="they-win"')).toBeGreaterThan(-1)
+        expect(band.slice(0, band.indexOf('id="they-win"'))).toContain("<svg")
+    })
+
     it("gives each price its plan's hue", () => {
         expect(html).toContain(`data-hue="${PLAN_HUE.lifetime}"`)
         expect(html).toContain(`data-hue="${PLAN_HUE.cloud}"`)
