@@ -1,7 +1,9 @@
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
+import { CloudPlanCard } from "@/components/site/CloudPlanCard"
 import { PlanColumns } from "@/components/site/PlanColumns"
+import { PlanComparison } from "@/components/site/PlanComparison"
 import { PLAN_HUE } from "@/components/site/planHues"
 import { defaultPricing, fmtINR } from "@/lib/pricing"
 
@@ -29,5 +31,26 @@ describe("the plan cards", () => {
     it("say what each plan delivers, with the buttons on one line at the foot", () => {
         expect(html.match(/You get: /g)).toHaveLength(3)
         expect(html.match(/flex-1 border-t/g)).toHaveLength(3)
+    })
+})
+
+/**
+ * A plan keeps its hue wherever it appears: the Cloud card under the columns,
+ * and each option's name in the plan table.
+ */
+
+describe("a plan's colour follows it", () => {
+    it("draws the Cloud card as Cloud's plan card", () => {
+        const html = renderToString(<CloudPlanCard pricing={defaultPricing} />)
+        expect(html).toMatch(new RegExp(`^<div class="hue-${PLAN_HUE.cloud} flex flex-col`))
+        // The estimate and the seats are lines of their own, not middle dots.
+        expect(html).not.toContain(" · ")
+    })
+
+    it("marks each option in the plan table with its plan's hue", () => {
+        const html = renderToString(<PlanComparison pricing={defaultPricing} />)
+        const head = html.slice(html.indexOf("<thead"), html.indexOf("</thead>"))
+        const hues = [...head.matchAll(/data-hue="([a-z]+)"/g)].map((m) => m[1])
+        expect(hues).toEqual([PLAN_HUE.source, PLAN_HUE.free, PLAN_HUE.lifetime, PLAN_HUE.cloud])
     })
 })

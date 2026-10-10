@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { PLAN_HUE } from "@/components/site/planHues";
+import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import type { Pricing } from "@/lib/pricing";
 import { PLAN_ROWS, planOptions } from "@/lib/plans";
 
 /**
  * "Which OneCamp is for you": the four ways to have it, compared on the things
  * that actually differ. A table where there is room, one card per option on a
- * phone, from the same data.
+ * phone, from the same data. Each option's name carries its plan's hue, the
+ * one its card has above.
  */
 export function PlanComparison({ pricing }: { pricing: Pricing }) {
   const plans = planOptions(pricing);
@@ -26,7 +29,10 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               <th className="w-36" />
               {plans.map((p) => (
                 <th key={p.key} scope="col" className="px-3 pb-3 text-left align-top">
-                  <span className="block font-semibold text-foreground">{p.name}</span>
+                  <span className="flex items-center gap-2 font-semibold text-foreground">
+                    <IdentityMark hue={PLAN_HUE[p.key]} variant="square" />
+                    {p.name}
+                  </span>
                   <span className="mt-1 block text-caption font-normal text-muted-foreground">{p.summary}</span>
                 </th>
               ))}
@@ -60,7 +66,10 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
       <div className="mt-8 grid gap-8 md:hidden">
         {plans.map((p) => (
           <div key={p.key} className="border-t border-border pt-5">
-            <p className="font-semibold text-foreground">{p.name}</p>
+            <p className="flex items-center gap-2 font-semibold text-foreground">
+              <IdentityMark hue={PLAN_HUE[p.key]} variant="square" />
+              {p.name}
+            </p>
             <p className="mt-1 text-small text-muted-foreground">{p.summary}</p>
             <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1.5 text-small">
               {PLAN_ROWS.map((row) => (
