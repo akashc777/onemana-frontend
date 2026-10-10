@@ -205,41 +205,43 @@ export default async function HomePage() {
         <QuestionList items={faqs} columns={2} className="mt-8" />
       </Section>
 
-      {/* The one centred block on the page: the close. */}
-      <Section divider>
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-balance text-h2 text-foreground">
-            If you can&apos;t say what your AI is allowed to do, this is for you.
-          </h2>
-          {/* Specified verbatim by the redesign plan's §3.4 (landingDiet.test.ts pins it). */}
-          <p className="mt-4 text-body-lg text-muted-foreground">
-            It can only do what you can. It writes down everything it does. It runs on your own server.
-          </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
-              Try the live demo
-            </ButtonLink>
-            <ButtonLink href="/free" variant="ghost" size="lg">
-              Install free
-            </ButtonLink>
+      {/* The close: the claim, the two ways in, and a quieter way to keep in
+          touch. It was a centred band followed by a separate email strip, the
+          last two blocks of every template; now one section on the grid, the
+          claim on the left and what to do about it on the right. */}
+      <Section id="start">
+        <div className="grid gap-10 border-t border-border pt-12 lg:grid-cols-12 lg:gap-x-8">
+          <div className="lg:col-span-7">
+            <h2 className="text-balance text-h2 text-foreground">
+              If you can&apos;t say what your AI is allowed to do, this is for you.
+            </h2>
+            {/* Specified verbatim by the redesign plan's §3.4 (landingDiet.test.ts pins it). */}
+            <p className="mt-4 max-w-xl text-body-lg text-muted-foreground">
+              It can only do what you can. It writes down everything it does. It runs on your own server.
+            </p>
+          </div>
+          <div className="lg:col-span-5">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
+                Try the live demo
+              </ButtonLink>
+              <ButtonLink href="/free" variant="ghost" size="lg">
+                Install free
+              </ButtonLink>
+            </div>
+            <div className="mt-8 border-t border-border pt-6">
+              <h3 className="font-sans text-small font-medium tracking-normal text-foreground">Release notes by email</h3>
+              <div className="mt-3">
+                <SubscribeForm
+                  source="pricing"
+                  cta="Email me updates"
+                  hint="New releases and price changes, a few times a year. Unsubscribe in one click."
+                />
+              </div>
+            </div>
           </div>
         </div>
       </Section>
-
-      {/* Updates by email, as the last thing on the page rather than mid-way through it. */}
-      <section className="border-t border-border">
-        <div className="container-x grid gap-4 py-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center md:gap-12">
-          <div>
-            <h2 className="font-sans text-small font-medium tracking-normal text-foreground">Release notes by email</h2>
-            <p className="mt-1 text-small text-muted-foreground">New releases and price changes, a few times a year.</p>
-          </div>
-          <SubscribeForm
-            source="pricing"
-            cta="Email me updates"
-            hint="Occasional product announcements, such as new releases and price changes. Unsubscribe in one click."
-          />
-        </div>
-      </section>
     </>
   );
 }
