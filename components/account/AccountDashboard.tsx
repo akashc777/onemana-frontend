@@ -14,7 +14,6 @@ import { subscriptionTone } from "@/lib/instanceState";
 import { WorkspaceSection } from "./WorkspaceSection";
 import { CopyField, StatusDot, SummaryTile, glyphs } from "./AccountParts";
 import { SpotWelcome } from "@/components/ui/graphics/spots";
-import { ButtonLink } from "@/components/ui/Button";
 
 type Tab = "overview" | "invoices" | "subscription" | "billing";
 
@@ -169,9 +168,11 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
             Your licences, invoices and workspace appear here once you buy OneCamp or claim a free licence, under
             this address. Paid a minute ago? Your key is on its way by email, and this page shows it on your next visit.
           </p>
-          <ButtonLink href="/free" variant="brand" className="mt-5">
+          {/* A plain link: next/link (via ButtonLink) would add 26 KB of
+              script to every account visit for a state few people see. */}
+          <a href="/free" className="btn-brand mt-5 h-10 px-4 py-0">
             Install free
-          </ButtonLink>
+          </a>
         </div>
       </div>
     );

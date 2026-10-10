@@ -41,7 +41,8 @@ describe("spot illustrations", () => {
     const html = renderToString(<AccountDashboard overview={nothing} instances={[]} onLogout={() => {}} onReload={() => {}} />);
     expect(html).toContain("Nothing here yet");
     expect(html).toContain("stroke-brand");
-    expect(html.match(/bg-brand /g)).toHaveLength(1);
+    // One action, and the only accent fill on the view.
+    expect(html.match(/btn-brand|bg-brand /g)).toHaveLength(1);
     expect(html).toContain('href="/free"');
   });
 
