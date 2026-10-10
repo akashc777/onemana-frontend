@@ -296,7 +296,7 @@ export function BuyCheckout({
                         role="radio"
                         aria-checked={edition === c.value}
                         onClick={() => setEdition(c.value)}
-                        className={`rounded-md border px-3.5 py-2.5 text-left transition-colors duration-150 ${edition === c.value ? "border-brand bg-brand-soft" : "border-border-strong bg-card hover:bg-muted"}`}
+                        className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left transition-colors duration-150 ${edition === c.value ? "border-brand bg-brand-soft" : "border-border-strong bg-card hover:bg-muted"}`}
                       >
                         <span className="block text-small font-medium text-foreground">{c.label}</span>
                         <span className="mt-0.5 block text-caption text-muted-foreground">{c.hint}</span>

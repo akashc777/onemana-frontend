@@ -125,7 +125,7 @@ export function DocsPager({
 }) {
   if (!prev && !next) return null;
   const card =
-    "hover-lift group flex min-h-[4.5rem] flex-col justify-center rounded-lg border border-border bg-card px-4 py-3 hover:border-border-strong";
+    "hover-lift group flex min-h-[4.5rem] flex-col justify-start rounded-lg border border-border bg-card px-4 py-3 hover:border-border-strong";
   return (
     <nav aria-label="More guides" className="mt-14 grid gap-3 sm:grid-cols-2">
       {prev ? (

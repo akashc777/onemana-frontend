@@ -1,9 +1,16 @@
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
+import { DocsPager } from "@/components/docs/DocsShell"
 import { CloudPlanCard } from "@/components/site/CloudPlanCard"
+import { CompareView } from "@/components/site/CompareView"
+import { GuaranteeList } from "@/components/site/GuaranteeList"
 import { LicencePlanCard } from "@/components/site/LicencePlanCard"
+import { QuestionList } from "@/components/site/marketing"
 import { PLAN_CARD_PARTS } from "@/components/site/PlanCard"
+import { governance } from "@/lib/content"
 import { defaultPricing } from "@/lib/pricing"
 
 /**
@@ -41,6 +48,32 @@ function childTags(html: string, openAt: number): string[] {
 }
 
 describe("things side by side line up", () => {
+  it("the guarantees in a row: each claim and its explanation are two rows of one subgrid", () => {
+    const html = renderToString(<GuaranteeList items={governance.points} layout="row" hue="dusk" />)
+    expect(html).toMatch(/^<ol class="[^"]*md:grid-cols-3 md:gap-y-0/)
+    const items = [...html.matchAll(/<li class="([^"]*)"/g)]
+    expect(items).toHaveLength(governance.points.length)
+    for (const m of items) {
+      expect(m[1]).toContain("md:row-span-2 md:grid-rows-subgrid md:gap-y-0")
+      // The number, the claim and the explanation, each a cell of the grid.
+      expect(childTags(html, m.index!)).toEqual(["span", "h3", "p"])
+    }
+    expect(html).toMatch(/<p class="col-start-2 /)
+  })
+
+  it("questions in two columns: each question and answer are two rows of one subgrid", () => {
+    const two = renderToString(<QuestionList items={[{ q: "A?", a: "Yes." }, { q: "B?", a: "No." }]} columns={2} />)
+    for (const m of two.matchAll(/<li class="([^"]*)"/g)) expect(m[1]).toContain("md:row-span-2 md:grid md:grid-rows-subgrid md:gap-y-0")
+    const one = renderToString(<QuestionList items={[{ q: "A?", a: "Yes." }]} />)
+    expect(one).not.toContain("subgrid")
+  })
+
+  it("/verify's two kinds of file share one subgrid", () => {
+    const src = readFileSync(join(__dirname, "verify/page.tsx"), "utf8")
+    expect(src).toContain('<dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0">')
+    expect(src.match(/<div className="sm:row-span-2 sm:grid sm:grid-rows-subgrid">/g)).toHaveLength(2)
+  })
+
   it("the licence and Cloud cards lay the same six parts on the row's subgrid", () => {
     for (const html of [
       renderToString(<LicencePlanCard pricing={defaultPricing} aligned />),
@@ -55,5 +88,22 @@ describe("things side by side line up", () => {
     }
     // Not aligned, a card is a plain column, as on a phone.
     expect(renderToString(<LicencePlanCard pricing={defaultPricing} />)).not.toContain("subgrid")
+  })
+
+  it("a docs pager card and /buy's AI choices start at the top, not the middle", () => {
+    const pager = renderToString(<DocsPager prev={{ slug: "a", title: "A guide with a long name" }} next={{ slug: "b", title: "B" }} />)
+    for (const m of pager.matchAll(/<a [^>]*class="([^"]*)"/g)) {
+      expect(m[1]).toContain("justify-start")
+      expect(m[1]).not.toContain("justify-center")
+    }
+    const buy = readFileSync(join(__dirname, "buy/BuyCheckout.tsx"), "utf8")
+    expect(buy).toContain('className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left')
+  })
+
+  it("/compare's tools: each tool over its line, the hairline under the cell", () => {
+    const html = renderToString(<CompareView pricing={defaultPricing} />)
+    const cells = [...html.matchAll(/<div class="border-b border-border\/60 pb-3">/g)]
+    expect(cells.length).toBeGreaterThan(4)
+    for (const m of cells) expect(childTags(html, m.index!)).toEqual(["p", "p"])
   })
 })

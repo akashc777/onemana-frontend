@@ -309,12 +309,14 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />
                 </div>
                 <div className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                    {/* The tool over what replaces it, the hairline under the
+                        cell: a short line used to sit beside its tool and a
+                        long one under it, and each column's hairlines fell
+                        where its own text ended. */}
                     {cancels.map((c) => (
-                        <div key={c.tool}>
-                            <div className="flex flex-wrap items-baseline gap-x-2 border-b border-border/60 pb-3">
-                                <span className="text-sm font-semibold text-foreground">{c.tool}</span>
-                                <span className="text-sm text-muted-foreground">{c.surface}</span>
-                            </div>
+                        <div key={c.tool} className="border-b border-border/60 pb-3">
+                            <p className="text-small font-semibold text-foreground">{c.tool}</p>
+                            <p className="mt-0.5 text-small text-muted-foreground">{c.surface}</p>
                         </div>
                     ))}
                 </div>

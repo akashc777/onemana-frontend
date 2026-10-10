@@ -33,11 +33,14 @@ export interface Guarantee {
 // markers. On a camp band it sits in a small card-coloured square in the
 // band's ink (hue), so the numbers read as part of that section's colour.
 // "row" sets the guarantees side by side under a hairline, for a section whose
-// top half already holds a heading and a figure; "list" stacks them.
+// top half already holds a heading and a figure; "list" stacks them. Side by
+// side, each guarantee takes two rows of one subgrid, the claim and its
+// explanation, so a claim that wraps to two lines moves its neighbours'
+// explanations down with its own and all three start on one line.
 export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string; layout?: "list" | "row"; hue?: CampHue }> = ({ items, className = "", layout = "list", hue }) => (
-    <ol className={`list-none p-0 ${layout === "row" ? "grid gap-x-10 gap-y-8 border-t border-border pt-8 md:grid-cols-3" : "border-t border-border"} ${className}`}>
+    <ol className={`list-none p-0 ${layout === "row" ? "grid gap-x-10 gap-y-8 border-t border-border pt-8 md:grid-cols-3 md:gap-y-0" : "border-t border-border"} ${className}`}>
         {items.map((g, i) => (
-            <li key={g.title} className={`grid grid-cols-[2rem_1fr] gap-x-3 ${layout === "row" ? "" : "border-b border-border py-5"}`}>
+            <li key={g.title} className={`grid grid-cols-[2rem_1fr] gap-x-3 ${layout === "row" ? "md:row-span-2 md:grid-rows-subgrid md:gap-y-0" : "border-b border-border py-5"}`}>
                 {hue ? (
                     <span aria-hidden className={`${HUE_CLASS[hue]} flex size-7 items-center justify-center rounded-md bg-card font-mono text-small tabular-nums text-hue-ink`}>
                         {i + 1}
@@ -47,10 +50,8 @@ export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: 
                         {i + 1}
                     </span>
                 )}
-                <div className="min-w-0">
-                    <h3 className="text-h3 text-foreground">{g.title}</h3>
-                    <p className="mt-1.5 text-small text-muted-foreground sm:text-body">{g.body}</p>
-                </div>
+                <h3 className="min-w-0 text-h3 text-foreground">{g.title}</h3>
+                <p className="col-start-2 mt-1.5 min-w-0 text-small text-muted-foreground sm:text-body">{g.body}</p>
             </li>
         ))}
     </ol>
