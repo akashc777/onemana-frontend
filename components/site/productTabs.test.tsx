@@ -59,3 +59,21 @@ describe("warming a product tab", () => {
         expect(img).toContain(`sizes="${SHOT_SIZES}"`)
     })
 })
+
+/**
+ * Each surface keeps one camp hue from its tab to its picture: a tile on the
+ * tab, the tint on the screenshot's stage.
+ */
+describe("the product tabs' colour", () => {
+    const html = renderToString(<ProductTabs />)
+
+    it("gives every tab a tile in its own hue, in the palette's chart order", () => {
+        const tiles = [...html.matchAll(/<span aria-hidden="true" class="(hue-[a-z]+) [^"]*bg-hue-tint/g)].map((m) => m[1])
+        expect(tiles).toEqual(["hue-sky", "hue-moss", "hue-sun", "hue-dusk", "hue-berry"])
+    })
+
+    it("sets the chosen surface's screenshot on that hue's tint", () => {
+        const panel = html.slice(html.indexOf('role="tabpanel"'))
+        expect(panel).toMatch(/class="rounded-lg border [^"]*hue-sky border-hue\/25 bg-hue-tint/)
+    })
+})

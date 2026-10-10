@@ -1,8 +1,11 @@
 "use client";
 
 import { getImageProps } from "next/image";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, type ComponentType, type KeyboardEvent, type SVGProps } from "react";
 import { ProductShot, type ShotName } from "@/components/site/ProductShot";
+import { CalendarGlyph, ChatGlyph, DocGlyph, SparkGlyph, TaskGlyph } from "@/components/site/Glyphs";
+import { Tile } from "@/components/ui/graphics/Tile";
+import type { CampHue } from "@/lib/campHue";
 import { site } from "@/lib/site";
 
 /**
@@ -20,12 +23,30 @@ import { site } from "@/lib/site";
  * app/landingDiet.test.ts holds them: it never advances on its own (a surface
  * changing while you read it is a carousel), and only the chosen panel is in
  * the page, so four hidden panels are not in the tab order or the HTML.
+ *
+ * Each surface has a camp hue, in the palette's chart order (sky, moss, sun,
+ * dusk, berry): its tab carries a tile in that hue and the screenshot's stage
+ * takes its tint, so the colour follows the surface from the tab to the
+ * picture. The accent stays where it was, on the chosen tab's edge.
  */
-const TABS: { id: string; label: string; shot: ShotName; text: string; alt: string; place: string }[] = [
+type Tab = {
+  id: string;
+  label: string;
+  shot: ShotName;
+  hue: CampHue;
+  Glyph: ComponentType<SVGProps<SVGSVGElement>>;
+  text: string;
+  alt: string;
+  place: string;
+};
+
+const TABS: Tab[] = [
   {
     id: "docs",
     label: "Docs",
     shot: "docs",
+    hue: "sky",
+    Glyph: DocGlyph,
     text: "Write together, with everyone's cursor on the page. Tasks and channels link straight to the doc.",
     alt: "The Q4 launch plan open in OneCamp's editor, with goals, owners and risks.",
     place: "docs",
@@ -34,6 +55,8 @@ const TABS: { id: string; label: string; shot: ShotName; text: string; alt: stri
     id: "tasks",
     label: "Tasks",
     shot: "tasks",
+    hue: "moss",
+    Glyph: TaskGlyph,
     text: "Boards, lists and timelines for every project, beside the conversation about the work.",
     alt: "The Q4 launch project as a board: To do, In progress and QA columns of task cards.",
     place: "board",
@@ -42,6 +65,8 @@ const TABS: { id: string; label: string; shot: ShotName; text: string; alt: stri
     id: "calendar",
     label: "Calendar",
     shot: "calendar",
+    hue: "sun",
+    Glyph: CalendarGlyph,
     text: "Due dates and events in one calendar, two-way Google sync, booking pages. Video calls start from any channel, on your own server.",
     alt: "OneCamp's month calendar for October, with task due dates across the weeks.",
     place: "1",
@@ -50,6 +75,8 @@ const TABS: { id: string; label: string; shot: ShotName; text: string; alt: stri
     id: "agents",
     label: "Agents",
     shot: "agents",
+    hue: "dusk",
+    Glyph: SparkGlyph,
     text: "Agents act for a person and can do only what that person can. Every action, and every refusal, is on the record.",
     alt: "The record of what an agent did: two refused attempts to post in a channel, each with its hash.",
     place: "drill",
@@ -58,6 +85,8 @@ const TABS: { id: string; label: string; shot: ShotName; text: string; alt: stri
     id: "chat",
     label: "Chat",
     shot: "chat",
+    hue: "berry",
+    Glyph: ChatGlyph,
     text: "Channels, threads and direct messages, with mentions, files and daily check-ins.",
     alt: "The #design channel in OneCamp: four people discussing a launch page.",
     place: "engineering",
@@ -136,12 +165,15 @@ export function ProductTabs() {
               onPointerEnter={() => warm(t.shot)}
               // Arrow keys choose as they move, so the neighbours are warmed too.
               onFocus={() => [i - 1, i, i + 1].forEach((n) => warm(TABS[(n + TABS.length) % TABS.length].shot))}
-              className={`relative -mb-px shrink-0 border-b-2 px-3 pb-3 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:border-b-0 lg:border-l-2 lg:py-2.5 lg:pl-5 lg:text-body ${
+              className={`relative -mb-px flex shrink-0 items-center gap-2.5 border-b-2 px-2 pb-2.5 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:gap-3 lg:border-b-0 lg:border-l-2 lg:py-2 lg:pl-4 lg:text-body ${
                 i === active
                   ? "border-brand text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
+              <Tile hue={t.hue} size="sm" className="lg:size-8 lg:rounded-lg lg:[&>svg]:size-4">
+                <t.Glyph />
+              </Tile>
               {t.label}
             </button>
           ))}
@@ -165,7 +197,7 @@ export function ProductTabs() {
             Open it in the live demo
           </a>
         </div>
-        <ProductShot key={tab.shot} name={tab.shot} alt={tab.alt} crop sizes={SHOT_SIZES} />
+        <ProductShot name={tab.shot} hue={tab.hue} alt={tab.alt} crop sizes={SHOT_SIZES} />
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
 import Image, { getImageProps } from "next/image";
+import type { CampHue } from "@/lib/campHue";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 
 /**
  * A real screenshot of the product, in the reader's theme.
@@ -25,8 +27,11 @@ export function ProductShot({
   className = "",
   sizes = "(min-width: 1120px) 1120px, 220vw",
   crop = false,
+  hue,
 }: {
   name: ShotName;
+  /** The surface's camp hue: the stage takes its tint, as the tab's tile does. */
+  hue?: CampHue;
   /** Leave the app's sidebar out on a wide screen, so the working area is shown nearer its real size. */
   crop?: boolean;
   alt: string;
@@ -42,8 +47,11 @@ export function ProductShot({
   // of every capture, so the image is drawn at 120% and shifted by that much.
   const img = `block h-auto w-[220%] max-w-none -ml-[34%] ${crop ? "sm:-ml-[19.8%] sm:w-[120%]" : "sm:ml-0 sm:w-full"}`;
   return (
-    <Stage className={className}>
-      <div className="aspect-[4/3] overflow-hidden rounded-md border border-border bg-card sm:aspect-auto">
+    <Stage className={className} hue={hue}>
+      {/* Keyed by the surface, so a new tab draws fresh images rather than
+          the old one until the new one loads; the stage around them stays,
+          and its tint follows the hue. */}
+      <div key={name} className="aspect-[4/3] overflow-hidden rounded-md border border-border bg-card sm:aspect-auto">
         <Image src={`/product/${name}-light.webp`} {...common} alt={alt} className={`${img} dark:hidden`} />
         <Image src={`/product/${name}-dark.webp`} {...common} alt={alt} className={`${img} hidden dark:block`} />
       </div>
@@ -52,13 +60,16 @@ export function ProductShot({
 }
 
 /**
- * The ground a screenshot sits on: the muted surface, one hairline, no shadow.
- * On the page's own background the app's grey sidebar ran into the page and
- * the image had no edge; on a step of the same palette it reads as a picture
- * placed with care (design/audit/storefront.md, idea 2).
+ * The ground a screenshot sits on, one hairline, no shadow. On the page's own
+ * background the app's grey sidebar ran into the page and the image had no
+ * edge; on a step of the palette it reads as a picture placed with care
+ * (design/audit/storefront.md, idea 2). Given a camp hue, the ground is that
+ * hue's tint, so a surface keeps the colour its tab gives it; otherwise the
+ * muted surface.
  */
-export function Stage({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-lg border border-border bg-muted p-2 sm:p-3 lg:p-4 ${className}`}>{children}</div>;
+export function Stage({ children, className = "", hue }: { children: React.ReactNode; className?: string; hue?: CampHue }) {
+  const ground = hue ? `${HUE_CLASS[hue]} border-hue/25 bg-hue-tint` : "border-border bg-muted";
+  return <div className={`rounded-lg border p-2 transition-colors duration-200 sm:p-3 lg:p-4 ${ground} ${className}`}>{children}</div>;
 }
 
 /** A numbered note on a figure: where it points, in percent of the image, and what it says. */
