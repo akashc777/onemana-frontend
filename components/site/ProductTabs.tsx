@@ -78,7 +78,7 @@ const TABS: Tab[] = [
     hue: "dusk",
     Glyph: SparkGlyph,
     text: "Agents act for a person and can do only what that person can. Every action, and every refusal, is on the record.",
-    alt: "The record of what an agent did: two refused attempts to post in a channel, each with its hash.",
+    alt: "Your record of what agents did as you: two attempts to post in a channel, each refused by permissions.",
     place: "drill",
   },
   {
