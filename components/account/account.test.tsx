@@ -73,5 +73,18 @@ it("keeps the invoices table's scroll box a containing block, so its hidden head
   // The "Download" column's sr-only label is absolutely positioned; without a
   // positioned ancestor inside the scroll box it escaped it and made the page
   // 429 px wide on a 390 px phone.
-  expect(source("components/account/AccountDashboard.tsx")).toContain('className="relative overflow-x-auto rounded-lg border border-border bg-card"');
+  expect(source("components/account/AccountDashboard.tsx")).toContain('className="relative hidden overflow-x-auto rounded-lg border border-border bg-card sm:block"');
+});
+
+it("lists invoices on a phone with each one's download in reach, and keeps the table for wider screens", () => {
+  // In the table, a 390 px phone showed three lines a row and the download
+  // button off the right edge of the screen.
+  const tab = source("components/account/AccountDashboard.tsx");
+  const body = tab.slice(tab.indexOf("function InvoicesTab"), tab.indexOf("function planCodeFor"));
+  const list = body.slice(body.indexOf("<ul"), body.indexOf("</ul>"));
+  expect(list).toContain("sm:hidden");
+  for (const piece of ["{inv.invoice_no}", "formatDate(inv.issued_at)", "gst(inv)", "formatINR(inv.gross_amount)", "downloadButton(inv)", "failed(inv)"]) {
+    expect(list).toContain(piece);
+  }
+  expect(body).toMatch(/className="relative hidden [^"]*sm:block"[\s\S]*<table/);
 });

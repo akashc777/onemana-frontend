@@ -320,51 +320,79 @@ function InvoicesTab() {
   if (invoices.length === 0)
     return <p className="text-small text-muted-foreground">No invoices yet. Each payment&apos;s GST invoice appears here.</p>;
 
+  const gst = (inv: Invoice) => (inv.is_export ? "Export, 0%" : formatINR(inv.cgst_amount + inv.sgst_amount + inv.igst_amount));
+  const downloadButton = (inv: Invoice) => (
+    <button
+      onClick={() => download(inv)}
+      disabled={downloading === inv.id}
+      className="h-8 whitespace-nowrap rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted disabled:opacity-60"
+    >
+      {downloading === inv.id ? "Downloading…" : "Download PDF"}
+    </button>
+  );
+  const failed = (inv: Invoice) =>
+    rowError[inv.id] ? (
+      <p role="alert" className="mt-1 text-caption text-danger-ink">
+        {rowError[inv.id]}
+      </p>
+    ) : null;
+
   return (
-    // relative: the header's screen-reader label is absolutely positioned, and
-    // without a containing block inside the scroll box it escaped it and
-    // widened the page by 39 px on a phone.
-    <div className="relative overflow-x-auto rounded-lg border border-border bg-card">
-      <table className="w-full min-w-[34rem] text-left text-small">
-        <thead className="border-b border-border text-caption text-muted-foreground">
-          <tr>
-            <th className="px-4 py-2.5 font-medium">Invoice</th>
-            <th className="px-4 py-2.5 font-medium">Date</th>
-            <th className="px-4 py-2.5 text-right font-medium">Amount</th>
-            <th className="px-4 py-2.5 text-right font-medium">GST</th>
-            <th className="px-4 py-2.5">
-              <span className="sr-only">Download</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody className="tabular-nums">
-          {invoices.map((inv) => (
-            <tr key={inv.id} className="border-t border-border first:border-t-0">
-              <td className="px-4 py-3 font-medium text-foreground">{inv.invoice_no}</td>
-              <td className="px-4 py-3 text-muted-foreground">{formatDate(inv.issued_at)}</td>
-              <td className="px-4 py-3 text-right text-foreground">{formatINR(inv.gross_amount)}</td>
-              <td className="px-4 py-3 text-right text-muted-foreground">
-                {inv.is_export ? "Export, 0%" : formatINR(inv.cgst_amount + inv.sgst_amount + inv.igst_amount)}
-              </td>
-              <td className="px-4 py-3 text-right">
-                <button
-                  onClick={() => download(inv)}
-                  disabled={downloading === inv.id}
-                  className="h-8 whitespace-nowrap rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted disabled:opacity-60"
-                >
-                  {downloading === inv.id ? "Downloading…" : "Download PDF"}
-                </button>
-                {rowError[inv.id] && (
-                  <p role="alert" className="mt-1 text-caption text-danger-ink">
-                    {rowError[inv.id]}
-                  </p>
-                )}
-              </td>
+    <>
+      {/* A phone gets a list: in the table, three lines a row and the download
+          button off the right edge of the screen. */}
+      <ul className="divide-y divide-border rounded-lg border border-border bg-card tabular-nums sm:hidden">
+        {invoices.map((inv) => (
+          <li key={inv.id} className="px-4 py-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-small font-medium text-foreground">{inv.invoice_no}</p>
+                <p className="mt-0.5 text-caption text-muted-foreground">
+                  {formatDate(inv.issued_at)}{"\u00a0· "}GST {gst(inv)}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <p className="text-small font-medium text-foreground">{formatINR(inv.gross_amount)}</p>
+                {downloadButton(inv)}
+              </div>
+            </div>
+            {failed(inv)}
+          </li>
+        ))}
+      </ul>
+      {/* relative: the header's screen-reader label is absolutely positioned, and
+          without a containing block inside the scroll box it escaped it and
+          widened the page by 39 px on a phone. */}
+      <div className="relative hidden overflow-x-auto rounded-lg border border-border bg-card sm:block">
+        <table className="w-full min-w-[34rem] text-left text-small">
+          <thead className="border-b border-border text-caption text-muted-foreground">
+            <tr>
+              <th className="px-4 py-2.5 font-medium">Invoice</th>
+              <th className="px-4 py-2.5 font-medium">Date</th>
+              <th className="px-4 py-2.5 text-right font-medium">Amount</th>
+              <th className="px-4 py-2.5 text-right font-medium">GST</th>
+              <th className="px-4 py-2.5">
+                <span className="sr-only">Download</span>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="tabular-nums">
+            {invoices.map((inv) => (
+              <tr key={inv.id} className="border-t border-border first:border-t-0">
+                <td className="px-4 py-3 font-medium text-foreground">{inv.invoice_no}</td>
+                <td className="px-4 py-3 text-muted-foreground">{formatDate(inv.issued_at)}</td>
+                <td className="px-4 py-3 text-right text-foreground">{formatINR(inv.gross_amount)}</td>
+                <td className="px-4 py-3 text-right text-muted-foreground">{gst(inv)}</td>
+                <td className="px-4 py-3 text-right">
+                  {downloadButton(inv)}
+                  {failed(inv)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
