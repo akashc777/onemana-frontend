@@ -67,7 +67,7 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
       <DocsShell groups={groups} activeSlug={doc.slug} aside={toc.length ? <OnThisPage headings={toc} /> : null}>
         <header className="max-w-[36rem]">
           <nav aria-label="Breadcrumb" className="text-caption text-muted-foreground">
-            <Link href="/docs" className="transition-colors duration-150 hover:text-foreground">
+            <Link href="/docs" className="tap-target transition-colors duration-150 hover:text-foreground">
               Docs
             </Link>
             {doc.category.trim() && (
@@ -79,7 +79,7 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
               </>
             )}
           </nav>
-          <h1 className="mt-3 text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+          <h1 className="mt-3 text-title-sm text-foreground sm:text-title">
             {doc.title}
           </h1>
           {updated && (

@@ -88,13 +88,13 @@ export function SubscribeForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className="h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm"
+          className="h-11 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:h-10 sm:text-sm"
         />
         <button type="submit" disabled={state === "sending"} className={buttonClasses("ghost", "md", "shrink-0")}>
           {state === "sending" ? "Adding…" : cta}
         </button>
       </div>
-      <p aria-live="polite" className="mt-2 text-xs text-muted-foreground">
+      <p aria-live="polite" className="mt-2 text-caption text-muted-foreground">
         {state === "error" ? (
           <span className="text-danger-ink">{msg}</span>
         ) : (

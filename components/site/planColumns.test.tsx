@@ -67,3 +67,20 @@ describe("a plan's colour follows it", () => {
         expect(hues).toEqual([PLAN_HUE.source, PLAN_HUE.free, PLAN_HUE.lifetime, PLAN_HUE.cloud])
     })
 })
+
+/**
+ * Stacked on a phone, the free plan's card showed a blank line where the
+ * others show "≈ $258 at today's rate": its estimate line is empty and held
+ * a minimum height. It is hidden while empty below md and keeps its subgrid
+ * row from md, where the cards sit side by side.
+ */
+describe("the free plan's card on a phone", () => {
+    it("has no blank line for the estimate it does not have", () => {
+        const html = renderToString(<PlanColumns pricing={defaultPricing} />)
+        const estimates = html.match(/<p class="mt-1 px-6 text-caption[^"]*">[^<]*<\/p>/g) ?? []
+        expect(estimates).toHaveLength(3)
+        for (const e of estimates) expect(e).toContain("empty:hidden md:empty:block")
+        expect(estimates[0]).toMatch(/"><\/p>$/)
+        expect(html).not.toContain("min-h-5 px-6")
+    })
+})

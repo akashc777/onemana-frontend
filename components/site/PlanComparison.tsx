@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PLAN_HUE } from "@/components/site/planHues";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { Section } from "@/components/ui/Section";
 import type { Pricing } from "@/lib/pricing";
 import { PLAN_ROWS, planOptions } from "@/lib/plans";
 
@@ -13,7 +14,7 @@ import { PLAN_ROWS, planOptions } from "@/lib/plans";
 export function PlanComparison({ pricing }: { pricing: Pricing }) {
   const plans = planOptions(pricing);
   return (
-    <section aria-labelledby="plans-heading" className="container-x py-16 sm:py-20">
+    <Section divider labelledBy="plans-heading">
       <h2 id="plans-heading" className="text-h2 text-foreground">
         Which OneCamp is for you
       </h2>
@@ -43,6 +44,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               <tr key={row.key} className="border-t border-border">
                 <th scope="row" className="py-3 pr-3 text-left align-top font-normal text-muted-foreground">
                   {row.label}
+                  {row.note && <span className="mt-0.5 block text-caption">{row.note}</span>}
                 </th>
                 {plans.map((p) => (
                   <td key={p.key} className="px-3 py-3 align-top text-foreground">
@@ -71,10 +73,13 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               {p.name}
             </p>
             <p className="mt-1 text-small text-muted-foreground">{p.summary}</p>
-            <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1.5 text-small">
+            <dl className="mt-3 grid grid-cols-[8rem_1fr] gap-x-3 gap-y-1.5 text-small">
               {PLAN_ROWS.map((row) => (
                 <div key={row.key} className="contents">
-                  <dt className="text-muted-foreground">{row.label}</dt>
+                  <dt className="text-muted-foreground">
+                    {row.label}
+                    {row.note && <span className="mt-0.5 block text-caption">{row.note}</span>}
+                  </dt>
                   <dd className="text-foreground">{p[row.key]}</dd>
                 </div>
               ))}
@@ -85,12 +90,12 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
 function PlanLink({ cta }: { cta: { label: string; href: string; external?: boolean } }) {
-  const cls = "link text-small font-medium";
+  const cls = "link tap-target text-small font-medium";
   return cta.external ? (
     <a href={cta.href} target="_blank" rel="noopener noreferrer" className={cls}>
       {cta.label}

@@ -21,10 +21,16 @@ const variants: Record<Variant, string> = {
   subtle: "text-muted-foreground hover:bg-muted hover:text-foreground",
 };
 
+// Each size states its line height, and its padding plus line height plus an
+// outline's two border pixels stays inside the minimum height, so a filled
+// and an outlined button of one size are one height (buttonHeight.test.ts).
+// lg once inherited a 22.5 px line and came out 44 filled, 44.5 outlined.
+// md is 44 px on a phone, where a finger presses it, and 40 from sm; sm is
+// for the wide nav only.
 const sizes: Record<Size, string> = {
   sm: "min-h-8 px-3 py-1 text-sm",
-  md: "min-h-10 px-4 py-2 text-sm",
-  lg: "min-h-11 px-5 py-2.5 text-[0.9375rem]",
+  md: "min-h-11 px-4 py-2 text-sm sm:min-h-10",
+  lg: "min-h-11 px-5 py-2 text-[0.9375rem] leading-6",
 };
 
 interface CommonProps {

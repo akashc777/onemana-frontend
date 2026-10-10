@@ -19,7 +19,7 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background">
       <nav className="container-x flex h-14 items-center justify-between gap-6" aria-label="Primary">
-        <Link href="/" className="flex items-center gap-2 text-[0.9375rem] font-semibold text-foreground">
+        <Link href="/" className="flex min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-foreground">
           <OneCampLogo className="h-6 w-6 rounded-md" />
           {site.name}
         </Link>
@@ -34,9 +34,8 @@ export function Nav() {
 
         <div className="hidden items-center gap-1 lg:flex">
           <ThemeToggle />
-          <Link href="/account" className="rounded-md px-2.5 py-1.5 text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
-            Sign in
-          </Link>
+          {/* Marked as the page you are on, on /account, as it is in the phone menu. */}
+          <NavLink href="/account">Sign in</NavLink>
           <a
             href={site.demoStartUrl}
             target="_blank"

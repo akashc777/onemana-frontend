@@ -165,7 +165,7 @@ export function ProductTabs() {
               onPointerEnter={() => warm(t.shot)}
               // Arrow keys choose as they move, so the neighbours are warmed too.
               onFocus={() => [i - 1, i, i + 1].forEach((n) => warm(TABS[(n + TABS.length) % TABS.length].shot))}
-              className={`relative -mb-px flex shrink-0 items-center gap-2.5 border-b-2 px-2 pb-2.5 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:gap-3 lg:border-b-0 lg:border-l-2 lg:py-2 lg:pl-4 lg:text-body ${
+              className={`relative -mb-px flex min-h-11 shrink-0 items-center gap-2.5 border-b-2 px-2 pb-2.5 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:min-h-0 lg:gap-3 lg:border-b-0 lg:border-l-2 lg:py-2 lg:pl-4 lg:text-body ${
                 i === active
                   ? "border-brand text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"
@@ -193,7 +193,7 @@ export function ProductTabs() {
       <div id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} className="min-w-0 lg:col-span-9">
         <div className="mb-5 flex flex-col gap-3 lg:hidden">
           <p className="text-body text-muted-foreground">{tab.text}</p>
-          <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="link self-start text-small font-medium">
+          <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="link tap-target self-start text-small font-medium">
             Open it in the live demo
           </a>
         </div>

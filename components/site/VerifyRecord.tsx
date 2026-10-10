@@ -156,7 +156,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
                     clean ? "border-success/40 bg-success/5" : "border-danger/50 bg-danger/5",
                 ].join(" ")}
             >
-                <p className="text-base font-semibold">
+                <p className="text-body font-semibold">
                     {clean
                         ? `${report.verified} of ${report.rows.length} rows are exactly as they were written.`
                         : `${report.mismatched} of ${report.rows.length} rows do not match their own hash.`}
@@ -197,7 +197,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
                                 <td className="px-3 py-2 tabular-nums text-muted-foreground">
                                     {r.seq ?? "not recorded"}
                                 </td>
-                                <td className="px-3 py-2 font-mono text-xs">{r.action ?? "not recorded"}</td>
+                                <td className="px-3 py-2 font-mono text-caption">{r.action ?? "not recorded"}</td>
                                 <td className="px-3 py-2">
                                     <Verdict verdict={r.verdict} />
                                 </td>
@@ -248,5 +248,5 @@ function Verdict({ verdict }: { verdict: VerifyReport["rows"][number]["verdict"]
         redacted: "text-muted-foreground",
         unhashed: "text-muted-foreground",
     }[verdict]
-    return <span className={`text-xs ${tone}`}>{label}</span>
+    return <span className={`text-caption ${tone}`}>{label}</span>
 }

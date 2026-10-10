@@ -5,7 +5,7 @@ import { CompareView } from "@/components/site/CompareView"
 import { Footer } from "@/components/site/Footer"
 import { HomeComparison } from "@/components/site/HomeComparison"
 import { Nav } from "@/components/site/Nav"
-import { PRODUCT_SERIES, productHue } from "@/components/site/productHues"
+import { PRODUCT_SERIES, SERIES_HUES, productHue } from "@/components/site/productHues"
 import { alternatives } from "@/lib/alternatives"
 import { hueFor } from "@/lib/campHue"
 import { rivals } from "@/lib/compare"
@@ -94,6 +94,14 @@ describe("product hues", () => {
             expect(home.get(name)).toBe(productHue(name))
             expect(there.get(name)).toBe(productHue(name))
         }
+    })
+
+    // The charts' order changed in integration (sky, berry, sun, lake, dusk,
+    // moss: neighbours ΔE 8 apart for colour-blind readers, where the first
+    // order reached 6); the products follow it, as the doc says they do.
+    it("takes the hues in the charts' order", () => {
+        expect(SERIES_HUES).toEqual(["sky", "berry", "sun", "lake", "dusk", "moss"])
+        for (const names of PRODUCT_SERIES) names.forEach((name, i) => expect(productHue(name)).toBe(SERIES_HUES[i % 6]))
     })
 
     it("leaves a name in neither list on its hash", () => {

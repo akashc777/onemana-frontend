@@ -67,6 +67,18 @@ describe("the account page", () => {
     expect(html).not.toMatch(/<button[^>]*disabled=""[^>]*>Email me a code/);
     expect(source("components/account/AccountLogin.tsx")).toContain('matchMedia("(pointer: fine)")');
   });
+
+  // On a wide screen the form had the page to itself, a small card in the
+  // top left and the rest empty; the welcome spot sits opposite, as the error
+  // spot does on the 404. On a phone "Use a different email" was a 20 px line.
+  it("pairs the form with the welcome spot on a wide screen, and keeps its links in reach on a phone", () => {
+    const html = renderToString(<AccountLogin onSignedIn={() => {}} />);
+    expect(html).toMatch(/^<div class="container-x grid [^"]*lg:grid-cols-\[minmax\(0,1fr\)_auto\]/);
+    expect(html).toMatch(/<svg[^>]*class="[^"]*hidden lg:block/);
+    expect(source("components/account/AccountLogin.tsx")).toContain('className="min-h-11 w-full text-center text-small');
+    // The nav marks Sign in as the page you are on, there as in the phone menu.
+    expect(source("components/site/Nav.tsx")).toContain('<NavLink href="/account">Sign in</NavLink>');
+  });
 });
 
 it("keeps the invoices table's scroll box a containing block, so its hidden header label cannot widen the page", () => {

@@ -18,6 +18,10 @@
  * actually bought on, and they are stated on screen so the sum can be checked
  * rather than trusted. Understating them would be the easy way to make this look
  * better and the fastest way to lose someone who knows what they pay.
+ *
+ * It sits on the page, not in a card: the two totals are the cards, side by
+ * side as a pair, and a frame round them made a card holding cards, two
+ * borders deep, where the rest of the site separates with space.
  */
 
 import React, { useMemo, useState } from "react"
@@ -52,7 +56,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     )
 
     return (
-        <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
+        <div>
             <div className="flex flex-wrap items-center gap-3">
                 <label htmlFor="team-size" className="text-small text-foreground">
                     Our team is
@@ -64,10 +68,10 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     max={1000}
                     value={people}
                     onChange={(e) => setPeople(Number(e.target.value) || 1)}
-                    className="h-10 w-24 rounded-md border border-border-strong bg-card px-3 text-base tabular-nums focus:border-brand"
+                    className="h-11 w-24 rounded-md border border-border-strong bg-card px-3 text-base tabular-nums focus:border-brand sm:h-10"
                 />
                 <span className="text-small text-foreground">people.</span>
-                <label className="flex cursor-pointer items-center gap-2 text-small text-foreground">
+                <label className="flex min-h-11 cursor-pointer items-center gap-2 text-small text-foreground sm:min-h-0">
                     <input
                         type="checkbox"
                         checked={withAi}
@@ -79,7 +83,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-md border border-border p-4">
+                <div className="rounded-lg border border-border bg-card p-5">
                     <div className="text-small font-medium text-muted-foreground">Slack + Notion + Zoom</div>
                     <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(saasYear)}</div>
                     <div className="text-caption text-muted-foreground">per year, and it grows with the team</div>
@@ -93,7 +97,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     </ul>
                 </div>
 
-                <div className="rounded-md border border-border-strong bg-muted p-4">
+                <div className="rounded-lg border border-border-strong bg-muted p-5">
                     <div className="text-small font-medium text-foreground">OneCamp, self-hosted</div>
                     <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>

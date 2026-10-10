@@ -17,7 +17,7 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
       <Link
         href="/docs"
         aria-current={activeSlug ? undefined : "page"}
-        className={`mb-4 flex min-h-8 items-center rounded-md px-2.5 transition-colors duration-150 ${
+        className={`mb-4 flex min-h-11 items-center rounded-md px-2.5 lg:min-h-8 transition-colors duration-150 ${
           activeSlug ? "text-muted-foreground hover:bg-muted hover:text-foreground" : "bg-brand-soft font-medium text-foreground"
         }`}
       >
@@ -37,7 +37,7 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
                   <Link
                     href={`/docs/${item.slug}`}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-8 items-center rounded-md px-2.5 py-1 leading-5 transition-colors duration-150 ${
+                    className={`flex min-h-11 items-center rounded-md px-2.5 py-1 leading-5 lg:min-h-8 transition-colors duration-150 ${
                       active ? "bg-brand-soft font-medium text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
@@ -85,7 +85,7 @@ export function DocsShell({
         <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 text-small font-medium text-foreground [&::-webkit-details-marker]:hidden">
           Browse the docs
           <svg aria-hidden viewBox="0 0 16 16" className="size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-open:rotate-180">
-            <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.17" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </summary>
         <div className="pb-5">
@@ -125,7 +125,7 @@ export function DocsPager({
 }) {
   if (!prev && !next) return null;
   const card =
-    "hover-lift group flex min-h-[4.5rem] flex-col justify-center rounded-lg border border-border bg-card px-4 py-3 hover:border-border-strong";
+    "hover-lift group flex min-h-[4.5rem] flex-col justify-start rounded-lg border border-border bg-card px-4 py-3 hover:border-border-strong";
   return (
     <nav aria-label="More guides" className="mt-14 grid gap-3 sm:grid-cols-2">
       {prev ? (

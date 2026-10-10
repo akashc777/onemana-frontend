@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { VerifyRecord } from "@/components/site/VerifyRecord";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SECTION_END } from "@/components/ui/Section";
 import { RecordRows } from "@/components/site/RecordRows";
 import { attemptAndRefusal } from "@/lib/recordExcerpt";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
@@ -41,7 +42,7 @@ export default function VerifyPage() {
         subtitle="Somebody handed you a file from a OneCamp workspace. Every row in it carries the hash it was written with. This page recomputes them, so you can see whether the file is the one the workspace produced or something edited on the way to you."
       />
 
-      <div className="container-x pb-24">
+      <div className={`container-x ${SECTION_END}`}>
         <div className="max-w-3xl">
           <VerifyRecord />
           <p className="mt-6 text-small text-muted-foreground">
@@ -50,17 +51,20 @@ export default function VerifyPage() {
           </p>
         </div>
 
-        <section className="mt-20 grid gap-8 border-t border-border pt-12 lg:grid-cols-12 lg:gap-x-8">
+        <section className="mt-20 grid gap-8 border-t border-border pt-16 sm:mt-28 sm:pt-24 lg:grid-cols-12 lg:gap-x-8">
           <h2 className="text-h3 text-foreground lg:col-span-4">Where the file comes from</h2>
           <div className="lg:col-span-8">
-            <dl className="grid gap-6 sm:grid-cols-2 sm:gap-10">
-              <div>
+            {/* Side by side, each kind takes two rows of one subgrid, so the
+                second's two-line name moves the first's description down
+                with its own and the two start on one line. */}
+            <dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-0">
+              <div className="sm:row-span-2 sm:grid sm:grid-rows-subgrid">
                 <dt className="font-medium text-foreground">An evidence pack, from an administrator</dt>
                 <dd className="mt-1 text-small text-muted-foreground">
                   The whole log for a window, exported from admin settings. This is the one an auditor is usually given.
                 </dd>
               </div>
-              <div>
+              <div className="sm:row-span-2 sm:grid sm:grid-rows-subgrid">
                 <dt className="font-medium text-foreground">A personal record, from anyone in the workspace</dt>
                 <dd className="mt-1 text-small text-muted-foreground">
                   What AI agents did in one person&apos;s name, downloaded from their own activity page. No administrator

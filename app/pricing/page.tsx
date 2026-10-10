@@ -2,17 +2,13 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/site/PageHeader";
 import { PlanColumns } from "@/components/site/PlanColumns";
 import { CloudPlanCard } from "@/components/site/CloudPlanCard";
-import { KeyGlyph } from "@/components/site/Glyphs";
-import { PlanBenefit, PlanCard } from "@/components/site/PlanCard";
-import { PLAN_HUE } from "@/components/site/planHues";
-import { ButtonLink } from "@/components/ui/Button";
+import { LicencePlanCard } from "@/components/site/LicencePlanCard";
 import { PlanComparison } from "@/components/site/PlanComparison";
 import { QuestionList } from "@/components/site/marketing";
-import { SectionHeading } from "@/components/ui/Section";
-import { lifetimeBenefits } from "@/lib/content";
+import { SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
-import { currencyNote, fmtINR, getPricing, usdEstimate } from "@/lib/pricing";
+import { currencyNote, fmtINR, getPricing } from "@/lib/pricing";
 import { site } from "@/lib/site";
 
 export const revalidate = 300;
@@ -68,57 +64,38 @@ export default async function PricingPage() {
         subtitle={`Free for up to ${FREE_SEATS} people. Pay once for a licence when you grow, or let us run it for you.`}
       />
 
-      <section className="pb-20 sm:pb-24">
+      <section className={SECTION_END}>
         <div className="container-x">
           <PlanColumns pricing={pricing} headingLevel="h2" />
         </div>
       </section>
 
       {/* The two paid plans in detail, as a matched pair: the licence and
-          Cloud, each the card of its plan in its hue (PlanCard). */}
-      <section className="border-t border-border">
-        <div className="container-x pb-24 pt-20">
-          <SectionHeading
-            title="Own it, or have us run it"
-            subtitle="Both have every part of OneCamp and the company controls. They differ in who looks after the server."
-          />
-          <div className="mt-10 grid items-stretch gap-4 lg:grid-cols-2">
-            <PlanCard hue={PLAN_HUE.lifetime} Glyph={KeyGlyph} title="The licence" fits="On your own server" titleAs="p">
-              <p className="flex items-baseline gap-2">
-                <span className="font-display text-h2 font-semibold tabular-nums text-foreground">{fmtINR(pricing.lifetime_inr)}</span>
-                <span className="text-small text-muted-foreground">once</span>
-              </p>
-              <p className="mt-1 min-h-5 text-caption text-muted-foreground">{usdEstimate(pricing.lifetime_usd)}</p>
-              <p className="mt-1 text-small text-foreground">Any number of people</p>
-              <ul className="mt-5 flex-1 space-y-2.5 border-t border-border pt-5 text-small text-foreground">
-                {lifetimeBenefits.map((b) => (
-                  <PlanBenefit key={b}>{b}</PlanBenefit>
-                ))}
-              </ul>
-              <div className="mt-6">
-                <ButtonLink href="/buy" variant="brand" className="w-full">
-                  Buy a licence
-                </ButtonLink>
-                <p className="mt-3 text-caption text-muted-foreground">The key and a GST invoice arrive by email straight away.</p>
-              </div>
-            </PlanCard>
-            <CloudPlanCard pricing={pricing} />
-          </div>
+          Cloud, each the card of its plan in its hue (PlanCard). Side by side
+          the two share one grid, so the prices, the lists and the buttons
+          start on one line: Cloud's plan switch sits with its seats, where
+          the licence says who it is for. */}
+      <Section divider>
+        <SectionHeading
+          title="Own it, or have us run it"
+          subtitle="Both have every part of OneCamp and the company controls. They differ in who looks after the server."
+        />
+        <div className="mt-10 grid items-stretch gap-4 lg:grid-cols-2 lg:gap-y-0">
+          <LicencePlanCard pricing={pricing} aligned />
+          <CloudPlanCard pricing={pricing} aligned />
         </div>
-      </section>
+      </Section>
 
-      <div className="border-t border-border">
-        <PlanComparison pricing={pricing} />
-      </div>
+      <PlanComparison pricing={pricing} />
 
-      <section className="border-t border-border">
-        <div className="container-x grid gap-8 pb-24 pt-20 lg:grid-cols-12 lg:gap-x-8">
+      <Section divider>
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-4">
             <SectionHeading title="About paying" />
           </div>
           <QuestionList items={questions} className="lg:col-span-8" />
         </div>
-      </section>
+      </Section>
     </>
   );
 }

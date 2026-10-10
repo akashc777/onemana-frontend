@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
 
@@ -67,7 +68,8 @@ export function AboutView() {
         divider
       />
 
-      <div className="container-x pb-24 pt-12">
+      {/* 40 px under the header's rule, as under each row's. */}
+      <div className={`container-x pt-10 ${SECTION_END}`}>
         {SECTIONS.map((s) => (
           <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 lg:grid-cols-12 lg:gap-x-8">
             <h2 className="text-h3 text-foreground lg:col-span-4">{s.title}</h2>
@@ -95,13 +97,13 @@ export function AboutView() {
                 Founder of OneMana. Writes the code, ships the releases and reads the support email.
               </p>
               <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-small">
-                <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link">
+                <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link tap-target">
                   GitHub
                 </a>
-                <a href={site.twitter} target="_blank" rel="noreferrer" className="link">
+                <a href={site.twitter} target="_blank" rel="noreferrer" className="link tap-target">
                   X (Twitter)
                 </a>
-                <Link href="/blog" className="link">
+                <Link href="/blog" className="link tap-target">
                   The blog
                 </Link>
               </p>

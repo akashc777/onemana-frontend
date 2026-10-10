@@ -1,4 +1,14 @@
-import { CAMP_HUES, hueFor, type CampHue } from "@/lib/campHue";
+import { hueFor, type CampHue } from "@/lib/campHue";
+
+/**
+ * The order a categorical series takes the six hues in: the charts' and
+ * timelines' order (PLAYFUL_LAYER.md, "Charts and timelines"; the app's
+ * components/table/tableChartPalette.ts). Neighbours differ by at least
+ * ΔE 8 under the common colour-blindness simulations. It changed from sky,
+ * moss, sun, dusk, berry, lake (which reached only 6) during the wave 2
+ * integration; the identity hash (lib/campHue CAMP_HUES) did not change.
+ */
+export const SERIES_HUES: readonly CampHue[] = ["sky", "berry", "sun", "lake", "dusk", "moss"];
 
 /**
  * The products the site names in lists, each list in the order it is shown:
@@ -16,8 +26,8 @@ export const PRODUCT_SERIES: readonly (readonly string[])[] = [
  * The hue a product wears on the site: its square in every comparison, and
  * the band on its /alternatives page.
  *
- * The products are a categorical series, so each list takes the palette's
- * fixed order (sky, moss, sun, dusk, berry, lake; PLAYFUL_LAYER.md).
+ * The products are a categorical series, so each list takes the series
+ * order above (sky, berry, sun, lake, dusk, moss; PLAYFUL_LAYER.md).
  * Neighbours never match, and any six in a row are six hues. Hashing the
  * name, as the app does for people and channels, put Slack, Notion, ClickUp,
  * Asana and Toggl Track all on lake, and the table's first two rows, Huly and
@@ -25,7 +35,7 @@ export const PRODUCT_SERIES: readonly (readonly string[])[] = [
  * stack on the home page) keeps its hash.
  */
 const PRODUCT_HUE: ReadonlyMap<string, CampHue> = new Map(
-  PRODUCT_SERIES.flatMap((names) => names.map((name, i) => [name, CAMP_HUES[i % CAMP_HUES.length]] as const)),
+  PRODUCT_SERIES.flatMap((names) => names.map((name, i) => [name, SERIES_HUES[i % SERIES_HUES.length]!] as const)),
 );
 
 export function productHue(name: string): CampHue {

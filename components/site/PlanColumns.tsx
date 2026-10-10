@@ -113,7 +113,10 @@ export function PlanColumns({ pricing, headingLevel = "h3" }: { pricing: Pricing
               <span className="font-display text-h2 font-semibold tabular-nums text-foreground">{p.price}</span>
               {p.per && <span className="text-small text-muted-foreground">{p.per}</span>}
             </p>
-            <p className="mt-1 min-h-5 px-6 text-caption text-muted-foreground">{p.estimate}</p>
+            {/* Free has no estimate. Side by side its empty line keeps its row
+                of the subgrid; stacked on a phone it is gone, where it left a
+                blank line between "₹0" and who the plan is for. */}
+            <p className="mt-1 px-6 text-caption text-muted-foreground empty:hidden md:empty:block">{p.estimate}</p>
             <p className="mt-2 px-6 text-small font-medium text-foreground">{p.fits}</p>
             <p className="mt-3 px-6 text-small text-muted-foreground">{p.body}</p>
             <p className="mx-6 mt-4 border-t border-border pt-4 text-small text-foreground">

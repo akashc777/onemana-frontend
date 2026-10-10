@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { portalApi } from "@/lib/portalApi";
 import { CODE_LENGTH } from "@/lib/oneTimeCode";
 import CodeInput from "./CodeInput";
+import { SpotWelcome } from "@/components/ui/graphics/spots";
 
 const inputCls =
   "h-11 w-full rounded-md border border-border-strong bg-card px-3.5 text-base text-foreground placeholder:text-faint sm:h-10 sm:text-small";
@@ -70,10 +71,13 @@ export function AccountLogin({
     }
   }
 
+  // On a wide screen the form had the page to itself: a small card in the
+  // top left and the rest empty. The welcome spot (the workspace's ring with
+  // its people round it) sits opposite, as the error spot does on the 404.
   return (
-    <div className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-14">
+    <div className="container-x grid min-h-[calc(100dvh-3.5rem)] content-start gap-10 pb-24 pt-10 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_auto]">
       <div className="max-w-sm">
-        <h1 className="text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+        <h1 className="text-title-sm text-foreground sm:text-title">
           Your OneCamp account
         </h1>
         <p className="mt-3 text-body text-muted-foreground">
@@ -83,7 +87,7 @@ export function AccountLogin({
         {step === "email" ? (
           <form onSubmit={sendCode} className="mt-8 space-y-4 rounded-lg border border-border bg-card p-5 sm:p-6">
             {notice && (
-              <p role="status" className="rounded-md bg-brand-soft px-3 py-2 text-small text-foreground">
+              <p role="status" className="rounded-md bg-info/10 px-3 py-2 text-small text-info-ink">
                 {notice}
               </p>
             )}
@@ -119,7 +123,7 @@ export function AccountLogin({
         ) : (
           <form onSubmit={verify} className="mt-8 space-y-4 rounded-lg border border-border bg-card p-5 sm:p-6">
             {notice && (
-              <p role="status" className="rounded-md bg-brand-soft px-3 py-2 text-small text-foreground">
+              <p role="status" className="rounded-md bg-info/10 px-3 py-2 text-small text-info-ink">
                 {notice}
               </p>
             )}
@@ -154,13 +158,14 @@ export function AccountLogin({
                 setCode("");
                 setError("");
               }}
-              className="w-full text-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground"
+              className="min-h-11 w-full text-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0"
             >
               Use a different email
             </button>
           </form>
         )}
       </div>
+      <SpotWelcome size={192} className="hidden lg:block" />
     </div>
   );
 }

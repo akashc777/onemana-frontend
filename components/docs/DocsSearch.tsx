@@ -130,8 +130,8 @@ export function DocsSearch({ className = "" }: { className?: string }) {
         Search the docs
       </label>
       <svg aria-hidden viewBox="0 0 16 16" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground">
-        <circle cx="7" cy="7" r="4.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M10.25 10.25L13.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="7" cy="7" r="4.25" fill="none" stroke="currentColor" strokeWidth="1.17" />
+        <path d="M10.25 10.25L13.5 13.5" stroke="currentColor" strokeWidth="1.17" strokeLinecap="round" />
       </svg>
       <input
         ref={field}
@@ -153,7 +153,7 @@ export function DocsSearch({ className = "" }: { className?: string }) {
           setOpen(true);
         }}
         onKeyDown={onFieldKey}
-        className="h-10 w-full rounded-md border border-border-strong bg-card pl-9 pr-9 text-base text-foreground placeholder:text-faint sm:h-9 sm:text-small [&::-webkit-search-cancel-button]:hidden"
+        className="h-11 w-full rounded-md border border-border-strong bg-card pl-9 pr-9 text-base text-foreground placeholder:text-faint sm:h-9 sm:text-small [&::-webkit-search-cancel-button]:hidden"
       />
       {!asked && (
         <kbd aria-hidden className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-sm border border-border bg-muted px-1.5 font-mono text-[0.6875rem] leading-5 text-muted-foreground lg:block">

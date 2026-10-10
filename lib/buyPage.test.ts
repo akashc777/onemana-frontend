@@ -95,9 +95,12 @@ describe("the money sentence", () => {
 describe("the buy page quotes the price it charges", () => {
   const page = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
 
+  // "Subscribe for", not "Subscribe -": a spaced hyphen standing in for a
+  // dash reads as copy nobody finished.
   it("prices the pay button from the chosen plan", () => {
-    expect(page).toContain("Subscribe - ${dual(price.usd, price.inr, price.per)}")
-    expect(page).not.toMatch(/Subscribe - \$\{fmtUSD\(pricing\.cloud_usd\)/)
+    expect(page).toContain("Subscribe for ${dual(price.usd, price.inr, price.per)}")
+    expect(page).not.toMatch(/Subscribe for \$\{fmtUSD\(pricing\.cloud_usd\)/)
+    expect(page).not.toMatch(/`[^`]* - \$\{/)
   })
 
   // Rupees in India and for Cloud; dollars for the licence abroad once the
@@ -186,5 +189,26 @@ describe("the plan switch on a narrow phone", () => {
     const checkout = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
     expect(checkout).toContain('Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span>')
     expect(checkout).toContain('Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>')
+  })
+})
+
+/**
+ * The checkout's layout on a wide screen: the plan, then "Try it before you
+ * pay" under it, beside the form. With two equal grid rows the form's height
+ * split between them, so on Cloud (address and AI choice make the form
+ * taller) "Try it before you pay" sat 146 px below the plan. And each Cloud
+ * choice is its name over what it adds: as one line, "Team yearly · 2 months
+ * free" wrapped beside one-line neighbours.
+ */
+describe("the buy page's layout", () => {
+  const page = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
+
+  it("keeps the first row the plan's own height", () => {
+    expect(page).toContain("lg:grid-cols-2 lg:grid-rows-[auto_1fr]")
+  })
+
+  it("draws each Cloud choice as its name over its detail", () => {
+    expect(page).toContain('const [name, detail] = choiceLabel(b, pricing).split(" · ")')
+    expect(page).toMatch(/<span className="font-medium">\{name\}<\/span>\s*\{detail && <span className="font-normal">\{detail\}<\/span>\}/)
   })
 })

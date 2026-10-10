@@ -28,14 +28,20 @@ export interface PlanOption {
   cta: { label: string; href: string; external?: boolean };
 }
 
-export const PLAN_ROWS: { key: keyof Omit<PlanOption, "key" | "name" | "summary" | "cta">; label: string }[] = [
+/**
+ * The rows the plans are compared on. A label is short enough for its column
+ * on one line; what it covers goes in `note`, a smaller line under it. "Company
+ * controls (SSO, LDAP, SCIM, audit export)" as one label was squeezed into
+ * four lines of one or two words in a phone's 112 px label column.
+ */
+export const PLAN_ROWS: { key: keyof Omit<PlanOption, "key" | "name" | "summary" | "cta">; label: string; note?: string }[] = [
   { key: "price", label: "Price" },
   { key: "runs", label: "Who runs it" },
   { key: "people", label: "People" },
   { key: "install", label: "Install" },
   { key: "updates", label: "Updates" },
   { key: "licence", label: "Licence" },
-  { key: "controls", label: "Company controls (SSO, LDAP, SCIM, audit export)" },
+  { key: "controls", label: "Company controls", note: "SSO, LDAP, SCIM, audit export" },
   { key: "help", label: "Help" },
 ];
 

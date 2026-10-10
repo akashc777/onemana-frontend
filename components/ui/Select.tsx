@@ -113,7 +113,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className="flex h-10 w-full items-center justify-between gap-2 rounded-md border border-border-strong bg-card px-3 text-left text-sm text-foreground transition-colors duration-150 focus:border-brand disabled:opacity-50"
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-md border border-border-strong bg-card px-3 text-left text-sm text-foreground transition-colors duration-150 focus:border-brand disabled:opacity-50 sm:h-10"
       >
         <span className={selected ? "text-foreground" : "text-faint"}>{selected ? selected.label : placeholder}</span>
         <svg
@@ -121,7 +121,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="1.46"
         >
           <path d="M5 8l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -151,7 +151,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
               >
                 <span className="truncate">{opt.label}</span>
                 {isSelected && (
-                  <svg className="h-4 w-4 flex-shrink-0 text-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <svg className="h-4 w-4 flex-shrink-0 text-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.46">
                     <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}

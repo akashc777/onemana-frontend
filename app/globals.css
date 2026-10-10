@@ -148,6 +148,16 @@ h1 {
   font-weight: 500;
 }
 
+/* A heading set at a text size (a card's title, a group's label, a plan's
+   name) takes the text face at normal tracking. Inter Tight is drawn for 20 px
+   and up; at 14 px with the display tracking its words ran together: the
+   template pages read "Firstdraft", "Finaldelivery" and "Ataglance". The
+   size class decides it, so no call site has to remember font-sans. */
+:is(h1, h2, h3, h4):is(.text-body, .text-small, .text-caption, .text-base, .text-sm, .text-xs) {
+  font-family: var(--font-rupee), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: normal;
+}
+
 /* Paragraphs avoid a lone last word (Web Interface Guidelines, typography). */
 p, li, dd {
   text-wrap: pretty;
@@ -233,6 +243,30 @@ body {
 
   .link {
     @apply text-brand-ink underline decoration-brand-ink/40 underline-offset-4 transition-colors duration-150 hover:decoration-brand-ink;
+  }
+
+  /* A link or text button that stands on its own line, not inside a
+     sentence ("See every plan", "All posts", a founder's links), answers a
+     44 px tap on a phone. The hit area is drawn round the words rather than
+     added to the layout: as a 44 px box the link set its words 12 px off the
+     page's rhythm (157 px under the home page's last plan link where every
+     other section ends at 144). Lists that stack links (the footer, the
+     docs) make each row 44 px instead. A link in running text keeps its
+     line: WCAG's inline exception. */
+  .tap-target {
+    @apply relative inline-flex items-center;
+  }
+
+  @media not all and (min-width: 640px) {
+    .tap-target::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: max(100%, 2.75rem);
+      height: max(100%, 2.75rem);
+      transform: translate(-50%, -50%);
+    }
   }
 
   /* On a camp band the orange ink falls just under 4.5:1 on three of the six
@@ -480,6 +514,20 @@ body {
     font-weight: 500;
     line-height: 1.625rem;
     transition: color 120ms cubic-bezier(.2, .8, .2, 1), background-color 120ms cubic-bezier(.2, .8, .2, 1);
+  }
+  /* On a touch screen the button's hit area reaches 44 px; the 8 px around
+     it is the code block's own margin, so nothing else is under it. An
+     ::after's inset counts from inside the 1 px border, so it reaches 9 px:
+     at 8 the area was 42 px tall. */
+  @media (pointer: coarse) {
+    .reading .code-copy {
+      position: relative;
+    }
+    .reading .code-copy::after {
+      content: "";
+      position: absolute;
+      inset: calc(-0.5rem - 1px);
+    }
   }
   .reading .code-copy:hover {
     color: rgb(var(--foreground));

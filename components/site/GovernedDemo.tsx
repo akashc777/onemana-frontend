@@ -236,17 +236,18 @@ export const GovernedDemo: React.FC = () => {
                         if (step >= STEPS.length - 1) setStep(0)
                         setPlaying((p) => !p)
                     }}
-                    className="h-8 rounded-md border border-border-strong px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted"
+                    className="h-11 rounded-md border border-border-strong px-3 text-caption font-medium sm:h-8 text-foreground transition-colors duration-150 hover:bg-muted"
                 >
                     {playing ? "Pause" : step >= STEPS.length - 1 ? "Replay" : "Play"}
                 </button>
 
-                {/* Each step is a 24 px target (WCAG 2.2, target size) round
-                    the same 8 px dot: the dot is what is drawn, the square is
-                    what a finger hits. The dots sit a target apart, the least
-                    that keeps targets from overlapping, and -mx-2 keeps the
-                    first and last where they were beside the button and label. */}
-                <ol className="-mx-2 my-0 flex list-none flex-wrap items-center p-0">
+                {/* Each step is a 44 px target on a phone and 24 px from sm
+                    (WCAG 2.2, target size) round the same 8 px dot: the dot is
+                    what is drawn, the square is what a finger hits. The dots
+                    sit a target apart, the least that keeps targets from
+                    overlapping, and the negative margin keeps the first and
+                    last where they were beside the button and label. */}
+                <ol className="-mx-[1.125rem] my-0 flex list-none flex-wrap items-center p-0 sm:-mx-2">
                     {STEPS.map((s, i) => (
                         <li key={s.label}>
                             <button
@@ -257,7 +258,7 @@ export const GovernedDemo: React.FC = () => {
                                     setPlaying(false)
                                     setStep(i)
                                 }}
-                                className="group flex h-6 w-6 items-center justify-center rounded-full"
+                                className="group flex h-11 w-11 items-center justify-center rounded-full sm:h-6 sm:w-6"
                             >
                                 <span
                                     aria-hidden

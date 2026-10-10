@@ -12,7 +12,7 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
     {
       term: "Open source",
       detail: (
-        <a href={site.serverGithubUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-border-strong underline-offset-4 hover:text-foreground">
+        <a href={site.serverGithubUrl} target="_blank" rel="noopener noreferrer" className="tap-target underline decoration-border-strong underline-offset-4 hover:text-foreground">
           AGPL-3.0, on GitHub
         </a>
       ),

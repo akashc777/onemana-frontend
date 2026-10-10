@@ -7,7 +7,7 @@ import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { getPricing } from "@/lib/pricing";
 import { getReleaseFacts } from "@/lib/releases";
-import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/Section";
+import { Margin, MarginHeading, SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
@@ -62,9 +62,9 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. What it is, with the evidence beside it. */}
-      <section className="pt-14 sm:pt-20 lg:pt-24">
+      <section className={`pt-14 sm:pt-20 lg:pt-24 ${SECTION_END}`}>
         <div className="container-x">
-          <h1 className="max-w-[16ch] text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:max-w-[20ch] sm:text-[3.5rem] lg:max-w-none lg:text-display">
+          <h1 className="max-w-[16ch] text-display-sm text-foreground sm:max-w-[20ch] sm:text-display-md lg:max-w-none lg:text-display">
             Your team&apos;s chat, docs and calls, on a server you own.
           </h1>
 
@@ -89,7 +89,7 @@ export default async function HomePage() {
                 {/* Tertiary, and only a text link: for the visitor who came to
                     see what it costs. Without it the first way to pay was the
                     plan columns, about 5,000 px down. Level with the buttons. */}
-                <Link href="/pricing" className="link self-start text-small font-medium sm:inline-flex sm:min-h-11 sm:items-center">
+                <Link href="/pricing" className="link inline-flex min-h-11 items-center self-start text-small font-medium">
                   See pricing
                 </Link>
               </div>
@@ -208,7 +208,7 @@ export default async function HomePage() {
         />
         <PlanColumns pricing={pricing} />
         <p className="mt-6 text-small">
-          <Link href="/pricing" className="link">
+          <Link href="/pricing" className="link tap-target">
             Compare every plan, side by side
           </Link>
         </p>

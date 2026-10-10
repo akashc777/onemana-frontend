@@ -15,6 +15,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
 import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
@@ -166,10 +167,14 @@ export function BuyCheckout({
               `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.sentence ?? "We email you the moment it is live."}`
             : "A licence for your own server. Pay once, for any number of people."
         }
-        className="!pb-0"
       />
-      <section className="pb-16 sm:pb-20">
-        <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-y-4">
+      {/* Two rows on a wide screen: the plan, then "Try it before you pay"
+          under it, with the form beside both. The first row is the plan's
+          own height and the second takes what the form needs beyond it:
+          with two equal rows the form's height split between them, and on
+          Cloud "Try it before you pay" sat 146 px below the plan. */}
+      <section className={SECTION_END}>
+        <div className="container-x grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
           <aside className="lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
@@ -178,7 +183,7 @@ export function BuyCheckout({
                 type="button"
                 onClick={() => setPlan("lifetime")}
                 aria-pressed={!isCloud}
-                className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 font-medium transition-colors duration-150 sm:min-h-0 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {/* Below 380 px the two labels do not fit side by side, and one
                     wrapped while the other did not: the qualifier is then read
@@ -189,7 +194,7 @@ export function BuyCheckout({
                 type="button"
                 onClick={() => setPlan("cloud")}
                 aria-pressed={isCloud}
-                className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 font-medium transition-colors duration-150 sm:min-h-0 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>
               </button>
@@ -216,7 +221,7 @@ export function BuyCheckout({
             <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} mt-6 border-t border-border pt-6`}>
               <div className="flex items-baseline justify-between">
                 <span className="flex items-center gap-2 self-center font-medium text-foreground">
-                  {isCloud ? <CloudGlyph className="size-5 shrink-0 text-hue" /> : <KeyGlyph className="size-5 shrink-0 text-hue" />}
+                  {isCloud ? <CloudGlyph className="size-4 shrink-0 text-hue" /> : <KeyGlyph className="size-4 shrink-0 text-hue" />}
                   {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
                 </span>
                 {/* Rupees are the price: they are what is charged. The licence
@@ -248,20 +253,27 @@ export function BuyCheckout({
                 <div
                   role="radiogroup"
                   aria-label="Plan"
-                  className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2"}`}
+                  className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
                 >
-                  {choices.map((b) => (
-                    <button
-                      key={b}
-                      type="button"
-                      role="radio"
-                      aria-checked={choice === b}
-                      onClick={() => setBilling(b)}
-                      className={`rounded-sm px-3 py-1.5 font-medium transition-colors duration-150 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                    >
-                      {choiceLabel(b, pricing)}
-                    </button>
-                  ))}
+                  {/* Each choice is its name over what it adds, the three
+                      alike: as one line, "Team yearly · 2 months free"
+                      wrapped beside one-line neighbours. */}
+                  {choices.map((b) => {
+                    const [name, detail] = choiceLabel(b, pricing).split(" · ");
+                    return (
+                      <button
+                        key={b}
+                        type="button"
+                        role="radio"
+                        aria-checked={choice === b}
+                        onClick={() => setBilling(b)}
+                        className={`flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 transition-colors duration-150 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        <span className="font-medium">{name}</span>
+                        {detail && <span className="font-normal">{detail}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
               <ul className="mt-5 space-y-2.5 text-small text-foreground">
@@ -296,7 +308,7 @@ export function BuyCheckout({
                         role="radio"
                         aria-checked={edition === c.value}
                         onClick={() => setEdition(c.value)}
-                        className={`rounded-md border px-3.5 py-2.5 text-left transition-colors duration-150 ${edition === c.value ? "border-brand bg-brand-soft" : "border-border-strong bg-card hover:bg-muted"}`}
+                        className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left transition-colors duration-150 ${edition === c.value ? "border-brand bg-brand-soft" : "border-border-strong bg-card hover:bg-muted"}`}
                       >
                         <span className="block text-small font-medium text-foreground">{c.label}</span>
                         <span className="mt-0.5 block text-caption text-muted-foreground">{c.hint}</span>
@@ -353,7 +365,7 @@ export function BuyCheckout({
                 ? "Processing…"
                 : isCloud
                   ? // The chosen plan's own price: Business once read Team's here.
-                    `Subscribe - ${dual(price.usd, price.inr, price.per)}`
+                    `Subscribe for ${dual(price.usd, price.inr, price.per)}`
                   : pricing.charge_usd
                     ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
                     : `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}
@@ -424,7 +436,7 @@ export function BuyCheckout({
 }
 
 const inputCls =
-  "h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm";
+  "h-11 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:h-10 sm:text-sm";
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (

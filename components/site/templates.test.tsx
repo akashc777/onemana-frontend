@@ -68,3 +68,30 @@ describe("the gallery's rows", () => {
         })
     }
 })
+
+/**
+ * A template page's two ways in sit under the words they answer, as on every
+ * other page: inside the header, 32 px under the subtitle, full width on a
+ * phone. Outside it they sat 72 px down and, on a phone, at two different
+ * widths. A task's day and priority go under its name on a phone every time,
+ * not beside a short name and under a long one.
+ */
+describe("a template page's first screen", () => {
+    for (const [name, html] of [
+        ["the gallery", renderToString(<TemplatesPage />)],
+        ["a template", renderToString(<TemplateView t={templates[0]} />)],
+    ] as const) {
+        it(`${name} puts its buttons in the header, stacked full width on a phone`, () => {
+            const header = html.slice(0, html.indexOf("</section>"))
+            expect(header).toMatch(/<div class="mt-8 flex flex-col gap-3 sm:flex-row">/)
+            expect(header).toContain(">Start free, up to ")
+        })
+    }
+
+    it("stacks a task's day and priority under its name on a phone", () => {
+        const html = renderToString(<TemplateView t={templates[0]} />)
+        const heads = html.match(/<li class="rounded-lg border border-border p-4"><div class="([^"]*)"/g) ?? []
+        expect(heads.length).toBeGreaterThan(3)
+        for (const h of heads) expect(h).toContain("flex flex-col gap-y-1 sm:flex-row")
+    })
+})

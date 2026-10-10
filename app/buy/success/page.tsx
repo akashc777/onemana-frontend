@@ -96,7 +96,7 @@ function SuccessInner() {
             </Tile>
           </Celebration>
         )}
-        <h1 className="mt-5 text-balance text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+        <h1 className="mt-5 text-balance text-title-sm text-foreground sm:text-title">
           {title}
         </h1>
 
