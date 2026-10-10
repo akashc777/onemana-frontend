@@ -63,3 +63,36 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     "danger-ink": [255, 128, 134],
   },
 }
+
+/**
+ * The camp palette (the playful layer of 10 Oct 2026): six identity hues in
+ * three cuts, the design direction's table verbatim. globals.css writes them
+ * as sRGB triples so Tailwind can add alpha; the workspace writes the same
+ * table as hex in its globals.css and pins it in its app/sharedTokens.test.ts.
+ * Both tables are this one, and both tests compare exactly, with no rounding:
+ * a person's colour on this site is the colour they get in the app.
+ */
+export const CAMP: Record<"light" | "dark", Record<string, string>> = {
+  light: {
+    "camp-sun": "#B98200", "camp-sun-tint": "#FFF6D6", "camp-sun-ink": "#7A5200",
+    "camp-moss": "#2F9E5B", "camp-moss-tint": "#E6F6EC", "camp-moss-ink": "#1D6A3C",
+    "camp-lake": "#0E97A6", "camp-lake-tint": "#E1F5F6", "camp-lake-ink": "#0B5C65",
+    "camp-sky": "#3B7DDD", "camp-sky-tint": "#E7EFFC", "camp-sky-ink": "#1E4E9A",
+    "camp-dusk": "#7B61D9", "camp-dusk-tint": "#EFEBFC", "camp-dusk-ink": "#4B3699",
+    "camp-berry": "#D9467C", "camp-berry-tint": "#FCE8EF", "camp-berry-ink": "#962556",
+  },
+  dark: {
+    "camp-sun": "#F5C542", "camp-sun-tint": "#2E2712", "camp-sun-ink": "#FBE29C",
+    "camp-moss": "#4CC38A", "camp-moss-tint": "#14291F", "camp-moss-ink": "#A6E7C4",
+    "camp-lake": "#3CC6D2", "camp-lake-tint": "#10292F", "camp-lake-ink": "#A3E6EC",
+    "camp-sky": "#6EA4F5", "camp-sky-tint": "#152238", "camp-sky-ink": "#B9D3FB",
+    "camp-dusk": "#A795F5", "camp-dusk-tint": "#211B38", "camp-dusk-ink": "#D4CBFB",
+    "camp-berry": "#F07AA6", "camp-berry-tint": "#33161F", "camp-berry-ink": "#F9C2D6",
+  },
+}
+
+/** "#3B7DDD" as the triple globals.css writes, [59, 125, 221]. */
+export function hexToTriple(hex: string): [number, number, number] {
+  const n = parseInt(hex.replace("#", ""), 16)
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}

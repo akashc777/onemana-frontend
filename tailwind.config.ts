@@ -49,6 +49,25 @@ const config: Config = {
         warning: { DEFAULT: "rgb(var(--warning) / <alpha-value>)", ink: "rgb(var(--warning-ink) / <alpha-value>)" },
         danger: { DEFAULT: "rgb(var(--danger) / <alpha-value>)", ink: "rgb(var(--danger-ink) / <alpha-value>)" },
         info: { DEFAULT: "rgb(var(--info) / <alpha-value>)", ink: "rgb(var(--info-ink) / <alpha-value>)" },
+        // The camp palette, six identity hues in three cuts (globals.css):
+        // bg-camp-sky-tint, text-camp-sky-ink, fill-camp-sky and so on.
+        camp: Object.fromEntries(
+          ["sun", "moss", "lake", "sky", "dusk", "berry"].map((hue) => [
+            hue,
+            {
+              DEFAULT: `rgb(var(--camp-${hue}) / <alpha-value>)`,
+              tint: `rgb(var(--camp-${hue}-tint) / <alpha-value>)`,
+              ink: `rgb(var(--camp-${hue}-ink) / <alpha-value>)`,
+            },
+          ]),
+        ),
+        // The current hue, set by a hue-* class (globals.css): bg-hue-tint,
+        // text-hue-ink, fill-hue, stroke-hue.
+        hue: {
+          DEFAULT: "rgb(var(--hue) / <alpha-value>)",
+          tint: "rgb(var(--hue-tint) / <alpha-value>)",
+          ink: "rgb(var(--hue-ink) / <alpha-value>)",
+        },
         ink: "rgb(var(--foreground) / <alpha-value>)",
         canvas: {
           DEFAULT: "rgb(var(--background) / <alpha-value>)",

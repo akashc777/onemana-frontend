@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-import { SHARED } from "@/lib/palette"
+import { CAMP, SHARED, hexToTriple } from "@/lib/palette"
 
 function tokens(css: string, selector: string): Record<string, string> {
   const at = css.search(new RegExp(`^${selector.replace(".", "\\.")}\\s*\\{`, "m"))
@@ -18,6 +18,14 @@ describe("shared tokens", () => {
       const got = tokens(css, selector)
       for (const [name, rgb] of Object.entries(SHARED[theme])) {
         expect(got[name], `--${name}`).toBe(rgb.join(" "))
+      }
+    })
+
+    it(`${theme} camp palette is the workspace's, exactly`, () => {
+      const got = tokens(css, selector)
+      expect(Object.keys(CAMP[theme])).toHaveLength(18)
+      for (const [name, hex] of Object.entries(CAMP[theme])) {
+        expect(got[name], `--${name} (${hex})`).toBe(hexToTriple(hex).join(" "))
       }
     })
   }
