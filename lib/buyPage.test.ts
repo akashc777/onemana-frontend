@@ -145,3 +145,36 @@ describe("the buy page renders on the server", () => {
     expect(checkout).not.toContain("PlanComparison")
   })
 })
+
+/**
+ * A failed pricing refresh keeps the live prices the server drew.
+ *
+ * fetchPricingClient answers a failure with the built-in fallback, the very
+ * defaultPricing object. Before the page was drawn on the server that was
+ * also its starting point, so nothing changed; now the page starts from live
+ * prices, and a refresh that failed (a network error, the backend down)
+ * replaced them with the fallback's: the wrong dollar rate, and Cloud's
+ * yearly and Business choices gone.
+ */
+describe("a failed pricing refresh on /buy", () => {
+  it("is told apart by identity: the fallback object itself comes back", async () => {
+    const { fetchPricingClient, defaultPricing } = await import("@/lib/pricing")
+    const real = globalThis.fetch
+    try {
+      globalThis.fetch = (() => Promise.reject(new Error("offline"))) as typeof fetch
+      expect(await fetchPricingClient()).toBe(defaultPricing)
+      globalThis.fetch = (() => Promise.resolve(new Response("{}", { status: 503 }))) as typeof fetch
+      expect(await fetchPricingClient()).toBe(defaultPricing)
+      globalThis.fetch = (() => Promise.resolve(new Response(JSON.stringify({ data: { lifetime_inr: 1 } }), { status: 200 }))) as typeof fetch
+      expect(await fetchPricingClient()).not.toBe(defaultPricing)
+    } finally {
+      globalThis.fetch = real
+    }
+  })
+
+  it("leaves the server's prices in place", () => {
+    const checkout = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
+    expect(checkout).toContain("if (fresh !== defaultPricing) setPricing(fresh);")
+    expect(checkout).not.toContain("fetchPricingClient().then(setPricing)")
+  })
+})

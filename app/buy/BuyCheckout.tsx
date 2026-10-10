@@ -10,7 +10,7 @@ import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { fetchPricingClient, fmtUSD, fmtINR, dual, currencyNote, setupEstimateFor, usdEstimate, type Pricing } from "@/lib/pricing";
+import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, dual, currencyNote, setupEstimateFor, usdEstimate, type Pricing } from "@/lib/pricing";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -61,7 +61,12 @@ export function BuyCheckout({
   const [billing, setBilling] = useState<Billing>(initialBilling);
 
   useEffect(() => {
-    fetchPricingClient().then(setPricing);
+    // A refresh that fails hands back the built-in fallback (the same object,
+    // defaultPricing); the page already has the live prices from the server,
+    // so a failed refresh must not replace them with the fallback's.
+    fetchPricingClient().then((fresh) => {
+      if (fresh !== defaultPricing) setPricing(fresh);
+    });
   }, []);
 
   const [email, setEmail] = useState("");
