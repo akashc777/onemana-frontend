@@ -121,4 +121,15 @@ export const glyphs = {
       <path d="M4.5 12.25h7a2.75 2.75 0 0 0 .4-5.47A4 4 0 0 0 4.2 7.6a2.35 2.35 0 0 0 .3 4.65z" />
     </svg>
   ),
+  check: (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3.5 8.5l3 3 6-7" />
+    </svg>
+  ),
+  clock: (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="5.75" />
+      <path d="M8 5v3.25l2 1.25" />
+    </svg>
+  ),
 } as const;
