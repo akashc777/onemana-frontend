@@ -5,6 +5,7 @@ import { listPublishedDocs, groupDocs } from "@/lib/docs";
 import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
+import { DocsSearch } from "@/components/docs/DocsSearch";
 
 export const metadata: Metadata = {
   title: "Docs - install & run OneCamp",
@@ -42,7 +43,9 @@ export default async function DocsIndexPage() {
         title="Docs"
         subtitle="How to install OneCamp on your server, keep it running, and use what is in it."
         divider
-      />
+      >
+        {docs.length > 0 && <DocsSearch className="mt-8 max-w-md" />}
+      </PageHeader>
 
       {/* The index IS the navigation, so it has no sidebar repeating it. Each
           guide says what it is in its own words (its description in the CMS),

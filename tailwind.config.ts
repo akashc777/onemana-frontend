@@ -117,12 +117,18 @@ const config: Config = {
           "50%": { transform: "scale(1.06)" },
           "100%": { transform: "scale(1)" },
         },
+        // DESIGN.md, Motion: a popover arrives in 160 ms, opacity plus 4 px.
+        "popover-in": {
+          "0%": { opacity: "0", transform: "translateY(-4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
         "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",
         "icon-pop": "icon-pop 0.35s ease-out",
+        "popover-in": "popover-in 160ms cubic-bezier(.2,.8,.2,1) both",
       },
     },
   },
