@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { gallerySpans } from "@/components/site/gallery";
 import { landingMetadata } from "@/lib/landingMetadata";
 import { taskCount, templates, weeksLong } from "@/lib/templates";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -38,9 +39,9 @@ export default function TemplatesPage() {
               app (hueFor on its id), and the card lifts a pixel under the
               pointer because the whole card is the link. The focus ring is
               the site's own. */}
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {templates.map((t) => (
-              <li key={t.id}>
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-12">
+            {templates.map((t, i) => (
+              <li key={t.id} className={gallerySpans(templates.length)[i]}>
                 <Link
                   href={`/templates/${t.id}`}
                   className="group flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-px hover:border-border-strong hover:shadow-popover"

@@ -7,6 +7,7 @@ import { cloudBuyHref } from "@/lib/paymentTerms";
 import { PlanBenefit } from "@/components/site/PlanCard";
 import { PLAN_HUE } from "@/components/site/planHues";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { Section } from "@/components/ui/Section";
 import { FreeCommand, FreeEmailKey } from "./FreeInstall";
 
 /**
@@ -28,8 +29,9 @@ export default function FreePage() {
         <FreeCommand />
       </PageHeader>
 
-      <section className="pb-20 pt-14">
-        <div className="container-x grid gap-12 lg:grid-cols-2 lg:gap-16">
+      {/* What it takes and what you get, on the free plan's moss band. */}
+      <Section band={PLAN_HUE.free} spacing="compact" className="mt-14">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <h2 className="text-h3 text-foreground">What you need</h2>
             <ul className="mt-4 space-y-3 border-t border-border pt-4">
@@ -69,7 +71,7 @@ export default function FreePage() {
             </div>
           </div>
         </div>
-      </section>
+      </Section>
     </>
   );
 }

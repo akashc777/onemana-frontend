@@ -2,6 +2,7 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
 import TemplatesPage from "@/app/templates/page"
+import { gallerySpans } from "@/components/site/gallery"
 import { TemplateView } from "@/components/site/TemplateView"
 import { hueFor } from "@/lib/campHue"
 import { templates } from "@/lib/templates"
@@ -34,4 +35,36 @@ describe("a template's page", () => {
         expect(html).toMatch(/>Week (<!-- -->)?1</)
         expect(html).not.toMatch(/uppercase/)
     })
+})
+
+
+/**
+ * Every row of the gallery is full. Seven templates in rows of three left one
+ * card alone in the last row; the spans now make 3 + 4 on a wide screen and a
+ * wide first card in two columns, for any count.
+ */
+describe("the gallery's rows", () => {
+    // Auto-placement: a card that does not fit the rest of a row starts a new one.
+    function rows(spans: number[], cols: number): number[] {
+        const out: number[] = []
+        let used = 0
+        for (const s of spans) {
+            if (used + s > cols) {
+                out.push(used)
+                used = 0
+            }
+            used += s
+        }
+        out.push(used)
+        return out
+    }
+    const span = (cls: string, prefix: string, fallback: number) => Number(cls.match(new RegExp(`${prefix}:col-span-(\\d+)`))?.[1] ?? fallback)
+
+    for (let n = 2; n <= 10; n++) {
+        it(`fills every row with ${n} templates`, () => {
+            const spans = gallerySpans(n)
+            expect(rows(spans.map((c) => span(c, "lg", 4)), 12).every((r) => r === 12)).toBe(true)
+            expect(rows(spans.map((c) => span(c, "sm", 1)), 2).every((r) => r === 2)).toBe(true)
+        })
+    }
 })
