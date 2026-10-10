@@ -1,10 +1,22 @@
 // Kept in step with site.demoUrl (lib/site.ts), which this file cannot import.
 const demoUrl = (process.env.NEXT_PUBLIC_DEMO_URL || "https://onecamp.onemana.dev").replace(/\/$/, "");
+// And with site.backendUrl: blog covers are served from its media endpoint.
+const backend = new URL((process.env.NEXT_PUBLIC_BACKEND_URL || "https://backend.onemana.dev").replace(/\/$/, ""));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
+    // Blog covers go through next/image, so a phone downloads a resized WebP
+    // instead of the original (lib/blog.ts coverOptimizable names the same
+    // two places). Media URLs never change, so a resized copy is kept a month.
+    images: {
+        remotePatterns: [
+            { protocol: backend.protocol.replace(":", ""), hostname: backend.hostname, port: backend.port, pathname: "/onecamp/blog/media/**" },
+            { protocol: "https", hostname: "raw.githubusercontent.com", port: "", pathname: "/akashc777/akashc777.github.io/**" },
+        ],
+        minimumCacheTTL: 2678400,
+    },
     // Addresses people type or search engines guess. /pricing is a page of its
     // own since 10 Oct 2026, so it no longer redirects to the home page.
     async redirects() {

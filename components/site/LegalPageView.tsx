@@ -1,26 +1,52 @@
+import { notFound } from "next/navigation";
 import { legalPages } from "@/lib/legalPages";
+import { enhanceArticle, TOC_MIN_HEADINGS } from "@/lib/article";
+import { formatDay } from "@/lib/format";
+import { Prose } from "@/components/reading/Prose";
+import { OnThisPage } from "@/components/reading/OnThisPage";
+import { OnThisPageDisclosure } from "@/components/reading/OnThisPageDisclosure";
 
+/**
+ * A legal page, read the way every long page is (components/reading): the
+ * title, the date it last changed, and the text at the reading measure. Its
+ * sections can be linked to (/privacy-policy#your-rights) and, on a page with
+ * several, are listed beside it on a wide screen and above it on a narrow one.
+ */
 export function LegalPageView({ slug }: { slug: string }) {
   const page = legalPages[slug];
-  if (!page) {
-    return <div className="container-x py-20 text-center text-muted-foreground">Page not found.</div>;
-  }
+  if (!page) notFound();
+  const { html, headings } = enhanceArticle(page.bodyHtml);
+  const toc = headings.length >= TOC_MIN_HEADINGS ? headings : [];
+
   return (
-    <article className="container-x max-w-[46rem] pb-24 pt-12 sm:pt-20">
-      <h1 className="text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{page.title}</h1>
-      {page.subtitle && <p className="mt-4 text-body-lg text-muted-foreground">{page.subtitle}</p>}
-      <div className="section-divider mt-8" role="separator" aria-hidden />
-      <div
-        className="prose mt-8 max-w-none
-          prose-headings:text-foreground prose-strong:text-foreground
-          prose-li:marker:text-muted-foreground"
-        dangerouslySetInnerHTML={{ __html: page.bodyHtml }}
-      />
-      {page.note && (
-        <div className="mt-10 rounded-lg bg-muted p-5 text-small text-muted-foreground">
-          <span dangerouslySetInnerHTML={{ __html: page.note }} />
-        </div>
-      )}
-    </article>
+    <div className="container-x pb-24 pt-10 sm:pt-16 lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:gap-x-16">
+      <article className="min-w-0">
+        <header>
+          <h1 className="text-balance text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+            {page.title}
+          </h1>
+          {page.subtitle && <p className="mt-3 text-body-lg text-muted-foreground">{page.subtitle}</p>}
+          <p className="mt-4 text-caption text-muted-foreground">
+            Last updated <time dateTime={page.updated}>{formatDay(page.updated)}</time>
+          </p>
+        </header>
+
+        {toc.length ? <OnThisPageDisclosure headings={toc} className="mt-6 lg:hidden" /> : null}
+
+        <Prose html={html} kind="legal" className="mt-8" />
+
+        {page.note && (
+          <p className="mt-10 border-t border-border pt-6 text-small text-muted-foreground" dangerouslySetInnerHTML={{ __html: page.note }} />
+        )}
+      </article>
+
+      {toc.length ? (
+        <aside className="hidden lg:block">
+          <div className="sticky top-[5.5rem] max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-contain pb-10 pt-1.5">
+            <OnThisPage headings={toc} />
+          </div>
+        </aside>
+      ) : null}
+    </div>
   );
 }

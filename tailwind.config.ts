@@ -123,6 +123,19 @@ const config: Config = {
         spring: "cubic-bezier(0.3,1.35,0.5,1)",
       },
       keyframes: {
+        // DESIGN.md, Motion: a popover arrives in 160 ms, opacity plus 4 px.
+        "popover-in": {
+          "0%": { opacity: "0", transform: "translateY(-4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        // A celebration's sparks leave the element they celebrate (the
+        // playful layer: 300 to 500 ms, never on routine actions). Each spark
+        // sets --spark-x and --spark-y, the way back to the element's centre.
+        "spark-out": {
+          "0%": { opacity: "0", transform: "translate(var(--spark-x), var(--spark-y)) scale(0.3)" },
+          "40%": { opacity: "1" },
+          "100%": { opacity: "1", transform: "translate(0, 0) scale(1)" },
+        },
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
@@ -147,6 +160,8 @@ const config: Config = {
         },
       },
       animation: {
+        "popover-in": "popover-in 160ms cubic-bezier(.2,.8,.2,1) both",
+        "spark-out": "spark-out 460ms cubic-bezier(0.3,1.35,0.5,1) both",
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
         "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",

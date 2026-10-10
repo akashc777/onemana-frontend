@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDoc, listPublishedDocs, groupDocs } from "@/lib/docs";
+import { getDoc, listPublishedDocs, groupDocs, docNeighbours } from "@/lib/docs";
 import { renderMarkdown } from "@/lib/markdown";
+import { enhanceArticle, TOC_MIN_HEADINGS } from "@/lib/article";
 import { jsonLdScript } from "@/lib/jsonLd";
+import { formatDay } from "@/lib/format";
 import { site } from "@/lib/site";
-import { DocsShell } from "@/components/docs/DocsShell";
+import { DocsPager, DocsShell } from "@/components/docs/DocsShell";
+import { Prose } from "@/components/reading/Prose";
+import { OnThisPage } from "@/components/reading/OnThisPage";
+import { OnThisPageDisclosure } from "@/components/reading/OnThisPageDisclosure";
 
 export const revalidate = 120;
 
@@ -38,7 +44,10 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
   if (!doc) notFound();
 
   const groups = groupDocs(all);
-  const html = renderMarkdown(doc.content);
+  const { html, headings } = enhanceArticle(renderMarkdown(doc.content));
+  const toc = headings.length >= TOC_MIN_HEADINGS ? headings : [];
+  const { prev, next } = docNeighbours(groups, doc.slug);
+  const updated = doc.updated_at || doc.published_at || doc.created_at;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -53,26 +62,46 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
 
   return (
     <>
-      <section className="pt-12 sm:pt-16">
-        <div className="container-x">
-          {doc.category && <p className="eyebrow !mb-2">{doc.category}</p>}
-          <h1 className="max-w-3xl text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{doc.title}</h1>
-        </div>
-      </section>
-
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
-      <DocsShell groups={groups} activeSlug={doc.slug}>
-        <div
-          className="prose max-w-[46rem] sm:prose-lg
-            prose-headings:scroll-mt-24 prose-headings:text-foreground
-            prose-strong:text-foreground
-            prose-pre:rounded-lg prose-pre:border prose-pre:border-border prose-pre:bg-muted
-            prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-muted-foreground
-            prose-img:rounded-lg prose-img:border prose-img:border-border
-            prose-th:text-foreground"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+      <DocsShell groups={groups} activeSlug={doc.slug} aside={toc.length ? <OnThisPage headings={toc} /> : null}>
+        <header className="max-w-[36rem]">
+          <nav aria-label="Breadcrumb" className="text-caption text-muted-foreground">
+            <Link href="/docs" className="transition-colors duration-150 hover:text-foreground">
+              Docs
+            </Link>
+            {doc.category.trim() && (
+              <>
+                <span aria-hidden className="mx-1.5 text-faint">
+                  /
+                </span>
+                <span>{doc.category.trim()}</span>
+              </>
+            )}
+          </nav>
+          <h1 className="mt-3 text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
+            {doc.title}
+          </h1>
+          {updated && (
+            <p className="mt-3 text-caption text-muted-foreground">
+              Updated <time dateTime={updated}>{formatDay(updated)}</time>
+            </p>
+          )}
+        </header>
+
+        {toc.length ? <OnThisPageDisclosure headings={toc} className="mt-6 max-w-[36rem] xl:hidden" /> : null}
+
+        <Prose html={html} kind="docs" className="mt-8" />
+
+        <DocsPager prev={prev} next={next} />
+
+        <p className="mt-10 max-w-[36rem] text-small text-muted-foreground">
+          Something missing or wrong in this guide? Write to{" "}
+          <a href="mailto:support@onemana.dev" className="link">
+            support@onemana.dev
+          </a>
+          .
+        </p>
       </DocsShell>
     </>
   );

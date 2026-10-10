@@ -1,6 +1,6 @@
 "use client";
 
-import type { InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 import { onlyCode } from "@/lib/oneTimeCode";
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | "maxLength"> & {
@@ -9,10 +9,12 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | 
 };
 
 /** A field for an emailed six-digit code. Takes a paste however it was copied
- *  (see onlyCode), and offers the code to the phone's keyboard and autofill. */
-export default function CodeInput({ value, onChange, ...rest }: Props) {
+ *  (see onlyCode), and offers the code to the phone's keyboard and autofill.
+ *  Takes a ref, so the sign-in can put the cursor in it. */
+const CodeInput = forwardRef<HTMLInputElement, Props>(function CodeInput({ value, onChange, ...rest }, ref) {
   return (
     <input
+      ref={ref}
       inputMode="numeric"
       autoComplete="one-time-code"
       {...rest}
@@ -20,4 +22,6 @@ export default function CodeInput({ value, onChange, ...rest }: Props) {
       onChange={(e) => onChange(onlyCode(e.target.value))}
     />
   );
-}
+});
+
+export default CodeInput;

@@ -19,8 +19,9 @@ describe("backupLine", () => {
   });
 
   it("dates the off-site copy once there is one", () => {
-    const line = backupLine(true, true, "2026-09-22T04:10:00Z");
-    expect(line).toMatch(/off-site copy from Sep 2[12]/);
-    expect(line).toContain("30 kept");
+    const line = backupLine(true, true, "2026-10-08T04:10:00Z");
+    expect(line).toContain("off-site copy from 8 Oct, 30 kept");
+    // The space before the dot does not break, so no line starts with one.
+    expect(line).not.toContain(" ·");
   });
 });

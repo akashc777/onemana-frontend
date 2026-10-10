@@ -59,8 +59,8 @@ export default async function BlogIndexPage() {
                   {month}
                 </h2>
                 <ul className="lg:col-span-9">
-                  {items.map((p) => (
-                    <PostCard key={p.id} post={p} compact={posts.indexOf(p) >= FEATURED} />
+                  {items.map(({ post, index }) => (
+                    <PostCard key={post.id} post={post} compact={index >= FEATURED} />
                   ))}
                 </ul>
               </section>
@@ -74,14 +74,20 @@ export default async function BlogIndexPage() {
 
 type Post = Awaited<ReturnType<typeof listPublishedPosts>>[number];
 
-/** Posts grouped by the month they were published, newest first, keeping the API's order inside a month. */
-function byMonth(posts: Post[]): [string, Post[]][] {
+/**
+ * Posts grouped by the month they were published, newest first, keeping the
+ * API's order inside a month, each with its place in the whole list (the
+ * newest few show their excerpt). One pass: it was indexOf per post.
+ */
+function byMonth(posts: Post[]): [string, { post: Post; index: number }[]][] {
   const fmt = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
-  const groups = new Map<string, Post[]>();
-  for (const p of posts) {
-    const d = p.published_at ? new Date(p.published_at) : null;
+  const groups = new Map<string, { post: Post; index: number }[]>();
+  posts.forEach((post, index) => {
+    const d = post.published_at ? new Date(post.published_at) : null;
     const key = d && !Number.isNaN(d.getTime()) ? fmt.format(d) : "Undated";
-    groups.set(key, [...(groups.get(key) ?? []), p]);
-  }
+    const list = groups.get(key);
+    if (list) list.push({ post, index });
+    else groups.set(key, [{ post, index }]);
+  });
   return [...groups.entries()];
 }

@@ -8,6 +8,27 @@ import { paymentTerms, storageOffered } from "@/lib/paymentTerms";
 import { storageLine } from "@/lib/storageLine";
 import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
 
+let pricingRequest: Promise<Pricing> | null = null;
+let knownPricing: Pricing | null = null;
+
+/**
+ * Starts the price read before the card is drawn. The account page calls it
+ * beside its own reads, so the offer arrives with the card; asked for only
+ * once the card was up, it landed a moment later and pushed the licences
+ * below it off the screen. A read that brings no offer (none set up, or the
+ * request failed) is asked again next time rather than kept.
+ */
+export function preloadStoragePricing(): Promise<Pricing> {
+  if (!pricingRequest) {
+    pricingRequest = fetchPricingClient().then((p) => {
+      if (storageOffered(p)) knownPricing = p;
+      else pricingRequest = null;
+      return p;
+    });
+  }
+  return pricingRequest;
+}
+
 /**
  * Extra storage on the workspace card: what the workspace has, or the offer.
  *
@@ -18,23 +39,23 @@ import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
  * the charge is what the backend acts on.
  */
 export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
-  const [pricing, setPricing] = useState<Pricing>(defaultPricing);
+  const [pricing, setPricing] = useState<Pricing>(() => knownPricing ?? defaultPricing);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [paid, setPaid] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    fetchPricingClient().then((p) => { if (alive) setPricing(p); }).catch(() => {});
+    preloadStoragePricing().then((p) => { if (alive) setPricing(p); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 
   const line = storageLine(inst.storage_addon_state, inst.storage_addon_gb, inst.storage_used_gb);
-  if (line) return <p className="text-sm text-muted-foreground">{line}</p>;
+  if (line) return <p className="text-small text-muted-foreground">{line}</p>;
   if (inst.state !== "live" || !storageOffered(pricing)) return null;
   if (paid) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="text-small text-muted-foreground">
         Thank you. Your {pricing.storage_addon_gb} GB is paid for; this card will say so as soon as the payment is confirmed, usually within a minute.
       </p>
     );
@@ -65,24 +86,28 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
   };
 
   return (
-    <div className="rounded-lg border border-border bg-muted/30 p-4">
+    <div className="rounded-lg border border-border bg-muted p-4">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <p className="text-sm text-foreground">
+      <p className="text-small text-foreground">
         Need more room for files and recordings? Add <strong>{pricing.storage_addon_gb} GB</strong> for{" "}
         <strong>{dual(pricing.storage_addon_usd, pricing.storage_addon_inr)} a month</strong>.
       </p>
-      <p className="mt-1 text-xs text-muted-foreground">{paymentTerms("addon")}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{currencyNote(pricing)}</p>
+      <p className="mt-1 text-caption text-muted-foreground">{paymentTerms("addon")}</p>
+      <p className="mt-1 text-caption text-muted-foreground">{currencyNote(pricing)}</p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => void buy()}
           disabled={busy}
-          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground disabled:opacity-60"
+          className="btn-brand h-9 px-3.5 py-0"
         >
           {busy ? "Opening checkout…" : `Add ${pricing.storage_addon_gb} GB`}
         </button>
-        {err && <span className="text-sm text-destructive">{err}</span>}
+        {err && (
+          <span role="alert" className="text-small text-danger-ink">
+            {err}
+          </span>
+        )}
       </div>
     </div>
   );

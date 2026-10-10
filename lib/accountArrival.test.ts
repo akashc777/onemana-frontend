@@ -18,7 +18,7 @@ describe("the account page after a purchase", () => {
 
   it("tells the workspace section about the subscriptions, so it can say one is coming", () => {
     const dashboard = readFileSync("components/account/AccountDashboard.tsx", "utf8")
-    expect(dashboard).toContain("<WorkspaceSection onReload={onReload} subscriptions={overview.subscriptions} />")
+    expect(dashboard).toContain("<WorkspaceSection onReload={onReload} subscriptions={overview.subscriptions} initial={instances} />")
     const section = readFileSync("components/account/WorkspaceSection.tsx", "utf8")
     expect(section).toContain("paidWithoutWorkspace(subscriptions, instances.length)")
     expect(section).toContain("usePoll((instances ?? []).some((i) => i.working) || onItsWay, POLL_MS, load)")

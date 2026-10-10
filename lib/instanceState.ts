@@ -45,6 +45,25 @@ export function stateBadgeClass(state: string): string {
   return CLASSES[stateTone(state)];
 }
 
+/** A subscription's status as the same tones (Razorpay's names), for the dot beside its word. */
+const SUBSCRIPTION_TONES: Record<string, StateTone> = {
+  active: "good",
+  paid: "good",
+  authenticated: "working",
+  created: "working",
+  paused: "waiting",
+  pending: "waiting",
+  halted: "waiting",
+  cancelled: "bad",
+  failed: "bad",
+  completed: "done",
+  expired: "done",
+};
+
+export function subscriptionTone(status: string): StateTone {
+  return SUBSCRIPTION_TONES[status] ?? "done";
+}
+
 /** States where something is actively happening, so a view should keep polling. */
 export function isWorkingState(state: string): boolean {
   return stateTone(state) === "working";

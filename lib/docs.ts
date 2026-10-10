@@ -76,3 +76,11 @@ export function groupDocs(docs: DocPage[]): DocNavGroup[] {
   }
   return order.map((key) => ({ category: labels.get(key)!, items: map.get(key)! }));
 }
+
+/** The guides either side of one, in the order the sidebar lists them. */
+export function docNeighbours(groups: DocNavGroup[], slug: string): { prev?: DocNavItem; next?: DocNavItem } {
+  const order = groups.flatMap((g) => g.items);
+  const at = order.findIndex((d) => d.slug === slug);
+  if (at < 0) return {};
+  return { prev: order[at - 1], next: order[at + 1] };
+}

@@ -6,6 +6,13 @@ export const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  // next/font's own fallback is a copy of Arial sized to match, which Android
+  // and most Linux machines cannot load. With nothing after it, text set by
+  // this class (the <body>) fell to the browser's serif until Inter arrived,
+  // then jumped. Written out, as next/font reads only literals. Inter Tight
+  // and JetBrains Mono are used only through their variables, which every
+  // stack follows with these same families.
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
 });
 
 /**

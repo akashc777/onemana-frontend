@@ -36,10 +36,24 @@ async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: b
   return (data as { data: T }).data;
 }
 
-/** Published posts for the public blog index (content omitted by the API).
- *  Always fetched fresh so newly published posts appear immediately. */
-export async function listPublishedPosts(): Promise<BlogPost[]> {
-  return (await getJSON<BlogPost[] | null>("/onecamp/blog", { noStore: true })) ?? [];
+/** Published posts (content omitted by the API), newest first.
+ *
+ *  Fresh by default, for the blog index, which renders on each request so a
+ *  post appears the moment it is published. `cached` reads it as a page that
+ *  regenerates on a timer must (a post's "more from the blog"): a no-store
+ *  read there makes Next throw DYNAMIC_SERVER_USAGE (lib/docsRendering.test.ts). */
+export async function listPublishedPosts(opts: { cached?: boolean } = {}): Promise<BlogPost[]> {
+  return (await getJSON<BlogPost[] | null>("/onecamp/blog", opts.cached ? { revalidate: 120 } : { noStore: true })) ?? [];
+}
+
+/**
+ * Whether a cover can go through next/image, which resizes it for the screen
+ * (a phone gets a few dozen kilobytes instead of the 180 KB original). Only
+ * the hosts next.config.mjs allows: the backend's media and the Jekyll repo
+ * older posts were imported from. Anything else is shown as it is.
+ */
+export function coverOptimizable(src: string): boolean {
+  return src.startsWith(`${site.backendUrl}/onecamp/blog/media/`) || src.startsWith("https://raw.githubusercontent.com/akashc777/akashc777.github.io/");
 }
 
 /** A single published post by slug. Returns null on 404. */

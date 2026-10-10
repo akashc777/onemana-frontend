@@ -1,16 +1,39 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { portalApi, PortalAuthError, type PortalOverview } from "@/lib/portalApi";
+import { portalApi, PortalAuthError, type PortalInstance, type PortalOverview } from "@/lib/portalApi";
 import { AccountLogin } from "@/components/account/AccountLogin";
 import { AccountDashboard } from "@/components/account/AccountDashboard";
+import { preloadStoragePricing } from "@/components/account/StorageAddon";
 import { readPurchase } from "@/lib/purchaseHandoff";
 
 type State =
   | { phase: "loading" }
   | { phase: "signedOut" }
-  | { phase: "signedIn"; overview: PortalOverview }
+  | { phase: "signedIn"; overview: PortalOverview; instances: PortalInstance[] | null }
   | { phase: "error"; message: string };
+
+/**
+ * While the session is checked: the page's frame, as tall as the window, so
+ * the footer is out of sight and nothing on screen moves when the account
+ * (or the sign-in form) takes its place. It said "Loading…" in a 70vh box,
+ * and the dashboard that replaced it pushed the footer and every section
+ * below it down: a layout shift of 0.47 on a phone.
+ */
+function Waiting() {
+  return (
+    <div role="status" aria-label="Checking your sign-in…" className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-14">
+      <div className="h-9 w-48 rounded-md bg-muted sm:h-10" />
+      <div className="mt-3 h-4 w-64 max-w-full rounded bg-muted" />
+      <div className="mt-10 h-px bg-border" />
+      <div className="mt-10 grid gap-3 sm:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="h-36 rounded-lg bg-muted" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function AccountPage() {
   const [state, setState] = useState<State>({ phase: "loading" });
@@ -19,10 +42,16 @@ export default function AccountPage() {
   const [linkNotice, setLinkNotice] = useState("");
 
   const load = useCallback(async () => {
-    setState({ phase: "loading" });
+    // The overview and the workspaces in parallel, so the account arrives in
+    // one piece: the workspace card used to load after the page had drawn,
+    // and moved everything under it. A workspace read that fails is left to
+    // the card, which asks again and says so. The storage offer's price is
+    // read alongside for the same reason.
+    const instances = portalApi.instances().catch(() => null);
+    preloadStoragePricing().catch(() => {});
     try {
       const overview = await portalApi.me();
-      setState({ phase: "signedIn", overview });
+      setState({ phase: "signedIn", overview, instances: await instances });
     } catch (err) {
       if (err instanceof PortalAuthError) {
         setState({ phase: "signedOut" });
@@ -57,16 +86,26 @@ export default function AccountPage() {
     setState({ phase: "signedOut" });
   }
 
-  if (state.phase === "loading") {
-    return <div className="grid min-h-[70vh] place-items-center text-sm text-muted-foreground">Loading…</div>;
-  }
+  if (state.phase === "loading") return <Waiting />;
 
   if (state.phase === "error") {
     return (
-      <div className="grid min-h-[70vh] place-items-center px-5 text-center text-sm">
-        <div>
-          <p className="text-danger-ink">{state.message}</p>
-          <button onClick={load} className="btn-ghost mt-3 px-4 py-2 text-xs">Retry</button>
+      <div className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-14">
+        <div role="alert" className="max-w-md">
+          <h1 className="text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground">Your account did not load</h1>
+          <p className="mt-3 text-body text-muted-foreground">{state.message}</p>
+          <p className="mt-1 text-small text-muted-foreground">
+            Nothing in your account has changed. If it keeps happening, write to support@onemana.dev.
+          </p>
+          <button
+            onClick={() => {
+              setState({ phase: "loading" });
+              load();
+            }}
+            className="btn-ghost mt-6 h-10 px-4 py-0"
+          >
+            Try again
+          </button>
         </div>
       </div>
     );
@@ -85,5 +124,5 @@ export default function AccountPage() {
     );
   }
 
-  return <AccountDashboard overview={state.overview} onLogout={logout} onReload={load} />;
+  return <AccountDashboard overview={state.overview} instances={state.instances} onLogout={logout} onReload={load} />;
 }

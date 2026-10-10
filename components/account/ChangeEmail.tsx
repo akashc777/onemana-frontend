@@ -55,17 +55,17 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="text-xs font-medium text-brand-ink hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className="text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] transition-colors duration-150 hover:decoration-brand-ink">
         Change email
       </button>
     );
   }
 
   return (
-    <div className="mt-2 space-y-2 rounded-lg border border-border bg-background p-3">
+    <div className="mt-3 space-y-2.5 rounded-lg border border-border bg-muted p-3 sm:p-4">
       {!sent ? (
         <>
-          <label htmlFor="new-email" className="block text-xs text-muted-foreground">
+          <label htmlFor="new-email" className="block text-caption text-muted-foreground">
             New email for this account (now {current})
           </label>
           <div className="flex flex-wrap gap-2">
@@ -75,17 +75,18 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className="h-9 min-w-0 flex-1 rounded-md border border-border-strong bg-card px-3 text-base text-foreground placeholder:text-faint sm:text-small"
               placeholder="billing@yourcompany.com"
+              spellCheck={false}
             />
-            <button type="button" onClick={send} disabled={busy || !email.trim()} className="btn-primary px-3 py-2 text-sm disabled:opacity-50">
+            <button type="button" onClick={send} disabled={busy || !email.trim()} className="btn-primary h-9 px-3.5 py-0 disabled:opacity-50">
               {busy ? "Sending…" : "Send code"}
             </button>
           </div>
         </>
       ) : (
         <>
-          <label htmlFor="change-code" className="block text-xs text-muted-foreground">
+          <label htmlFor="change-code" className="block text-caption text-muted-foreground">
             Enter the 6-digit code we sent to {email.trim()}. Your workspaces move to the new address too.
           </label>
           <div className="flex flex-wrap gap-2">
@@ -93,17 +94,21 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
               id="change-code"
               value={code}
               onChange={setCode}
-              className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm tracking-widest"
+              className="h-9 w-32 rounded-md border border-border-strong bg-card px-3 font-mono text-base tracking-widest text-foreground sm:text-small"
               placeholder="000000"
             />
-            <button type="button" onClick={confirm} disabled={busy || code.length !== CODE_LENGTH} className="btn-primary px-3 py-2 text-sm disabled:opacity-50">
+            <button type="button" onClick={confirm} disabled={busy || code.length !== CODE_LENGTH} className="btn-primary h-9 px-3.5 py-0 disabled:opacity-50">
               {busy ? "Checking…" : "Confirm"}
             </button>
           </div>
         </>
       )}
-      {error && <p className="text-xs text-danger-ink">{error}</p>}
-      <button type="button" onClick={reset} className="text-xs text-muted-foreground hover:text-foreground">
+      {error && (
+        <p role="alert" className="text-caption text-danger-ink">
+          {error}
+        </p>
+      )}
+      <button type="button" onClick={reset} className="text-caption text-muted-foreground transition-colors duration-150 hover:text-foreground">
         Cancel
       </button>
     </div>
