@@ -34,9 +34,8 @@ export function Nav() {
 
         <div className="hidden items-center gap-1 lg:flex">
           <ThemeToggle />
-          <Link href="/account" className="rounded-md px-2.5 py-1.5 text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
-            Sign in
-          </Link>
+          {/* Marked as the page you are on, on /account, as it is in the phone menu. */}
+          <NavLink href="/account">Sign in</NavLink>
           <a
             href={site.demoStartUrl}
             target="_blank"
