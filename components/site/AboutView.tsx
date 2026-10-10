@@ -68,7 +68,8 @@ export function AboutView() {
         divider
       />
 
-      <div className={`container-x pt-12 ${SECTION_END}`}>
+      {/* 40 px under the header's rule, as under each row's. */}
+      <div className={`container-x pt-10 ${SECTION_END}`}>
         {SECTIONS.map((s) => (
           <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 lg:grid-cols-12 lg:gap-x-8">
             <h2 className="text-h3 text-foreground lg:col-span-4">{s.title}</h2>

@@ -59,6 +59,14 @@ describe("the section rhythm", () => {
     expect(offenders).toEqual([])
   })
 
+  it("/about's rows sit 40 px from every hairline, the header's included", () => {
+    // The first row was 48 px under the header's rule, each later row 40
+    // under its own, and the docs index 40 under its header's.
+    const src = readFileSync(join(ROOT, "components/site/AboutView.tsx"), "utf8")
+    expect(src).toContain("className={`container-x pt-10 ${SECTION_END}`}")
+    expect(src).toMatch(/border-b border-border py-10 first:pt-0/)
+  })
+
   it("a band keeps the section's padding", () => {
     for (const file of PAGES) {
       const src = readFileSync(join(ROOT, file), "utf8")
