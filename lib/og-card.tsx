@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { site } from "@/lib/site";
+import { APP } from "@/lib/appSystem";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -54,22 +55,17 @@ export const OG = {
   },
 } as const;
 
-/** The logo: the white ring on the orange tile. The gradient is the brand mark's own. */
+/**
+ * The logo: the app's bare ring (lib/appSystem.ts APP.logo, from the app's
+ * public/logo.svg), at its proportions: outer edge 204 of 512, stroke 56.
+ */
 export function OgLogo({ size = 48 }: { size?: number }) {
-  const ring = Math.round(size * 0.59);
+  const { viewBox, r, stroke, colour } = APP.logo;
+  const k = size / viewBox;
+  const ring = Math.round((2 * r + stroke) * k);
   return (
-    <div
-      style={{
-        width: size,
-        height: size,
-        borderRadius: Math.round(size * 0.22),
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #FF8A00, #FF3D00)",
-      }}
-    >
-      <div style={{ width: ring, height: ring, borderRadius: 999, display: "flex", border: `${Math.round(size * 0.11)}px solid #FFFFFF` }} />
+    <div style={{ width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: ring, height: ring, borderRadius: 999, display: "flex", border: `${Math.round(stroke * k)}px solid ${colour}` }} />
     </div>
   );
 }

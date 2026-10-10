@@ -11,11 +11,11 @@ import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
  * what it is. Pass the name as children when it is a link, so the mark stays
  * outside the link.
  */
-export function ProductName({ name, children, markId }: { name: string; children?: ReactNode; markId?: string }) {
+export function ProductName({ name, children }: { name: string; children?: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2">
       {name === "OneCamp" ? (
-        <OneCampLogo className="size-4 shrink-0 rounded-[4px]" gradientId={markId ?? "ocLogoGradName"} />
+        <OneCampLogo className="size-4 shrink-0" />
       ) : (
         <IdentityMark id={name} hue={productHue(name)} variant="square" size={10} />
       )}

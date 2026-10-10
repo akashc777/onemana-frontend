@@ -14,7 +14,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 pb-14 pt-16 sm:grid-cols-4 lg:grid-cols-12 lg:gap-x-8">
           <div className="col-span-2 sm:col-span-4 lg:col-span-4 lg:pr-8">
             <Link href="/" className="flex w-fit min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-foreground sm:min-h-0">
-              <OneCampLogo className="h-6 w-6 rounded-md" gradientId="ocLogoGradFooter" />
+              <OneCampLogo className="h-6 w-6" />
               {site.name}
             </Link>
             <p className="mt-3 max-w-xs text-small text-muted-foreground">

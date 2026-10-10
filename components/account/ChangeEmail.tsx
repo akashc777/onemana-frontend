@@ -75,7 +75,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-9 min-w-0 flex-1 rounded-md border border-border-strong bg-card px-3 text-base text-foreground placeholder:text-faint sm:text-small"
+              className="ui-field min-w-0 flex-1"
               placeholder="billing@yourcompany.com"
               spellCheck={false}
             />
@@ -94,7 +94,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
               id="change-code"
               value={code}
               onChange={setCode}
-              className="h-9 w-32 rounded-md border border-border-strong bg-card px-3 font-mono text-base tracking-widest text-foreground sm:text-small"
+              className="ui-field w-32 font-mono tracking-widest"
               placeholder="000000"
             />
             <button type="button" onClick={confirm} disabled={busy || code.length !== CODE_LENGTH} className="btn-primary h-9 px-3.5 py-0 disabled:opacity-50">

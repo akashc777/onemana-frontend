@@ -14,6 +14,7 @@ import { subscriptionTone } from "@/lib/instanceState";
 import { WorkspaceSection } from "./WorkspaceSection";
 import { CopyField, StatusDot, SummaryTile, glyphs } from "./AccountParts";
 import { SpotWelcome } from "@/components/ui/graphics/spots";
+import { buttonClasses } from "@/components/ui/Button";
 
 type Tab = "overview" | "invoices" | "subscription" | "billing";
 
@@ -325,7 +326,7 @@ function InvoicesTab() {
     <button
       onClick={() => download(inv)}
       disabled={downloading === inv.id}
-      className="h-8 whitespace-nowrap rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60"
+      className={buttonClasses("ghost", "sm", "whitespace-nowrap")}
     >
       {downloading === inv.id ? "Downloading…" : "Download PDF"}
     </button>
@@ -502,7 +503,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
     );
 
   const secondary =
-    "h-9 rounded-md border border-border-strong bg-card px-3.5 text-small font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60";
+    buttonClasses("ghost", "md");
 
   return (
     <div className="space-y-4">

@@ -1,3 +1,4 @@
+import { APP } from "@/lib/appSystem";
 /**
  * Original, simplified brand-colored marks for the tools OneCamp replaces.
  * These are stylized approximations (not the official trademarked logos) drawn
@@ -73,21 +74,17 @@ export function OneCampMark({ className = "" }: { className?: string }) {
 }
 
 /**
- * OneCamp product logo: white ring on a warm orange gradient tile. Each place
- * it appears passes its own gradient id: the nav, the footer and a table can
- * all show it on one page, and ids must be unique there.
+ * OneCamp's mark: the app's own (public/logo.svg there), a bare ring in one
+ * literal orange that holds on both grounds. Its numbers are in the one
+ * table (lib/appSystem.ts, APP.logo), so the site and the app cannot draw two
+ * different marks.
  */
-export function OneCampLogo({ className = "", gradientId = "ocLogoGrad" }: { className?: string; gradientId?: string }) {
+export function OneCampLogo({ className = "" }: { className?: string }) {
+  const { viewBox, r, stroke, colour } = APP.logo;
+  const c = viewBox / 2;
   return (
-    <svg viewBox="0 0 512 512" className={className} fill="none" aria-hidden>
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#FF8A00" />
-          <stop offset="1" stopColor="#FF3D00" />
-        </linearGradient>
-      </defs>
-      <rect width="512" height="512" rx="112" fill={`url(#${gradientId})`} />
-      <circle cx="256" cy="256" r="150" stroke="#FFFFFF" strokeWidth="56" />
+    <svg viewBox={`0 0 ${viewBox} ${viewBox}`} className={className} fill="none" aria-hidden>
+      <circle cx={c} cy={c} r={r} stroke={colour} strokeWidth={stroke} />
     </svg>
   );
 }

@@ -1,5 +1,8 @@
 import type { Config } from "tailwindcss";
 
+import { APP } from "./lib/appSystem";
+import appSystem, { appTheme } from "./lib/tailwindAppSystem";
+
 const config: Config = {
   darkMode: "class",
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
@@ -91,58 +94,38 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       // The marketing scale (DESIGN.md, Type). Size / line height / tracking.
+      // Display sizes are larger than any the app has (a hero is a hero);
+      // above the app's largest title (36 px) they take its one tightening
+      // step, and at or under it the font's own spacing, as the app's do.
       // The display headline steps down on a tablet and a phone; a page's
       // title (h1) is "title" on a phone; a reading page's title (a guide, a
       // policy, the account) is title-sm on a phone and title from sm.
       fontSize: {
-        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: "-0.032em" }],
-        "display-md": ["3.5rem", { lineHeight: "3.6875rem", letterSpacing: "-0.03em" }],
-        "display-sm": ["2.75rem", { lineHeight: "2.875rem", letterSpacing: "-0.03em" }],
-        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: "-0.026em" }],
-        title: ["2.25rem", { lineHeight: "2.625rem", letterSpacing: "-0.024em" }],
-        "title-sm": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: "-0.022em" }],
-        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: "-0.016em" }],
-        h3: ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em" }],
+        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: APP.heading.tightStep }],
+        "display-md": ["3.5rem", { lineHeight: "3.6875rem", letterSpacing: APP.heading.tightStep }],
+        "display-sm": ["2.75rem", { lineHeight: "2.875rem", letterSpacing: APP.heading.tightStep }],
+        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: APP.heading.tightStep }],
+        title: ["2.25rem", { lineHeight: "2.625rem", letterSpacing: APP.heading.tracking }],
+        "title-sm": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: APP.heading.tracking }],
+        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: APP.heading.tracking }],
+        h3: appTheme.fontSize.h3,
         "body-lg": ["1.125rem", { lineHeight: "1.75rem" }],
         body: ["1rem", { lineHeight: "1.625rem" }],
-        small: ["0.875rem", { lineHeight: "1.25rem" }],
-        caption: ["0.8125rem", { lineHeight: "1.125rem" }],
+        small: appTheme.fontSize.small,
+        caption: appTheme.fontSize.caption,
       },
       maxWidth: {
         content: "1120px",
         prose: "720px",
       },
-      // Four radii. 4: chips, kbd, checkboxes. 6: buttons, inputs. 10: cards,
-      // popovers, menus. 14: dialogs and sheets. Full is for avatars and dots.
-      borderRadius: {
-        sm: "0.25rem",
-        DEFAULT: "0.375rem",
-        md: "0.375rem",
-        lg: "0.625rem",
-        xl: "0.625rem",
-        "2xl": "0.875rem",
-      },
-      // Shadows only for things that float. Cards, inputs and buttons have none:
-      // structure is a hairline.
-      boxShadow: {
-        sm: "none",
-        card: "none",
-        product: "none",
-        elevated: "0 4px 16px rgb(0 0 0 / 0.08)",
-        popover: "0 4px 16px rgb(0 0 0 / 0.08)",
-        dialog: "0 16px 48px rgb(0 0 0 / 0.16)",
-      },
-      // The app's house timing (MOTION in its globals.css): 120 ms for hover
-      // and press, so a bare transition-colors takes it as it does there.
-      transitionDuration: {
-        DEFAULT: "120ms",
-        120: "120ms",
-      },
-      transitionTimingFunction: {
-        DEFAULT: "cubic-bezier(0.2,0.8,0.2,1)",
-        // A knob that travels lands with a slight overshoot (ease-spring).
-        spring: "cubic-bezier(0.3,1.35,0.5,1)",
-      },
+      // The app's radii, shadows and timing, from the one table
+      // (lib/appSystem.ts, built by lib/tailwindAppSystem.ts). 4 chips, 6
+      // controls, 10 surfaces, 14 dialogs; shadows only for what floats;
+      // 120 ms on one curve, and the spring for a knob that travels.
+      borderRadius: appTheme.borderRadius,
+      boxShadow: appTheme.boxShadow,
+      transitionDuration: appTheme.transitionDuration,
+      transitionTimingFunction: appTheme.transitionTimingFunction,
       keyframes: {
         // DESIGN.md, Motion: a popover arrives in 160 ms, opacity plus 4 px.
         "popover-in": {
@@ -191,7 +174,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/typography"), appSystem],
 };
 
 export default config;

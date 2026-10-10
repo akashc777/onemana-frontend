@@ -63,7 +63,7 @@ export function CloudPlanCard({ pricing, aligned = false }: { pricing: Pricing; 
                 role="radio"
                 aria-checked={choice === b}
                 onClick={() => setChoice(b)}
-                className={`min-h-11 rounded-sm px-2 py-1.5 font-medium transition-colors sm:min-h-0 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-2 py-1.5 font-medium transition-colors sm:min-h-0 ${choice === b ? "bg-card text-foreground ring-1 ring-border" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {choiceLabel(b, pricing).split(" · ")[0]}
               </button>

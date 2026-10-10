@@ -68,7 +68,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     max={1000}
                     value={people}
                     onChange={(e) => setPeople(Number(e.target.value) || 1)}
-                    className="h-11 w-24 rounded-md border border-border-strong bg-card px-3 text-base tabular-nums focus:border-brand sm:h-10"
+                    className="ui-field w-24 tabular-nums"
                 />
                 <span className="text-small text-foreground">people.</span>
                 <label className="flex min-h-11 cursor-pointer items-center gap-2 text-small text-foreground sm:min-h-0">

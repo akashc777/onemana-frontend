@@ -19,6 +19,7 @@ import { Tile } from "@/components/ui/graphics/Tile";
 import { SpotWelcome } from "@/components/ui/graphics/spots";
 import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
+import { buttonClasses } from "@/components/ui/Button";
 
 // The customer's view of the workspace their subscription bought.
 //
@@ -162,7 +163,7 @@ function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void })
       <button
         type="button"
         disabled={busy}
-        className="h-8 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60"
+        className={buttonClasses("ghost", "sm")}
         onClick={async () => {
           if (!window.confirm("Move now? Your workspace pauses while the last backup is copied and restored, usually 10 to 30 minutes, then carries on at the same address.")) return;
           setBusy(true);
@@ -371,7 +372,7 @@ function ChooseAddress({ inst, onChanged }: { inst: PortalInstance; onChanged: (
             placeholder="your-company"
             autoComplete="off"
             spellCheck={false}
-            className="h-10 w-full max-w-xs rounded-md border border-border-strong bg-card px-3 text-base text-foreground placeholder:text-faint sm:text-small"
+            className="ui-field max-w-xs"
           />
           <span className="text-small text-muted-foreground">.{WORKSPACE_ZONE}</span>
         </div>

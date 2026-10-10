@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import type { CampHue } from "@/lib/campHue";
 import type { StateTone } from "@/lib/instanceState";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { buttonClasses } from "@/components/ui/Button";
 
 /**
  * The dot for each tone, from the meaning tokens (DESIGN.md: colour that
@@ -56,7 +57,7 @@ export function CopyField({ value, label, wrap = false }: { value: string; label
           }
           window.setTimeout(() => setDone(""), 1600);
         }}
-        className="h-[2.125rem] shrink-0 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        className={buttonClasses("ghost", "sm", "shrink-0")}
         aria-label={`Copy ${label}`}
       >
         {done === "copied" ? "Copied" : done === "failed" ? "Select it" : "Copy"}

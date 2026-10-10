@@ -33,7 +33,9 @@ import { templates } from "@/lib/templates"
  * "Tall" is a class that makes the box 44 px at the base breakpoint:
  * min-h-11, h-11, or the shared .tap-target.
  */
-const TALL = /(^|\s)(min-h-11|h-11|w-11 h-11|tap-target)(\s|$)/
+// ui-field, ui-btn-md and ui-btn-lg are 44 px below md by construction
+// (lib/tailwindAppSystem.ts, held by app/appSystem.test.tsx).
+const TALL = /(^|\s)(min-h-11|max-md:min-h-11|h-11|w-11 h-11|tap-target|ui-field|ui-btn-md|ui-btn-lg)(\s|$)/
 
 /** The class attribute of each opening tag that matches. */
 function classesOf(html: string, tag: RegExp): string[] {
@@ -81,7 +83,7 @@ describe("a phone's targets", () => {
     expectTall(classesOf(renderToString(<Select value="" onChange={() => {}} options={[]} ariaLabel="State" />), /<button[^>]*>/g), "select")
     for (const file of ["../app/buy/BuyCheckout.tsx", "../app/free/FreeInstall.tsx"]) {
       const src = readFileSync(join(__dirname, file), "utf8")
-      expect(src, file).toMatch(/const inputCls =\s*"h-11 [^"]*sm:h-10/)
+      expect(src, file).toMatch(/const inputCls =\s*"ui-field"/)
     }
   })
 

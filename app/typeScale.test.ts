@@ -27,9 +27,11 @@ function tsx(dir: string, out: string[] = []): string[] {
 describe("the type scale", () => {
   it("names a step for every size a heading needs, the smaller screens' included", () => {
     const config = readFileSync(join(ROOT, "tailwind.config.ts"), "utf8")
-    for (const step of ["display", '"display-md"', '"display-sm"', "h1", "title", '"title-sm"', "h2", "h3"]) {
+    for (const step of ["display", '"display-md"', '"display-sm"', "h1", "title", '"title-sm"', "h2"]) {
       expect(config).toMatch(new RegExp(`(^|\\s)${step}: \\["[\\d.]+rem", \\{ lineHeight`, "m"))
     }
+    // h3 is the app's text-xl, from the one table (lib/appSystem.ts).
+    expect(config).toContain("h3: appTheme.fontSize.h3")
   })
 
   // Body text too: nothing below the caption step (13 px), and no line height

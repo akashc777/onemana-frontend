@@ -51,7 +51,7 @@ export default function NotFound() {
             <li key={w.href}>
               <Link href={w.href} className="hover-lift flex h-full items-start gap-3 rounded-lg border border-border bg-card p-5">
                 {w.mark === "home" ? (
-                  <OneCampLogo className="size-8 shrink-0 rounded-lg" gradientId="ocLogoGrad404" />
+                  <OneCampLogo className="size-8 shrink-0" />
                 ) : (
                   <Tile hue={w.mark === "pricing" ? "sun" : "dusk"} size="md">
                     {w.mark === "pricing" ? <KeyGlyph /> : <DocGlyph />}

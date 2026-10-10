@@ -80,7 +80,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
               </th>
               {COLUMNS.map((c, i) => (
                 <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "rounded-t-md bg-muted pl-4 text-foreground" : "text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
-                  <ProductName name={c} markId="ocLogoGradHomeTable" />
+                  <ProductName name={c} />
                 </th>
               ))}
             </tr>

@@ -100,7 +100,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                             <tbody>
                                 <tr className="border-b border-border bg-muted">
                                     <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
-                                        <ProductName name={onecampRow.name} markId="ocLogoGradCompare" />
+                                        <ProductName name={onecampRow.name} />
                                     </th>
                                     <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.what}</td>
                                     <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.billing}</td>

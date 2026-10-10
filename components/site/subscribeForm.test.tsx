@@ -23,7 +23,7 @@ describe("the email form", () => {
 
     it("keeps the site's focus ring and field shape", () => {
         expect(input).not.toMatch(/outline-none|focus:ring/)
-        expect(input).toContain("rounded-md")
+        expect(input).toContain("ui-field")
     })
 
     it("asks with an outline button, not a second filled one", () => {

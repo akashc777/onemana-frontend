@@ -20,13 +20,13 @@ describe("names in the comparison table", () => {
     const head = html.slice(html.indexOf("<thead"), html.indexOf("</thead>"))
 
     it("puts OneCamp's logo on its column and a hued square on each rival's", () => {
-        expect(head).toContain('id="ocLogoGradHomeTable"')
+        expect(head).toContain('stroke="#c84f00"')
         for (const rival of ["Slack + Notion + Zoom", "Mattermost", "Huly"]) {
             expect(head).toContain(`data-hue="${productHue(rival)}"`)
         }
     })
 
-    it("never repeats the logo's gradient id on a page that also has the nav and footer", () => {
+    it("draws the app's mark with no gradient, so no id can repeat on a page", () => {
         const page = renderToString(
             <>
                 <Nav />
@@ -34,9 +34,8 @@ describe("names in the comparison table", () => {
                 <Footer />
             </>,
         )
-        const ids = [...page.matchAll(/<linearGradient id="([^"]+)"/g)].map((m) => m[1])
-        expect(ids.length).toBeGreaterThanOrEqual(3)
-        expect(new Set(ids).size).toBe(ids.length)
+        expect(page).not.toContain("<linearGradient")
+        expect(page.match(/stroke="#c84f00"/g)?.length).toBeGreaterThanOrEqual(3)
     })
 })
 

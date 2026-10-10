@@ -20,7 +20,7 @@ export function Nav() {
     <header className="sticky top-0 z-50 border-b border-border bg-background">
       <nav className="container-x flex h-14 items-center justify-between gap-6" aria-label="Primary">
         <Link href="/" className="flex min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-foreground">
-          <OneCampLogo className="h-6 w-6 rounded-md" />
+          <OneCampLogo className="h-6 w-6" />
           {site.name}
         </Link>
 

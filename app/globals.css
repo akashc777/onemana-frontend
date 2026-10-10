@@ -2,161 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* THE ONECAMP PALETTE (DESIGN.md, Colour). Shared with the product: the page a
-   visitor reads before paying must look like the app they get after, and
-   app/sharedTokens.test.ts pins these numbers against the workspace's.
-
-   Cool graphite neutrals (hue about 250, almost no chroma) under one signal
-   orange. Orange on graphite reads like an instrument panel; the warm cream
-   these replaced read like a bakery, and made the orange look like decoration
-   rather than a signal. Every pair a person reads is measured in
-   app/paletteContrast.test.ts.
-
-   Values are space-separated sRGB so Tailwind can add alpha. */
 :root {
-  --background: 252 252 253;        /* page */
-  --card: 255 255 255;              /* panels, cards, inputs */
-  --muted: 245 246 247;             /* sidebar, table header, hover */
-  --accent: 245 246 247;            /* surface-2, as the app's --accent */
-  /* surface-3: the hover and pressed step under a row, a menu item or a ghost
-     button, the app's --sidebar-accent (its bg-highlight). One step past
-     --accent, so a hover on a muted ground still shows. */
-  --highlight: 237 238 240;
-  /* THE FRAME. The app's canvas is the theme's wash (app/themes.css,
-     --brand-wash, oklch(0.972 0.007 65)): the top bar and the gutter round
-     the sheet sit on it, and the page itself is the sheet. The site does the
-     same: the nav and the gutter are the wash, the page is a sheet. */
-  --canvas: 249 245 241;
-  --border: 228 229 232;            /* hairlines: structure only */
-  --border-strong: 211 213 218;     /* input borders */
-  --foreground: 20 22 26;           /* primary text */
-  --accent-foreground: 20 22 26;
-  --muted-foreground: 95 100 112;   /* secondary text */
-  --faint: 138 143 153;             /* placeholders and disabled only */
-  /* The accent, and the only place saturation is spent: one primary button per
-     view, the focus ring, the current selection, links and the logo. */
-  --brand: 204 74 11;               /* fill, with white text */
-  --brand-foreground: 255 255 255;
-  --brand-ink: 194 65 12;           /* links and accent text */
-  --brand-soft: 255 241 232;        /* selected background */
-  --ring: 204 74 11;
-  /* Agents have a colour of their own, as in the product: the accent marks
-     links and actions, and an agent is neither. Agent tags only. */
-  --agent: 79 91 213;
-  --agent-foreground: 255 255 255;
-  --agent-muted: 238 240 253;
-  --success: 31 138 76;
-  --warning: 178 107 0;
-  --danger: 209 41 61;
-  --info: 47 111 219;
-  /* Meaning colours as TEXT. The fills above are for dots, borders and tints;
-     as words they fail AA on the page and on their own 15% tint, so text uses
-     these deeper cuts (4.8:1 or better on both, paletteContrast.test.ts). */
-  --success-ink: 23 107 58;
-  --warning-ink: 138 83 0;
-  --info-ink: 34 87 181;
-  --danger-ink: 174 31 51;
-  /* THE CAMP PALETTE (the playful layer, 10 Oct 2026): six identity hues,
-     named for the place the product is named after, in three cuts each.
-     strong: marks, icons, dots and illustration fills (3:1 or more on the
-     page, a card, the muted ground and its own tint). -tint: soft grounds for
-     tiles, chips and bands. -ink: text on its own tint (5.9:1 or more here,
-     10.4:1 in dark). Every person, project and channel takes one
-     (lib/campHue.ts hueFor). The workspace writes the same table as hex, and
-     both repos pin it (lib/palette.ts CAMP): change both or neither. Not
-     status colours, and never the accent. */
-  --camp-sun: 185 130 0;          /* #B98200 */
-  --camp-sun-tint: 255 246 214;   /* #FFF6D6 */
-  --camp-sun-ink: 122 82 0;       /* #7A5200 */
-  --camp-moss: 47 158 91;         /* #2F9E5B */
-  --camp-moss-tint: 230 246 236;  /* #E6F6EC */
-  --camp-moss-ink: 29 106 60;     /* #1D6A3C */
-  --camp-lake: 14 151 166;        /* #0E97A6 */
-  --camp-lake-tint: 225 245 246;  /* #E1F5F6 */
-  --camp-lake-ink: 11 92 101;     /* #0B5C65 */
-  --camp-sky: 59 125 221;         /* #3B7DDD */
-  --camp-sky-tint: 231 239 252;   /* #E7EFFC */
-  --camp-sky-ink: 30 78 154;      /* #1E4E9A */
-  --camp-dusk: 123 97 217;        /* #7B61D9 */
-  --camp-dusk-tint: 239 235 252;  /* #EFEBFC */
-  --camp-dusk-ink: 75 54 153;     /* #4B3699 */
-  --camp-berry: 217 70 124;       /* #D9467C */
-  --camp-berry-tint: 252 232 239; /* #FCE8EF */
-  --camp-berry-ink: 150 37 86;    /* #962556 */
+  /* THE PALETTE is not written here. Every colour token (--background,
+     --brand, the camp hues and the rest, light and dark) comes from the one
+     table, lib/appSystem.ts, which mirrors the app; lib/tailwindAppSystem.ts
+     writes them into :root and .dark. Change a colour there, in step with
+     the app. Values are space-separated sRGB so Tailwind can add alpha. */
   /* .hover-lift's shadow: a card a pixel off the page, not floating. */
   --shadow-lift: 0 1px 2px rgb(20 22 26 / 0.04), 0 6px 16px -6px rgb(20 22 26 / 0.12);
   color-scheme: light;
 }
 
 .dark {
-  --background: 14 15 17;
-  --card: 22 24 28;
-  --muted: 29 32 37;
-  --accent: 29 32 37;
-  --highlight: 37 40 46;
-  --canvas: 35 28 23;
-  --border: 38 40 45;
-  --border-strong: 51 54 61;
-  --foreground: 237 238 240;
-  --accent-foreground: 237 238 240;
-  --muted-foreground: 155 160 170;
-  --faint: 107 112 122;
-  /* Lifted, not reused: the orange that is confident on paper is mud on near
-     black. Dark text on it, because white on this orange fails AA. */
-  --brand: 255 122 51;
-  --brand-foreground: 14 15 17;
-  --brand-ink: 255 138 76;
-  --brand-soft: 42 26 16;
-  --ring: 255 122 51;
-  --agent: 163 171 245;
-  --agent-foreground: 14 15 17;
-  --agent-muted: 30 33 64;
-  --success: 76 195 138;
-  --warning: 240 180 76;
-  --danger: 242 85 90;
-  --info: 110 164 245;
-  --success-ink: 76 195 138;
-  --warning-ink: 240 180 76;
-  --info-ink: 110 164 245;
-  --danger-ink: 255 128 134;
-  /* The camp hues lift on the dark ground and their tints sink into it. */
-  --camp-sun: 245 197 66;         /* #F5C542 */
-  --camp-sun-tint: 46 39 18;      /* #2E2712 */
-  --camp-sun-ink: 251 226 156;    /* #FBE29C */
-  --camp-moss: 76 195 138;        /* #4CC38A */
-  --camp-moss-tint: 20 41 31;     /* #14291F */
-  --camp-moss-ink: 166 231 196;   /* #A6E7C4 */
-  --camp-lake: 60 198 210;        /* #3CC6D2 */
-  --camp-lake-tint: 16 41 47;     /* #10292F */
-  --camp-lake-ink: 163 230 236;   /* #A3E6EC */
-  --camp-sky: 110 164 245;        /* #6EA4F5 */
-  --camp-sky-tint: 21 34 56;      /* #152238 */
-  --camp-sky-ink: 185 211 251;    /* #B9D3FB */
-  --camp-dusk: 167 149 245;       /* #A795F5 */
-  --camp-dusk-tint: 33 27 56;     /* #211B38 */
-  --camp-dusk-ink: 212 203 251;   /* #D4CBFB */
-  --camp-berry: 240 122 166;      /* #F07AA6 */
-  --camp-berry-tint: 51 22 31;    /* #33161F */
-  --camp-berry-ink: 249 194 214;  /* #F9C2D6 */
   --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 20px -8px rgb(0 0 0 / 0.6);
   color-scheme: dark;
 }
 
-/* Headings take the display face, as the product's do: which face is a
-   heading is a system decision, not one for each component to remember.
-   Inter Tight at 600, never 700: calm comes from a light display weight. */
+/* Headings take the display face, as the app's do: which face is a heading
+   is a system decision, not one for each component to remember. Inter Tight
+   at 600 and at the font's own spacing, as the app sets its titles; the
+   display sizes that are larger than any the app has carry the app's one
+   tightening step in their size (tailwind.config.ts). */
 h1, h2, h3 {
   font-family: var(--font-rupee-display), var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: normal;
   text-wrap: balance;
-}
-
-/* A page's title is set lighter than its sections: at 48 to 64 px, Inter
-   Tight at 600 reads heavy and cramped, and the size already carries the
-   hierarchy. 500 is inside DESIGN.md's "600 at most". */
-h1 {
-  font-weight: 500;
 }
 
 /* A heading set at a text size (a card's title, a group's label, a plan's
@@ -189,12 +60,15 @@ html {
 
 body {
   @apply bg-background font-sans text-foreground antialiased;
-  font-feature-settings: "cv11" 1, "ss01" 1;
+  /* Inter as the app draws it: its own glyphs, contextual alternates off. */
+  font-feature-settings: "calt" 0;
   text-rendering: optimizeLegibility;
 }
 
+/* The app's selection: a tint of the accent mixed into the page, under the
+   text's own ink. */
 ::selection {
-  background: rgb(var(--brand) / 0.18);
+  background: color-mix(in oklab, rgb(var(--brand)) 26%, rgb(var(--background)));
   color: rgb(var(--foreground));
 }
 
@@ -228,30 +102,31 @@ body {
   /* The app's buttons as classes, for a form that draws its own <button>
      (components/ui/Button.tsx has the reasons): btn-brand is the app's
      default, the accent fill; btn-ghost its outline; btn-primary its
-     secondary, a muted fill. */
+     secondary, a muted fill. The shape is ui-btn (lib/tailwindAppSystem.ts). */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-muted px-4 py-1.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,opacity,transform] hover:bg-muted/80 active:translate-y-px disabled:opacity-50;
+    @apply ui-btn ui-btn-md bg-muted text-foreground hover:bg-muted/80;
   }
 
   .btn-brand {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-brand-ink px-4 py-1.5 text-sm font-medium text-brand-foreground transition-[color,background-color,border-color,opacity,transform] hover:bg-brand-ink/90 focus-visible:outline-[1.5px] focus-visible:outline-offset-2 focus-visible:outline-ring active:translate-y-px disabled:opacity-50;
+    @apply ui-btn ui-btn-md ui-btn-filled bg-brand-ink text-brand-foreground hover:bg-brand-ink/90;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border-strong bg-background px-4 py-1.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,opacity,transform] hover:bg-highlight active:translate-y-px disabled:opacity-50;
+    @apply ui-btn ui-btn-md border border-border-strong bg-background text-foreground hover:bg-highlight;
   }
 
   /* Structure is a hairline, never a shadow. */
   .card {
-    @apply rounded-lg border border-border bg-card p-6;
+    @apply ui-card p-6;
   }
 
   .card-hover {
     @apply transition-colors hover:bg-muted/60;
   }
 
+  /* A label, as the app's Badge: ui-chip (lib/tailwindAppSystem.ts). */
   .pill {
-    @apply inline-flex items-center gap-1.5 rounded-sm border border-border bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground;
+    @apply ui-chip;
   }
 
   /* Grey, sentence case, and rare: at most two sections a page. */
@@ -323,7 +198,7 @@ body {
 
   .prose :where(h1, h2, h3, h4):not(:where([class~="not-prose"] *)) {
     font-weight: 600;
-    letter-spacing: -0.015em;
+    letter-spacing: normal;
   }
 
   .prose :where(code):not(:where(pre *)) {
@@ -418,7 +293,7 @@ body {
   .reading :where(h2) {
     font-size: 1.5em;
     line-height: 1.25;
-    letter-spacing: -0.008em;
+    letter-spacing: normal;
     margin-top: 2.25em;
     margin-bottom: 0.6em;
   }

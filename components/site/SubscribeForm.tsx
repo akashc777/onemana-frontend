@@ -88,7 +88,7 @@ export function SubscribeForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className="h-11 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors placeholder:text-faint focus:border-brand sm:h-10 sm:text-sm"
+          className="ui-field"
         />
         <button type="submit" disabled={state === "sending"} className={buttonClasses("ghost", "md", "shrink-0")}>
           {state === "sending" ? "Adding…" : cta}

@@ -113,7 +113,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className="flex h-11 w-full items-center justify-between gap-2 rounded-md border border-border-strong bg-card px-3 text-left text-sm text-foreground transition-colors focus:border-brand disabled:opacity-50 sm:h-10"
+        className="ui-field items-center justify-between gap-2 text-left"
       >
         <span className={selected ? "text-foreground" : "text-faint"}>{selected ? selected.label : placeholder}</span>
         <svg

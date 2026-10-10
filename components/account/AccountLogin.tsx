@@ -7,7 +7,7 @@ import CodeInput from "./CodeInput";
 import { SpotWelcome } from "@/components/ui/graphics/spots";
 
 const inputCls =
-  "h-11 w-full rounded-md border border-border-strong bg-card px-3.5 text-base text-foreground placeholder:text-faint sm:h-10 sm:text-small";
+  "ui-field";
 
 /**
  * AccountLogin runs the passwordless flow: enter email -> receive a 6-digit
