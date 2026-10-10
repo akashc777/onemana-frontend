@@ -120,7 +120,8 @@ function HeroImage({ theme, kind, alt }: { theme: "light" | "dark"; kind: keyof 
   const v = HERO[kind];
   const { props } = getImageProps({ src: `/product/${v.file}-${theme}.webp`, width: v.width, height: v.height, sizes: v.sizes, alt });
   return (
-    // eslint-disable-next-line jsx-a11y/alt-text -- alt comes from getImageProps
+    // getImageProps gives the optimised srcSet and the alt; a plain <img> is how it is used.
+    // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
     <img {...props} {...HIGH_PRIORITY} loading="lazy" className={`${v.show} h-auto w-full rounded-md border border-border bg-card`} />
   );
 }
