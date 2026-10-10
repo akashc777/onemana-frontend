@@ -22,16 +22,24 @@ interface SectionProps {
    * AA on every tint (app/bandContrast.test.ts). Wins over tone.
    */
   band?: CampHue;
+  /** The id of the heading that names this section, for aria-labelledby. */
+  labelledBy?: string;
 }
 
 // 96 on a wide screen and 64 on a phone (DESIGN.md, Space), with a little more
 // below than above: equal padding reads as a gap that is too big at the top.
 // No reveal on scroll: every section is visible to a crawler, a link preview,
 // a full-page capture and a fast reader alike.
-const SPACING = {
+// Every page's sections keep this one rhythm (sectionRhythm.test.ts): 144 px
+// between two sections' content on a phone and 208 on a wide screen, and a
+// band's edge 64 and 96 above its content, 80 and 112 below.
+export const SECTION_SPACING = {
   default: "pt-16 pb-20 sm:pt-24 sm:pb-28",
   compact: "py-10 sm:py-14",
 } as const;
+/** The bottom of a section, for a first section that follows a PageHeader. */
+export const SECTION_END = "pb-20 sm:pb-28";
+const SPACING = SECTION_SPACING;
 
 /**
  * Semantic <section> with the site's width and vertical rhythm. No scroll
@@ -39,14 +47,14 @@ const SPACING = {
  * anchor below the sticky nav, and a margin here added to it, so a link
  * landed 80 px lower on the screen than it meant to.
  */
-export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page", band }: SectionProps) {
+export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page", band, labelledBy }: SectionProps) {
   const ground = band
     ? `${HUE_CLASS[band]} border-y border-hue/15 bg-hue-tint`
     : tone === "muted"
       ? "border-y border-border bg-muted/70"
       : "";
   return (
-    <section id={id} data-band={band} className={`relative ${ground} ${className}`}>
+    <section id={id} aria-labelledby={labelledBy} data-band={band} className={`relative ${ground} ${className}`}>
       <div className="container-x">
         {divider && tone === "page" && !band && <div className="section-divider" role="separator" aria-hidden />}
         <div className={SPACING[spacing]}>{children}</div>

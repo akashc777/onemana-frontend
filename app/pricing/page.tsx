@@ -5,7 +5,7 @@ import { CloudPlanCard } from "@/components/site/CloudPlanCard";
 import { LicencePlanCard } from "@/components/site/LicencePlanCard";
 import { PlanComparison } from "@/components/site/PlanComparison";
 import { QuestionList } from "@/components/site/marketing";
-import { SectionHeading } from "@/components/ui/Section";
+import { SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { currencyNote, fmtINR, getPricing } from "@/lib/pricing";
@@ -64,7 +64,7 @@ export default async function PricingPage() {
         subtitle={`Free for up to ${FREE_SEATS} people. Pay once for a licence when you grow, or let us run it for you.`}
       />
 
-      <section className="pb-20 sm:pb-24">
+      <section className={SECTION_END}>
         <div className="container-x">
           <PlanColumns pricing={pricing} headingLevel="h2" />
         </div>
@@ -75,31 +75,27 @@ export default async function PricingPage() {
           the two share one grid, so the prices, the lists and the buttons
           start on one line: Cloud's plan switch sits with its seats, where
           the licence says who it is for. */}
-      <section className="border-t border-border">
-        <div className="container-x pb-24 pt-20">
-          <SectionHeading
-            title="Own it, or have us run it"
-            subtitle="Both have every part of OneCamp and the company controls. They differ in who looks after the server."
-          />
-          <div className="mt-10 grid items-stretch gap-4 lg:grid-cols-2 lg:gap-y-0">
-            <LicencePlanCard pricing={pricing} aligned />
-            <CloudPlanCard pricing={pricing} aligned />
-          </div>
+      <Section divider>
+        <SectionHeading
+          title="Own it, or have us run it"
+          subtitle="Both have every part of OneCamp and the company controls. They differ in who looks after the server."
+        />
+        <div className="mt-10 grid items-stretch gap-4 lg:grid-cols-2 lg:gap-y-0">
+          <LicencePlanCard pricing={pricing} aligned />
+          <CloudPlanCard pricing={pricing} aligned />
         </div>
-      </section>
+      </Section>
 
-      <div className="border-t border-border">
-        <PlanComparison pricing={pricing} />
-      </div>
+      <PlanComparison pricing={pricing} />
 
-      <section className="border-t border-border">
-        <div className="container-x grid gap-8 pb-24 pt-20 lg:grid-cols-12 lg:gap-x-8">
+      <Section divider>
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-4">
             <SectionHeading title="About paying" />
           </div>
           <QuestionList items={questions} className="lg:col-span-8" />
         </div>
-      </section>
+      </Section>
     </>
   );
 }

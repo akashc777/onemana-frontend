@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
 
@@ -67,7 +68,7 @@ export function AboutView() {
         divider
       />
 
-      <div className="container-x pb-24 pt-12">
+      <div className={`container-x pt-12 ${SECTION_END}`}>
         {SECTIONS.map((s) => (
           <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 lg:grid-cols-12 lg:gap-x-8">
             <h2 className="text-h3 text-foreground lg:col-span-4">{s.title}</h2>

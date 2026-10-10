@@ -7,7 +7,7 @@ import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { getPricing } from "@/lib/pricing";
 import { getReleaseFacts } from "@/lib/releases";
-import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/Section";
+import { Margin, MarginHeading, SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
@@ -62,7 +62,7 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. What it is, with the evidence beside it. */}
-      <section className="pt-14 sm:pt-20 lg:pt-24">
+      <section className={`pt-14 sm:pt-20 lg:pt-24 ${SECTION_END}`}>
         <div className="container-x">
           <h1 className="max-w-[16ch] text-display-sm text-foreground sm:max-w-[20ch] sm:text-display-md lg:max-w-none lg:text-display">
             Your team&apos;s chat, docs and calls, on a server you own.

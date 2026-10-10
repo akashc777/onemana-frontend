@@ -29,7 +29,7 @@ export default function FreePage() {
       </PageHeader>
 
       {/* What it takes and what you get, on the free plan's moss band. */}
-      <Section band={PLAN_HUE.free} spacing="compact" className="mt-14">
+      <Section band={PLAN_HUE.free} className="mt-10 sm:mt-[4.5rem]">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <h2 className="text-h3 text-foreground">What you need</h2>

@@ -15,6 +15,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
 import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
@@ -172,7 +173,7 @@ export function BuyCheckout({
           own height and the second takes what the form needs beyond it:
           with two equal rows the form's height split between them, and on
           Cloud "Try it before you pay" sat 146 px below the plan. */}
-      <section className="pb-16 sm:pb-20">
+      <section className={SECTION_END}>
         <div className="container-x grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
           <aside className="lg:col-start-1 lg:row-start-1">
 

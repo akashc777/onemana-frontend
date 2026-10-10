@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { VerifyRecord } from "@/components/site/VerifyRecord";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SECTION_END } from "@/components/ui/Section";
 import { RecordRows } from "@/components/site/RecordRows";
 import { attemptAndRefusal } from "@/lib/recordExcerpt";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
@@ -41,7 +42,7 @@ export default function VerifyPage() {
         subtitle="Somebody handed you a file from a OneCamp workspace. Every row in it carries the hash it was written with. This page recomputes them, so you can see whether the file is the one the workspace produced or something edited on the way to you."
       />
 
-      <div className="container-x pb-24">
+      <div className={`container-x ${SECTION_END}`}>
         <div className="max-w-3xl">
           <VerifyRecord />
           <p className="mt-6 text-small text-muted-foreground">
@@ -50,7 +51,7 @@ export default function VerifyPage() {
           </p>
         </div>
 
-        <section className="mt-20 grid gap-8 border-t border-border pt-12 lg:grid-cols-12 lg:gap-x-8">
+        <section className="mt-20 grid gap-8 border-t border-border pt-16 sm:mt-28 sm:pt-24 lg:grid-cols-12 lg:gap-x-8">
           <h2 className="text-h3 text-foreground lg:col-span-4">Where the file comes from</h2>
           <div className="lg:col-span-8">
             {/* Side by side, each kind takes two rows of one subgrid, so the

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PLAN_HUE } from "@/components/site/planHues";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { Section } from "@/components/ui/Section";
 import type { Pricing } from "@/lib/pricing";
 import { PLAN_ROWS, planOptions } from "@/lib/plans";
 
@@ -13,7 +14,7 @@ import { PLAN_ROWS, planOptions } from "@/lib/plans";
 export function PlanComparison({ pricing }: { pricing: Pricing }) {
   const plans = planOptions(pricing);
   return (
-    <section aria-labelledby="plans-heading" className="container-x py-16 sm:py-20">
+    <Section divider labelledBy="plans-heading">
       <h2 id="plans-heading" className="text-h2 text-foreground">
         Which OneCamp is for you
       </h2>
@@ -89,7 +90,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
 

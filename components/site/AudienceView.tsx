@@ -8,7 +8,7 @@ import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { SpotImported } from "@/components/ui/graphics/spots";
 import { productHue } from "@/components/site/productHues";
-import { Section, SectionHeading } from "@/components/ui/Section";
+import { SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { dual, fmtINR, type Pricing } from "@/lib/pricing";
@@ -48,7 +48,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         </div>
       </PageHeader>
 
-      <section className="pb-16 sm:pb-20">
+      <section className={SECTION_END}>
         <div className="container-x">
           <dl className="border-t border-border">
             {a.points.map((p) => {
@@ -73,7 +73,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           hue (the colour its mark has in every comparison), with the spot for
           an import that finished. */}
       {(a.rival || a.move) && (
-        <Section band={a.rival ? productHue(a.rival.name) : "moss"} spacing="compact">
+        <Section band={a.rival ? productHue(a.rival.name) : "moss"}>
           <SpotImported size={64} hue={a.rival ? productHue(a.rival.name) : "moss"} className="mb-6" />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             {a.rival && (
@@ -118,7 +118,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
 
       {/* The evidence, on the page that sells it: rows of the demo's record. */}
       {a.slug === "compliance" && (
-        <Section band="dusk" spacing="compact">
+        <Section band="dusk">
           <div className="grid gap-8 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
             <h2 className="text-h3 text-foreground">What the record looks like</h2>
             <RecordRows
@@ -136,55 +136,53 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         </Section>
       )}
 
-      <section className="pb-20 pt-16 sm:pb-28">
-        <div className="container-x">
-          {/* The price as two plain figures and a link, each with its plan's
-              hue: a three-cell card with a button in the last cell was a
-              pricing table in miniature. */}
-          <div className="border-t border-border pt-8">
-            <div className="grid gap-6 sm:grid-cols-[repeat(2,minmax(0,1fr))_auto] sm:items-end sm:gap-10">
+      <Section>
+        {/* The price as two plain figures and a link, each with its plan's
+            hue: a three-cell card with a button in the last cell was a
+            pricing table in miniature. */}
+        <div className="border-t border-border pt-8">
+          <div className="grid gap-6 sm:grid-cols-[repeat(2,minmax(0,1fr))_auto] sm:items-end sm:gap-10">
+            <div>
+              <p className="flex items-center gap-2 text-small text-muted-foreground">
+                <IdentityMark hue={PLAN_HUE.lifetime} variant="square" />
+                Own it
+              </p>
+              <p className="mt-1 font-display text-h3 font-semibold text-foreground">{lifetime} once</p>
+              <p className="mt-0.5 text-small text-muted-foreground">Everyone on your server, for good.</p>
+            </div>
+            {pricing.cloud_configured && (
               <div>
                 <p className="flex items-center gap-2 text-small text-muted-foreground">
-                  <IdentityMark hue={PLAN_HUE.lifetime} variant="square" />
-                  Own it
+                  <IdentityMark hue={PLAN_HUE.cloud} variant="square" />
+                  Or we run it
                 </p>
-                <p className="mt-1 font-display text-h3 font-semibold text-foreground">{lifetime} once</p>
-                <p className="mt-0.5 text-small text-muted-foreground">Everyone on your server, for good.</p>
+                <p className="mt-1 font-display text-h3 font-semibold text-foreground">{cloud}</p>
+                <p className="mt-0.5 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
               </div>
-              {pricing.cloud_configured && (
-                <div>
-                  <p className="flex items-center gap-2 text-small text-muted-foreground">
-                    <IdentityMark hue={PLAN_HUE.cloud} variant="square" />
-                    Or we run it
-                  </p>
-                  <p className="mt-1 font-display text-h3 font-semibold text-foreground">{cloud}</p>
-                  <p className="mt-0.5 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
-                </div>
-              )}
-              <div>
-                <Link href="/pricing" className="link tap-target text-small font-medium">
-                  See every plan
-                </Link>
-              </div>
+            )}
+            <div>
+              <Link href="/pricing" className="link tap-target text-small font-medium">
+                See every plan
+              </Link>
             </div>
-            <p className="mt-4 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
           </div>
-
-          <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
-            <SectionHeading title="Questions" />
-            <QuestionList items={a.faqs} />
-          </div>
-
-          {a.proof && (
-            <p className="mt-10 text-small text-muted-foreground">
-              More detail:{" "}
-              <a href={a.proof.href} className="link">
-                {a.proof.label}
-              </a>
-            </p>
-          )}
+          <p className="mt-4 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
         </div>
-      </section>
+
+        <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
+          <SectionHeading title="Questions" />
+          <QuestionList items={a.faqs} />
+        </div>
+
+        {a.proof && (
+          <p className="mt-10 text-small text-muted-foreground">
+            More detail:{" "}
+            <a href={a.proof.href} className="link">
+              {a.proof.label}
+            </a>
+          </p>
+        )}
+      </Section>
     </>
   );
 }
