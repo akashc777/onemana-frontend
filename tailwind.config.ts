@@ -117,6 +117,8 @@ const config: Config = {
       },
       transitionTimingFunction: {
         DEFAULT: "cubic-bezier(.2,.8,.2,1)",
+        // A knob that travels lands with a slight overshoot (ease-spring).
+        spring: "cubic-bezier(0.3,1.35,0.5,1)",
       },
       keyframes: {
         "fade-up": {
@@ -136,12 +138,18 @@ const config: Config = {
           "50%": { transform: "scale(1.06)" },
           "100%": { transform: "scale(1)" },
         },
+        // The springy check (the playful layer): 1 -> 1.12 -> 1, as the app's.
+        "spring-pop": {
+          "0%, 100%": { scale: "1" },
+          "45%": { scale: "1.12" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
         "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",
         "icon-pop": "icon-pop 0.35s ease-out",
+        spring: "spring-pop 220ms cubic-bezier(0.2,0.8,0.2,1)",
       },
     },
   },

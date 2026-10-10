@@ -74,6 +74,8 @@
   --camp-berry: 217 70 124;       /* #D9467C */
   --camp-berry-tint: 252 232 239; /* #FCE8EF */
   --camp-berry-ink: 150 37 86;    /* #962556 */
+  /* .hover-lift's shadow: a card a pixel off the page, not floating. */
+  --shadow-lift: 0 1px 2px rgb(20 22 26 / 0.04), 0 6px 16px -6px rgb(20 22 26 / 0.12);
   color-scheme: light;
 }
 
@@ -125,6 +127,7 @@
   --camp-berry: 240 122 166;      /* #F07AA6 */
   --camp-berry-tint: 51 22 31;    /* #33161F */
   --camp-berry-ink: 249 194 214;  /* #F9C2D6 */
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 20px -8px rgb(0 0 0 / 0.6);
   color-scheme: dark;
 }
 
@@ -334,6 +337,35 @@ body {
   }
 }
 
+/* THE PLAYFUL LAYER'S MOTION (PLAYFUL_LAYER.md, "Motion"; the storefront is at
+   MOTION 4). A card that is a thing to open lifts one pixel with its shadow
+   growing a little, on pointers that hover; the hero's orbit turns once in
+   160s and pauses while the hero is off screen (components/ui/graphics/
+   HeroOrbit sets data-paused). Both stand still for reduced motion below. */
+.hover-lift {
+  transition-property: translate, box-shadow;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (hover: hover) {
+  .hover-lift:hover {
+    translate: 0 -1px;
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@keyframes orbit-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+.orbit-turn {
+  animation: orbit-turn 160s linear infinite;
+}
+[data-paused] .orbit-turn {
+  animation-play-state: paused;
+}
+
 /* Everything that moves stands still for a visitor who asked for less motion.
    Motion on this site only confirms a state change (DESIGN.md, Motion). */
 @media (prefers-reduced-motion: reduce) {
@@ -344,6 +376,13 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  /* The hero's orbit stops where it is, rather than spinning once to the end. */
+  .orbit-turn {
+    animation: none !important;
+  }
+  .hover-lift:hover {
+    translate: none !important;
   }
 }
 
