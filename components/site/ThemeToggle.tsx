@@ -18,7 +18,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-md lg:h-8 lg:w-8 text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
     >
       <span className="sr-only dark:hidden">Switch to dark mode</span>
       <span className="sr-only hidden dark:inline">Switch to light mode</span>

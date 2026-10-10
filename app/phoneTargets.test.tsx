@@ -4,7 +4,9 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
 import { CloudPlanCard } from "@/components/site/CloudPlanCard"
+import { Footer } from "@/components/site/Footer"
 import { GovernedDemo } from "@/components/site/GovernedDemo"
+import { Nav } from "@/components/site/Nav"
 import { ProductTabs } from "@/components/site/ProductTabs"
 import { SubscribeForm } from "@/components/site/SubscribeForm"
 import { Select } from "@/components/ui/Select"
@@ -35,6 +37,23 @@ function expectTall(classes: string[], what: string) {
 }
 
 describe("a phone's targets", () => {
+  it("the nav: the logo, Pricing, the menu button and the theme switch", () => {
+    const html = renderToString(<Nav />)
+    // The bar a phone shows: from the last lg:hidden block to the menu panel.
+    const menuStart = html.indexOf('id="mobile-menu"')
+    const phoneBar = html.slice(html.lastIndexOf('lg:hidden"', menuStart), menuStart)
+    expectTall(classesOf(html, /<a[^>]*href="\/"[^>]*>/g), "logo")
+    expectTall(classesOf(phoneBar, /<a[^>]*href="\/pricing"[^>]*>(?=Pricing)/g), "Pricing")
+    expectTall(classesOf(html, /<button[^>]*aria-controls="mobile-menu"[^>]*>/g), "menu button")
+    expectTall(classesOf(html, /<button[^>]*type="button"[^>]*class="[^"]*rounded-md text-muted-foreground[^"]*"[^>]*>/g), "theme switch")
+  })
+
+  it("every footer link", () => {
+    const html = renderToString(<Footer />)
+    const links = classesOf(html, /<a [^>]*>/g).filter((c) => !c.includes("link"))
+    expectTall(links, "footer links")
+  })
+
   it("fields: the update form's address and a select", () => {
     expectTall(classesOf(renderToString(<SubscribeForm source="t" cta="Go" hint="" />), /<input[^>]*type="email"[^>]*>/g), "email field")
     expectTall(classesOf(renderToString(<Select value="" onChange={() => {}} options={[]} ariaLabel="State" />), /<button[^>]*>/g), "select")

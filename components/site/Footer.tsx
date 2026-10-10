@@ -13,7 +13,7 @@ export function Footer() {
       <div className="container-x">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 pb-14 pt-16 sm:grid-cols-4 lg:grid-cols-12 lg:gap-x-8">
           <div className="col-span-2 sm:col-span-4 lg:col-span-4 lg:pr-8">
-            <Link href="/" className="inline-flex items-center gap-2 text-[0.9375rem] font-semibold text-foreground">
+            <Link href="/" className="flex w-fit min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-foreground sm:min-h-0">
               <OneCampLogo className="h-6 w-6 rounded-md" gradientId="ocLogoGradFooter" />
               {site.name}
             </Link>
@@ -31,7 +31,7 @@ export function Footer() {
           {Object.entries(footerLinks).map(([group, links]) => (
             <div key={group} className="lg:col-span-2">
               <h2 className="font-sans text-small font-medium tracking-normal text-foreground">{group}</h2>
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-1 sm:mt-3 sm:space-y-2">
                 {links.map((l) => (
                   <li key={l.label}>
                     {"external" in l && l.external ? (
@@ -39,12 +39,12 @@ export function Footer() {
                         href={l.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-small text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                        className="flex w-fit min-h-11 items-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0"
                       >
                         {l.label}
                       </a>
                     ) : (
-                      <Link href={l.href} className="text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
+                      <Link href={l.href} className="flex w-fit min-h-11 items-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0">
                         {l.label}
                       </Link>
                     )}
