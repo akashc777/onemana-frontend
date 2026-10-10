@@ -23,7 +23,6 @@ export default function FreePage() {
       <PageHeader
         title={`Install OneCamp free, for up to ${FREE_SEATS} people`}
         subtitle="Chat, docs, tasks, calls and AI teammates on your own server. Paste one command into it. No email, no card."
-        className="!pb-0"
       >
         {/* THE COMMAND, ON THE FACE OF THE PAGE. */}
         <FreeCommand />

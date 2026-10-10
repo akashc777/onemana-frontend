@@ -18,6 +18,12 @@ interface PageHeaderProps {
  * An inner page's opening: the title, one line under it, and nothing behind
  * it. The orange beam and the orange eyebrow it used to carry were the
  * template's signature; the page's own content is enough.
+ *
+ * It always ends 40 px above what follows (pb-10 on its container), the same
+ * on every page. A page's own first actions (its buttons, /free's command)
+ * go in as children, 32 px under the subtitle. `className` lands on the
+ * outer <section>, so it cannot take that padding away: "!pb-0" there did
+ * nothing, and the templates' buttons, outside the header, sat 72 px down.
  */
 export function PageHeader({ eyebrow, title, subtitle, align = "left", divider = false, className = "", children }: PageHeaderProps) {
   const centred = align === "center";

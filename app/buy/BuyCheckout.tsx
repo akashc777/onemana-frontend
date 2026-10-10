@@ -166,7 +166,6 @@ export function BuyCheckout({
               `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.sentence ?? "We email you the moment it is live."}`
             : "A licence for your own server. Pay once, for any number of people."
         }
-        className="!pb-0"
       />
       <section className="pb-16 sm:pb-20">
         <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-y-4">

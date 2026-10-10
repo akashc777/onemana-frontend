@@ -29,18 +29,20 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
   const length = weeksLong(t);
   return (
     <>
-      <PageHeader eyebrow="Project template" title={t.name} subtitle={t.description} align="left" className="!pb-0" />
+      {/* The two ways in sit under the words they answer, 32 px down and
+          full width on a phone, as on every other page. */}
+      <PageHeader eyebrow="Project template" title={t.name} subtitle={t.description} align="left">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href={demoTemplateUrl(t.id)} external variant="brand" size="lg">
+            Use it in the live demo
+          </ButtonLink>
+          <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
+        </div>
+      </PageHeader>
 
-      <section className="pb-16 pt-8">
+      <section className="pb-20 sm:pb-28">
         <div className="container-x">
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href={demoTemplateUrl(t.id)} external variant="brand" size="lg">
-              Use it in the live demo
-            </ButtonLink>
-            <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
-          </div>
-
-          <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <ol className="grid gap-10" aria-label="The plan, week by week">
               {weeks.map((w, i) => (
                 <li key={i}>
@@ -123,7 +125,7 @@ function TaskCard({ task }: { task: TemplateTask }) {
         : dayLabel(task.due_day);
   return (
     <li className="rounded-lg border border-border p-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <div className="flex flex-col gap-y-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-x-4">
         <h3 className="text-small font-semibold text-foreground">{task.name}</h3>
         <p className="text-caption tabular-nums text-muted-foreground">
           {when}

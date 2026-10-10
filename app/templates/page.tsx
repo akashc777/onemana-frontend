@@ -20,26 +20,28 @@ export const metadata: Metadata = landingMetadata(meta, "/templates");
 export default function TemplatesPage() {
   return (
     <>
+      {/* The two ways in sit under the words they answer, 32 px down as on
+          every other page; outside the header they were 72 px down. */}
       <PageHeader
         eyebrow="Project templates"
         title="Start a project with its plan already in it"
         subtitle={`Each template is a whole plan: the tasks in order, what done looks like for each, and dates that count from the day you start. They're built into OneCamp, free for up to ${FREE_SEATS} people on your own server.`}
         align="left"
-        className="!pb-0"
-      />
-      <section className="pb-16 pt-8">
+      >
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href={site.demoUrlTo("templates")} external variant="brand" size="lg">
+            Try them in the live demo
+          </ButtonLink>
+          <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
+        </div>
+      </PageHeader>
+      <section className="pb-20 sm:pb-28">
         <div className="container-x">
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href={site.demoUrlTo("templates")} external variant="brand" size="lg">
-              Try them in the live demo
-            </ButtonLink>
-            <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
-          </div>
           {/* Each template has its identity colour, as a project has in the
               app (hueFor on its id), and the card lifts a pixel under the
               pointer because the whole card is the link. The focus ring is
               the site's own. */}
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-12">
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-12">
             {templates.map((t, i) => (
               <li key={t.id} className={gallerySpans(templates.length)[i]}>
                 <Link
