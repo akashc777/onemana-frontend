@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/site/PageHeader";
-import { FaqItem } from "@/components/site/marketing";
+import { QuestionList } from "@/components/site/marketing";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/Section";
 import { site } from "@/lib/site";
@@ -134,11 +134,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
 
           <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
             <SectionHeading title="Questions" />
-            <div className="border-t border-border">
-              {a.faqs.map((f) => (
-                <FaqItem key={f.q} q={f.q} a={f.a} />
-              ))}
-            </div>
+            <QuestionList items={a.faqs} />
           </div>
 
           {a.proof && (

@@ -16,7 +16,7 @@ import { FactsStrip } from "@/components/site/FactsStrip";
 import { RunSpec } from "@/components/site/RunSpec";
 import { HomeComparison } from "@/components/site/HomeComparison";
 import { PlanColumns } from "@/components/site/PlanColumns";
-import { FaqItem } from "@/components/site/marketing";
+import { QuestionList } from "@/components/site/marketing";
 import { RecordRows } from "@/components/site/RecordRows";
 import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
 
@@ -200,17 +200,9 @@ export default async function HomePage() {
         </p>
       </Section>
 
-      <Section id="faq" divider>
+      <Section id="faq">
         <h2 className="text-h2 text-foreground">Before you pay</h2>
-        <div className="mt-8 grid gap-x-12 md:grid-cols-2">
-          {[faqs.slice(0, Math.ceil(faqs.length / 2)), faqs.slice(Math.ceil(faqs.length / 2))].map((col, i) => (
-            <div key={i} className={`border-border ${i === 0 ? "border-t" : "md:border-t"}`}>
-              {col.map((f) => (
-                <FaqItem key={f.q} q={f.q} a={f.a} />
-              ))}
-            </div>
-          ))}
-        </div>
+        <QuestionList items={faqs} columns={2} className="mt-8" />
       </Section>
 
       {/* The one centred block on the page: the close. */}

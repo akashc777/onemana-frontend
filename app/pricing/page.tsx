@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { PlanColumns } from "@/components/site/PlanColumns";
 import { CloudPlanCard } from "@/components/site/CloudPlanCard";
 import { PlanComparison } from "@/components/site/PlanComparison";
-import { FaqItem } from "@/components/site/marketing";
+import { QuestionList } from "@/components/site/marketing";
 import { SectionHeading } from "@/components/ui/Section";
 import { lifetimeBenefits } from "@/lib/content";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -109,11 +109,7 @@ export default async function PricingPage() {
           <div className="lg:col-span-4">
             <SectionHeading title="About paying" />
           </div>
-          <div className="border-t border-border lg:col-span-8">
-            {questions.map((f) => (
-              <FaqItem key={f.q} q={f.q} a={f.a} />
-            ))}
-          </div>
+          <QuestionList items={questions} className="lg:col-span-8" />
         </div>
       </section>
     </>

@@ -1,24 +1,32 @@
 /**
- * A question and its answer, as a plain disclosure under a hairline.
+ * Questions and their answers, open, on a shared grid.
  *
- * No card, no tinted chevron chip, no animated height: the list reads as a
- * list, and the native <details> element does the opening without a script.
+ * They were a disclosure each (a question with a plus that rotated): the FAQ
+ * accordion every SaaS template ends on, and the answer a buyer came for was
+ * one tap away, five times over. The answers are short, so they are simply
+ * shown: each pair under a hairline, the question in the text face at weight
+ * 500 and the answer under it, in one or two columns. In two columns the rows
+ * share their top line, so the hairlines meet across the page.
+ *
+ * The question is an h3, so a screen reader can move between them by heading.
  */
-export function FaqItem({ q, a }: { q: string; a: string }) {
+export function QuestionList({
+  items,
+  columns = 1,
+  className = "",
+}: {
+  items: readonly { q: string; a: string }[];
+  columns?: 1 | 2;
+  className?: string;
+}) {
   return (
-    <details className="group border-b border-border">
-      <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-body font-medium text-foreground [&::-webkit-details-marker]:hidden">
-        {q}
-        <svg
-          className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-150 group-open:rotate-45"
-          viewBox="0 0 16 16"
-          fill="none"
-          aria-hidden
-        >
-          <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </summary>
-      <p className="max-w-prose pb-5 text-body text-muted-foreground">{a}</p>
-    </details>
+    <ul role="list" className={`m-0 grid list-none gap-x-12 p-0 ${columns === 2 ? "md:grid-cols-2" : ""} ${className}`}>
+      {items.map((f) => (
+        <li key={f.q} className="border-t border-border pb-8 pt-5">
+          <h3 className="font-sans text-body font-medium tracking-normal text-foreground">{f.q}</h3>
+          <p className="mt-2 max-w-prose text-small text-muted-foreground sm:text-body">{f.a}</p>
+        </li>
+      ))}
+    </ul>
   );
 }
