@@ -18,6 +18,10 @@
  * actually bought on, and they are stated on screen so the sum can be checked
  * rather than trusted. Understating them would be the easy way to make this look
  * better and the fastest way to lose someone who knows what they pay.
+ *
+ * It sits on the page, not in a card: the two totals are the cards, side by
+ * side as a pair, and a frame round them made a card holding cards, two
+ * borders deep, where the rest of the site separates with space.
  */
 
 import React, { useMemo, useState } from "react"
@@ -52,7 +56,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     )
 
     return (
-        <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
+        <div>
             <div className="flex flex-wrap items-center gap-3">
                 <label htmlFor="team-size" className="text-small text-foreground">
                     Our team is
@@ -79,7 +83,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-md border border-border p-4">
+                <div className="rounded-lg border border-border bg-card p-5">
                     <div className="text-small font-medium text-muted-foreground">Slack + Notion + Zoom</div>
                     <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(saasYear)}</div>
                     <div className="text-caption text-muted-foreground">per year, and it grows with the team</div>
@@ -93,7 +97,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     </ul>
                 </div>
 
-                <div className="rounded-md border border-border-strong bg-muted p-4">
+                <div className="rounded-lg border border-border-strong bg-muted p-5">
                     <div className="text-small font-medium text-foreground">OneCamp, self-hosted</div>
                     <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>
