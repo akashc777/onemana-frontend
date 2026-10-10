@@ -8,6 +8,27 @@ import { paymentTerms, storageOffered } from "@/lib/paymentTerms";
 import { storageLine } from "@/lib/storageLine";
 import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
 
+let pricingRequest: Promise<Pricing> | null = null;
+let knownPricing: Pricing | null = null;
+
+/**
+ * Starts the price read before the card is drawn. The account page calls it
+ * beside its own reads, so the offer arrives with the card; asked for only
+ * once the card was up, it landed a moment later and pushed the licences
+ * below it off the screen. A read that brings no offer (none set up, or the
+ * request failed) is asked again next time rather than kept.
+ */
+export function preloadStoragePricing(): Promise<Pricing> {
+  if (!pricingRequest) {
+    pricingRequest = fetchPricingClient().then((p) => {
+      if (storageOffered(p)) knownPricing = p;
+      else pricingRequest = null;
+      return p;
+    });
+  }
+  return pricingRequest;
+}
+
 /**
  * Extra storage on the workspace card: what the workspace has, or the offer.
  *
@@ -18,14 +39,14 @@ import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
  * the charge is what the backend acts on.
  */
 export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
-  const [pricing, setPricing] = useState<Pricing>(defaultPricing);
+  const [pricing, setPricing] = useState<Pricing>(() => knownPricing ?? defaultPricing);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [paid, setPaid] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    fetchPricingClient().then((p) => { if (alive) setPricing(p); }).catch(() => {});
+    preloadStoragePricing().then((p) => { if (alive) setPricing(p); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 

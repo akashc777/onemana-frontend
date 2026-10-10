@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { portalApi, PortalAuthError, type PortalInstance, type PortalOverview } from "@/lib/portalApi";
 import { AccountLogin } from "@/components/account/AccountLogin";
 import { AccountDashboard } from "@/components/account/AccountDashboard";
+import { preloadStoragePricing } from "@/components/account/StorageAddon";
 import { readPurchase } from "@/lib/purchaseHandoff";
 
 type State =
@@ -44,8 +45,10 @@ export default function AccountPage() {
     // The overview and the workspaces in parallel, so the account arrives in
     // one piece: the workspace card used to load after the page had drawn,
     // and moved everything under it. A workspace read that fails is left to
-    // the card, which asks again and says so.
+    // the card, which asks again and says so. The storage offer's price is
+    // read alongside for the same reason.
     const instances = portalApi.instances().catch(() => null);
+    preloadStoragePricing().catch(() => {});
     try {
       const overview = await portalApi.me();
       setState({ phase: "signedIn", overview, instances: await instances });
