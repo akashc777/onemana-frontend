@@ -1,0 +1,109 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
+/**
+ * The two parts of the nav that need the browser: which page is current, and
+ * the phone menu's open state. Everything else in the nav is drawn on the
+ * server (components/site/Nav.tsx).
+ */
+
+const LOOKS = {
+  /** A link in the desktop bar. */
+  bar: {
+    base: "rounded-md px-2.5 py-1.5 text-small transition-colors duration-150",
+    current: "font-medium text-foreground",
+    other: "text-muted-foreground hover:text-foreground",
+  },
+  /** A row in the phone menu. */
+  menu: {
+    base: "flex min-h-12 items-center border-b border-border text-body transition-colors duration-150",
+    current: "font-medium text-foreground",
+    other: "text-foreground/90 hover:text-foreground",
+  },
+  /** Pricing, beside the menu button on a phone. */
+  compact: {
+    base: "inline-flex min-h-10 items-center rounded-md px-2.5 text-small transition-colors duration-150",
+    current: "font-medium text-foreground",
+    other: "text-muted-foreground hover:text-foreground",
+  },
+} as const;
+
+/**
+ * A nav link that knows whether it is the page you are on. A link to a page is
+ * current on that page and its children; a link to a home-page section never
+ * is. Current is said in weight as well as colour, not colour alone.
+ */
+export function NavLink({ href, look = "bar", children }: { href: string; look?: keyof typeof LOOKS; children: ReactNode }) {
+  const pathname = usePathname() ?? "";
+  const current = !href.includes("#") && (pathname === href || pathname.startsWith(`${href}/`));
+  const l = LOOKS[look];
+  return (
+    <Link href={href} aria-current={current ? "page" : undefined} className={`${l.base} ${current ? l.current : l.other}`}>
+      {children}
+    </Link>
+  );
+}
+
+/**
+ * The phone menu: a button and a panel that floats under the header, so
+ * opening it does not push the page down. The panel's contents come from the
+ * server as children. It closes on a link, on another page, on Escape (focus
+ * goes back to the button) and on a tap outside the header.
+ */
+export function MobileMenu({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+
+  useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      button.current?.focus();
+    };
+    const onDown = (e: PointerEvent) => {
+      const header = button.current?.closest("header");
+      if (header && !header.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onDown);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <button
+        ref={button}
+        type="button"
+        aria-label={open ? "Close menu" : "Open menu"}
+        aria-expanded={open}
+        aria-controls="mobile-menu"
+        className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+          {open ? <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /> : <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />}
+        </svg>
+      </button>
+      {/* A link inside closes it, including one to a section of this page,
+          which changes no pathname. */}
+      <div
+        id="mobile-menu"
+        hidden={!open}
+        onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
+        className="absolute inset-x-0 top-full max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain border-b border-border bg-background shadow-popover lg:hidden"
+      >
+        {children}
+      </div>
+    </>
+  );
+}

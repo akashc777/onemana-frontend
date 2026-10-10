@@ -27,6 +27,9 @@ const SERVER_PAGES = [
   "app/templates/[slug]/page.tsx",
   "app/about/page.tsx",
   "app/not-found.tsx",
+  // The site chrome: the nav is drawn on the server, with two client parts.
+  "components/site/Nav.tsx",
+  "components/site/Footer.tsx",
 ]
 
 describe("client boundaries on the marketing site", () => {
@@ -39,5 +42,6 @@ describe("client boundaries on the marketing site", () => {
   it("keeps the interactive parts of /buy and /free in their own client files", () => {
     expect(isClient("app/buy/BuyCheckout.tsx")).toBe(true)
     expect(isClient("app/free/FreeInstall.tsx")).toBe(true)
+    expect(isClient("components/site/NavParts.tsx")).toBe(true)
   })
 })
