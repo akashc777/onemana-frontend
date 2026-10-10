@@ -151,7 +151,11 @@ feel busy. Use the scale: an arbitrary `text-[13px]` is a size nobody chose.
 ## Space, radius, borders
 
 - **Spacing** is a 4-pt scale: 4, 8, 12, 16, 24, 32, 48, 64, 96.
-  - Marketing: sections 96 desktop and 64 phone; content at most 1120 px; 16 px gutters on a phone.
+  - Marketing: a section's content starts 64 px below its top on a phone and 96 on a wide
+    screen, and ends 80 and 112 above its bottom, so two sections' content is 144 and 208 apart
+    on every page (`Section`, or `SECTION_END` after a `PageHeader`; `sectionRhythm.test.ts`).
+    Content at most 1120 px; 16 px gutters on a phone. A page's two-column parts sit on the
+    12-column grid with 32 px gutters, so their columns share lines down the page.
   - App: rows 32 (dense list) / 36 (table) / 40 (nav item); panel padding 24; page gutter 32.
 - **Radius**, four steps only:
   - `rounded-sm` 4: chips, kbd, checkboxes.
@@ -186,8 +190,10 @@ Never two sections in a row with the same shape.
 **Eyebrows are rare and grey**: sentence case, `muted-foreground`, at most two
 on a page. An orange uppercase mono eyebrow above every section is the template.
 
-**Icons carry information or are absent.** Lucide-style, 1.5 px stroke, 16 px in
-UI and 18 in the nav, in `muted-foreground`. Never an icon inside a tinted chip.
+**Icons carry information or are absent.** Lucide-style, one stroke: 1.75 on the
+24 grid (1.46 on a 20 grid, 1.17 on a 16; `iconStroke.test.ts`). 16 px beside
+words; the phone menu's is 20; a tile sizes its own glyph. In
+`muted-foreground`, or in a tile's strong cut on its tint (the playful layer).
 
 ## What makes it ours (the storefront)
 
@@ -241,6 +247,9 @@ Motion confirms a state change. It never decorates.
 - Contrast AA for every pair a person reads (`paletteContrast.test.ts`).
 - Every page works at 360 px with no horizontal scroll. Wide tables scroll inside
   their own box, never the page.
+- On a phone everything a finger presses is a 44 px target: medium and large
+  buttons, fields and selects, switches and tabs, and a link that stands on its
+  own line (`.tap-target`). A link inside a sentence keeps its line.
 
 ## Copy
 
