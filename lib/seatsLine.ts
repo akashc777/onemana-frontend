@@ -1,3 +1,5 @@
+import { formatDayMonth } from "@/lib/format";
+
 /**
  * The one sentence about people on a workspace card.
  *
@@ -10,16 +12,20 @@
  * person joining, so "of" or "limit" would promise an enforcement that does
  * not exist; a count over the included number is stated as a fact, and the
  * next sentence says who to talk to.
+ *
+ * The date is the house one ("9 Oct", as on the rest of the account page), and
+ * the space before each "·" does not break, so a wrapped line never starts
+ * with a dot.
  */
 export function seatsLine(used: number | undefined, included: number, asOf?: string): string {
   if (used === undefined || used === null) return "";
-  const when = asOf ? ` as of ${new Date(asOf).toLocaleDateString(undefined, { month: "short", day: "numeric" })}` : "";
+  const when = asOf ? ` as of ${formatDayMonth(asOf)}` : "";
   const people = used === 1 ? "1 person" : `${used} people`;
   if (included > 0 && used > included) {
     return `${people}${when}. Your plan includes ${included}; get in touch about a larger workspace.`;
   }
   if (included > 0) {
-    return `${people}${when} · ${included} included in your plan`;
+    return `${people}${when}\u00a0· ${included} included in your plan`;
   }
   return `${people}${when}`;
 }

@@ -230,7 +230,7 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
           {backupLine(inst.backups_nightly, inst.offsite_configured, inst.offsite_backup_at)}
           {inst.offsite_backup_at && (
             <>
-              {" · "}
+              {"\u00a0· "}
               <BackupDownload id={inst.id} />
             </>
           )}
