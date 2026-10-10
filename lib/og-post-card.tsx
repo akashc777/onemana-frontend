@@ -1,16 +1,23 @@
+import type { CampHue } from "@/lib/campHue";
+import { OG, OgLogo } from "@/lib/og-card";
 import { site } from "@/lib/site";
 
-// Shared 1200x630 social card for dynamically generated blog/doc OG images.
-// Title-driven, matching the brand language of lib/og-card.tsx. Rendered by the
-// per-slug opengraph-image / twitter-image routes via next/og ImageResponse, so
-// every element uses explicit `display: flex` (a Satori requirement).
+// Shared 1200x630 social card for the per-post and per-guide OG images, in the
+// site card's language (lib/og-card.tsx, version 5): the page's ground, the
+// logo, the words at weight 600, the post's topic or the guide's group as a
+// chip in its camp hue, and the logo's rings in the corner. It used to keep
+// what the site card dropped: a line grid, an orange glow, an orange rule
+// across the top and an orange uppercase eyebrow, the template's signature,
+// with the title at 700. Rendered by the per-slug opengraph-image and
+// twitter-image routes via next/og ImageResponse, so every element uses
+// explicit `display: flex` (a Satori requirement).
 
 export const OG_POST_SIZE = { width: 1200, height: 630 };
 
 /** Trim a title to a sane length for the card (Satori has no real clamp). */
 export function clampTitle(t: string, max = 110): string {
   const s = (t || "").trim();
-  return s.length > max ? s.slice(0, max - 1).trimEnd() + "\u2026" : s;
+  return s.length > max ? s.slice(0, max - 1).trimEnd() + "…" : s;
 }
 
 /** Scale the title down as it gets longer so it always fits the card. */
@@ -21,47 +28,54 @@ function titleFontSize(len: number): number {
   return 42;
 }
 
-const CARD_BG = {
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  position: "relative" as const,
-  overflow: "hidden",
-  background: "#ffffff",
-  fontFamily: "Inter",
-  color: "#222222",
-};
+/** The logo's rings, a quarter of them, in the bottom-right corner, with one dot in the card's hue. */
+function CornerRings({ hue }: { hue: CampHue }) {
+  const cx = 1150;
+  const cy = 600;
+  const ring = (r: number, style: "solid" | "dashed", colour: string) => (
+    <div
+      key={r}
+      style={{
+        position: "absolute",
+        left: cx - r,
+        top: cy - r,
+        width: r * 2,
+        height: r * 2,
+        borderRadius: 9999,
+        border: `2px ${style} ${colour}`,
+        display: "flex",
+      }}
+    />
+  );
+  return (
+    <>
+      {ring(120, "solid", OG.line)}
+      {ring(200, "dashed", OG.lineStrong)}
+      {ring(280, "solid", OG.line)}
+      {/* A dot on the dashed ring, up and to the left of the centre. */}
+      <div style={{ position: "absolute", left: cx - 141 - 8, top: cy - 141 - 8, width: 16, height: 16, borderRadius: 999, background: OG.camp[hue].strong, display: "flex" }} />
+    </>
+  );
+}
 
-export function PostOgCard({ eyebrow, title, meta }: { eyebrow: string; title: string; meta?: string }) {
+export function PostOgCard({ eyebrow, title, meta, hue = "sky" }: { eyebrow: string; title: string; meta?: string; hue?: CampHue }) {
   const t = clampTitle(title);
   const fs = titleFontSize(t.length);
+  const c = OG.camp[hue];
   return (
-    <div style={CARD_BG}>
-      {/* Faint grid + top-left brand glow + orange rule, matching the site card. */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          backgroundImage:
-            "linear-gradient(#e8eaed 1px, transparent 1px), linear-gradient(90deg, #e8eaed 1px, transparent 1px)",
-          backgroundSize: "56px 56px",
-          opacity: 0.35,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 220,
-          display: "flex",
-          background: "radial-gradient(ellipse 80% 60% at 18% -10%, rgba(255,77,0,0.14), transparent 70%)",
-        }}
-      />
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, display: "flex", background: "#CC4A0B" }} />
-
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        position: "relative",
+        overflow: "hidden",
+        background: OG.page,
+        fontFamily: "Inter",
+        color: OG.text,
+      }}
+    >
+      <CornerRings hue={hue} />
       <div
         style={{
           display: "flex",
@@ -69,72 +83,56 @@ export function PostOgCard({ eyebrow, title, meta }: { eyebrow: string; title: s
           justifyContent: "space-between",
           width: "100%",
           height: "100%",
-          padding: "64px 80px",
+          padding: "64px 80px 60px 72px",
           position: "relative",
         }}
       >
-        {/* Brand row */}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <LogoMark />
-          <span style={{ display: "flex", marginLeft: 16, fontSize: 30, fontWeight: 700, letterSpacing: "-0.02em" }}>
-            {site.name}
-          </span>
+        {/* Brand row, as on the site card. */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <OgLogo size={44} />
+          <span style={{ display: "flex", fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em" }}>{site.name}</span>
         </div>
 
-        {/* Eyebrow + title */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* The topic or group as a chip in its hue, then the title. */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
           <div
             style={{
               display: "flex",
-              fontSize: 20,
+              alignItems: "center",
+              gap: 10,
+              padding: "6px 14px",
+              borderRadius: 8,
+              background: c.tint,
+              color: c.ink,
+              fontSize: 22,
               fontWeight: 600,
-              color: "#CC4A0B",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
             }}
           >
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: c.strong, display: "flex" }} />
             {eyebrow}
           </div>
           <div
             style={{
               display: "flex",
-              marginTop: 20,
+              marginTop: 24,
               fontSize: fs,
-              fontWeight: 700,
-              lineHeight: 1.06,
+              fontWeight: 600,
+              lineHeight: 1.08,
               letterSpacing: "-0.03em",
-              color: "#1a1a1a",
-              maxWidth: 1000,
+              color: OG.text,
+              maxWidth: 960,
             }}
           >
             {t}
           </div>
         </div>
 
-        {/* Footer: meta + domain */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ display: "flex", fontSize: 24, fontWeight: 500, color: "#5f6368" }}>{meta || ""}</span>
-          <span style={{ display: "flex", fontSize: 22, fontWeight: 600, color: "#CC4A0B" }}>onemana.dev</span>
+        {/* Footer: the address and the meta. */}
+        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          <span style={{ display: "flex", fontSize: 22, fontWeight: 600, color: OG.link }}>onemana.dev</span>
+          {meta ? <span style={{ display: "flex", fontSize: 22, color: OG.text2 }}>{meta}</span> : null}
         </div>
       </div>
-    </div>
-  );
-}
-
-function LogoMark() {
-  return (
-    <div
-      style={{
-        width: 52,
-        height: 52,
-        borderRadius: 10,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #FF8A00, #FF3D00)",
-      }}
-    >
-      <div style={{ width: 20, height: 20, borderRadius: 999, display: "flex", border: "3px solid #fff" }} />
     </div>
   );
 }
