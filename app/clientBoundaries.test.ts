@@ -19,6 +19,7 @@ const SERVER_PAGES = [
   "app/page.tsx",
   "app/pricing/page.tsx",
   "app/buy/page.tsx",
+  "app/free/page.tsx",
   "app/compare/page.tsx",
   "app/alternatives/[rival]/page.tsx",
   "app/for/[audience]/page.tsx",
@@ -35,7 +36,8 @@ describe("client boundaries on the marketing site", () => {
     })
   }
 
-  it("keeps the interactive part of /buy in its own client file", () => {
+  it("keeps the interactive parts of /buy and /free in their own client files", () => {
     expect(isClient("app/buy/BuyCheckout.tsx")).toBe(true)
+    expect(isClient("app/free/FreeInstall.tsx")).toBe(true)
   })
 })
