@@ -24,11 +24,16 @@ const SPACING = {
   compact: "py-10 sm:py-14",
 } as const;
 
-/** Semantic <section> with the site's width and vertical rhythm. */
+/**
+ * Semantic <section> with the site's width and vertical rhythm. No scroll
+ * margin of its own: html's scroll-padding-top (globals.css) already stops an
+ * anchor below the sticky nav, and a margin here added to it, so a link
+ * landed 80 px lower on the screen than it meant to.
+ */
 export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page" }: SectionProps) {
   const ground = tone === "muted" ? "border-y border-border bg-muted/70" : "";
   return (
-    <section id={id} className={`relative scroll-mt-20 ${ground} ${className}`}>
+    <section id={id} className={`relative ${ground} ${className}`}>
       <div className="container-x">
         {divider && tone === "page" && <div className="section-divider" role="separator" aria-hidden />}
         <div className={SPACING[spacing]}>{children}</div>

@@ -59,6 +59,18 @@ describe("the governed walkthrough", () => {
         expect(html).not.toContain(AUDIT_ROW.action)
     })
 
+    // WCAG 2.2 target size: each step was an 8 px button. The dot is still
+    // 8 px; the button round it is 24 by 24 (h-6 w-6).
+    it("gives every step a 24 px target", () => {
+        const html = renderToString(<GovernedDemo />)
+        const steps = html.match(/<button[^>]*aria-label="Step \d[^>]*>/g) ?? []
+        expect(steps).toHaveLength(STEPS.length)
+        for (const b of steps) {
+            expect(b).toMatch(/class="[^"]*\bh-6\b/)
+            expect(b).toMatch(/class="[^"]*\bw-6\b/)
+        }
+    })
+
     it("names every step for a screen reader", () => {
         const html = renderToString(<GovernedDemo />)
         for (const [i, s] of STEPS.entries()) {

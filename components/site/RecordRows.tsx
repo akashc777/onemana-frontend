@@ -16,51 +16,68 @@ import { recordTime, shortHash, type RecordRow } from "@/lib/recordExcerpt";
  * places and a rule joins their sequence numbers: the chain is something the
  * reader can see, not a word they are asked to believe.
  *
+ * The marks are drawn only where the chain holds (a row's prev is the hash of
+ * the row above it), and they are meant to be seen: muted-foreground at 70%
+ * clears the 3:1 a graphic needs (3.04:1 light, 4.1:1 dark, measured in
+ * app/paletteContrast.test.ts). border-strong, at 1.4:1, was a hairline nobody
+ * could find. A screen reader hears the same thing in words: which hash is
+ * which, and that the marked one matches its neighbour.
+ *
  * Mono is for the record's data only (sequence, action, time, hashes); the
  * sentence a person reads is in the text face.
  */
 export function RecordRows({ rows, caption, className = "" }: { rows: RecordRow[]; caption?: ReactNode; className?: string }) {
-  const linked = new Set(rows.slice(1).map((r) => r.prev));
   return (
     <figure className={`m-0 ${className}`}>
       <ol className="m-0 list-none border-y border-border p-0" aria-label="Rows from the record">
-        {rows.map((r, i) => (
-          <li key={r.seq} className="relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-3 py-4 [&+li]:border-t [&+li]:border-border">
-            {/* The rule from one sequence number to the next is the chain. */}
-            {i < rows.length - 1 && (
-              <span aria-hidden className="absolute bottom-0 left-[0.6rem] top-10 w-px translate-y-4 bg-border-strong" />
-            )}
-            <span className="pt-px font-mono text-caption tabular-nums text-muted-foreground">#{r.seq}</span>
-            <div className="min-w-0">
-              <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3 font-mono text-caption">
-                <span className={r.refused ? "text-danger-ink" : "text-foreground"}>{r.action}</span>
-                <time dateTime={r.at} className="tabular-nums text-muted-foreground">
-                  {recordTime(r.at)} UTC
-                </time>
-              </p>
-              <p className="m-0 mt-1.5 text-small text-foreground">{r.summary}</p>
-              <p className="m-0 mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-caption text-muted-foreground">
-                <span>
-                  prev <Hash value={r.prev} marked={linked.has(r.prev)} />
-                </span>
-                <span>
-                  this <Hash value={r.hash} marked={linked.has(r.hash)} />
-                </span>
-              </p>
-            </div>
-          </li>
-        ))}
+        {rows.map((r, i) => {
+          // The chain, where it holds: the row above wrote the hash this row
+          // carries as prev, and the row below carries this row's hash.
+          const prevMatches = i > 0 && rows[i - 1].hash === r.prev;
+          const hashMatches = i < rows.length - 1 && rows[i + 1].prev === r.hash;
+          return (
+            <li key={r.seq} className="relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-3 py-4 [&+li]:border-t [&+li]:border-border">
+              {/* The rule from one sequence number to the next is the chain. */}
+              {hashMatches && (
+                <span aria-hidden className="absolute bottom-0 left-[0.6rem] top-10 w-px translate-y-4 bg-muted-foreground/70" />
+              )}
+              <span className="pt-px font-mono text-caption tabular-nums text-muted-foreground">#{r.seq}</span>
+              <div className="min-w-0">
+                <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3 font-mono text-caption">
+                  <span className={r.refused ? "text-danger-ink" : "text-foreground"}>{r.action}</span>
+                  <time dateTime={r.at} className="tabular-nums text-muted-foreground">
+                    {recordTime(r.at)} UTC
+                  </time>
+                </p>
+                <p className="m-0 mt-1.5 text-small text-foreground">{r.summary}</p>
+                <p className="m-0 mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-caption text-muted-foreground">
+                  <span>
+                    <span aria-hidden>prev</span> <span className="sr-only">Hash of the row before: </span>
+                    <Hash value={r.prev} matches={prevMatches ? "above" : undefined} />
+                  </span>
+                  <span>
+                    <span aria-hidden>this</span> <span className="sr-only">This row&apos;s hash: </span>
+                    <Hash value={r.hash} matches={hashMatches ? "below" : undefined} />
+                  </span>
+                </p>
+              </div>
+            </li>
+          );
+        })}
       </ol>
       {caption && <figcaption className="mt-3 text-caption text-muted-foreground">{caption}</figcaption>}
     </figure>
   );
 }
 
-function Hash({ value, marked }: { value: string; marked: boolean }) {
-  if (!marked) return <span translate="no">{shortHash(value)}</span>;
+/** A short hash; boxed, and said to match, when the neighbouring row carries it too. */
+function Hash({ value, matches }: { value: string; matches?: "above" | "below" }) {
   return (
-    <span translate="no" className="rounded-sm border border-border-strong px-1 text-foreground">
-      {shortHash(value)}
-    </span>
+    <>
+      <span translate="no" className={matches ? "rounded-sm border border-muted-foreground/70 px-1 text-foreground" : undefined}>
+        {shortHash(value)}
+      </span>
+      {matches && <span className="sr-only">{` (matches the row ${matches})`}</span>}
+    </>
   );
 }

@@ -76,7 +76,7 @@ export function AboutView() {
           </section>
         ))}
 
-        <section id="contact" className="grid scroll-mt-24 gap-4 py-10 lg:grid-cols-12 lg:gap-x-8">
+        <section id="contact" className="grid gap-4 py-10 lg:grid-cols-12 lg:gap-x-8">
           <h2 className="text-h3 text-foreground lg:col-span-4">Who writes the code</h2>
           <div className="flex max-w-prose gap-5 lg:col-span-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}

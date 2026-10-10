@@ -78,5 +78,14 @@ describe("palette contrast", () => {
         expect(ratio, `${fg} on ${bg} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(min)
       })
     }
+    // The record's chain marks (components/site/RecordRows.tsx): the box round
+    // the shared hash and the rule joining the rows are graphics a reader needs
+    // to see the chain, so 3:1 on the page they sit on. They were border-strong,
+    // which is a hairline at 1.4:1; muted-foreground at 70% clears it.
+    it(`${theme}: the record's chain marks (muted-foreground/70) are at least 3:1 on the page`, () => {
+      const mark = over(SHARED[theme]["muted-foreground"], SHARED[theme].background, 0.7)
+      const ratio = contrast(mark, SHARED[theme].background)
+      expect(ratio, `the chain marks are ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(3)
+    })
   }
 })

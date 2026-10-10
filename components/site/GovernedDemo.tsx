@@ -241,7 +241,12 @@ export const GovernedDemo: React.FC = () => {
                     {playing ? "Pause" : step >= STEPS.length - 1 ? "Replay" : "Play"}
                 </button>
 
-                <ol className="m-0 flex list-none flex-wrap items-center gap-1 p-0">
+                {/* Each step is a 24 px target (WCAG 2.2, target size) round
+                    the same 8 px dot: the dot is what is drawn, the square is
+                    what a finger hits. The dots sit a target apart, the least
+                    that keeps targets from overlapping, and -mx-2 keeps the
+                    first and last where they were beside the button and label. */}
+                <ol className="-mx-2 my-0 flex list-none flex-wrap items-center p-0">
                     {STEPS.map((s, i) => (
                         <li key={s.label}>
                             <button
@@ -252,10 +257,15 @@ export const GovernedDemo: React.FC = () => {
                                     setPlaying(false)
                                     setStep(i)
                                 }}
-                                className={`h-2 w-2 rounded-full transition-colors duration-150 ${
-                                    i <= step ? "bg-foreground" : "bg-foreground/20 hover:bg-foreground/40"
-                                }`}
-                            />
+                                className="group flex h-6 w-6 items-center justify-center rounded-full"
+                            >
+                                <span
+                                    aria-hidden
+                                    className={`h-2 w-2 rounded-full transition-colors duration-150 ${
+                                        i <= step ? "bg-foreground" : "bg-foreground/20 group-hover:bg-foreground/40"
+                                    }`}
+                                />
+                            </button>
                         </li>
                     ))}
                 </ol>

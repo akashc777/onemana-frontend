@@ -10,6 +10,11 @@ import Image, { getImageProps } from "next/image";
  *
  * Both images are in the markup and CSS shows the one that matches the theme.
  * The hidden one is display:none, so a lazy one is never fetched.
+ *
+ * Both carry the real alt. display:none also takes the hidden one out of the
+ * accessibility tree, so a screen reader hears one description in either
+ * theme. (The dark one used to be alt="" and aria-hidden, which left a dark-mode
+ * reader with no image at all.)
  */
 export type ShotName = "channel" | "chat" | "docs" | "tasks" | "calendar" | "agents";
 
@@ -40,7 +45,7 @@ export function ProductShot({
     <Stage className={className}>
       <div className="aspect-[4/3] overflow-hidden rounded-md border border-border bg-card sm:aspect-auto">
         <Image src={`/product/${name}-light.webp`} {...common} alt={alt} className={`${img} dark:hidden`} />
-        <Image src={`/product/${name}-dark.webp`} {...common} alt="" aria-hidden className={`${img} hidden dark:block`} />
+        <Image src={`/product/${name}-dark.webp`} {...common} alt={alt} className={`${img} hidden dark:block`} />
       </div>
     </Stage>
   );
@@ -108,6 +113,9 @@ function Notes({ notes }: { notes: ShotNote[] }) {
  *   media query cannot choose it);
  * - nothing is preloaded: a preload link cannot carry these conditions, and
  *   preloading all four was what fetched every variant on every visit.
+ *
+ * Both themes carry the alt, as in ProductShot: the hidden picture is out of
+ * the accessibility tree because it is display:none, not because it is mute.
  */
 export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt: string; notes?: ShotNote[] }) {
   return (
@@ -122,14 +130,14 @@ export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt:
               width: 2240,
               height: 1400,
               sizes: "(min-width: 1120px) 1120px, 100vw",
-              alt: theme === "light" ? alt : "",
+              alt,
             }).props;
             const phone = getImageProps({
               src: `/product/channel-phone-${theme}.webp`,
               width: 780,
               height: 1180,
               sizes: "384px",
-              alt: theme === "light" ? phoneAlt : "",
+              alt: phoneAlt,
             }).props;
             return (
               <picture key={theme} className={theme === "light" ? "block dark:hidden" : "hidden dark:block"}>
@@ -139,7 +147,6 @@ export function HeroShot({ alt, phoneAlt, notes = [] }: { alt: string; phoneAlt:
                   {...desktop}
                   loading="lazy"
                   fetchPriority="high"
-                  aria-hidden={theme === "dark" ? true : undefined}
                   className="block h-auto w-full rounded-md border border-border bg-card"
                 />
               </picture>
