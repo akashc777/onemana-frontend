@@ -14,7 +14,12 @@ import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearInr } from "@/lib/teamCost"
  * exists, how you pay) and come from their own pages, linked under the table.
  * The rupee figures are worked out, never typed: OneCamp's from the live
  * pricing, the per-seat stack from its list prices at the day's rate.
+ *
+ * OneCamp's tinted column keeps 16 px inside its edges, and the column after
+ * it starts 16 px past the tint, as every column starts 16 px after the one
+ * before: it used to start on the tint's edge, its words touching it.
  */
+const AFTER_TINT = "pl-4";
 const COLUMNS = ["OneCamp", "Slack + Notion + Zoom", "Mattermost", "Huly"] as const;
 
 type Row = { label: string; cells: [string, string, string, string]; loses?: boolean };
@@ -74,7 +79,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
                 <span className="sr-only">Fact</span>
               </th>
               {COLUMNS.map((c, i) => (
-                <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "rounded-t-md bg-muted pl-4 text-foreground" : "text-muted-foreground"}`}>
+                <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "rounded-t-md bg-muted pl-4 text-foreground" : "text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
                   <ProductName name={c} markId="ocLogoGradHomeTable" />
                 </th>
               ))}
@@ -88,7 +93,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
                   {r.loses && <span className="mt-0.5 block text-caption text-muted-foreground">Where OneCamp loses</span>}
                 </th>
                 {r.cells.map((cell, i) => (
-                  <td key={i} className={`py-3.5 pr-4 align-top ${i === 0 ? "bg-muted pl-4 font-medium text-foreground" : "text-muted-foreground"}`}>
+                  <td key={i} className={`py-3.5 pr-4 align-top ${i === 0 ? "bg-muted pl-4 font-medium text-foreground" : "text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
                     {cell}
                   </td>
                 ))}
