@@ -148,6 +148,16 @@ h1 {
   font-weight: 500;
 }
 
+/* A heading set at a text size (a card's title, a group's label, a plan's
+   name) takes the text face at normal tracking. Inter Tight is drawn for 20 px
+   and up; at 14 px with the display tracking its words ran together: the
+   template pages read "Firstdraft", "Finaldelivery" and "Ataglance". The
+   size class decides it, so no call site has to remember font-sans. */
+:is(h1, h2, h3, h4):is(.text-body, .text-small, .text-caption, .text-base, .text-sm, .text-xs) {
+  font-family: var(--font-rupee), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: normal;
+}
+
 /* Paragraphs avoid a lone last word (Web Interface Guidelines, typography). */
 p, li, dd {
   text-wrap: pretty;
