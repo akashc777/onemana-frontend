@@ -3,11 +3,13 @@ import { CompareView } from "@/components/site/CompareView";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
+import { rivalNames } from "@/lib/compare";
 
 export const revalidate = 300;
 
-const DESCRIPTION =
-  "OneCamp against Huly, Nextcloud, Mattermost and Plane: how each one bills you, what governs its agents, and what each of them does better. With the subscriptions a self-hosted workspace replaces.";
+// Named from the page's own list, so a search result cannot promise a
+// different set of rivals from the page it opens (it once listed four of six).
+const DESCRIPTION = `OneCamp against ${rivalNames()}: how each one bills you, what governs its agents, and what each of them does better.`;
 
 export const metadata: Metadata = {
   title: "Compare",

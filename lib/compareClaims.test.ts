@@ -4,14 +4,18 @@ import { resolve } from "node:path"
 import { describe, expect, it } from "vitest"
 
 import {
+    AGENTS_CHECKED,
     CLAIMS_CHECKED,
     RECORD_KEEPING_IN_FORCE,
     agentsYouBring,
     RECORD_KEEPING_SOURCE,
+    countWord,
     killQuestion,
     onecampRow,
     recordKeeping,
+    rivalNames,
     rivals,
+    rivalsLine,
 } from "@/lib/compare"
 
 /**
@@ -58,6 +62,9 @@ describe("what the comparison page is allowed to claim", () => {
     it("tells the reader when the claims were checked", () => {
         expect(CLAIMS_CHECKED).toMatch(/\d{4}/)
         expect(VIEW).toContain("CLAIMS_CHECKED")
+        // The agents table carries the date it was read, not the rivals' date.
+        expect(AGENTS_CHECKED).toMatch(/\d{4}/)
+        expect(VIEW).toContain("AGENTS_CHECKED")
     })
 
     it("links each rival to the page its row came from", () => {
@@ -83,6 +90,72 @@ describe("what the comparison page is allowed to claim", () => {
         // The homepage stopped arguing module against category leader. Moving the
         // section to its own page was not permission to start again.
         expect(VIEW).toContain("Not a feature-for-feature swap")
+    })
+
+    it("does not say every claim links, when the concessions carry no link", () => {
+        expect(VIEW).not.toMatch(/every claim/i)
+    })
+})
+
+/**
+ * The page said "five open-source alternatives" over six rivals, one of them
+ * closed, and "ask all five of us" over a table of seven products. Each number
+ * was typed into the copy while the list grew. Now every count is worked out
+ * from the list, and a typed one fails here.
+ */
+describe("the counts the page prints", () => {
+    it("works them out from the list rather than typing them", () => {
+        expect(VIEW).toContain("rivalsLine()")
+        expect(VIEW).not.toMatch(/\b(?:two|three|four|five|six|seven|eight|nine|ten)\s+(?:open|alternatives|of us)\b/i)
+    })
+
+    it("says how many rivals there are, and how many publish their code", () => {
+        const open = rivals.filter((r) => r.openSource).length
+        const line = rivalsLine()
+        expect(line.toLowerCase().startsWith(`${countWord(rivals.length)} `)).toBe(true)
+        if (open > 0 && open < rivals.length) expect(line).toContain(`${countWord(open)} of them open source`)
+    })
+
+    it("words every mix of open and closed rivals", () => {
+        const as = (openSource: boolean) => ({ ...rivals[0], openSource })
+        expect(rivalsLine([as(true), as(true)])).toBe("Two open-source alternatives")
+        expect(rivalsLine([as(false), as(false)])).toBe("Two alternatives")
+        expect(rivalsLine([as(true), as(false), as(true)])).toBe("Three alternatives, two of them open source")
+    })
+
+    it("does not count a hosted product with no licence or repository as open source", () => {
+        expect(rivals.find((r) => r.name === "Ando")?.openSource).toBe(false)
+    })
+
+    it("names every rival in the page's search description", () => {
+        const page = readFileSync(resolve(__dirname, "..", "app", "compare", "page.tsx"), "utf8")
+        expect(page).toContain("rivalNames()")
+        for (const r of rivals) expect(rivalNames()).toContain(r.name)
+    })
+})
+
+/**
+ * Two rows said more than the pages they link to (10 October 2026 review).
+ * Ando's announcement says agents are members that choose their channels; it
+ * says nothing of an identity, an inbox or permissions. Plane's pricing page
+ * marks its AI "Cloud only" and names no local model.
+ */
+describe("rows that once said more than their source", () => {
+    const row = (name: string) => {
+        const r = rivals.find((x) => x.name === name)
+        expect(r, `${name} is not in the list`).toBeTruthy()
+        return r!
+    }
+
+    it("keeps Ando's row to its announcement", () => {
+        const ando = row("Ando")
+        expect(`${ando.agents} ${ando.theyWin}`).not.toMatch(/inbox|identity|permission|hosted harness/i)
+    })
+
+    it("keeps Plane's row to its pricing page", () => {
+        const plane = row("Plane")
+        expect(`${plane.what} ${plane.agents}`).not.toMatch(/local model/i)
+        expect(plane.agents).toMatch(/cloud only/i)
     })
 })
 

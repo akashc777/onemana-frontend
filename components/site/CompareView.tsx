@@ -5,15 +5,18 @@ import CostCalculator from "@/components/site/CostCalculator";
 import type { Pricing } from "@/lib/pricing";
 import { ButtonLink } from "@/components/ui/Button";
 import {
+    AGENTS_CHECKED,
     CLAIMS_CHECKED,
     RECORD_KEEPING_IN_FORCE,
     agentsYouBring,
     RECORD_KEEPING_SOURCE,
     cancels,
+    countWord,
     killQuestion,
     onecampRow,
     recordKeeping,
     rivals,
+    rivalsLine,
 } from "@/lib/compare";
 import { site } from "@/lib/site";
 
@@ -28,15 +31,19 @@ import { site } from "@/lib/site";
  * It is ordered the way a sceptic reads: the concession first, then the claim,
  * then the way to check the claim without talking to anyone. Leading with where
  * the rivals win is not modesty. It is the only thing that makes the next
- * section worth reading, and everything on this page is one link away from a
- * source a reader can open in another tab.
+ * section worth reading, and every rival's row in the table is one link away
+ * from the page it was read from. The concessions are our judgement, dated, and
+ * the page does not pretend they are sourced.
+ *
+ * No count is typed here: rivalsLine and countWord work them out from the list
+ * in lib/compare.ts, so a rival added or dropped cannot leave a wrong number.
  */
 export function CompareView({ pricing }: { pricing: Pricing }) {
     return (
         <>
             <PageHeader
                 title="Where OneCamp wins, and where it does not"
-                subtitle="Five open-source alternatives, compared on how they bill you and what limits their agents. Every claim about another product links to where it came from."
+                subtitle={`${rivalsLine()}, compared on how they bill you and what limits their agents. Each rival's name in the table links to the page its row came from.`}
                 divider
             />
 
@@ -77,7 +84,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
                         <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
                             <caption className="sr-only">
-                                OneCamp compared with five open alternatives on billing and agent governance
+                                {`OneCamp compared with ${countWord(rivals.length)} alternatives on billing and agent governance`}
                             </caption>
                             <thead>
                                 <tr className="border-b border-border bg-muted/40">
@@ -108,7 +115,24 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                                                 {r.name}
                                             </a>
                                         </th>
-                                        <td className="px-4 py-4 align-top text-muted-foreground">{r.what}</td>
+                                        <td className="px-4 py-4 align-top text-muted-foreground">
+                                            {r.what}
+                                            {/* A part of the row its own page does not say, sourced where it is said. */}
+                                            {r.also && (
+                                                <>
+                                                    {" ("}
+                                                    <a
+                                                        href={r.also.href}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="underline decoration-border-strong underline-offset-4 hover:text-foreground hover:decoration-foreground"
+                                                    >
+                                                        {r.also.label}
+                                                    </a>
+                                                    )
+                                                </>
+                                            )}
+                                        </td>
                                         <td className="px-4 py-4 align-top text-muted-foreground">{r.billing}</td>
                                         <td className="px-4 py-4 align-top text-muted-foreground">{r.agents}</td>
                                     </tr>
@@ -118,8 +142,8 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     </div>
                 </div>
                 <p className="mt-4 text-xs text-muted-foreground">
-                    Each rival name links to the pricing page the row was read from, {CLAIMS_CHECKED}. If one of these is
-                    out of date, it is our error and worth telling us about.
+                    Each rival&apos;s name links to the page its row was read from, in {CLAIMS_CHECKED}. If one of these
+                    is out of date, it is our error and worth telling us about.
                 </p>
             </Section>
 
@@ -127,7 +151,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
             <Section tone="muted">
                 <SectionHeading
                     align="left"
-                    title="Ask all five of us the same thing"
+                    title="Ask every one of us the same thing"
                     subtitle="You can check OneCamp's answer yourself, in the demo, in about a minute."
                 />
                 <div className="mt-10 max-w-3xl border-l-2 border-foreground pl-6">
@@ -208,7 +232,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                     No token to paste: the agent signs in, and whoever approves it picks the agent it acts as and what
                     it may do. OneCamp itself is one licence with unlimited people, so an agent is never another seat.
-                    Checked {CLAIMS_CHECKED}.
+                    Checked {AGENTS_CHECKED}.
                 </p>
             </Section>
 

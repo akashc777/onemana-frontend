@@ -17,14 +17,22 @@
  *
  * EVERY FACT ABOUT SOMEONE ELSE CARRIES A SOURCE AND A DATE. Rival pricing
  * moves, and a stale claim about a competitor is the kind of error that costs
- * more than the sale it was written to win. `checked` is the day the linked page
- * was read; `source` is where a reader goes to check it themselves. The claims
- * chosen are structural — how you are billed, whether a thing exists at all —
- * because those age in years, where a price ages in weeks.
+ * more than the sale it was written to win. CLAIMS_CHECKED is when the linked
+ * pages were read; `source` is where a reader goes to check it themselves. The
+ * claims chosen are structural — how you are billed, whether a thing exists at
+ * all — because those age in years, where a price ages in weeks.
+ *
+ * COUNTS COME FROM THIS LIST. The page once said "five open-source
+ * alternatives" above six rivals, one of them closed (Ando), because the number
+ * was typed into the copy while the list grew. Every count the page prints is
+ * worked out from `rivals` by the helpers at the end of this file.
  */
 
-/** The day every `source` below was read. Update it when the claims are rechecked. */
-export const CLAIMS_CHECKED = "September 2026"
+/**
+ * When every rival's `source` was last read: re-read live on 10 October 2026,
+ * when Ando's and Plane's rows were corrected to what their pages say.
+ */
+export const CLAIMS_CHECKED = "October 2026"
 
 export interface Rival {
     /** Product name, as its makers write it. */
@@ -39,6 +47,10 @@ export interface Rival {
     theyWin: string
     /** Where the billing and agent claims can be checked. */
     source: string
+    /** Its code is published under an open-source licence. The page counts these. */
+    openSource: boolean
+    /** A second page, for a part of the row that `source` does not say. */
+    also?: { label: string; href: string }
 }
 
 export const rivals: Rival[] = [
@@ -49,6 +61,10 @@ export const rivals: Rival[] = [
         agents: "Pricing page lists AI as TBD on every tier",
         theyWin: "Far more users, first-class GitHub issue sync, and no licence gate at all",
         source: "https://huly.io/pricing",
+        openSource: true,
+        // The pricing page still lists cloud tiers; the repository's README is
+        // where "frozen, continued in a fork" is said (read 10 Oct 2026).
+        also: { label: "see its README", href: "https://github.com/hcengineering/platform#readme" },
     },
     {
         name: "Nextcloud",
@@ -57,6 +73,7 @@ export const rivals: Rival[] = [
         agents: "Assistant with local models; no published pre-action audit chain",
         theyWin: "Years of public-sector deployment, an app ecosystem, and air-gap credibility OneCamp has not earned yet",
         source: "https://nextcloud.com/pricing/",
+        openSource: true,
     },
     {
         name: "Mattermost",
@@ -65,6 +82,8 @@ export const rivals: Rival[] = [
         agents: "Bring your own model and MCP tools; governance framed as deployment control",
         theyWin: "A decade of hardening, FIPS and STIG compliance, and the deepest security review record in this list",
         source: "https://mattermost.com/pricing/",
+        // Open core: the server's source is public, the paid editions are not.
+        openSource: true,
     },
     {
         // Block's open workspace (July 2026) is the closest to OneCamp's own
@@ -76,25 +95,36 @@ export const rivals: Rival[] = [
         agents: "Agents join as members with their own keys, permissions and signed actions",
         theyWin: "Free, backed by Block, with agent identities that sign their own work and ready harnesses for Goose, Codex and Claude Code",
         source: "https://block.xyz/inside/introducing-buzz-where-humans-and-agents-work-together",
+        openSource: true,
     },
     {
         // Launched 24 Sep 2026 with a $20M seed as "agent-native messaging":
         // the other product built on agents as members, so a buyer comparing
-        // governed agents meets it. Read from its own announcement.
+        // governed agents meets it. Read from its own announcement, which says
+        // agents are members that decide which channels to join and pick up
+        // work untagged. It says nothing of an agent's identity, inbox or
+        // permissions (press did), so neither does this row. Hosted, priced
+        // per seat, behind a waitlist, with no licence or repository: not
+        // open source.
         name: "Ando",
         what: "Team messaging where agents join channels and DMs as members",
         billing: "Per human seat, agents not counted; prices not published, access by waitlist",
-        agents: "Agents follow channels and join conversations without being mentioned, each with an identity, an inbox and permissions",
-        theyWin: "$20M of backing, agents that choose which conversations to join across a workspace, and its own hosted harness next to Claude, Codex and Grok Bot",
+        agents: "Agents are members of the workspace: they decide which channels to join and pick up work without being tagged",
+        theyWin: "$20M of backing, agents that choose which conversations to join across a workspace, and its own harness next to Claude, Codex and Grok Bot",
         source: "https://www.ando.so/blog/introducing-ando",
+        openSource: false,
     },
     {
+        // The pricing page lists AI agents and credits under "Cloud only" and
+        // mentions no local model; the self-hosted Plane AI in its developer
+        // docs is a Commercial Edition feature. So no "local model support".
         name: "Plane",
-        what: "Project management, self-hostable, with local model support",
+        what: "Project management, open source and self-hostable",
         billing: "Per user, per month, from $6 a seat",
-        agents: "AI inside project management; no chat or video to govern",
+        agents: "AI agents on monthly credits, which its pricing page marks cloud only; no chat or video to govern",
         theyWin: "A sharper issue tracker than OneCamp's, and native mobile apps",
         source: "https://plane.so/pricing",
+        openSource: true,
     },
 ]
 
@@ -103,12 +133,22 @@ export const rivals: Rival[] = [
  * rival, so the page cannot describe itself in terms it does not also apply to
  * everybody else.
  */
-export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never } = {
+export const onecampRow: Omit<Rival, "theyWin" | "source" | "also"> & { theyWin?: never } = {
     name: "OneCamp",
+    openSource: true,
     what: "Chat, docs, tasks, tables, video, calendar, Gmail and agents in one workspace. Open source (AGPL-3.0)",
     billing: "Free and open source to self-host; a free ready-made release for up to 25 people; one licence for unlimited users; or a flat monthly cloud",
     agents: "Agents inherit the live permissions of the person they act for, and refusals are written to a hash chain before the action. An agent following a channel replies there, tells its sponsor privately, or stays silent. Any MCP agent signs in by URL, local models included, and agents built elsewhere (AG-UI or A2A) run under the same rules",
 }
+
+/**
+ * When the agents' setup paths below were read. Not CLAIMS_CHECKED: the 10
+ * October re-read covered the rivals. Of these, the Open WebUI and Claude
+ * paths still matched that day; OpenAI's help page refused the fetch, and the
+ * Grok Bot announcement does not describe adding an MCP server. Move this
+ * date only when all four have been read again.
+ */
+export const AGENTS_CHECKED = "September 2026"
 
 /**
  * Agents a buyer may already pay for, and how each one works inside OneCamp.
@@ -120,7 +160,7 @@ export const onecampRow: Omit<Rival, "theyWin" | "source"> & { theyWin?: never }
  *
  * The connection line describes the product as shipped: /v1/mcp answers OAuth
  * sign-in (oneCamp business/OAuthServer), and each vendor's own setup path was
- * read from its documentation on the date in CLAIMS_CHECKED.
+ * read from its documentation on the date in AGENTS_CHECKED.
  */
 export interface AgentYouBring {
     name: string
@@ -159,7 +199,7 @@ export const agentsYouBring: AgentYouBring[] = [
 ]
 
 /**
- * The question worth asking all five, including us.
+ * The question worth asking every product on the page, including us.
  *
  * It is phrased so that "yes" is checkable in five minutes rather than
  * believable in principle, which is the only kind of claim this page is for.
@@ -223,3 +263,29 @@ export const cancels = [
     { tool: "Google Calendar", surface: "Scheduling, tied to the same accounts" },
     { tool: "Otter or a per-minute transcriber", surface: "Meeting transcription, on your server" },
 ]
+
+const NUMBER_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"]
+
+/** A count as the page's sentences say it: "six", and digits past twelve. */
+export function countWord(n: number): string {
+    return NUMBER_WORDS[n] ?? String(n)
+}
+
+/**
+ * "Six alternatives, five of them open source": how many rivals the page
+ * compares, and how many of those publish their code, counted from the list.
+ */
+export function rivalsLine(list: Rival[] = rivals): string {
+    const total = countWord(list.length)
+    const open = list.filter((r) => r.openSource).length
+    const head = total.charAt(0).toUpperCase() + total.slice(1)
+    const noun = list.length === 1 ? "alternative" : "alternatives"
+    if (open === list.length) return `${head} open-source ${noun}`
+    if (open === 0) return `${head} ${noun}`
+    return `${head} ${noun}, ${countWord(open)} of them open source`
+}
+
+/** The rivals by name, as a sentence would list them: "Huly, Nextcloud … and Plane". */
+export function rivalNames(list: Rival[] = rivals): string {
+    return new Intl.ListFormat("en-GB", { style: "long", type: "conjunction" }).format(list.map((r) => r.name))
+}
