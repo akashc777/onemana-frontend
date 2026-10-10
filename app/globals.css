@@ -244,6 +244,282 @@ body {
     text-decoration-color: rgb(var(--brand-ink) / 0.4);
     text-underline-offset: 4px;
   }
+
+  /* THE READING SYSTEM. Every long page (a doc, a post, a legal page) reads
+     the same way: lib/article.ts shapes the HTML, components/reading/Prose.tsx
+     renders it, and these rules set it. Two sizes, one measure:
+
+     - .reading-docs and .reading-legal: 16/27, for reference text that is
+       scanned as much as read;
+     - .reading-post: 18/30, for a post read from top to bottom.
+
+     The measure is about 70 characters a line (Inter averages about half an
+     em a character), so text stops at 36em while code, tables and figures may
+     use the column. Headings are the display face at 600, a step below the
+     page title, and leave the reader room above them. */
+  .reading {
+    --reading-measure: 36em;
+    max-width: none;
+    color: var(--tw-prose-body);
+    font-size: 1rem;
+    line-height: 1.6875;
+  }
+  .reading-post {
+    font-size: 1.125rem;
+    line-height: 1.6667;
+  }
+
+  .reading > :first-child {
+    margin-top: 0;
+  }
+  .reading :where(p, ul, ol, blockquote, .callout, dl) {
+    max-width: var(--reading-measure);
+  }
+  .reading :where(p) {
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
+  .reading :where(ul, ol) {
+    margin-top: 0;
+    margin-bottom: 1.1em;
+    padding-left: 1.4em;
+  }
+  .reading :where(li) {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    padding-left: 0.2em;
+  }
+  .reading :where(li > p) {
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+  }
+  .reading :where(li)::marker {
+    color: rgb(var(--muted-foreground));
+  }
+
+  .reading :where(h2, h3, h4) {
+    font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    color: rgb(var(--foreground));
+    font-weight: 600;
+    max-width: var(--reading-measure);
+    text-wrap: balance;
+    /* Below the 56 px nav (html has scroll-padding-top), with air. */
+    scroll-margin-top: 1rem;
+  }
+  .reading :where(h2) {
+    font-size: 1.5em;
+    line-height: 1.25;
+    letter-spacing: -0.008em;
+    margin-top: 2.25em;
+    margin-bottom: 0.6em;
+  }
+  .reading :where(h3) {
+    font-size: 1.1875em;
+    line-height: 1.35;
+    letter-spacing: 0;
+    margin-top: 1.9em;
+    margin-bottom: 0.5em;
+  }
+  .reading :where(h4) {
+    font-size: 1em;
+    line-height: 1.5;
+    margin-top: 1.6em;
+    margin-bottom: 0.4em;
+  }
+  .reading :where(h2 + h3) {
+    margin-top: 1em;
+  }
+
+  /* The pointer-only link beside a heading (lib/article.ts). Its "#" is drawn
+     here, so copying a heading copies only its words. */
+  .reading .heading-anchor {
+    margin-left: 0.35em;
+    color: rgb(var(--faint));
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 120ms cubic-bezier(.2, .8, .2, 1);
+  }
+  .reading .heading-anchor::before {
+    content: "#";
+  }
+  .reading :where(h2, h3, h4):hover .heading-anchor,
+  .reading .heading-anchor:hover {
+    opacity: 1;
+    color: rgb(var(--brand-ink));
+  }
+
+  .reading :where(a):not(.heading-anchor) {
+    color: rgb(var(--brand-ink));
+    font-weight: 500;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgb(var(--brand-ink) / 0.35);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 120ms cubic-bezier(.2, .8, .2, 1);
+  }
+  .reading :where(a):not(.heading-anchor):hover {
+    text-decoration-color: rgb(var(--brand-ink));
+  }
+  .reading :where(strong) {
+    color: rgb(var(--foreground));
+    font-weight: 600;
+  }
+
+  /* Inline code: a hairline chip, a step smaller than the text around it. */
+  .reading :where(code):not(:where(pre *)) {
+    font-size: 0.8125em;
+    padding: 0.15em 0.4em;
+    border: 1px solid rgb(var(--border));
+    border-radius: 4px;
+    background-color: rgb(var(--muted));
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
+  }
+  .reading :where(h2, h3, h4) :where(code) {
+    font-size: 0.85em;
+  }
+
+  /* A code block and its copy button: the button sits beside the code, never
+     over it, so a long line scrolls under nothing. */
+  .reading .code-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 1.4em 0;
+    border: 1px solid rgb(var(--border));
+    border-radius: 10px;
+    background-color: rgb(var(--muted));
+  }
+  .reading .code-block pre {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0.85rem 0 0.85rem 1rem;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: rgb(var(--foreground));
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .reading .code-block pre code {
+    font-size: inherit;
+    font-weight: 400;
+  }
+  .reading .code-copy {
+    flex: none;
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    min-height: 1.75rem;
+    padding: 0 0.625rem;
+    border: 1px solid rgb(var(--border-strong));
+    border-radius: 6px;
+    background-color: rgb(var(--card));
+    color: rgb(var(--muted-foreground));
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.625rem;
+    transition: color 120ms cubic-bezier(.2, .8, .2, 1), background-color 120ms cubic-bezier(.2, .8, .2, 1);
+  }
+  .reading .code-copy:hover {
+    color: rgb(var(--foreground));
+    background-color: rgb(var(--accent));
+  }
+  .reading .code-copy[data-copied] {
+    color: rgb(var(--success-ink));
+  }
+
+  /* Tables scroll inside their own box. Numbers line up. */
+  .reading .table-scroll {
+    margin: 1.4em 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .reading .table-scroll table {
+    margin: 0;
+    width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+  .reading .table-scroll :where(th) {
+    color: rgb(var(--foreground));
+    font-weight: 600;
+    text-align: left;
+    vertical-align: bottom;
+    padding: 0 1rem 0.5rem 0;
+  }
+  .reading .table-scroll :where(td) {
+    vertical-align: top;
+    padding: 0.55rem 1rem 0.55rem 0;
+  }
+
+  .reading :where(blockquote) {
+    margin: 1.4em 0;
+    padding-left: 1em;
+    border-left: 2px solid rgb(var(--border-strong));
+    color: rgb(var(--muted-foreground));
+    font-style: normal;
+    font-weight: 400;
+    quotes: none;
+  }
+  .reading :where(blockquote p)::before,
+  .reading :where(blockquote p)::after {
+    content: none;
+  }
+
+  /* A note, tip or warning (lib/article.ts, from GitHub's alert syntax). */
+  .reading .callout {
+    margin: 1.4em 0;
+    padding: 0.85em 1em;
+    border: 1px solid rgb(var(--border));
+    border-radius: 10px;
+    background-color: rgb(var(--muted));
+    color: rgb(var(--foreground));
+  }
+  .reading .callout > :last-child {
+    margin-bottom: 0;
+  }
+  .reading .callout-title {
+    margin-bottom: 0.25em;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .reading :where(hr) {
+    margin: 2.5em 0;
+    border-color: rgb(var(--border));
+  }
+
+  /* Figures: a hairline frame, the description under it. An image whose size
+     is not in the HTML keeps a 16:10 box while it loads (most screenshots
+     here are 1440 by 900), so the text under it does not jump. */
+  .reading .article-figure {
+    margin: 1.8em 0;
+  }
+  .reading :where(img) {
+    margin: 1.8em 0;
+    border: 1px solid rgb(var(--border));
+    border-radius: 10px;
+  }
+  .reading .article-figure img {
+    margin: 0;
+  }
+  .reading :where(img:not([width])) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto 16 / 10;
+  }
+  .reading .article-figure figcaption {
+    max-width: var(--reading-measure);
+    margin-top: 0.6rem;
+    color: rgb(var(--muted-foreground));
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
 }
 
 @layer utilities {

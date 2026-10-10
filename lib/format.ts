@@ -60,3 +60,15 @@ export function timeAgo(iso?: string | null): string {
   if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
   return `${Math.floor(secs / 86400)}d ago`;
 }
+
+/**
+ * A date in running text, e.g. "9 Oct 2026": a guide's last update, a post's
+ * day, a legal page's date. formatDate keeps the two-digit day for tables,
+ * where the columns line up.
+ */
+export function formatDay(iso?: string | null): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "-";
+  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(d);
+}
