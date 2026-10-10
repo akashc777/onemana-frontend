@@ -17,7 +17,7 @@ import type { PortalOverview, PortalSubscription } from "@/lib/portalApi";
  * purchase went through, and lift on the cards that open something.
  */
 const nothing: PortalOverview = {
-  customer: { id: "c", email: "a@b.in", name: "", gstin: "", phone: "", address_line: "", city: "", state: "", state_code: "", country: "", created_at: "" },
+  customer: { id: "c", email: "a@example.com", name: "", gstin: "", phone: "", address_line: "", city: "", state: "", state_code: "", country: "", created_at: "" },
   licenses: [],
   order_count: 0,
   invoice_count: 0,

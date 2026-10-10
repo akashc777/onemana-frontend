@@ -8,7 +8,7 @@ import type { PortalOverview } from "@/lib/portalApi";
 
 const overview: PortalOverview = {
   customer: {
-    id: "c", email: "meera@kestrel-labs.in", name: "Meera Iyer", gstin: "", phone: "", address_line: "", city: "",
+    id: "c", email: "meera@example.com", name: "Meera Iyer", gstin: "", phone: "", address_line: "", city: "",
     state: "", state_code: "", country: "India", created_at: "2026-07-14T09:12:00Z",
   },
   licenses: [{ key: "3f2b8c1e-9a4d-4e6f-8b7a-1c2d3e4f5a6b", product_type: "license", plan_code: "onecamp_lifetime", install_cmd: "/bin/bash -c x", issued_at: "2026-07-14T09:20:00Z" }],
