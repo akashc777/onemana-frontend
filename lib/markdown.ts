@@ -1,8 +1,20 @@
-import { marked } from "marked";
+import { Marked } from "marked";
 import sanitizeHtml from "sanitize-html";
 import { site } from "./site";
 
-marked.setOptions({ gfm: true, breaks: true });
+/**
+ * One newline inside a paragraph is a space, as CommonMark and Jekyll read it.
+ *
+ * It was a line break (`breaks: true`), and the docs and the Jekyll posts are
+ * written hard-wrapped at about 80 characters: every doc page broke each
+ * paragraph where its source line ended, then again where the column did, so
+ * a phone showed a short line after every long one (36 forced breaks on the
+ * installation guide alone). A break an author wants is still there: end the
+ * line with two spaces or a backslash.
+ *
+ * Its own instance, so no other module's settings can change how an article reads.
+ */
+const md = new Marked({ gfm: true, breaks: false });
 
 /**
  * Tags an admin-authored article can legitimately contain.
@@ -54,8 +66,8 @@ const ALLOWED_TAGS = [
  * token-gated admin editor, so this is defence in depth — but it is the kind that
  * actually defends, which the previous version did not.
  */
-export function renderMarkdown(md: string): string {
-  const rendered = marked.parse(md ?? "", { async: false }) as string;
+export function renderMarkdown(source: string): string {
+  const rendered = md.parse(source ?? "", { async: false }) as string;
 
   const clean = sanitizeHtml(rendered, {
     allowedTags: ALLOWED_TAGS,
@@ -97,7 +109,7 @@ export function renderMarkdown(md: string): string {
 }
 
 /** Rough reading-time estimate from Markdown source. */
-export function readingTime(md: string): number {
-  const words = (md || "").trim().split(/\s+/).filter(Boolean).length;
+export function readingTime(source: string): number {
+  const words = (source || "").trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }

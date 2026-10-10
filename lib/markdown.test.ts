@@ -214,3 +214,19 @@ describe("readingTime", () => {
     expect(() => readingTime(undefined as unknown as string)).not.toThrow();
   });
 });
+
+describe("renderMarkdown — a hard-wrapped paragraph flows", () => {
+  // The docs and the Jekyll posts are written hard-wrapped at about 80
+  // characters. Read as line breaks, every source line ended a line on the
+  // page, so a phone showed a short line after every long one.
+  it("joins the lines of one paragraph instead of breaking them", () => {
+    const out = renderMarkdown("This guide is for running OneCamp on your own server, with a lifetime licence\nor a free one for up to 25 people.");
+    expect(out).not.toContain("<br");
+    expect(out).toContain("lifetime licence\nor a free one");
+  });
+
+  it("still breaks a line where the author asked for it", () => {
+    expect(renderMarkdown("first line  \nsecond line")).toContain("<br />");
+    expect(renderMarkdown("first line\\\nsecond line")).toContain("<br />");
+  });
+});
