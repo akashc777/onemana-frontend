@@ -1,11 +1,12 @@
 import Link from "next/link";
+import type { ShotNote } from "@/components/site/ProductShot";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { faqs, governance } from "@/lib/content";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { fmtINR, getPricing } from "@/lib/pricing";
+import { getPricing } from "@/lib/pricing";
 import { getReleaseFacts } from "@/lib/releases";
-import { Section, SectionHeading } from "@/components/ui/Section";
+import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
@@ -16,6 +17,8 @@ import { RunSpec } from "@/components/site/RunSpec";
 import { HomeComparison } from "@/components/site/HomeComparison";
 import { PlanColumns } from "@/components/site/PlanColumns";
 import { FaqItem } from "@/components/site/marketing";
+import { RecordRows } from "@/components/site/RecordRows";
+import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
 
 export const revalidate = 300;
 
@@ -28,54 +31,80 @@ export const revalidate = 300;
  * four calls to action at once.
  *
  * Calls to action, in rank: the live demo (filled), Install free (outline),
- * then buying, as a text link. Nothing is centred but the final call.
+ * then buying, in the plan columns. Nothing is centred but the final call.
+ *
+ * The two ideas that make it OneCamp's own page rather than a well-kept
+ * template (design/audit/storefront.md): the hero's image is two real rows of
+ * the product's record, chained by a hash; and the screenshots are figures,
+ * on a stage, with numbered notes saying what to look at.
  */
+
+/** What to look at in the hero screenshot, placed in percent of the wide image. */
+const HERO_NOTES: ShotNote[] = [
+  { x: 40, y: 32.9, text: "Release Captain is an agent, and every message it posts says so." },
+  { x: 94.6, y: 35.4, text: "It reports what is done and leaves the load test open until someone posts the numbers." },
+  { x: 35.6, y: 65.8, text: "A check-in asks the channel each day, and the answers collect in one thread." },
+];
 export default async function HomePage() {
   const [pricing, release] = await Promise.all([getPricing(), getReleaseFacts()]);
 
   return (
     <>
-      {/* 1. What it is, and the product itself. */}
-      <section className="pt-14 sm:pt-20">
+      {/* 1. What it is, with the evidence beside it. */}
+      <section className="pt-14 sm:pt-20 lg:pt-24">
         <div className="container-x">
-          <h1 className="max-w-4xl text-balance text-[2.5rem] leading-[1.08] tracking-[-0.024em] text-foreground sm:text-h1 lg:text-display">
-            Slack, Notion and Zoom in one app, on your own server.
+          <h1 className="max-w-[16ch] text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:max-w-[20ch] sm:text-[3.5rem] lg:max-w-none lg:text-display">
+            Your team&apos;s chat, docs and calls, on a server you own.
           </h1>
-          <p className="mt-6 max-w-2xl text-body-lg text-muted-foreground">
-            OneCamp is an open-source workspace for chat, docs, tasks and calls. Its AI agents can do only what
-            the person asking could do, and every attempt is on the record. Free for up to {FREE_SEATS} people.
-          </p>
 
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start">
-            <div className="flex flex-col gap-1.5">
-              <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
-                Try the live demo
-              </ButtonLink>
-              <span className="text-caption text-muted-foreground sm:text-center">No sign-up, 2 minutes</span>
+          <div className="mt-10 grid gap-12 lg:mt-12 lg:grid-cols-12 lg:gap-x-8">
+            <div className="lg:col-span-6">
+              <p className="max-w-xl text-body-lg text-muted-foreground">
+                Like Slack, Notion and Zoom in one open-source app, with AI agents that can only do what you can.
+              </p>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start">
+                <div className="flex flex-col gap-1.5">
+                  <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
+                    Try the live demo
+                  </ButtonLink>
+                  <span className="text-caption text-muted-foreground">No sign-up</span>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <ButtonLink href="/free" variant="ghost" size="lg">
+                    Install free
+                  </ButtonLink>
+                  <span className="text-caption text-muted-foreground">Up to {FREE_SEATS} people, no card</span>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <ButtonLink href="/free" variant="ghost" size="lg">
-                Install free
-              </ButtonLink>
-              <span className="text-caption text-muted-foreground sm:text-center">Up to {FREE_SEATS} people, no card</span>
+
+            {/* The image is the record: an agent's attempt and its refusal. */}
+            <div className="lg:col-span-5 lg:col-start-8">
+              <RecordRows
+                rows={attemptAndRefusal}
+                caption={
+                  <>
+                    From the live demo&apos;s record, {recordDay(attemptAndRefusal[1].at)}. Each row carries the hash of the
+                    one before it.{" "}
+                    <Link href="/verify" className="link">
+                      Check the file yourself
+                    </Link>
+                  </>
+                }
+              />
             </div>
           </div>
-          <p className="mt-6 text-small text-muted-foreground">
-            Ready to buy?{" "}
-            <Link href="/buy" className="link">
-              Buy a licence, {fmtINR(pricing.lifetime_inr)} once
-            </Link>
-          </p>
 
-          <div className="mt-12 sm:mt-16">
+          <div className="mt-16 sm:mt-20">
             <HeroShot
               alt="OneCamp's #engineering channel: a release thread where the Release Captain agent reports checklist status, with the sidebar of channels, projects and docs."
               phoneAlt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
+              notes={HERO_NOTES}
             />
           </div>
 
           {/* 2. Facts, where a logo wall would go. */}
-          <div className="mt-12">
+          <div className="mt-14">
             <FactsStrip release={release} />
           </div>
         </div>
@@ -85,23 +114,26 @@ export default async function HomePage() {
       <Section id="product">
         <span id="features" aria-hidden />
         <span id="tour" aria-hidden />
-        <SectionHeading title="Everything your team works in" subtitle="Real screens from the live demo, in your theme." className="mb-8" />
+        <SectionHeading
+          title="Chat, docs, tasks, calendar and agents in one app"
+          subtitle="Each screen is from the live demo, which opens without an account."
+          className="mb-10 lg:mb-14"
+        />
         <ProductTabs />
       </Section>
 
       {/* 4. The argument, shown. The id is the one the nav's "Safe AI" and old links use. */}
-      <Section id="demo" divider>
+      <Section id="demo" tone="muted">
         <span id="governance" aria-hidden />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
-          <div>
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
+          <div className="lg:col-span-5">
             <SectionHeading
               eyebrow="Safe AI"
               title="Watch an agent get stopped"
               subtitle="Priya can't post in #finance. Neither can her AI agent, and the attempt is written down."
             />
-            <GuaranteeList items={governance.points} className="mt-8" />
           </div>
-          <div className="lg:sticky lg:top-24 lg:self-start lg:pt-2">
+          <div className="lg:col-span-7">
             <GovernedDemo />
             {/* The proof path: run the same refusal in the demo, then check its record yourself. */}
             <p className="mt-4 text-small text-muted-foreground">
@@ -117,31 +149,40 @@ export default async function HomePage() {
             </p>
           </div>
         </div>
+        <GuaranteeList items={governance.points} layout="row" className="mt-16" />
       </Section>
 
       {/* 5. What running it involves. Old links to #enterprise land here. */}
-      <Section id="run" divider>
+      <Section id="run">
         <span id="enterprise" aria-hidden />
-        <SectionHeading
-          title="What you are signing up to run"
-          subtitle="Self-hosting means somebody on your team looks after a server. This is what that involves."
-          className="mb-8"
-        />
-        <RunSpec />
+        <Margin
+          aside={
+            <MarginHeading
+              title="What you are signing up to run"
+              subtitle="Self-hosting means somebody on your team looks after a server. This is what that involves."
+            />
+          }
+        >
+          <RunSpec />
+        </Margin>
       </Section>
 
       {/* 6. How it compares, including where it loses. */}
-      <Section id="compare" divider>
-        <SectionHeading title="How it compares" subtitle="Facts, not ticks, and one row where OneCamp loses." className="mb-8" />
+      <Section id="compare">
+        <SectionHeading
+          title="Against Slack, Mattermost and Huly, row by row"
+          subtitle="The last row is the one OneCamp loses."
+          className="mb-10"
+        />
         <HomeComparison pricing={pricing} />
       </Section>
 
       {/* 7. The price, and the questions people ask before paying. */}
-      <Section id="pricing" divider>
+      <Section id="pricing">
         <SectionHeading
           eyebrow="Pricing"
           title="Free for small teams. Pay once when you grow."
-          className="mb-8"
+          className="mb-10"
         />
         <PlanColumns pricing={pricing} />
         <p className="mt-6 text-small">
@@ -152,13 +193,15 @@ export default async function HomePage() {
       </Section>
 
       <Section id="faq" divider>
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
-          <SectionHeading title="Before you buy" subtitle="The questions we are actually asked." />
-          <div className="border-t border-border">
-            {faqs.map((f) => (
-              <FaqItem key={f.q} q={f.q} a={f.a} />
-            ))}
-          </div>
+        <h2 className="text-h2 text-foreground">Before you pay</h2>
+        <div className="mt-8 grid gap-x-12 md:grid-cols-2">
+          {[faqs.slice(0, Math.ceil(faqs.length / 2)), faqs.slice(Math.ceil(faqs.length / 2))].map((col, i) => (
+            <div key={i} className={`border-border ${i === 0 ? "border-t" : "md:border-t"}`}>
+              {col.map((f) => (
+                <FaqItem key={f.q} q={f.q} a={f.a} />
+              ))}
+            </div>
+          ))}
         </div>
       </Section>
 

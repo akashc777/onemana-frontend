@@ -106,14 +106,16 @@ export default function FreePage() {
       >
         {/* THE COMMAND, ON THE FACE OF THE PAGE. */}
         <div className="mt-8 max-w-3xl">
-          <div className="overflow-hidden rounded-lg border border-border bg-[#0E0F11] text-[#EDEEF0] dark:bg-card">
-            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
-              <span className="text-caption text-[#9BA0AA]">Run on your server, as root</span>
+          {/* The page's own surface, like every code block on the site: a block
+              hard-coded dark in a light page reads as a different website. */}
+          <div className="overflow-hidden rounded-lg border border-border bg-muted text-foreground">
+            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2.5">
+              <span className="text-caption text-muted-foreground">Run on your server, as root</span>
               {instant ? (
                 <button
                   type="button"
                   onClick={copy}
-                  className="rounded-sm px-2 py-1 text-caption font-medium text-[#EDEEF0] transition-colors duration-150 hover:bg-white/10"
+                  className="rounded-sm border border-border-strong bg-card px-2 py-1 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-accent"
                 >
                   {copied ? "Copied" : "Copy"}
                 </button>
@@ -125,7 +127,7 @@ export default function FreePage() {
               ) : (
                 <>
                   /bin/bash -c &quot;$(curl -fsSL {site.backendUrl}/onecamp/download/
-                  <span className="rounded-sm bg-white/10 px-1 text-[#9BA0AA]">your-key</span>)&quot;
+                  <span className="rounded-sm border border-dashed border-border-strong px-1 text-muted-foreground">your-key</span>)&quot;
                 </>
               )}
             </pre>
@@ -157,9 +159,9 @@ export default function FreePage() {
         <div className="container-x grid gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <h2 className="text-h3 text-foreground">What you need</h2>
-            <ul className="mt-4 border-t border-border">
+            <ul className="mt-4 space-y-3 border-t border-border pt-4">
               {selfHostNeeds.map((need) => (
-                <li key={need} className="border-b border-border py-3 text-small text-foreground">
+                <li key={need} className="text-small text-foreground">
                   {need}
                 </li>
               ))}
@@ -202,7 +204,7 @@ export default function FreePage() {
                   </label>
                   <label className="block">
                     <span className="mb-1.5 block text-small font-medium text-foreground">Name or team (optional)</span>
-                    <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="organization" className={inputCls} placeholder="Acme" />
+                    <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="organization" className={inputCls} placeholder="Your team's name…" />
                   </label>
                   {state.kind === "error" && (
                     <p role="alert" className="text-small text-danger-ink">
@@ -219,9 +221,9 @@ export default function FreePage() {
 
           <div>
             <h2 className="text-h3 text-foreground">What the free plan includes</h2>
-            <ul className="mt-4 border-t border-border">
+            <ul className="mt-4 space-y-3 border-t border-border pt-4">
               {freeIncludes.map((item) => (
-                <li key={item} className="border-b border-border py-3 text-small text-foreground">
+                <li key={item} className="text-small text-foreground">
                   {item}
                 </li>
               ))}

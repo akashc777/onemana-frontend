@@ -112,15 +112,15 @@ export const footerLinks = {
   ],
   // One link per "alternative to" page, from the pages' own data.
   "Switch from": ALTERNATIVE_INDEX.map((a) => ({ label: a.label, href: `/alternatives/${a.slug}` })),
+  // Who sells it, and the policies a buyer reads before paying. One group:
+  // six footer columns was a link farm (design/audit/storefront.md).
   Company: [
-    { label: "About Us", href: "/about" },
-    { label: "My Account", href: "/account" },
-    { label: "Terms of Service", href: "/terms-of-service" },
-  ],
-  Policies: [
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Refund Policy", href: "/refund-policy" },
-    { label: "Account Ownership", href: "/account-ownership-policy" },
-    { label: "Taxes on Services", href: "/taxes-on-services" },
+    { label: "About", href: "/about" },
+    { label: "Your account", href: "/account" },
+    { label: "Terms of service", href: "/terms-of-service" },
+    { label: "Privacy policy", href: "/privacy-policy" },
+    { label: "Refund policy", href: "/refund-policy" },
+    { label: "Account ownership", href: "/account-ownership-policy" },
+    { label: "Taxes on services", href: "/taxes-on-services" },
   ],
 };

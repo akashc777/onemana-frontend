@@ -65,22 +65,22 @@ export default async function PricingPage() {
         subtitle={`Free for up to ${FREE_SEATS} people. Pay once for a licence when you grow, or let us run it for you.`}
       />
 
-      <section className="pb-16 sm:pb-20">
+      <section className="pb-20 sm:pb-24">
         <div className="container-x">
           <PlanColumns pricing={pricing} headingLevel="h2" />
         </div>
       </section>
 
       <section className="border-t border-border">
-        <div className="container-x grid gap-10 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16">
+        <div className="container-x grid gap-12 pb-24 pt-20 lg:grid-cols-2 lg:gap-16">
           <div>
             <SectionHeading
               title="The licence"
               subtitle={`${fmtINR(pricing.lifetime_inr)} once, for any number of people on your own server.`}
             />
-            <ul className="mt-6 border-t border-border">
+            <ul className="mt-6 grid gap-x-8 gap-y-3 border-t border-border pt-5 sm:grid-cols-2">
               {lifetimeBenefits.map((b) => (
-                <li key={b} className="border-b border-border py-3 text-small text-foreground">
+                <li key={b} className="text-small text-foreground">
                   {b}
                 </li>
               ))}
@@ -105,9 +105,11 @@ export default async function PricingPage() {
       </div>
 
       <section className="border-t border-border">
-        <div className="container-x grid gap-8 py-16 sm:py-20 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
-          <SectionHeading title="About paying" />
-          <div className="border-t border-border">
+        <div className="container-x grid gap-8 pb-24 pt-20 lg:grid-cols-12 lg:gap-x-8">
+          <div className="lg:col-span-4">
+            <SectionHeading title="About paying" />
+          </div>
+          <div className="border-t border-border lg:col-span-8">
             {questions.map((f) => (
               <FaqItem key={f.q} q={f.q} a={f.a} />
             ))}

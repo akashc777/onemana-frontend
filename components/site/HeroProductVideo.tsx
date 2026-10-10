@@ -10,7 +10,9 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-muted">
+      {/* On the same stage as the screenshots (ProductShot's Stage). */}
+      <div className="rounded-lg border border-border bg-muted p-2 sm:p-3 lg:p-4">
+      <div className="relative aspect-video overflow-hidden rounded-md border border-border bg-muted">
         {playing ? (
           <iframe
             title="OneCamp launch film"
@@ -41,6 +43,7 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
             </span>
           </button>
         )}
+      </div>
       </div>
       <p className="mt-3 text-caption text-muted-foreground">92 seconds. The product screens are recorded in the live demo.</p>
     </div>

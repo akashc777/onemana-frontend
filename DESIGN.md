@@ -102,7 +102,9 @@ pass, except danger, whose ink is `#FF8086`).
 | Text | **Inter** (`cv11`, `ss01`) | 400, 500, 600 |
 | Mono | **JetBrains Mono** | 400, 500: keys, IDs, audit timestamps, code. Never eyebrows. |
 
-Headings take the display face by default (`h1, h2, h3` in `globals.css`), at 600.
+Headings take the display face by default (`h1, h2, h3` in `globals.css`): a
+page's title (`h1`) at 500, section headings at 600. At 48 to 64 px the size
+already carries the hierarchy, and 600 there reads heavy and cramped.
 Bricolage Grotesque is retired: its quirky terminals were the tell of a
 template-built site.
 
@@ -177,6 +179,24 @@ on a page. An orange uppercase mono eyebrow above every section is the template.
 
 **Icons carry information or are absent.** Lucide-style, 1.5 px stroke, 16 px in
 UI and 18 in the nav, in `muted-foreground`. Never an icon inside a tinted chip.
+
+## What makes it ours (the storefront)
+
+Taste by subtraction leaves a page anybody could have made. Two things on the
+site are OneCamp's alone, and they are used where they are evidence, never as
+ornament (from the 10 Oct 2026 taste audit):
+
+- **The record.** Where a page argues that agents are on the record, it shows
+  rows of the real record (`RecordRows`, from `public/sample-record.json`, the
+  file /verify checks): sequence, action, time, the row's sentence, and the hash
+  two rows share, marked in both. Mono is for that data only.
+- **Figures, not wallpaper.** A screenshot sits on a stage (the `muted` surface,
+  one hairline) and, where it matters, carries numbered square markers with the
+  notes under it saying what to look at (`HeroShot` notes).
+
+A document-like section uses the margin grid (`Margin`: heading in four of
+twelve columns, content in eight); it alternates with full-width sections, and
+a page has at most one muted band (`Section tone="muted"`).
 
 ## Calls to action
 

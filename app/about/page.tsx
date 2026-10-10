@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `Who builds ${site.name}: OneMana Solutions, a Bangalore-based company shipping a self-hosted workspace.`,
+  description: `Who builds ${site.name}: OneMana Solutions, a one-person company in Bengaluru, and what that means for a team that runs it.`,
   alternates: { canonical: "/about" },
   openGraph: {
     title: `About ${site.name}`,

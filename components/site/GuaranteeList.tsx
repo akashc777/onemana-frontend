@@ -28,10 +28,12 @@ export interface Guarantee {
 }
 
 // The number is neutral: the accent is for actions, not for list markers.
-export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string }> = ({ items, className = "" }) => (
-    <ol className={`list-none border-t border-border p-0 ${className}`}>
+// "row" sets the guarantees side by side under a hairline, for a section whose
+// top half already holds a heading and a figure; "list" stacks them.
+export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string; layout?: "list" | "row" }> = ({ items, className = "", layout = "list" }) => (
+    <ol className={`list-none p-0 ${layout === "row" ? "grid gap-x-10 gap-y-8 border-t border-border pt-8 md:grid-cols-3" : "border-t border-border"} ${className}`}>
         {items.map((g, i) => (
-            <li key={g.title} className="grid grid-cols-[2rem_1fr] gap-x-3 border-b border-border py-5">
+            <li key={g.title} className={`grid grid-cols-[2rem_1fr] gap-x-3 ${layout === "row" ? "" : "border-b border-border py-5"}`}>
                 <span aria-hidden className="pt-0.5 font-mono text-small tabular-nums text-muted-foreground">
                     {i + 1}
                 </span>

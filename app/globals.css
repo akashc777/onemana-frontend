@@ -89,10 +89,31 @@ h1, h2, h3 {
   font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* A page's title is set lighter than its sections: at 48 to 64 px, Inter
+   Tight at 600 reads heavy and cramped, and the size already carries the
+   hierarchy. 500 is inside DESIGN.md's "600 at most". */
+h1 {
+  font-weight: 500;
+}
+
+/* Paragraphs avoid a lone last word (Web Interface Guidelines, typography). */
+p, li, dd {
+  text-wrap: pretty;
+}
+
+/* No double-tap zoom delay on anything a finger presses. */
+a, button, summary, label, [role="tab"] {
+  touch-action: manipulation;
 }
 
 html {
   scroll-behavior: smooth;
+  /* The sticky nav is 56 px: anything scrolled to, by a link or by focus,
+     stops below it rather than under it. */
+  scroll-padding-top: 4.5rem;
   background-color: rgb(var(--background));
 }
 

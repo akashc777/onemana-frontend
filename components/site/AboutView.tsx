@@ -1,98 +1,112 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { site } from "@/lib/site";
-import { ButtonLink } from "@/components/ui/Button";
 
 const FOUNDER_AVATAR =
   "https://avatars.githubusercontent.com/u/32003795?s=256&v=4";
 
-/** About page - founder story, aligned with homepage voice and design tokens. */
+/**
+ * About: who builds OneCamp, and what that means for somebody deciding
+ * whether to run their team on it.
+ *
+ * It used to be written for a laugh ("solo warriors", "because apparently, I
+ * enjoy pain", "Coffee Machine Operator"). A buyer reading an about page is
+ * doing due diligence on a one-person company; the honest answer to "what if
+ * he stops" is the useful one, so the page gives it in plain words. Each
+ * statement is one the site makes elsewhere (lib/content beforeYouPay).
+ */
+const SECTIONS: { title: string; body: React.ReactNode }[] = [
+  {
+    title: "Why it exists",
+    body: (
+      <>
+        <p>
+          OneCamp started as a fix for my own tabs: chat in one tool, docs in another, tasks in a third, calls in a
+          fourth, and a calendar that agreed with none of them.
+        </p>
+        <p>
+          It became one app that runs on your own server, with AI agents that can only do what the person asking
+          can, and a record of everything they try.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: "What one person means for you",
+    body: (
+      <ul>
+        <li>
+          I answer support myself, at{" "}
+          <a href="mailto:support@onemana.dev" className="link">
+            support@onemana.dev
+          </a>
+          .
+        </li>
+        <li>
+          The code is public on{" "}
+          <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link">
+            GitHub
+          </a>
+          , so your install does not depend on me. A paid build has no licence server and no phone-home: it keeps
+          running if OneMana stops.
+        </li>
+        <li>OneMana runs its own work on OneCamp, every day.</li>
+        <li>You pay {site.company}, the registered company, through Razorpay, and get a GST invoice.</li>
+      </ul>
+    ),
+  },
+];
+
 export function AboutView() {
   return (
     <>
       <PageHeader
-        title="Built in Bangalore, run on our own server"
-        subtitle="OneCamp is a self-hosted workspace from OneMana. One founder, one product, no borrowed playbook."
+        title="One person builds OneCamp, in Bengaluru"
+        subtitle="OneMana Solutions is a one-person company. This is what that means if you are deciding whether to run your team on what it makes."
         divider
       />
 
-      <div className="container-x pb-20 pt-10">
-      <article className="max-w-[46rem]">
-        <div>
-          <div className="prose max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground">
-            <h2>The story</h2>
-            <p>
-              One person. One mission. One slightly over-ambitious product roadmap.
-            </p>
-            <p>
-              It started the way most of this did: too many tabs before the first coffee. Slack for chat. Notion for
-              docs. Something else for tasks. Zoom when we needed to talk. A calendar that never quite matched the rest.
-              It was getting ridiculous.
-            </p>
-            <p>
-              So instead of complaining about it on Twitter like a normal person, I built <strong>OneCamp</strong>, a
-              self-hosted workspace that puts chat, tasks, docs, video, calendar, and local AI in one place. Because
-              apparently, I enjoy pain.
-            </p>
-            <p>
-              <strong>{site.company}</strong> is a one-person company (the &quot;OPC&quot; is in the name for a reason: One
-              Person Company, it&apos;s literally right there). Headquartered in Bangalore, where the coffee is strong,
-              the traffic is stronger, and the startups are strongest. We run the entire business on the product we ship.
-            </p>
+      <div className="container-x pb-24 pt-12">
+        {SECTIONS.map((s) => (
+          <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 lg:grid-cols-12 lg:gap-x-8">
+            <h2 className="text-h3 text-foreground lg:col-span-4">{s.title}</h2>
+            <div className="max-w-prose space-y-4 text-body text-muted-foreground lg:col-span-8 [&_li]:pl-1 [&_ul]:list-disc [&_ul]:space-y-3 [&_ul]:pl-5">
+              {s.body}
+            </div>
+          </section>
+        ))}
 
-            <h2>What we believe</h2>
-            <p>
-              Small teams and solo warriors deserve the same powerful tools big companies get, without the
-              enterprise price tag, without the vendor lock-in, and without someone else owning your data. Pay once (or
-              let us host it), but the product should never hold your data hostage. All of it is open source on GitHub
-              under AGPL-3.0, the server and the web app, both editions. It runs on your server, or on one we run for
-              you. That is the deal.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-12 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-start">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={FOUNDER_AVATAR} alt="Akash Hadagali" width={72} height={72} className="h-[72px] w-[72px] shrink-0 rounded-full object-cover" />
-          <div>
-            <h2 className="text-h3 text-foreground">Akash Hadagali</h2>
-            <p className="text-small text-muted-foreground">Founder, OneMana. The team: all 1 of us.</p>
-            <p className="mt-3 max-w-prose text-small text-muted-foreground">
-              Founder, CEO, CTO, Designer, Intern &amp; Coffee Machine Operator. Writes the code. Fixes the bugs.
-              Deploys at 2 AM. Answers support emails. Also somehow finds time to eat.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <ButtonLink href={site.githubOrgUrl} external variant="ghost" size="sm">
-                GitHub
-              </ButtonLink>
-              <ButtonLink href={site.twitter} external variant="ghost" size="sm">
-                Twitter
-              </ButtonLink>
-              <ButtonLink href="/blog" variant="ghost" size="sm">
-                Blog
-              </ButtonLink>
+        <section id="contact" className="grid scroll-mt-24 gap-4 py-10 lg:grid-cols-12 lg:gap-x-8">
+          <h2 className="text-h3 text-foreground lg:col-span-4">Who writes the code</h2>
+          <div className="flex max-w-prose gap-5 lg:col-span-8">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={FOUNDER_AVATAR}
+              alt="Akash Hadagali"
+              width={64}
+              height={64}
+              loading="lazy"
+              className="h-16 w-16 shrink-0 rounded-full object-cover"
+            />
+            <div>
+              <p className="font-medium text-foreground">Akash Hadagali</p>
+              <p className="mt-1 text-body text-muted-foreground">
+                Founder of OneMana. Writes the code, ships the releases and reads the support email.
+              </p>
+              <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-small">
+                <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link">
+                  GitHub
+                </a>
+                <a href={site.twitter} target="_blank" rel="noreferrer" className="link">
+                  X (Twitter)
+                </a>
+                <Link href="/blog" className="link">
+                  The blog
+                </Link>
+              </p>
             </div>
           </div>
-        </div>
-
-        <div className="mt-12 border-t border-border pt-8 text-small text-muted-foreground">
-          <p id="contact" className="scroll-mt-24">
-            Questions?{" "}
-            <a href="mailto:support@onemana.dev" className="link">
-              support@onemana.dev
-            </a>
-          </p>
-          <p className="mt-2">
-            <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">
-              Try the live demo
-            </a>
-            {" · "}
-            <Link href="/free" className="link">
-              Install free
-            </Link>
-          </p>
-        </div>
-      </article>
+        </section>
       </div>
     </>
   );

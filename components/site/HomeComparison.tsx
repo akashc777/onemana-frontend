@@ -4,7 +4,8 @@ import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearInr } from "@/lib/teamCost"
 
 /**
  * Facts in rows, four products in columns: the proof that stands in for the
- * customer logos OneCamp does not have yet.
+ * customer logos OneCamp does not have yet. OneCamp's column sits on the muted
+ * surface, so the eye reads down it first; nothing else on the table is tinted.
  *
  * It includes a row OneCamp loses (ready-made integrations), on purpose: a
  * table where one column wins everything is an advert, and readers discount it
@@ -72,7 +73,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
                 <span className="sr-only">Fact</span>
               </th>
               {COLUMNS.map((c, i) => (
-                <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "text-foreground" : "text-muted-foreground"}`}>
+                <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "rounded-t-md bg-muted pl-4 text-foreground" : "text-muted-foreground"}`}>
                   {c}
                 </th>
               ))}
@@ -86,7 +87,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
                   {r.loses && <span className="mt-0.5 block text-caption text-muted-foreground">Where OneCamp loses</span>}
                 </th>
                 {r.cells.map((cell, i) => (
-                  <td key={i} className={`py-3.5 pr-4 align-top ${i === 0 ? "font-medium text-foreground" : "text-muted-foreground"}`}>
+                  <td key={i} className={`py-3.5 pr-4 align-top ${i === 0 ? "bg-muted pl-4 font-medium text-foreground" : "text-muted-foreground"}`}>
                     {cell}
                   </td>
                 ))}

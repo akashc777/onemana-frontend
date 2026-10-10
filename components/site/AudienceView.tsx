@@ -7,6 +7,9 @@ import { FREE_SEATS } from "@/lib/freePlan";
 import { dual, fmtINR, type Pricing } from "@/lib/pricing";
 import type { Audience } from "@/lib/audiences";
 import { ALTERNATIVES_CHECKED } from "@/lib/alternatives";
+import { RecordRows } from "@/components/site/RecordRows";
+import { attemptAndRefusal } from "@/lib/recordExcerpt";
+import Link from "next/link";
 
 /**
  * One page for one kind of buyer, or for people leaving one rival: what fits
@@ -34,12 +37,12 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         </div>
       </PageHeader>
 
-      <section className="pb-16 sm:pb-20">
+      <section className="pb-20 sm:pb-28">
         <div className="container-x">
           <dl className="border-t border-border">
             {a.points.map((p) => (
               <div key={p.title} className="grid gap-1 border-b border-border py-6 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
-                <dt className="font-display text-h3 font-semibold text-foreground">{p.title}</dt>
+                <dt className="font-display text-h3 font-semibold text-balance text-foreground">{p.title}</dt>
                 <dd className="text-body text-muted-foreground">{p.body}</dd>
               </div>
             ))}
@@ -86,26 +89,48 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
             </div>
           )}
 
-          <div className="mt-16 grid overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-3">
-            <div className="p-6">
-              <p className="text-small font-medium text-muted-foreground">Own it</p>
-              <p className="mt-2 font-display text-h3 font-semibold text-foreground">{lifetime} once</p>
-              <p className="mt-1 text-small text-muted-foreground">Everyone on your server, for good.</p>
+          {/* The evidence, on the page that sells it: rows of the demo's record. */}
+          {a.slug === "compliance" && (
+            <div className="mt-16 grid gap-8 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-16">
+              <h2 className="text-h3 text-foreground">What the record looks like</h2>
+              <RecordRows
+                rows={attemptAndRefusal}
+                caption={
+                  <>
+                    Two rows from the live demo. The second carries the first one&apos;s hash.{" "}
+                    <Link href="/verify" className="link">
+                      Check the file yourself
+                    </Link>
+                  </>
+                }
+              />
             </div>
-            {pricing.cloud_configured && (
-              <div className="border-t border-border p-6 sm:border-l sm:border-t-0">
-                <p className="text-small font-medium text-muted-foreground">Or we run it</p>
-                <p className="mt-2 font-display text-h3 font-semibold text-foreground">{cloud}</p>
-                <p className="mt-1 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
+          )}
+
+          {/* The price as two plain figures and a link: a three-cell card with a
+              button in the last cell was a pricing table in miniature. */}
+          <div className="mt-16 border-t border-border pt-8">
+            <div className="grid gap-6 sm:grid-cols-[repeat(2,minmax(0,1fr))_auto] sm:items-end sm:gap-10">
+              <div>
+                <p className="text-small text-muted-foreground">Own it</p>
+                <p className="mt-1 font-display text-h3 font-semibold text-foreground">{lifetime} once</p>
+                <p className="mt-0.5 text-small text-muted-foreground">Everyone on your server, for good.</p>
               </div>
-            )}
-            <div className="flex items-center border-t border-border p-6 sm:border-l sm:border-t-0">
-              <ButtonLink href="/pricing" variant="ghost">
-                See every plan
-              </ButtonLink>
+              {pricing.cloud_configured && (
+                <div>
+                  <p className="text-small text-muted-foreground">Or we run it</p>
+                  <p className="mt-1 font-display text-h3 font-semibold text-foreground">{cloud}</p>
+                  <p className="mt-0.5 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
+                </div>
+              )}
+              <div>
+                <Link href="/pricing" className="link text-small font-medium">
+                  See every plan
+                </Link>
+              </div>
             </div>
+            <p className="mt-4 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
           </div>
-          <p className="mt-3 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
 
           <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
             <SectionHeading title="Questions" />

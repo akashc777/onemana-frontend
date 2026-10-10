@@ -53,8 +53,8 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
 
   return (
     <>
-      <section className="border-b border-border pt-12 sm:pt-16">
-        <div className="container-x pb-8">
+      <section className="pt-12 sm:pt-16">
+        <div className="container-x">
           {doc.category && <p className="eyebrow !mb-2">{doc.category}</p>}
           <h1 className="max-w-3xl text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{doc.title}</h1>
         </div>

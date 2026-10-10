@@ -145,7 +145,7 @@ function BuyInner() {
           isCloud
             ? // How long, from the backend's one estimate; nothing of its own here.
               `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.sentence ?? "We email you the moment it is live."}`
-            : "Self-hosted workspace. Lifetime license, unlimited users."
+            : "A licence for your own server. Pay once, for any number of people."
         }
         className="!pb-0"
       />
@@ -161,7 +161,7 @@ function BuyInner() {
                 aria-pressed={!isCloud}
                 className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Lifetime · self-host
+                Licence, self-hosted
               </button>
               <button
                 type="button"
@@ -169,7 +169,7 @@ function BuyInner() {
                 aria-pressed={isCloud}
                 className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Cloud · managed
+                Cloud, run by us
               </button>
             </div>
 
@@ -180,7 +180,7 @@ function BuyInner() {
                 same offer used to sit below the form, four screens down on a
                 phone. The licence card below says what paying adds. */}
             {!isCloud && (
-              <p className="mt-4 rounded-md bg-muted px-4 py-3 text-small text-muted-foreground">
+              <p className="mt-4 border-l-2 border-border-strong pl-4 text-small text-muted-foreground">
                 Fewer than {FREE_SEATS} people? OneCamp is free for you.{" "}
                 <a href="/free" className="link font-medium">
                   Get the install command
@@ -189,7 +189,7 @@ function BuyInner() {
               </p>
             )}
 
-            <div className="mt-4 rounded-lg border border-border bg-card p-6">
+            <div className="mt-6 border-t border-border pt-6">
               <div className="flex items-baseline justify-between">
                 <span className="font-medium text-foreground">{isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}</span>
                 {/* Rupees are the price: they are what is charged. The licence
@@ -288,7 +288,7 @@ function BuyInner() {
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>
             <Field label="Name">
-              <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Your name or company" autoComplete="name" />
+              <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Your name or company…" autoComplete="name" />
             </Field>
             <Field label="Country">
               <Select
@@ -341,7 +341,7 @@ function BuyInner() {
             <p className="text-caption text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="underline underline-offset-2 hover:text-foreground">Terms</a> and{" "}
-              <a href="/refund-policy" className="underline underline-offset-2 hover:text-foreground">Refund Policy</a>.
+              <a href="/refund-policy" className="underline underline-offset-2 hover:text-foreground">Refund policy</a>.
             </p>
           </form>
 
@@ -358,7 +358,7 @@ function BuyInner() {
                 their own server. The demo already exists and is clicked from every
                 other page; it was missing from the only page where the decision is
                 actually made. */}
-            <div className="rounded-lg border border-border p-6">
+            <div className="border-t border-border pt-6">
               <p className="font-medium text-foreground">Try it before you pay</p>
               <p className="mt-1 text-small text-muted-foreground">
                 The live demo is the real product with sample data. Nothing to install and no
@@ -376,7 +376,7 @@ function BuyInner() {
             {/* Only one of the thirty ever came back on another day, so there is no
                 consideration cycle to catch them in later. Either we can reach them
                 or they are gone. */}
-            <div className="mt-4 rounded-lg border border-border p-6">
+            <div className="mt-8 border-t border-border pt-6">
               <p className="font-medium text-foreground">Not buying today?</p>
               <p className="mt-1 text-small text-muted-foreground">
                 Leave your address and we will tell you when the price or the license terms

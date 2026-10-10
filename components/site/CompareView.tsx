@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Section, SectionHeading } from "@/components/ui/Section";
+import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/Section";
 import CostCalculator from "@/components/site/CostCalculator";
 import type { Pricing } from "@/lib/pricing";
 import { ButtonLink } from "@/components/ui/Button";
@@ -36,21 +36,23 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
         <>
             <PageHeader
                 title="Where OneCamp wins, and where it does not"
-                subtitle="Five open alternatives, the subscriptions all of them replace, and one question that separates them. Claims about other products link to the page they came from."
+                subtitle="Five open-source alternatives, compared on how they bill you and what limits their agents. Every claim about another product links to where it came from."
                 divider
             />
 
             {/* The concession, first and unhedged. */}
             <Section>
-                <SectionHeading
-                    align="left"
-                    eyebrow="Start here"
-                    title="What the others do better"
-                    subtitle={`Every one of these is a real reason to buy something else. Checked ${CLAIMS_CHECKED}.`}
-                />
+                <Margin
+                    aside={
+                        <MarginHeading
+                            title="What the others do better"
+                            subtitle={`Each of these is a real reason to buy something else. Checked ${CLAIMS_CHECKED}.`}
+                        />
+                    }
+                >
                 {/* A list with the product in the margin: four boxes of equal
                     weight made an honest concession look like a feature grid. */}
-                <dl className="mt-8 divide-y divide-border border-y border-border">
+                <dl className="divide-y divide-border border-y border-border">
                     {rivals.map((r) => (
                         <div key={r.name} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-8">
                             <dt className="font-medium text-foreground">{r.name}</dt>
@@ -58,6 +60,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         </div>
                     ))}
                 </dl>
+                </Margin>
             </Section>
 
             {/* The table. Structural claims only: how you pay, and what exists. */}
@@ -121,23 +124,22 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
             </Section>
 
             {/* The question. This is the page's actual argument. */}
-            <Section divider>
+            <Section tone="muted">
                 <SectionHeading
                     align="left"
                     title="Ask all five of us the same thing"
-                    subtitle="A governance claim you cannot check in an afternoon is a brochure. This one you can."
+                    subtitle="You can check OneCamp's answer yourself, in the demo, in about a minute."
                 />
-                <div className="mt-8">
-                    <blockquote className="rounded-lg bg-muted p-6">
-                        <p className="text-balance text-lg leading-relaxed text-foreground">{killQuestion}</p>
+                <div className="mt-10 max-w-3xl border-l-2 border-foreground pl-6">
+                    <blockquote className="m-0">
+                        <p className="text-balance font-display text-[1.5rem] leading-[2rem] tracking-[-0.01em] text-foreground sm:text-[1.75rem] sm:leading-[2.25rem]">{killQuestion}</p>
                     </blockquote>
                 </div>
                 <div className="mt-6">
                     <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                        OneCamp answers yes, and the demo will show you rather than tell you: the drill sends an agent at
-                        a channel its human principal is not in, and hands back the refusal with its position in the
-                        chain and the hash of the row before it. Nothing is staged. The row is written to the same log an
-                        admin exports.
+                        OneCamp answers yes, and the demo shows it: the drill sends an agent at a channel its person is
+                        not in, and hands back the refusal with its position in the chain and the hash of the row before
+                        it. The row is written to the same log an admin exports.
                     </p>
                 </div>
                 {/* The step past "we will show you": you check it, with our
@@ -150,8 +152,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         <a href="/verify" className="underline underline-offset-4 hover:text-foreground">
                             the verifier
                         </a>
-                        , which recomputes every row in your browser. It needs no account and nothing is uploaded, so
-                        what you are trusting is a page you can read the source of, not us.
+                        , which recomputes every row in your browser. It needs no account and uploads nothing.
                     </p>
                 </div>
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -166,11 +167,11 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
 
             {/* The agents a buyer already pays for are not the competition. They
                 are what arrives here, and this is how. */}
-            <Section divider>
+            <Section>
                 <SectionHeading
                     align="left"
                     title="Already paying for an agent? Bring it."
-                    subtitle="Whether it is a hosted agent billed by the seat or your own on a local model, OneCamp is where it works beside your team: each arrives as a named agent with a sponsor, reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
+                    subtitle="Hosted or your own, each arrives as a named agent acting for a person. It reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
                 />
                 <div className="mt-8">
                     <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
@@ -213,13 +214,15 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
 
             {/* Why the question above stopped being a matter of taste. */}
             <Section divider>
-                <SectionHeading
-                    align="left"
-                    eyebrow="Since August"
-                    title="What a deployer is now asked to keep"
-                    subtitle={`The EU AI Act's record-keeping obligations came into full application on ${RECORD_KEEPING_IN_FORCE}. Until then "our agents are audited" was a preference you could weigh against price.`}
-                />
-                <div className="mt-8">
+                <Margin
+                    aside={
+                        <MarginHeading
+                            title="What a deployer is now asked to keep"
+                            subtitle={`The EU AI Act's record-keeping obligations came into full application on ${RECORD_KEEPING_IN_FORCE}. Until then "our agents are audited" was a preference you could weigh against price.`}
+                        />
+                    }
+                >
+                <div>
                     <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
                         <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
                             <caption className="sr-only">
@@ -262,6 +265,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         .
                     </p>
                 </div>
+                </Margin>
             </Section>
 
             {/* The SEO block, which is also the honest answer to "what do I cancel". */}

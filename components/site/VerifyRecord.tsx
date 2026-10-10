@@ -91,7 +91,7 @@ export function VerifyRecord() {
     )
 
     return (
-        <div className="mx-auto w-full max-w-3xl">
+        <div className="w-full">
             <label
                 onDragOver={(e) => {
                     e.preventDefault()
@@ -100,7 +100,7 @@ export function VerifyRecord() {
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
                 className={[
-                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-12 text-center transition-colors",
+                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-card px-6 py-14 text-center transition-colors duration-150 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
                     dragging ? "border-foreground/50 bg-foreground/5" : "border-border hover:border-foreground/30",
                 ].join(" ")}
             >
@@ -114,12 +114,12 @@ export function VerifyRecord() {
                     }}
                 />
                 <span className="text-sm font-medium">Drop the file here, or choose one</span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-caption text-muted-foreground">
                     It is read in your browser. Nothing is uploaded.
                 </span>
             </label>
 
-            <p className="mt-3 text-center text-xs text-muted-foreground">
+            <p className="mt-3 text-caption text-muted-foreground">
                 No file yet?{" "}
                 <button
                     type="button"
@@ -136,7 +136,7 @@ export function VerifyRecord() {
             )}
 
             {state.kind === "error" && (
-                <p className="mt-6 rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
+                <p className="mt-6 rounded-lg border border-danger/40 bg-danger/5 p-4 text-sm text-danger-ink">
                     {state.message}
                 </p>
             )}
@@ -153,7 +153,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
             <div
                 className={[
                     "rounded-lg border p-5",
-                    clean ? "border-success/40 bg-success/5" : "border-destructive/50 bg-destructive/5",
+                    clean ? "border-success/40 bg-success/5" : "border-danger/50 bg-danger/5",
                 ].join(" ")}
             >
                 <p className="text-base font-semibold">
@@ -184,7 +184,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
 
             <div className="overflow-x-auto rounded-lg border">
                 <table className="w-full text-left text-sm">
-                    <thead className="border-b bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+                    <thead className="border-b bg-muted/40 text-caption text-muted-foreground">
                         <tr>
                             <th className="px-3 py-2 font-medium">Seq</th>
                             <th className="px-3 py-2 font-medium">Action</th>
@@ -244,7 +244,7 @@ function Verdict({ verdict }: { verdict: VerifyReport["rows"][number]["verdict"]
     }[verdict]
     const tone = {
         verified: "text-success-ink",
-        mismatch: "text-destructive font-medium",
+        mismatch: "text-danger-ink font-medium",
         redacted: "text-muted-foreground",
         unhashed: "text-muted-foreground",
     }[verdict]

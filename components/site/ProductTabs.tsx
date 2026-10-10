@@ -7,6 +7,12 @@ import { site } from "@/lib/site";
 /**
  * The product, one surface at a time: a tab, one sentence, one real screenshot.
  *
+ * On a wide screen the tabs stand in the margin as a vertical list with the
+ * chosen surface's sentence under it, and the screenshot fills the measure:
+ * a different shape from the hero's full-width figure just above, so the two
+ * do not read as the same section twice. Chat is last because the hero is
+ * already a channel. On a phone the tabs are a row that scrolls.
+ *
  * It replaced two sections that argued the same point ("everything your team
  * works in" and "what it actually looks like"), the second of them a drawn
  * mockup. Two rules carried over from the showcase it replaces, and
@@ -15,14 +21,6 @@ import { site } from "@/lib/site";
  * the page, so four hidden panels are not in the tab order or the HTML.
  */
 const TABS: { id: string; label: string; shot: ShotName; text: string; alt: string; place: string }[] = [
-  {
-    id: "chat",
-    label: "Chat",
-    shot: "chat",
-    text: "Channels, threads and direct messages, with mentions, files and daily check-ins.",
-    alt: "The #design channel in OneCamp: four people discussing a launch page.",
-    place: "engineering",
-  },
   {
     id: "docs",
     label: "Docs",
@@ -55,6 +53,14 @@ const TABS: { id: string; label: string; shot: ShotName; text: string; alt: stri
     alt: "The record of what an agent did: two refused attempts to post in a channel, each with its hash.",
     place: "drill",
   },
+  {
+    id: "chat",
+    label: "Chat",
+    shot: "chat",
+    text: "Channels, threads and direct messages, with mentions, files and daily check-ins.",
+    alt: "The #design channel in OneCamp: four people discussing a launch page.",
+    place: "engineering",
+  },
 ];
 
 export function ProductTabs() {
@@ -68,8 +74,8 @@ export function ProductTabs() {
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "ArrowRight") move(active + 1);
-    else if (e.key === "ArrowLeft") move(active - 1);
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") move(active + 1);
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") move(active - 1);
     else if (e.key === "Home") move(0);
     else if (e.key === "End") move(TABS.length - 1);
     else return;
@@ -79,51 +85,57 @@ export function ProductTabs() {
   const tab = TABS[active];
 
   return (
-    <div>
-      <div
-        role="tablist"
-        aria-label="Parts of OneCamp"
-        onKeyDown={onKeyDown}
-        className="-mx-4 flex gap-1 overflow-x-auto border-b border-border px-4 sm:mx-0 sm:px-0"
-      >
-        {TABS.map((t, i) => (
-          <button
-            key={t.id}
-            ref={(el) => {
-              refs.current[i] = el;
-            }}
-            id={`tab-${t.id}`}
-            role="tab"
-            type="button"
-            aria-selected={i === active}
-            aria-controls={`panel-${t.id}`}
-            tabIndex={i === active ? 0 : -1}
-            onClick={() => setActive(i)}
-            className={`relative -mb-px shrink-0 border-b-2 px-3 pb-3 pt-1 text-small font-medium transition-colors duration-150 ${
-              i === active
-                ? "border-brand text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-x-10">
+      <div className="min-w-0 lg:col-span-3">
+        <div
+          role="tablist"
+          aria-label="Parts of OneCamp"
+          onKeyDown={onKeyDown}
+          className="-mx-4 flex gap-1 overflow-x-auto border-b border-border px-4 sm:mx-0 sm:px-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-b-0 lg:border-l"
+        >
+          {TABS.map((t, i) => (
+            <button
+              key={t.id}
+              ref={(el) => {
+                refs.current[i] = el;
+              }}
+              id={`tab-${t.id}`}
+              role="tab"
+              type="button"
+              aria-selected={i === active}
+              aria-controls={`panel-${t.id}`}
+              tabIndex={i === active ? 0 : -1}
+              onClick={() => setActive(i)}
+              className={`relative -mb-px shrink-0 border-b-2 px-3 pb-3 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:border-b-0 lg:border-l-2 lg:py-2.5 lg:pl-5 lg:text-body ${
+                i === active
+                  ? "border-brand text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-5 hidden text-body text-muted-foreground lg:block">{tab.text}</p>
+        <a
+          href={site.demoUrlTo(tab.place)}
+          target="_blank"
+          rel="noreferrer"
+          className="link mt-4 hidden text-small font-medium lg:inline-block"
+        >
+          Open it in the live demo
+        </a>
       </div>
 
       {/* Only the chosen panel renders, the one at TABS[active]. */}
-      <div id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} className="pt-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
-          <p className="max-w-2xl text-body text-muted-foreground">{tab.text}</p>
-          <a
-            href={site.demoUrlTo(tab.place)}
-            target="_blank"
-            rel="noreferrer"
-            className="link shrink-0 text-small font-medium"
-          >
+      <div id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} className="min-w-0 lg:col-span-9">
+        <div className="mb-5 flex flex-col gap-3 lg:hidden">
+          <p className="text-body text-muted-foreground">{tab.text}</p>
+          <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="link self-start text-small font-medium">
             Open it in the live demo
           </a>
         </div>
-        <ProductShot key={tab.shot} name={tab.shot} alt={tab.alt} className="mt-6" />
+        <ProductShot key={tab.shot} name={tab.shot} alt={tab.alt} crop sizes="(min-width: 1120px) 1000px, 220vw" />
       </div>
     </div>
   );

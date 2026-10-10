@@ -39,9 +39,8 @@ export default async function DocsIndexPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Documentation"
-        title="OneCamp docs"
-        subtitle="Everything you need to deploy, configure, and run your self-hosted workspace."
+        title="Docs"
+        subtitle="How to install OneCamp on your server, keep it running, and use what is in it."
         divider
       />
 
@@ -63,11 +62,11 @@ export default async function DocsIndexPage() {
         ) : (
           <div className="space-y-12">
             {groups.map((group) => (
-              <section key={group.category} className="grid gap-4 lg:grid-cols-[12rem_1fr] lg:gap-10">
-                <h2 className="font-sans text-small font-medium tracking-normal text-muted-foreground lg:sticky lg:top-24 lg:h-fit lg:pt-4">
+              <section key={group.category} className="grid gap-4 lg:grid-cols-12 lg:gap-x-8">
+                <h2 className="text-h3 text-foreground lg:sticky lg:top-24 lg:col-span-3 lg:h-fit lg:pt-3">
                   {group.category}
                 </h2>
-                <ul className="divide-y divide-border border-y border-border">
+                <ul className="divide-y divide-border border-y border-border lg:col-span-9">
                   {group.items.map((item) => (
                     <li key={item.slug}>
                       <Link

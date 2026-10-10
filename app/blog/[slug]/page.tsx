@@ -70,31 +70,16 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
-      <div className="container-x max-w-prose pt-12 sm:pt-16">
+      <div className="container-x max-w-prose pt-12 sm:pt-20">
         <Link href="/blog" className="text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
           ← All posts
         </Link>
 
         <header className="mt-6">
-          {post.tags?.length > 0 && (
-            <div className="mb-4 flex flex-wrap gap-2">
-              {post.tags.map((t) => (
-                <span key={t} className="rounded-sm bg-muted px-2 py-0.5 text-caption text-muted-foreground">
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
           <h1 className="text-balance text-[2.25rem] leading-[2.625rem] tracking-[-0.024em] text-foreground sm:text-h1">{post.title}</h1>
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-small text-muted-foreground">
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-small text-muted-foreground">
             {post.author && <span className="font-medium text-foreground">{post.author}</span>}
-            {post.published_at && (
-              <>
-                <span aria-hidden>·</span>
-                <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
-              </>
-            )}
-            <span aria-hidden>·</span>
+            {post.published_at && <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>}
             <span>{mins} min read</span>
           </div>
         </header>
@@ -122,6 +107,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               the bottom of a technical write-up is the warmest reader this site
               gets, and organic search sends more people here than to any other
               page. Until now they left with no way to hear from us again. */}
+          {/* Tags at the end, as words: as pills above the title they were the
+              first thing a reader met, ahead of the headline. */}
+          {post.tags?.length > 0 && (
+            <p className="mb-8 text-small text-muted-foreground">
+              Filed under {post.tags.join(", ")}.
+            </p>
+          )}
+
           <div className="mb-20 border-t border-border pt-8">
             <p className="text-small font-medium text-foreground">Get the next one</p>
             <p className="mb-4 mt-1 text-small text-muted-foreground">

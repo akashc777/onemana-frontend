@@ -24,7 +24,7 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
     { term: "Your data stays put", detail: "No telemetry; your messages and files stay on your server" },
   ];
   return (
-    <dl className="grid grid-cols-2 gap-x-6 gap-y-5 border-y border-border py-6 lg:grid-cols-4">
+    <dl className="grid grid-cols-1 gap-x-8 gap-y-5 border-t border-border pt-6 min-[420px]:grid-cols-2 lg:grid-cols-4">
       {facts.map((f) => (
         <div key={f.term}>
           <dt className="text-small font-medium text-foreground">{f.term}</dt>

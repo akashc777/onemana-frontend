@@ -8,22 +8,29 @@ interface SectionProps {
   divider?: boolean;
   /** Tighter vertical rhythm for strips and short bands. */
   spacing?: "default" | "compact";
+  /**
+   * The ground. "muted" is the one band a page may have: a step darker in the
+   * same palette, for the section the page is really about. Never a theme flip.
+   */
+  tone?: "page" | "muted";
 }
 
-// 80 on a wide screen and 64 on a phone (DESIGN.md, Space). No reveal on
-// scroll: every section is visible to a crawler, a link preview, a full-page
-// capture and a fast reader alike.
+// 96 on a wide screen and 64 on a phone (DESIGN.md, Space), with a little more
+// below than above: equal padding reads as a gap that is too big at the top.
+// No reveal on scroll: every section is visible to a crawler, a link preview,
+// a full-page capture and a fast reader alike.
 const SPACING = {
-  default: "py-16 sm:py-20",
+  default: "pt-16 pb-20 sm:pt-24 sm:pb-28",
   compact: "py-10 sm:py-14",
 } as const;
 
 /** Semantic <section> with the site's width and vertical rhythm. */
-export function Section({ id, children, className = "", divider = false, spacing = "default" }: SectionProps) {
+export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page" }: SectionProps) {
+  const ground = tone === "muted" ? "border-y border-border bg-muted/70" : "";
   return (
-    <section id={id} className={`relative scroll-mt-16 ${className}`}>
+    <section id={id} className={`relative scroll-mt-20 ${ground} ${className}`}>
       <div className="container-x">
-        {divider && <div className="section-divider" role="separator" aria-hidden />}
+        {divider && tone === "page" && <div className="section-divider" role="separator" aria-hidden />}
         <div className={SPACING[spacing]}>{children}</div>
       </div>
     </section>
@@ -31,7 +38,7 @@ export function Section({ id, children, className = "", divider = false, spacing
 }
 
 interface HeadingProps {
-  /** Grey, sentence case, and rare: at most two on a page. */
+  /** Grey, sentence case, and rare: at most one on a page. */
   eyebrow?: string;
   title: ReactNode;
   subtitle?: ReactNode;
@@ -51,6 +58,34 @@ export function SectionHeading({ eyebrow, title, subtitle, align = "left", class
       {eyebrow && <p className="eyebrow">{eyebrow}</p>}
       <H className="text-balance text-h2 text-foreground">{title}</H>
       {subtitle && <p className="mt-3 text-body text-muted-foreground sm:text-body-lg">{subtitle}</p>}
+    </div>
+  );
+}
+
+/**
+ * The editorial grid: the heading in the margin (four of twelve columns), the
+ * content in the measure beside it. For sections that read like a document:
+ * a specification, a list of questions, a policy. It alternates with
+ * full-width sections, so two neighbours never share a shape. Below lg the
+ * margin stacks above the content.
+ */
+export function Margin({ aside, children, className = "" }: { aside: ReactNode; children: ReactNode; className?: string }) {
+  return (
+    <div className={`grid gap-8 lg:grid-cols-12 lg:gap-x-8 ${className}`}>
+      <div className="lg:col-span-4 lg:pr-6">{aside}</div>
+      <div className="min-w-0 lg:col-span-8">{children}</div>
+    </div>
+  );
+}
+
+/** A heading for the margin: smaller than a section heading, because the margin is narrow. */
+export function MarginHeading({ title, subtitle, id }: { title: ReactNode; subtitle?: ReactNode; id?: string }) {
+  return (
+    <div className="lg:sticky lg:top-24">
+      <h2 id={id} className="text-balance text-[1.75rem] leading-[2.125rem] tracking-[-0.016em] text-foreground">
+        {title}
+      </h2>
+      {subtitle && <p className="mt-3 text-body text-muted-foreground">{subtitle}</p>}
     </div>
   );
 }

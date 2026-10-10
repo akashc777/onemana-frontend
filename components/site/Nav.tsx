@@ -38,7 +38,7 @@ export function Nav() {
               href={l.href}
               aria-current={current(l.href) ? "page" : undefined}
               className={`rounded-md px-2.5 py-1.5 text-small transition-colors duration-150 ${
-                current(l.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                current(l.href) ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {l.label}

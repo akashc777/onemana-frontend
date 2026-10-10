@@ -44,9 +44,9 @@ const SPEC: { term: string; detail: string; href?: string; link?: string }[] = [
 
 export function RunSpec() {
   return (
-    <dl className="grid gap-x-12 md:grid-cols-2">
+    <dl className="grid gap-x-10 gap-y-8 border-t border-border pt-8 sm:grid-cols-2">
       {SPEC.map((s) => (
-        <div key={s.term} className="border-t border-border py-5">
+        <div key={s.term}>
           <dt className="text-small font-medium text-foreground">{s.term}</dt>
           <dd className="mt-1.5 text-small text-muted-foreground">
             {s.detail}
