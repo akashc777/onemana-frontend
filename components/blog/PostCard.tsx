@@ -1,12 +1,14 @@
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
-import { formatDate } from "@/lib/format";
+import { formatDayMonth } from "@/lib/format";
 import { readingTime } from "@/lib/markdown";
 
 /**
  * One post in the blog index: the title, two lines of its excerpt, then the
  * date and how long it takes to read. The month is in the margin of the list
- * (app/blog/page.tsx), so a post does not repeat it in a column of its own.
+ * (app/blog/page.tsx), so a post does not repeat it: its date is the day and
+ * the month ("9 Oct"), where "09 Oct 2026" once ran down a busy month a dozen
+ * times. The <time> keeps the full timestamp for anything that reads it.
  * Two lines, not the whole excerpt, and only for the newest few: the index
  * was 20,000 px tall when all eighty-odd posts ran their excerpts in full.
  */
@@ -20,7 +22,7 @@ export function PostCard({ post, compact = false }: { post: BlogPost; compact?: 
           <span className="min-w-0 text-body text-foreground transition-colors duration-150 group-hover:text-brand-ink">{post.title}</span>
           {post.published_at ? (
             <time dateTime={post.published_at} className="shrink-0 text-caption tabular-nums text-muted-foreground">
-              {formatDate(post.published_at)}
+              {formatDayMonth(post.published_at)}
             </time>
           ) : null}
         </Link>
@@ -35,7 +37,7 @@ export function PostCard({ post, compact = false }: { post: BlogPost; compact?: 
         </span>
         {post.excerpt && <span className="mt-2 line-clamp-2 max-w-2xl text-body text-muted-foreground">{post.excerpt}</span>}
         <span className="mt-2 block text-caption text-muted-foreground">
-          {post.published_at ? <time dateTime={post.published_at}>{formatDate(post.published_at)}</time> : null}
+          {post.published_at ? <time dateTime={post.published_at}>{formatDayMonth(post.published_at)}</time> : null}
           {mins ? `, ${mins} min read` : ""}
         </span>
       </Link>

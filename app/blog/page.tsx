@@ -5,13 +5,17 @@ import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
 import { PostCard } from "@/components/blog/PostCard";
 
+// Said plainly, as the page header says it. "From the OneCamp team" described
+// a team that does not exist: OneMana is one person (see /about).
+const DESCRIPTION = `Notes from building ${site.name}, written by the person who builds it: what shipped, what broke, and what changed because of it.`;
+
 export const metadata: Metadata = {
   title: "Blog: notes from building OneCamp",
-  description: `News, deep dives, and guides from the ${site.name} team on self-hosted, AI-native collaboration.`,
+  description: DESCRIPTION,
   alternates: { canonical: "/blog" },
   openGraph: {
     title: `${site.name} Blog`,
-    description: `News, deep dives, and guides from the ${site.name} team on self-hosted, AI-native collaboration.`,
+    description: DESCRIPTION,
     url: `${site.url}/blog`,
     type: "website",
     images: defaultOgImages,
@@ -19,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: `${site.name} Blog`,
-    description: `News and guides on self-hosted, AI-native team collaboration.`,
+    description: DESCRIPTION,
     images: defaultTwitterImages,
   },
 };

@@ -33,6 +33,18 @@ export function formatDate(iso?: string | null): string {
   }).format(d);
 }
 
+/**
+ * The day and month only, e.g. "9 Oct", for a list whose heading already says
+ * the month and year (the blog index groups posts under "October 2026"). UTC,
+ * like the grouping, so a post never shows a day from the month next door.
+ */
+export function formatDayMonth(iso?: string | null): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "-";
+  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(d);
+}
+
 /** "3m ago". For timelines, where the gap matters more than the clock time.
  *
  *  Beside the other formatters rather than inside a component, because the second
