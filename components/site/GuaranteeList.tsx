@@ -21,22 +21,32 @@
  */
 
 import React from "react"
+import type { CampHue } from "@/lib/campHue"
+import { HUE_CLASS } from "@/components/ui/graphics/hues"
 
 export interface Guarantee {
     title: string
     body: string
 }
 
-// The number is neutral: the accent is for actions, not for list markers.
+// The number is never the accent: the accent is for actions, not for list
+// markers. On a camp band it sits in a small card-coloured square in the
+// band's ink (hue), so the numbers read as part of that section's colour.
 // "row" sets the guarantees side by side under a hairline, for a section whose
 // top half already holds a heading and a figure; "list" stacks them.
-export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string; layout?: "list" | "row" }> = ({ items, className = "", layout = "list" }) => (
+export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string; layout?: "list" | "row"; hue?: CampHue }> = ({ items, className = "", layout = "list", hue }) => (
     <ol className={`list-none p-0 ${layout === "row" ? "grid gap-x-10 gap-y-8 border-t border-border pt-8 md:grid-cols-3" : "border-t border-border"} ${className}`}>
         {items.map((g, i) => (
             <li key={g.title} className={`grid grid-cols-[2rem_1fr] gap-x-3 ${layout === "row" ? "" : "border-b border-border py-5"}`}>
-                <span aria-hidden className="pt-0.5 font-mono text-small tabular-nums text-muted-foreground">
-                    {i + 1}
-                </span>
+                {hue ? (
+                    <span aria-hidden className={`${HUE_CLASS[hue]} flex size-7 items-center justify-center rounded-md bg-card font-mono text-small tabular-nums text-hue-ink`}>
+                        {i + 1}
+                    </span>
+                ) : (
+                    <span aria-hidden className="pt-0.5 font-mono text-small tabular-nums text-muted-foreground">
+                        {i + 1}
+                    </span>
+                )}
                 <div className="min-w-0">
                     <h3 className="text-h3 text-foreground">{g.title}</h3>
                     <p className="mt-1.5 text-small text-muted-foreground sm:text-body">{g.body}</p>

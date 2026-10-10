@@ -76,8 +76,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["var(--font-display-face)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        // The one-glyph rupee faces come first (lib/fonts.ts): their
+        // unicode-range is U+20B9 alone, so they draw ₹ and nothing else.
+        sans: ["var(--font-rupee)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-rupee-display)", "var(--font-display-face)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       // The marketing scale (DESIGN.md, Type). Size / line height / tracking.

@@ -65,7 +65,7 @@ describe("an Indian buyer's GSTIN and state", () => {
   })
 
   it("is what the checkout sends", () => {
-    const page = readFileSync("app/buy/page.tsx", "utf8")
+    const page = readFileSync("app/buy/BuyCheckout.tsx", "utf8")
     expect(page).toContain("checkIndianBilling(gstin, stateName)")
     expect(page).toContain("gstin: billing.gstin")
     expect(page).toContain("state_code: billing.stateCode")

@@ -88,7 +88,7 @@ describe("the AI choice", () => {
 })
 
 describe("the checkout asks for both before paying", () => {
-  const buy = readFileSync("app/buy/page.tsx", "utf8")
+  const buy = readFileSync("app/buy/BuyCheckout.tsx", "utf8")
   const form = buy.slice(buy.indexOf("<form onSubmit={handleSubmit}"), buy.indexOf("</form>"))
 
   it("puts the address field and the AI choice in the Cloud form", () => {

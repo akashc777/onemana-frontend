@@ -37,7 +37,7 @@ describe("no page says a time of its own", () => {
   const times = /within a day|few hours|under an hour|within an hour/i
 
   it("on /buy, which shows the estimate for the plan chosen", () => {
-    const buy = read("app/buy/page.tsx")
+    const buy = read("app/buy/BuyCheckout.tsx")
     expect(buy).toContain("setupEstimateFor(pricing, business)?.sentence")
     expect(buy).not.toMatch(times)
     expect(cloudBenefits.join(" ")).not.toMatch(times)

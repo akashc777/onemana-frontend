@@ -72,17 +72,21 @@ export function OneCampMark({ className = "" }: { className?: string }) {
   );
 }
 
-/** OneCamp product logo: white ring on a warm orange gradient tile. */
-export function OneCampLogo({ className = "" }: { className?: string }) {
+/**
+ * OneCamp product logo: white ring on a warm orange gradient tile. Each place
+ * it appears passes its own gradient id: the nav, the footer and a table can
+ * all show it on one page, and ids must be unique there.
+ */
+export function OneCampLogo({ className = "", gradientId = "ocLogoGrad" }: { className?: string; gradientId?: string }) {
   return (
     <svg viewBox="0 0 512 512" className={className} fill="none" aria-hidden>
       <defs>
-        <linearGradient id="ocLogoGrad" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#FF8A00" />
           <stop offset="1" stopColor="#FF3D00" />
         </linearGradient>
       </defs>
-      <rect width="512" height="512" rx="112" fill="url(#ocLogoGrad)" />
+      <rect width="512" height="512" rx="112" fill={`url(#${gradientId})`} />
       <circle cx="256" cy="256" r="150" stroke="#FFFFFF" strokeWidth="56" />
     </svg>
   );

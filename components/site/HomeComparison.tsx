@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProductName } from "@/components/site/ProductName";
 import { fmtINR, type Pricing } from "@/lib/pricing";
 import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearInr } from "@/lib/teamCost";
 
@@ -74,7 +75,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
               </th>
               {COLUMNS.map((c, i) => (
                 <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "rounded-t-md bg-muted pl-4 text-foreground" : "text-muted-foreground"}`}>
-                  {c}
+                  <ProductName name={c} markId="ocLogoGradHomeTable" />
                 </th>
               ))}
             </tr>

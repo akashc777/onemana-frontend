@@ -17,7 +17,7 @@ import { describe, expect, it } from "vitest";
  */
 const files = [
   "app/page.tsx",
-  "app/buy/page.tsx",
+  "app/buy/BuyCheckout.tsx",
   "app/blog/[slug]/page.tsx",
 ];
 

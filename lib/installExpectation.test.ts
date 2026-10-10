@@ -22,6 +22,8 @@ const ROOT = process.cwd()
 const read = (p: string) => readFileSync(join(ROOT, p), "utf8").toLowerCase()
 /** The purchase receipt: the page, and the key and install block it shows. */
 const receipt = () => read("app/buy/success/page.tsx") + read("components/site/LicenseInstall.tsx")
+/** The free page: drawn on the server, with its command and email form as client parts. */
+const freePage = () => read("app/free/page.tsx") + read("app/free/FreeInstall.tsx")
 
 describe("what a buyer is told before they pay", () => {
     it("names the machine floor in the install steps and the needs list", () => {
@@ -34,7 +36,7 @@ describe("what a buyer is told before they pay", () => {
         for (const [where, text] of [
             ["install step one", steps[0].body.toLowerCase()],
             ["the receipt", receipt()],
-            ["the free page", read("app/free/page.tsx")],
+            ["the free page", freePage()],
         ] as const) {
             expect(text, `${where} still describes a second deploy`).not.toContain("second deploy")
         }
@@ -43,7 +45,7 @@ describe("what a buyer is told before they pay", () => {
     })
 
     it("shows the free page's visitor what they need before the form", () => {
-        expect(read("app/free/page.tsx")).toContain("selfhostneeds")
+        expect(freePage()).toContain("selfhostneeds")
     })
 })
 
@@ -58,7 +60,7 @@ describe("what a buyer is told the installer asks", () => {
     it("is the same words in the steps, the receipt and the free page", () => {
         expect(steps[0].body).toContain(installerAsks)
         expect(read("components/site/LicenseInstall.tsx")).toContain("{installerasks}")
-        expect(read("app/free/page.tsx")).toContain("{installerasks}")
+        expect(freePage()).toContain("{installerasks}")
     })
 
     it("names the questions in the order the installer asks them", () => {
@@ -74,7 +76,7 @@ describe("what a buyer is told the installer asks", () => {
             ["install step one", steps[0].body.toLowerCase()],
             ["the needs list", selfHostNeeds.join(" ").toLowerCase()],
             ["the receipt", receipt()],
-            ["the free page", read("app/free/page.tsx")],
+            ["the free page", freePage()],
         ] as const) {
             expect(text, where).not.toMatch(/asks (for )?(one|your) email|docker-capable|with docker,/)
         }

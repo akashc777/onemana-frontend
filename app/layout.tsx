@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { fontDisplay, fontMono, fontSans } from "@/lib/fonts";
+import { fontDisplay, fontMono, fontRupee, fontRupeeDisplay, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { jsonLdScript } from "@/lib/jsonLd";
@@ -97,8 +97,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const pricing = await getPricing();
   const jsonLd = buildJsonLd(pricing.lifetime_inr, pricing.lifetime_usd, pricing.cloud_inr, pricing.cloud_usd);
   return (
-    <html lang="en" className={`${fontSans.variable} ${fontMono.variable} ${fontDisplay.variable}`} suppressHydrationWarning>
-      <body className={`${fontSans.className} flex min-h-screen flex-col font-sans antialiased`}>
+    <html
+      lang="en"
+      className={`${fontSans.variable} ${fontMono.variable} ${fontDisplay.variable} ${fontRupee.variable} ${fontRupeeDisplay.variable}`}
+      suppressHydrationWarning
+    >
+      {/* font-sans, not Inter's own class: the stack puts the one-glyph rupee
+          face first (lib/fonts.ts), which Inter's class would leave out. */}
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <ThemeProvider>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
           <VisitorTracker />

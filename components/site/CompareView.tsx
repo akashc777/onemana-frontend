@@ -4,6 +4,7 @@ import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/
 import CostCalculator from "@/components/site/CostCalculator";
 import type { Pricing } from "@/lib/pricing";
 import { ButtonLink } from "@/components/ui/Button";
+import { ProductName } from "@/components/site/ProductName";
 import {
     AGENTS_CHECKED,
     CLAIMS_CHECKED,
@@ -62,7 +63,9 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 <dl className="divide-y divide-border border-y border-border">
                     {rivals.map((r) => (
                         <div key={r.name} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-8">
-                            <dt className="font-medium text-foreground">{r.name}</dt>
+                            <dt className="font-medium text-foreground">
+                                <ProductName name={r.name} />
+                            </dt>
                             <dd className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{r.theyWin}</dd>
                         </div>
                     ))}
@@ -97,7 +100,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                             <tbody>
                                 <tr className="border-b border-border bg-muted">
                                     <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
-                                        {onecampRow.name}
+                                        <ProductName name={onecampRow.name} markId="ocLogoGradCompare" />
                                     </th>
                                     <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.what}</td>
                                     <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.billing}</td>
@@ -106,14 +109,16 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                                 {rivals.map((r) => (
                                     <tr key={r.name} className="border-b border-border last:border-0">
                                         <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
-                                            <a
-                                                href={r.source}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
-                                            >
-                                                {r.name}
-                                            </a>
+                                            <ProductName name={r.name}>
+                                                <a
+                                                    href={r.source}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
+                                                >
+                                                    {r.name}
+                                                </a>
+                                            </ProductName>
                                         </th>
                                         <td className="px-4 py-4 align-top text-muted-foreground">
                                             {r.what}
@@ -148,7 +153,8 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
             </Section>
 
             {/* The question. This is the page's actual argument. */}
-            <Section tone="muted">
+            {/* Dusk: the site's colour for agents and the record. */}
+            <Section band="dusk">
                 <SectionHeading
                     align="left"
                     title="Ask every one of us the same thing"

@@ -25,7 +25,7 @@ describe("the account page after a purchase", () => {
   })
 
   it("tells a Cloud buyer on /buy that the email is their sign-in", () => {
-    const buy = readFileSync("app/buy/page.tsx", "utf8")
+    const buy = readFileSync("app/buy/BuyCheckout.tsx", "utf8")
     expect(buy).toContain("You sign in to your workspace with it")
   })
 })

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { buttonClasses } from "@/components/ui/Button";
 import { site } from "@/lib/site";
 
 /**
@@ -22,6 +23,11 @@ import { site } from "@/lib/site";
  * than somebody who has just finished a blog post, so the caller says what the
  * reason is. Defaults are the existing wording, so nothing changes where nobody
  * has thought about it yet.
+ *
+ * It looks like the site's other forms: a 6 px input on the card surface with
+ * the global focus ring, and an outline button, because the orange is kept for
+ * the one primary action of each view and this is never it. The answer, or
+ * the error, is announced where it appears.
  */
 export function SubscribeForm({
     source,
@@ -59,7 +65,11 @@ export function SubscribeForm({
   };
 
   if (state === "done") {
-    return <p className={`text-sm text-foreground ${compact ? "" : "mt-2"}`}>{msg}</p>;
+    return (
+      <p role="status" className={`text-sm text-foreground ${compact ? "" : "mt-2"}`}>
+        {msg}
+      </p>
+    );
   }
 
   return (
@@ -70,22 +80,21 @@ export function SubscribeForm({
         </label>
         <input
           id={`sub-${source}`}
+          name="email"
           type="email"
           required
+          autoComplete="email"
+          spellCheck={false}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30"
+          className="h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm"
         />
-        <button
-          type="submit"
-          disabled={state === "sending"}
-          className="btn-primary shrink-0 px-4 py-2 text-sm disabled:opacity-60"
-        >
+        <button type="submit" disabled={state === "sending"} className={buttonClasses("ghost", "md", "shrink-0")}>
           {state === "sending" ? "Adding…" : cta}
         </button>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
+      <p aria-live="polite" className="mt-2 text-xs text-muted-foreground">
         {state === "error" ? (
           <span className="text-danger-ink">{msg}</span>
         ) : (

@@ -24,7 +24,7 @@ import { describe, expect, it } from "vitest"
  */
 
 const ROOT = join(__dirname, "..")
-const BUY = readFileSync(join(ROOT, "app/buy/page.tsx"), "utf8")
+const BUY = readFileSync(join(ROOT, "app/buy/BuyCheckout.tsx"), "utf8")
 
 describe("the checkout page", () => {
   it("offers the live demo, so paying is not the only way to find out", () => {
@@ -67,7 +67,7 @@ describe("the checkout page", () => {
 })
 
 describe("the money sentence", () => {
-  const page = readFileSync(join(process.cwd(), "app/buy/page.tsx"), "utf8")
+  const page = readFileSync(join(process.cwd(), "app/buy/BuyCheckout.tsx"), "utf8")
 
   it("is rendered from paymentTerms at the pay button, for every plan", () => {
     // The refund policy says "no refunds"; the checkout used to say only "you
@@ -93,7 +93,7 @@ describe("the money sentence", () => {
 // while the checkout charged ₹24,999. It now takes the chosen plan's price,
 // and every price on the page is dollars beside the rupee charge.
 describe("the buy page quotes the price it charges", () => {
-  const page = readFileSync(join(__dirname, "..", "app", "buy", "page.tsx"), "utf8")
+  const page = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
 
   it("prices the pay button from the chosen plan", () => {
     expect(page).toContain("Subscribe - ${dual(price.usd, price.inr, price.per)}")
@@ -104,5 +104,87 @@ describe("the buy page quotes the price it charges", () => {
   // backend charges them (charge_usd). The note under the button says which.
   it("says how the charge is made where the money is paid", () => {
     expect(page).toContain("currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })")
+  })
+})
+
+/**
+ * The checkout arrives in the first response, not after the JavaScript.
+ *
+ * The page was one client component that read the query with useSearchParams
+ * under a Suspense boundary, so Next rendered it in the browser: the HTML held
+ * "Loading…", and the price, the form and the footer appeared once the script
+ * ran, shifting the page by 0.74 on a phone (Lighthouse, 10 Oct 2026). The page
+ * is now a server component that reads the query and the pricing, and the
+ * client part starts from them.
+ */
+describe("the buy page renders on the server", () => {
+  // Code only: the comments explain the history in the same words.
+  const code = (f: string) =>
+    readFileSync(join(__dirname, "..", "app", "buy", f), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "")
+  const page = code("page.tsx")
+  const checkout = code("BuyCheckout.tsx")
+
+  it("is a server component that reads the plan and the price itself", () => {
+    expect(page).not.toMatch(/^["']use client["']/m)
+    expect(page).toContain("await getPricing()")
+    expect(page).toContain("initialPricing={pricing}")
+  })
+
+  it("never asks the browser for the query, which sent the whole page to the browser", () => {
+    for (const src of [page, checkout]) {
+      expect(src).not.toMatch(/useSearchParams|<Suspense/)
+    }
+    expect(checkout).toContain("useState<Pricing>(initialPricing)")
+    expect(checkout).not.toMatch(/useState<Pricing>\(defaultPricing\)/)
+  })
+
+  it("draws the plan table outside the form, so typing does not redraw it", () => {
+    expect(page).toContain("<PlanComparison pricing={pricing} />")
+    expect(checkout).not.toContain("PlanComparison")
+  })
+})
+
+/**
+ * A failed pricing refresh keeps the live prices the server drew.
+ *
+ * fetchPricingClient answers a failure with the built-in fallback, the very
+ * defaultPricing object. Before the page was drawn on the server that was
+ * also its starting point, so nothing changed; now the page starts from live
+ * prices, and a refresh that failed (a network error, the backend down)
+ * replaced them with the fallback's: the wrong dollar rate, and Cloud's
+ * yearly and Business choices gone.
+ */
+describe("a failed pricing refresh on /buy", () => {
+  it("is told apart by identity: the fallback object itself comes back", async () => {
+    const { fetchPricingClient, defaultPricing } = await import("@/lib/pricing")
+    const real = globalThis.fetch
+    try {
+      globalThis.fetch = (() => Promise.reject(new Error("offline"))) as typeof fetch
+      expect(await fetchPricingClient()).toBe(defaultPricing)
+      globalThis.fetch = (() => Promise.resolve(new Response("{}", { status: 503 }))) as typeof fetch
+      expect(await fetchPricingClient()).toBe(defaultPricing)
+      globalThis.fetch = (() => Promise.resolve(new Response(JSON.stringify({ data: { lifetime_inr: 1 } }), { status: 200 }))) as typeof fetch
+      expect(await fetchPricingClient()).not.toBe(defaultPricing)
+    } finally {
+      globalThis.fetch = real
+    }
+  })
+
+  it("leaves the server's prices in place", () => {
+    const checkout = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
+    expect(checkout).toContain("if (fresh !== defaultPricing) setPricing(fresh);")
+    expect(checkout).not.toContain("fetchPricingClient().then(setPricing)")
+  })
+})
+
+describe("the plan switch on a narrow phone", () => {
+  // At 360 px "Licence, self-hosted" wrapped to two lines beside a one-line
+  // "Cloud, run by us". Below 380 px the qualifiers are read, not shown.
+  it("keeps both labels to one line and their full names for a screen reader", () => {
+    const checkout = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")
+    expect(checkout).toContain('Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span>')
+    expect(checkout).toContain('Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>')
   })
 })

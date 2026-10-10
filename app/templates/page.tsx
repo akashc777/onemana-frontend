@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
+import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { gallerySpans } from "@/components/site/gallery";
 import { landingMetadata } from "@/lib/landingMetadata";
 import { taskCount, templates, weeksLong } from "@/lib/templates";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -33,25 +35,35 @@ export default function TemplatesPage() {
             </ButtonLink>
             <ButtonLink href="/free" variant="ghost" size="lg">Start free, up to {FREE_SEATS} people</ButtonLink>
           </div>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {templates.map((t) => (
-              <li key={t.id}>
+          {/* Each template has its identity colour, as a project has in the
+              app (hueFor on its id), and the card lifts a pixel under the
+              pointer because the whole card is the link. The focus ring is
+              the site's own. */}
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-12">
+            {templates.map((t, i) => (
+              <li key={t.id} className={gallerySpans(templates.length)[i]}>
                 <Link
                   href={`/templates/${t.id}`}
-                  className="card group flex h-full flex-col border border-border transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                  className="hover-lift group flex h-full flex-col rounded-lg border border-border bg-card p-6"
                 >
-                  <h2 className="text-base font-semibold text-foreground group-hover:text-brand-ink">{t.name}</h2>
-                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">{t.description}</p>
-                  <p className="mt-4 text-xs font-medium tabular-nums text-muted-foreground">
-                    {taskCount(t)} tasks · {weeksLong(t)} {weeksLong(t) === 1 ? "week" : "weeks"}
+                  <h2 className="flex items-center gap-2.5 font-sans text-body font-semibold tracking-normal text-foreground">
+                    <IdentityMark id={t.id} variant="square" />
+                    {t.name}
+                  </h2>
+                  <p className="mt-2 flex-1 text-small text-muted-foreground">{t.description}</p>
+                  <p className="mt-4 text-caption font-medium tabular-nums text-muted-foreground">
+                    {taskCount(t)} tasks, {weeksLong(t)} {weeksLong(t) === 1 ? "week" : "weeks"}
                   </p>
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="mt-10 max-w-2xl text-sm text-muted-foreground">
+          <p className="mt-10 max-w-2xl text-small text-muted-foreground">
             Run a project your team repeats? Save it as a template in OneCamp and everyone starts from it next time.{" "}
-            <Link href="/docs/project-templates" className="underline underline-offset-4">How templates work</Link>.
+            <Link href="/docs/project-templates" className="link">
+              How templates work
+            </Link>
+            .
           </p>
         </div>
       </section>

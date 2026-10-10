@@ -135,7 +135,7 @@
    heading is a system decision, not one for each component to remember.
    Inter Tight at 600, never 700: calm comes from a light display weight. */
 h1, h2, h3 {
-  font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-rupee-display), var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
   text-wrap: balance;
@@ -233,6 +233,14 @@ body {
 
   .link {
     @apply text-brand-ink underline decoration-brand-ink/40 underline-offset-4 transition-colors duration-150 hover:decoration-brand-ink;
+  }
+
+  /* On a camp band the orange ink falls just under 4.5:1 on three of the six
+     tints (sky, dusk, berry in light mode, app/bandContrast.test.ts), so a link
+     there reads in the text colour and keeps the accent in its underline,
+     drawn solid so it still says "link". */
+  [data-band] .link {
+    @apply text-foreground decoration-brand-ink;
   }
 
   .section-divider {
