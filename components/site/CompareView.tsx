@@ -148,7 +148,8 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
             </Section>
 
             {/* The question. This is the page's actual argument. */}
-            <Section tone="muted">
+            {/* Dusk: the site's colour for agents and the record. */}
+            <Section band="dusk">
                 <SectionHeading
                     align="left"
                     title="Ask every one of us the same thing"

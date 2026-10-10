@@ -130,8 +130,9 @@ export default async function HomePage() {
         <ProductTabs />
       </Section>
 
-      {/* 4. The argument, shown. The id is the one the nav's "Safe AI" and old links use. */}
-      <Section id="demo" tone="muted">
+      {/* 4. The argument, shown. The id is the one the nav's "Safe AI" and old links use.
+          Dusk is the site's colour for agents and the record. */}
+      <Section id="demo" band="dusk">
         <span id="governance" aria-hidden />
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-5">
@@ -209,8 +210,8 @@ export default async function HomePage() {
           touch. It was a centred band followed by a separate email strip, the
           last two blocks of every template; now one section on the grid, the
           claim on the left and what to do about it on the right. */}
-      <Section id="start">
-        <div className="grid gap-10 border-t border-border pt-12 lg:grid-cols-12 lg:gap-x-8">
+      <Section id="start" band="sky">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-7">
             <h2 className="text-balance text-h2 text-foreground">
               If you can&apos;t say what your AI is allowed to do, this is for you.

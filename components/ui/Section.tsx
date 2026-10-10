@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import type { CampHue } from "@/lib/campHue";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 
 interface SectionProps {
   id?: string;
@@ -9,10 +11,17 @@ interface SectionProps {
   /** Tighter vertical rhythm for strips and short bands. */
   spacing?: "default" | "compact";
   /**
-   * The ground. "muted" is the one band a page may have: a step darker in the
-   * same palette, for the section the page is really about. Never a theme flip.
+   * The ground. "muted" is a step darker in the same palette. Never a theme flip.
    */
   tone?: "page" | "muted";
+  /**
+   * A full-width band in a camp hue's tint (the playful layer): at most every
+   * other section, and one band colour on a screen. The hue says what the
+   * section is about, the same hue it has everywhere on the site (dusk for
+   * agents and the record, for one). Text on it keeps its tokens, which hold
+   * AA on every tint (app/bandContrast.test.ts). Wins over tone.
+   */
+  band?: CampHue;
 }
 
 // 96 on a wide screen and 64 on a phone (DESIGN.md, Space), with a little more
@@ -30,12 +39,16 @@ const SPACING = {
  * anchor below the sticky nav, and a margin here added to it, so a link
  * landed 80 px lower on the screen than it meant to.
  */
-export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page" }: SectionProps) {
-  const ground = tone === "muted" ? "border-y border-border bg-muted/70" : "";
+export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page", band }: SectionProps) {
+  const ground = band
+    ? `${HUE_CLASS[band]} border-y border-hue/15 bg-hue-tint`
+    : tone === "muted"
+      ? "border-y border-border bg-muted/70"
+      : "";
   return (
-    <section id={id} className={`relative ${ground} ${className}`}>
+    <section id={id} data-band={band} className={`relative ${ground} ${className}`}>
       <div className="container-x">
-        {divider && tone === "page" && <div className="section-divider" role="separator" aria-hidden />}
+        {divider && tone === "page" && !band && <div className="section-divider" role="separator" aria-hidden />}
         <div className={SPACING[spacing]}>{children}</div>
       </div>
     </section>
