@@ -197,7 +197,7 @@ export function DocsSearch({ className = "" }: { className?: string }) {
                     onPointerEnter={() => router.prefetch(h.href)}
                     onFocus={() => router.prefetch(h.href)}
                     onClick={done}
-                    className="block rounded-md px-3 py-2 outline-offset-0 transition-colors duration-150 hover:bg-muted focus-visible:bg-muted"
+                    className="block rounded-md px-3 py-2 outline-offset-0 transition-colors hover:bg-muted focus-visible:bg-muted"
                   >
                     <span className="block text-small font-medium text-foreground">{h.section || h.title}</span>
                     <span className="block text-caption text-muted-foreground">{h.section ? h.title : "Guide"}</span>

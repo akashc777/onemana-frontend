@@ -55,7 +55,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] transition-colors duration-150 hover:decoration-brand-ink">
+      <button type="button" onClick={() => setOpen(true)} className="text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] transition-colors hover:decoration-brand-ink">
         Change email
       </button>
     );
@@ -108,7 +108,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
           {error}
         </p>
       )}
-      <button type="button" onClick={reset} className="text-caption text-muted-foreground transition-colors duration-150 hover:text-foreground">
+      <button type="button" onClick={reset} className="text-caption text-muted-foreground transition-colors hover:text-foreground">
         Cancel
       </button>
     </div>

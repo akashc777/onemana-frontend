@@ -13,19 +13,19 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 const LOOKS = {
   /** A link in the desktop bar. */
   bar: {
-    base: "rounded-md px-2.5 py-1.5 text-small transition-colors duration-150",
+    base: "rounded-md px-2.5 py-1.5 text-small transition-colors",
     current: "font-medium text-foreground",
     other: "text-muted-foreground hover:text-foreground",
   },
   /** A row in the phone menu. */
   menu: {
-    base: "flex min-h-12 items-center border-b border-border text-body transition-colors duration-150",
+    base: "flex min-h-12 items-center border-b border-border text-body transition-colors",
     current: "font-medium text-foreground",
     other: "text-foreground/90 hover:text-foreground",
   },
   /** Pricing, beside the menu button on a phone. */
   compact: {
-    base: "inline-flex min-h-11 items-center rounded-md px-2.5 text-small transition-colors duration-150",
+    base: "inline-flex min-h-11 items-center rounded-md px-2.5 text-small transition-colors",
     current: "font-medium text-foreground",
     other: "text-muted-foreground hover:text-foreground",
   },
@@ -87,7 +87,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="mobile-menu"
-        className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+        className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         onClick={() => setOpen((v) => !v)}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>

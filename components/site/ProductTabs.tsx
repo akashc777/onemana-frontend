@@ -165,7 +165,7 @@ export function ProductTabs() {
               onPointerEnter={() => warm(t.shot)}
               // Arrow keys choose as they move, so the neighbours are warmed too.
               onFocus={() => [i - 1, i, i + 1].forEach((n) => warm(TABS[(n + TABS.length) % TABS.length].shot))}
-              className={`relative -mb-px flex min-h-11 shrink-0 items-center gap-2.5 border-b-2 px-2 pb-2.5 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:min-h-0 lg:gap-3 lg:border-b-0 lg:border-l-2 lg:py-2 lg:pl-4 lg:text-body ${
+              className={`relative -mb-px flex min-h-11 shrink-0 items-center gap-2.5 border-b-2 px-2 pb-2.5 pt-1 text-left text-small font-medium transition-colors lg:-ml-px lg:mb-0 lg:min-h-0 lg:gap-3 lg:border-b-0 lg:border-l-2 lg:py-2 lg:pl-4 lg:text-body ${
                 i === active
                   ? "border-brand text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"

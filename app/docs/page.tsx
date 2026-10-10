@@ -87,7 +87,7 @@ export default async function DocsIndexPage() {
                         className="group flex items-baseline justify-between gap-6 py-4"
                       >
                         <span className="min-w-0">
-                          <span className="block font-medium text-foreground transition-colors duration-150 group-hover:text-brand-ink">
+                          <span className="block font-medium text-foreground transition-colors group-hover:text-brand-ink">
                             {item.title}
                           </span>
                           {item.summary && (
@@ -96,7 +96,7 @@ export default async function DocsIndexPage() {
                             </span>
                           )}
                         </span>
-                        <span aria-hidden className="shrink-0 text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5">
+                        <span aria-hidden className="shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5">
                           →
                         </span>
                       </Link>

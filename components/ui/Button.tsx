@@ -4,33 +4,40 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 type Variant = "primary" | "brand" | "brandPremium" | "ghost" | "subtle";
 type Size = "sm" | "md" | "lg";
 
-// Radius 6, no shadow, and the focus ring comes from the global :focus-visible
-// rule (globals.css), so every control shows the same one.
+// The app's Button (onecamp-fe components/ui/button.tsx), on this site's
+// names; lib/appSystem.ts has its numbers and app/appSystem.test.ts holds
+// them. Radius 6, weight 500, no shadow. Hover is a fill step, a press
+// settles the button a pixel, disabled fades to half. Keyboard focus is the
+// global ring (globals.css); a filled button takes a thin outline 2px off
+// its fill instead, because a 2px ring pressed against orange reads as one
+// thick slab. Named transition properties, at the house 120 ms.
 const base =
-  "inline-flex items-center justify-center gap-2 text-center rounded-md font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 text-center rounded-md font-medium transition-[color,background-color,border-color,opacity,transform] active:translate-y-px disabled:pointer-events-none disabled:opacity-50";
+
+const FILLED_FOCUS = "focus-visible:outline-[1.5px] focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 const variants: Record<Variant, string> = {
-  /** Neutral fill, for an action that matters but is not the page's one primary. */
-  primary: "bg-foreground text-background hover:bg-foreground/90",
-  /** The accent fill. One per view: it is the thing the page wants you to do. */
-  brand: "bg-brand text-brand-foreground hover:bg-brand-dark",
+  /** The app's secondary: a muted fill, for an action that matters but is not the page's one primary. */
+  primary: "bg-muted text-foreground hover:bg-muted/80",
+  /** The app's default: the accent fill (--brand-ink, the app's --brand-text). One per view. */
+  brand: `bg-brand-ink text-brand-foreground hover:bg-brand-ink/90 ${FILLED_FOCUS}`,
   /** Kept as a name for older call sites; it is the same as brand now. */
-  brandPremium: "bg-brand text-brand-foreground hover:bg-brand-dark",
-  /** Outline: the secondary action beside a primary one. */
-  ghost: "border border-border-strong bg-card text-foreground hover:bg-muted",
-  subtle: "text-muted-foreground hover:bg-muted hover:text-foreground",
+  brandPremium: `bg-brand-ink text-brand-foreground hover:bg-brand-ink/90 ${FILLED_FOCUS}`,
+  /** The app's outline: the secondary action beside a primary one. */
+  ghost: "border border-border-strong bg-background text-foreground hover:bg-highlight",
+  /** The app's ghost: no ground until the pointer is on it. */
+  subtle: "text-foreground hover:bg-highlight",
 };
 
-// Each size states its line height, and its padding plus line height plus an
-// outline's two border pixels stays inside the minimum height, so a filled
-// and an outlined button of one size are one height (buttonHeight.test.ts).
-// lg once inherited a 22.5 px line and came out 44 filled, 44.5 outlined.
-// md is 44 px on a phone, where a finger presses it, and 40 from sm; sm is
-// for the wide nav only.
+// The app's sizes: sm 32, default 36, lg 40, with its padding and text. Each
+// states a line height, and padding plus line height plus an outline's two
+// border pixels stays inside the minimum height, so a filled and an outlined
+// button of one size are one height (buttonHeight.test.ts). Below md, where a
+// finger presses them, md and lg reach 44 px, as the app's own fields do.
 const sizes: Record<Size, string> = {
-  sm: "min-h-8 px-3 py-1 text-sm",
-  md: "min-h-11 px-4 py-2 text-sm sm:min-h-10",
-  lg: "min-h-11 px-5 py-2 text-[0.9375rem] leading-6",
+  sm: "min-h-8 px-3 py-1 text-caption",
+  md: "min-h-11 px-4 py-1.5 text-sm md:min-h-9",
+  lg: "min-h-11 px-8 py-2 text-sm md:min-h-10",
 };
 
 interface CommonProps {

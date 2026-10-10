@@ -132,8 +132,14 @@ const config: Config = {
         popover: "0 4px 16px rgb(0 0 0 / 0.08)",
         dialog: "0 16px 48px rgb(0 0 0 / 0.16)",
       },
+      // The app's house timing (MOTION in its globals.css): 120 ms for hover
+      // and press, so a bare transition-colors takes it as it does there.
+      transitionDuration: {
+        DEFAULT: "120ms",
+        120: "120ms",
+      },
       transitionTimingFunction: {
-        DEFAULT: "cubic-bezier(.2,.8,.2,1)",
+        DEFAULT: "cubic-bezier(0.2,0.8,0.2,1)",
         // A knob that travels lands with a slight overshoot (ease-spring).
         spring: "cubic-bezier(0.3,1.35,0.5,1)",
       },

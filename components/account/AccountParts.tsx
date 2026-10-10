@@ -56,7 +56,7 @@ export function CopyField({ value, label, wrap = false }: { value: string; label
           }
           window.setTimeout(() => setDone(""), 1600);
         }}
-        className="h-[2.125rem] shrink-0 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+        className="h-[2.125rem] shrink-0 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         aria-label={`Copy ${label}`}
       >
         {done === "copied" ? "Copied" : done === "failed" ? "Select it" : "Copy"}

@@ -158,7 +158,7 @@ export function AccountLogin({
                 setCode("");
                 setError("");
               }}
-              className="min-h-11 w-full text-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0"
+              className="min-h-11 w-full text-center text-small text-muted-foreground transition-colors hover:text-foreground sm:min-h-0"
             >
               Use a different email
             </button>

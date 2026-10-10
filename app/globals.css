@@ -199,10 +199,13 @@ body {
 }
 
 /* One visible focus state for everything a keyboard can reach, in the accent:
-   the ring is one of the few places the accent is allowed. */
+   the ring is one of the few places the accent is allowed. The app's ring
+   (ring-2 ring-ring/70 ring-offset-1), drawn as an outline so forced-colours
+   mode still shows it. A filled button takes a thinner one 2px off its fill
+   (components/ui/Button.tsx). */
 :focus-visible {
-  outline: 2px solid rgb(var(--ring));
-  outline-offset: 2px;
+  outline: 2px solid rgb(var(--ring) / 0.7);
+  outline-offset: 1px;
   border-radius: 4px;
 }
 
@@ -222,16 +225,20 @@ body {
     @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
   }
 
+  /* The app's buttons as classes, for a form that draws its own <button>
+     (components/ui/Button.tsx has the reasons): btn-brand is the app's
+     default, the accent fill; btn-ghost its outline; btn-primary its
+     secondary, a muted fill. */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-colors duration-150 hover:bg-foreground/90 disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-muted px-4 py-1.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,opacity,transform] hover:bg-muted/80 active:translate-y-px disabled:opacity-50;
   }
 
   .btn-brand {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-brand-foreground transition-colors duration-150 hover:bg-brand-dark disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-brand-ink px-4 py-1.5 text-sm font-medium text-brand-foreground transition-[color,background-color,border-color,opacity,transform] hover:bg-brand-ink/90 focus-visible:outline-[1.5px] focus-visible:outline-offset-2 focus-visible:outline-ring active:translate-y-px disabled:opacity-50;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border-strong bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border-strong bg-background px-4 py-1.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,opacity,transform] hover:bg-highlight active:translate-y-px disabled:opacity-50;
   }
 
   /* Structure is a hairline, never a shadow. */
@@ -240,7 +247,7 @@ body {
   }
 
   .card-hover {
-    @apply transition-colors duration-150 hover:bg-muted/60;
+    @apply transition-colors hover:bg-muted/60;
   }
 
   .pill {
@@ -253,7 +260,7 @@ body {
   }
 
   .link {
-    @apply text-brand-ink underline decoration-brand-ink/40 underline-offset-4 transition-colors duration-150 hover:decoration-brand-ink;
+    @apply text-brand-ink underline decoration-brand-ink/40 underline-offset-4 transition-colors hover:decoration-brand-ink;
   }
 
   /* A link or text button that stands on its own line, not inside a

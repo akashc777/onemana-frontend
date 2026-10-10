@@ -98,14 +98,14 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                 <ul className="mt-3 grid text-small sm:gap-1.5">
                   {others.map((o) => (
                     <li key={o.id}>
-                      <Link href={`/templates/${o.id}`} className="inline-flex min-h-11 items-center gap-2 text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0">
+                      <Link href={`/templates/${o.id}`} className="inline-flex min-h-11 items-center gap-2 text-muted-foreground transition-colors hover:text-foreground sm:min-h-0">
                         <IdentityMark id={o.id} variant="square" />
                         {o.name}
                       </Link>
                     </li>
                   ))}
                   <li>
-                    <Link href="/templates" className="inline-flex min-h-11 items-center text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0">All templates</Link>
+                    <Link href="/templates" className="inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-foreground sm:min-h-0">All templates</Link>
                   </li>
                 </ul>
               </nav>

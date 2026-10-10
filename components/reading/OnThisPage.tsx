@@ -54,7 +54,7 @@ export function OnThisPage({ headings }: { headings: ArticleHeading[] }) {
                 href={`#${h.id}`}
                 onClick={() => setCurrent(h.id)}
                 aria-current={active ? "location" : undefined}
-                className={`-ml-px block border-l py-1.5 pr-2 transition-colors duration-150 ${h.level === 3 ? "pl-6" : "pl-3"} ${
+                className={`-ml-px block border-l py-1.5 pr-2 transition-colors ${h.level === 3 ? "pl-6" : "pl-3"} ${
                   active ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >

@@ -29,7 +29,7 @@ export function PostCard({ post, compact = false }: { post: BlogPost; compact?: 
     return (
       <li className="border-b border-border last:border-b-0">
         <Link href={`/blog/${post.slug}`} className="group flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-          <span className="min-w-0 text-body text-foreground transition-colors duration-150 group-hover:text-brand-ink">{post.title}</span>
+          <span className="min-w-0 text-body text-foreground transition-colors group-hover:text-brand-ink">{post.title}</span>
           <span className="flex shrink-0 items-center gap-3">
             <TopicLabel topic={topic} />
             {date}
@@ -41,7 +41,7 @@ export function PostCard({ post, compact = false }: { post: BlogPost; compact?: 
   return (
     <li className="border-b border-border last:border-b-0">
       <Link href={`/blog/${post.slug}`} className="group block py-6">
-        <span className="block text-balance font-display text-h3 font-semibold text-foreground transition-colors duration-150 group-hover:text-brand-ink">
+        <span className="block text-balance font-display text-h3 font-semibold text-foreground transition-colors group-hover:text-brand-ink">
           {post.title}
         </span>
         {post.excerpt && <span className="mt-2 line-clamp-2 max-w-2xl text-body text-muted-foreground">{post.excerpt}</span>}

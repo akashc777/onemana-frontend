@@ -42,7 +42,7 @@ describe("spot illustrations", () => {
     expect(html).toContain("Nothing here yet");
     expect(html).toContain("stroke-brand");
     // One action, and the only accent fill on the view.
-    expect(html.match(/btn-brand|bg-brand /g)).toHaveLength(1);
+    expect(html.match(/btn-brand|bg-brand-ink /g)).toHaveLength(1);
     expect(html).toContain('href="/free"');
   });
 

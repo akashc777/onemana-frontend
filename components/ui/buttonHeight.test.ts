@@ -10,7 +10,7 @@ import { buttonClasses } from "@/components/ui/Button"
  * "Try the live demo" was 44 px and the outlined "Install free" beside it
  * 44.5 px on every page that pairs them.
  *
- * Read per breakpoint: the classes with no prefix, then each `sm:` override.
+ * Read per breakpoint: the classes with no prefix, then each `md:` override.
  */
 const REM = 16
 const spacing = (n: string) => Number(n) * 4
@@ -40,7 +40,7 @@ function measure(cls: string, prefix: string) {
 
 describe("a button size", () => {
   for (const size of ["sm", "md", "lg"] as const) {
-    for (const prefix of ["", "sm:"]) {
+    for (const prefix of ["", "md:"]) {
       it(`${size}${prefix ? ` from ${prefix.slice(0, -1)}` : ""} is one height, filled or outlined`, () => {
         for (const variant of ["brand", "primary", "ghost", "subtle"] as const) {
           const m = measure(buttonClasses(variant, size), prefix)
@@ -53,7 +53,7 @@ describe("a button size", () => {
   }
 
   // A finger presses md and lg on a phone (plan cards, the menu, every form),
-  // so below sm they reach 44 px; sm is the wide nav's.
+  // so below md they reach 44 px; sm is the wide nav's.
   it("md and lg are 44 px targets on a phone", () => {
     for (const size of ["md", "lg"] as const) {
       expect(measure(buttonClasses("ghost", size), "").min, size).toBeGreaterThanOrEqual(44)
@@ -61,7 +61,7 @@ describe("a button size", () => {
   })
 
   it("keeps its text size on the scale or names it in rem", () => {
-    for (const size of ["sm", "md", "lg"] as const) {
+    for (const size of ["md", "lg"] as const) {
       const text = measure(buttonClasses("brand", size), "").text ?? ""
       expect(text).toMatch(/^text-(sm|small|\[[\d.]+rem\])$/)
       if (text.startsWith("text-[")) expect(Number(text.slice(6, -4)) * REM).toBeGreaterThanOrEqual(14)

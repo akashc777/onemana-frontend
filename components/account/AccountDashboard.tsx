@@ -120,7 +120,7 @@ export function AccountDashboard({
               onClick={() => choose(t.key)}
               onPointerEnter={t.key === "invoices" ? () => void loadInvoices().catch(() => {}) : undefined}
               onFocus={t.key === "invoices" ? () => void loadInvoices().catch(() => {}) : undefined}
-              className={`-mb-px shrink-0 whitespace-nowrap border-b-2 py-2.5 text-small font-medium transition-colors duration-150 ${
+              className={`-mb-px shrink-0 whitespace-nowrap border-b-2 py-2.5 text-small font-medium transition-colors ${
                 selected ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -152,7 +152,7 @@ function licenceKind(l: PortalOverview["licenses"][number]): string {
 
 function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (tab: Tab) => void }) {
   const nextSub = overview.subscriptions.find((s) => s.status === "active" || s.status === "created");
-  const tileLink = "text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] transition-colors duration-150 hover:decoration-brand-ink";
+  const tileLink = "text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] transition-colors hover:decoration-brand-ink";
   const licences = overview.licenses.length;
   const invoices = overview.invoice_count;
   // Signed in with an address that has bought nothing yet (or whose payment
@@ -325,7 +325,7 @@ function InvoicesTab() {
     <button
       onClick={() => download(inv)}
       disabled={downloading === inv.id}
-      className="h-8 whitespace-nowrap rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted disabled:opacity-60"
+      className="h-8 whitespace-nowrap rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60"
     >
       {downloading === inv.id ? "Downloading…" : "Download PDF"}
     </button>
@@ -502,7 +502,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
     );
 
   const secondary =
-    "h-9 rounded-md border border-border-strong bg-card px-3.5 text-small font-medium text-foreground transition-colors duration-150 hover:bg-muted disabled:opacity-60";
+    "h-9 rounded-md border border-border-strong bg-card px-3.5 text-small font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60";
 
   return (
     <div className="space-y-4">
@@ -550,7 +550,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
               <button
                 onClick={() => cancel(s)}
                 disabled={busy === s.id}
-                className="h-9 rounded-md px-3.5 text-small font-medium text-danger-ink transition-colors duration-150 hover:bg-danger/10 disabled:opacity-60"
+                className="h-9 rounded-md px-3.5 text-small font-medium text-danger-ink transition-colors hover:bg-danger/10 disabled:opacity-60"
               >
                 {busy === s.id ? "Cancelling…" : "Cancel subscription"}
               </button>

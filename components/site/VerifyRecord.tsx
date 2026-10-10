@@ -100,7 +100,7 @@ export function VerifyRecord() {
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
                 className={[
-                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-card px-6 py-14 text-center transition-colors duration-150 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
+                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-card px-6 py-14 text-center transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
                     dragging ? "border-foreground/50 bg-foreground/5" : "border-border hover:border-foreground/30",
                 ].join(" ")}
             >

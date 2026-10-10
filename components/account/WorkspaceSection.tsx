@@ -162,7 +162,7 @@ function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void })
       <button
         type="button"
         disabled={busy}
-        className="h-8 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-muted disabled:opacity-60"
+        className="h-8 rounded-md border border-border-strong bg-card px-3 text-caption font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60"
         onClick={async () => {
           if (!window.confirm("Move now? Your workspace pauses while the last backup is copied and restored, usually 10 to 30 minutes, then carries on at the same address.")) return;
           setBusy(true);

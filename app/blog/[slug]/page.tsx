@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <div className="container-x max-w-prose pt-10 sm:pt-16">
-        <Link href="/blog" className="tap-target text-small text-muted-foreground transition-colors duration-150 hover:text-foreground">
+        <Link href="/blog" className="tap-target text-small text-muted-foreground transition-colors hover:text-foreground">
           ← All posts
         </Link>
 
@@ -143,7 +143,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               {next.map((p) => (
                 <li key={p.slug} className="border-b border-border">
                   <Link href={`/blog/${p.slug}`} className="group flex flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                    <span className="min-w-0 text-body text-foreground transition-colors duration-150 group-hover:text-brand-ink">{p.title}</span>
+                    <span className="min-w-0 text-body text-foreground transition-colors group-hover:text-brand-ink">{p.title}</span>
                     <span className="flex shrink-0 items-center gap-3">
                       <TopicLabel topic={blogTopic(p.tags, p.title)} />
                       {p.published_at ? (

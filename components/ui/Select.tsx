@@ -113,11 +113,11 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className="flex h-11 w-full items-center justify-between gap-2 rounded-md border border-border-strong bg-card px-3 text-left text-sm text-foreground transition-colors duration-150 focus:border-brand disabled:opacity-50 sm:h-10"
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-md border border-border-strong bg-card px-3 text-left text-sm text-foreground transition-colors focus:border-brand disabled:opacity-50 sm:h-10"
       >
         <span className={selected ? "text-foreground" : "text-faint"}>{selected ? selected.label : placeholder}</span>
         <svg
-          className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"

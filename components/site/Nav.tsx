@@ -40,7 +40,7 @@ export function Nav() {
             href={site.demoStartUrl}
             target="_blank"
             rel="noreferrer"
-            className="rounded-md px-2.5 py-1.5 text-small font-medium text-foreground transition-colors duration-150 hover:text-brand-ink"
+            className="rounded-md px-2.5 py-1.5 text-small font-medium text-foreground transition-colors hover:text-brand-ink"
           >
             Live demo
           </a>

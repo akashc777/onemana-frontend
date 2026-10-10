@@ -39,12 +39,12 @@ export function Footer() {
                         href={l.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex min-h-11 w-full items-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0 sm:w-fit"
+                        className="flex min-h-11 w-full items-center text-small text-muted-foreground transition-colors hover:text-foreground sm:min-h-0 sm:w-fit"
                       >
                         {l.label}
                       </a>
                     ) : (
-                      <Link href={l.href} className="flex min-h-11 w-full items-center text-small text-muted-foreground transition-colors duration-150 hover:text-foreground sm:min-h-0 sm:w-fit">
+                      <Link href={l.href} className="flex min-h-11 w-full items-center text-small text-muted-foreground transition-colors hover:text-foreground sm:min-h-0 sm:w-fit">
                         {l.label}
                       </Link>
                     )}

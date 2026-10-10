@@ -236,7 +236,7 @@ export const GovernedDemo: React.FC = () => {
                         if (step >= STEPS.length - 1) setStep(0)
                         setPlaying((p) => !p)
                     }}
-                    className="h-11 rounded-md border border-border-strong px-3 text-caption font-medium sm:h-8 text-foreground transition-colors duration-150 hover:bg-muted"
+                    className="h-11 rounded-md border border-border-strong px-3 text-caption font-medium sm:h-8 text-foreground transition-colors hover:bg-muted"
                 >
                     {playing ? "Pause" : step >= STEPS.length - 1 ? "Replay" : "Play"}
                 </button>
@@ -262,7 +262,7 @@ export const GovernedDemo: React.FC = () => {
                             >
                                 <span
                                     aria-hidden
-                                    className={`h-2 w-2 rounded-full transition-colors duration-150 ${
+                                    className={`h-2 w-2 rounded-full transition-colors ${
                                         i <= step ? "bg-foreground" : "bg-foreground/20 group-hover:bg-foreground/40"
                                     }`}
                                 />
