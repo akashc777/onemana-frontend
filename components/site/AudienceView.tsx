@@ -7,7 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { SpotImported } from "@/components/ui/graphics/spots";
-import { hueFor } from "@/lib/campHue";
+import { productHue } from "@/components/site/productHues";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -73,8 +73,8 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           hue (the colour its mark has in every comparison), with the spot for
           an import that finished. */}
       {(a.rival || a.move) && (
-        <Section band={a.rival ? hueFor(a.rival.name) : "moss"} spacing="compact">
-          <SpotImported size={64} hue={a.rival ? hueFor(a.rival.name) : "moss"} className="mb-6" />
+        <Section band={a.rival ? productHue(a.rival.name) : "moss"} spacing="compact">
+          <SpotImported size={64} hue={a.rival ? productHue(a.rival.name) : "moss"} className="mb-6" />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             {a.rival && (
               <section aria-labelledby="they-win">

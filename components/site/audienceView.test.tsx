@@ -6,7 +6,7 @@ import { FEATURE_MARK } from "@/components/site/featureMarks"
 import { PLAN_HUE } from "@/components/site/planHues"
 import { alternativeBySlug } from "@/lib/alternatives"
 import { audienceBySlug } from "@/lib/audiences"
-import { hueFor } from "@/lib/campHue"
+import { productHue } from "@/components/site/productHues"
 import { defaultPricing } from "@/lib/pricing"
 
 /**
@@ -25,12 +25,12 @@ describe("an alternatives page", () => {
 
     it("marks the rival with the colour it has in every comparison", () => {
         const heading = html.slice(html.indexOf('id="they-win"'), html.indexOf("</h2>", html.indexOf('id="they-win"')))
-        expect(heading).toContain(`data-hue="${hueFor(a.rival!.name)}"`)
+        expect(heading).toContain(`data-hue="${productHue(a.rival!.name)}"`)
     })
 
     it("puts where the rival is better, and how to move, on the rival's own band with the import spot", () => {
-        expect(html).toContain(`data-band="${hueFor(a.rival!.name)}"`)
-        const band = html.slice(html.indexOf(`data-band="${hueFor(a.rival!.name)}"`))
+        expect(html).toContain(`data-band="${productHue(a.rival!.name)}"`)
+        const band = html.slice(html.indexOf(`data-band="${productHue(a.rival!.name)}"`))
         expect(band.indexOf('id="they-win"')).toBeGreaterThan(-1)
         expect(band.slice(0, band.indexOf('id="they-win"'))).toContain("<svg")
     })
