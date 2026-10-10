@@ -64,10 +64,10 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     max={1000}
                     value={people}
                     onChange={(e) => setPeople(Number(e.target.value) || 1)}
-                    className="h-10 w-24 rounded-md border border-border-strong bg-card px-3 text-base tabular-nums focus:border-brand"
+                    className="h-11 w-24 rounded-md border border-border-strong bg-card px-3 text-base tabular-nums focus:border-brand sm:h-10"
                 />
                 <span className="text-small text-foreground">people.</span>
-                <label className="flex cursor-pointer items-center gap-2 text-small text-foreground">
+                <label className="flex min-h-11 cursor-pointer items-center gap-2 text-small text-foreground sm:min-h-0">
                     <input
                         type="checkbox"
                         checked={withAi}

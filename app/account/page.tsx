@@ -102,7 +102,7 @@ export default function AccountPage() {
               setState({ phase: "loading" });
               load();
             }}
-            className="btn-ghost mt-6 h-10 px-4 py-0"
+            className="btn-ghost mt-6 h-11 px-4 py-0 sm:h-10"
           >
             Try again
           </button>

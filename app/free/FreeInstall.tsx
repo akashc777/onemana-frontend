@@ -15,7 +15,7 @@ import { installerAsks } from "@/lib/content";
  */
 
 const inputCls =
-  "h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm";
+  "h-11 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:h-10 sm:text-sm";
 
 type State = { kind: "idle" } | { kind: "sending" } | { kind: "sent"; email: string } | { kind: "error"; msg: string };
 

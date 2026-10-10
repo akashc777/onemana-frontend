@@ -178,7 +178,7 @@ export function BuyCheckout({
                 type="button"
                 onClick={() => setPlan("lifetime")}
                 aria-pressed={!isCloud}
-                className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 font-medium transition-colors duration-150 sm:min-h-0 ${!isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {/* Below 380 px the two labels do not fit side by side, and one
                     wrapped while the other did not: the qualifier is then read
@@ -189,7 +189,7 @@ export function BuyCheckout({
                 type="button"
                 onClick={() => setPlan("cloud")}
                 aria-pressed={isCloud}
-                className={`rounded-sm px-3 py-2 font-medium transition-colors duration-150 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 font-medium transition-colors duration-150 sm:min-h-0 ${isCloud ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>
               </button>
@@ -257,7 +257,7 @@ export function BuyCheckout({
                       role="radio"
                       aria-checked={choice === b}
                       onClick={() => setBilling(b)}
-                      className={`rounded-sm px-3 py-1.5 font-medium transition-colors duration-150 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      className={`min-h-11 rounded-sm px-3 py-1.5 font-medium transition-colors duration-150 sm:min-h-0 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                     >
                       {choiceLabel(b, pricing)}
                     </button>
@@ -424,7 +424,7 @@ export function BuyCheckout({
 }
 
 const inputCls =
-  "h-10 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:text-sm";
+  "h-11 w-full rounded-md border border-border-strong bg-card px-3 text-base text-foreground transition-colors duration-150 placeholder:text-faint focus:border-brand sm:h-10 sm:text-sm";
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (

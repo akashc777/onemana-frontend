@@ -153,7 +153,7 @@ export function DocsSearch({ className = "" }: { className?: string }) {
           setOpen(true);
         }}
         onKeyDown={onFieldKey}
-        className="h-10 w-full rounded-md border border-border-strong bg-card pl-9 pr-9 text-base text-foreground placeholder:text-faint sm:h-9 sm:text-small [&::-webkit-search-cancel-button]:hidden"
+        className="h-11 w-full rounded-md border border-border-strong bg-card pl-9 pr-9 text-base text-foreground placeholder:text-faint sm:h-9 sm:text-small [&::-webkit-search-cancel-button]:hidden"
       />
       {!asked && (
         <kbd aria-hidden className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-sm border border-border bg-muted px-1.5 font-mono text-[0.6875rem] leading-5 text-muted-foreground lg:block">

@@ -52,6 +52,14 @@ describe("a button size", () => {
     }
   }
 
+  // A finger presses md and lg on a phone (plan cards, the menu, every form),
+  // so below sm they reach 44 px; sm is the wide nav's.
+  it("md and lg are 44 px targets on a phone", () => {
+    for (const size of ["md", "lg"] as const) {
+      expect(measure(buttonClasses("ghost", size), "").min, size).toBeGreaterThanOrEqual(44)
+    }
+  })
+
   it("keeps its text size on the scale or names it in rem", () => {
     for (const size of ["sm", "md", "lg"] as const) {
       const text = measure(buttonClasses("brand", size), "").text ?? ""
