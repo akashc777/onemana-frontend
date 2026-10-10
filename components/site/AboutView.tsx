@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
+import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
 
 const FOUNDER_AVATAR =
@@ -107,6 +108,22 @@ export function AboutView() {
             </div>
           </div>
         </section>
+
+        {/* The next step. A reader doing due diligence on a one-person company
+            reached the end of the page with nowhere to go but back. */}
+        <div className="grid border-t border-border pt-10 lg:grid-cols-12 lg:gap-x-8">
+          <p className="max-w-prose text-body text-foreground lg:col-span-8 lg:col-start-5">
+            Try it before you decide: the{" "}
+            <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">
+              live demo
+            </a>{" "}
+            needs no account, and the{" "}
+            <Link href="/free" className="link">
+              free install
+            </Link>{" "}
+            runs on your own server for up to {FREE_SEATS} people.
+          </p>
+        </div>
       </div>
     </>
   );

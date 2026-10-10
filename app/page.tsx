@@ -31,7 +31,8 @@ export const revalidate = 300;
  * four calls to action at once.
  *
  * Calls to action, in rank: the live demo (filled), Install free (outline),
- * then buying, in the plan columns. Nothing is centred but the final call.
+ * a "See pricing" text link beside them, then buying, in the plan columns.
+ * Nothing is centred but the final call.
  *
  * The two ideas that make it OneCamp's own page rather than a well-kept
  * template (design/audit/storefront.md): the hero's image is two real rows of
@@ -76,6 +77,12 @@ export default async function HomePage() {
                   </ButtonLink>
                   <span className="text-caption text-muted-foreground">Up to {FREE_SEATS} people, no card</span>
                 </div>
+                {/* Tertiary, and only a text link: for the visitor who came to
+                    see what it costs. Without it the first way to pay was the
+                    plan columns, about 5,000 px down. Level with the buttons. */}
+                <Link href="/pricing" className="link self-start text-small font-medium sm:inline-flex sm:min-h-11 sm:items-center">
+                  See pricing
+                </Link>
               </div>
             </div>
 

@@ -6,8 +6,12 @@ import { audiences } from "@/lib/audiences";
 import { alternatives } from "@/lib/alternatives";
 import { templates } from "@/lib/templates";
 
+// Every public page that is not generated from data below. app/sitemap.test.ts
+// checks this against the pages in app/, so a new one cannot be left out the
+// way /free (the free install, the second action on every page) was.
 const STATIC_ROUTES = [
   "",
+  "/free",
   "/buy",
   "/tour",
   "/pricing",
