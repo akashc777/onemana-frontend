@@ -134,8 +134,9 @@ describe("the checkout a Cloud link opens", () => {
     const { planFromParams } = await import("@/lib/paymentTerms");
     expect(planFromParams("cloud")).toBe("cloud");
     for (const v of [null, "", "lifetime", "Cloud", "free"]) expect(planFromParams(v)).toBe("lifetime");
+    // The server page reads the link's plan and opens the checkout on it.
     const buy = readFileSync(join(__dirname, "..", "app/buy/page.tsx"), "utf8");
-    expect(buy).toContain('planFromParams(params.get("plan"))');
+    expect(buy).toContain("initialPlan={planFromParams(one(searchParams.plan))}");
   });
 
   it("is where the free page sends someone with no server", () => {
