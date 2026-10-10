@@ -84,6 +84,9 @@ describe("a phone's targets", () => {
     const demo = renderToString(<GovernedDemo />)
     expectTall(classesOf(demo, /<button[^>]*aria-label="Step[^>]*>/g), "walkthrough steps")
     expectTall(classesOf(demo, /<button type="button" class="[^"]*border-border-strong[^"]*"[^>]*>/g), "walkthrough play")
+    // /free's Copy, drawn 28 px tall in the command's header, hits 44.
+    const free = readFileSync(join(__dirname, "free/FreeInstall.tsx"), "utf8")
+    expect(free).toContain("after:absolute after:-inset-2 after:content-['']")
     const buy = readFileSync(join(__dirname, "../app/buy/BuyCheckout.tsx"), "utf8")
     expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(2)
     expect(buy).toContain("className={`flex min-h-11 flex-col")

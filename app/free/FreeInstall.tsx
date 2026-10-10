@@ -83,7 +83,9 @@ export function FreeCommand() {
             <button
               type="button"
               onClick={copy}
-              className="rounded-sm border border-border-strong bg-card px-2 py-1 text-caption font-medium text-foreground transition-colors duration-150 hover:bg-accent"
+              // Drawn 28 px tall in the box's header; its hit area reaches
+              // 44 px, inside the header's own padding.
+              className="relative rounded-sm border border-border-strong bg-card px-2 py-1 text-caption font-medium text-foreground transition-colors duration-150 after:absolute after:-inset-2 after:content-[''] hover:bg-accent"
             >
               {copied ? "Copied" : "Copy"}
             </button>
