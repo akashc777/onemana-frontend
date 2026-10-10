@@ -167,8 +167,13 @@ export function BuyCheckout({
             : "A licence for your own server. Pay once, for any number of people."
         }
       />
+      {/* Two rows on a wide screen: the plan, then "Try it before you pay"
+          under it, with the form beside both. The first row is the plan's
+          own height and the second takes what the form needs beyond it:
+          with two equal rows the form's height split between them, and on
+          Cloud "Try it before you pay" sat 146 px below the plan. */}
       <section className="pb-16 sm:pb-20">
-        <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-y-4">
+        <div className="container-x grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
           <aside className="lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
@@ -247,20 +252,27 @@ export function BuyCheckout({
                 <div
                   role="radiogroup"
                   aria-label="Plan"
-                  className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2"}`}
+                  className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
                 >
-                  {choices.map((b) => (
-                    <button
-                      key={b}
-                      type="button"
-                      role="radio"
-                      aria-checked={choice === b}
-                      onClick={() => setBilling(b)}
-                      className={`min-h-11 rounded-sm px-3 py-1.5 font-medium transition-colors duration-150 sm:min-h-0 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                    >
-                      {choiceLabel(b, pricing)}
-                    </button>
-                  ))}
+                  {/* Each choice is its name over what it adds, the three
+                      alike: as one line, "Team yearly · 2 months free"
+                      wrapped beside one-line neighbours. */}
+                  {choices.map((b) => {
+                    const [name, detail] = choiceLabel(b, pricing).split(" · ");
+                    return (
+                      <button
+                        key={b}
+                        type="button"
+                        role="radio"
+                        aria-checked={choice === b}
+                        onClick={() => setBilling(b)}
+                        className={`flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 transition-colors duration-150 ${choice === b ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        <span className="font-medium">{name}</span>
+                        {detail && <span className="font-normal">{detail}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
               <ul className="mt-5 space-y-2.5 text-small text-foreground">
@@ -352,7 +364,7 @@ export function BuyCheckout({
                 ? "Processing…"
                 : isCloud
                   ? // The chosen plan's own price: Business once read Team's here.
-                    `Subscribe - ${dual(price.usd, price.inr, price.per)}`
+                    `Subscribe for ${dual(price.usd, price.inr, price.per)}`
                   : pricing.charge_usd
                     ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
                     : `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr)} & get your key`}

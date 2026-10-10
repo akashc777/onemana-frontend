@@ -85,7 +85,8 @@ describe("a phone's targets", () => {
     expectTall(classesOf(demo, /<button[^>]*aria-label="Step[^>]*>/g), "walkthrough steps")
     expectTall(classesOf(demo, /<button type="button" class="[^"]*border-border-strong[^"]*"[^>]*>/g), "walkthrough play")
     const buy = readFileSync(join(__dirname, "../app/buy/BuyCheckout.tsx"), "utf8")
-    expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(3)
+    expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(2)
+    expect(buy).toContain("className={`flex min-h-11 flex-col")
   })
 
   it("links that stand alone", () => {
