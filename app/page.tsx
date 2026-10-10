@@ -46,8 +46,9 @@ export const revalidate = 300;
 const HERO_NOTES: ShotNote[] = [
   { x: 40, y: 32.9, text: "Release Captain is an agent, and every message it posts says so." },
   { x: 94.6, y: 35.4, text: "It reports what is done and leaves the load test open until someone posts the numbers." },
-  // The demo's check-in runs Monday to Friday (oneCamp business/DemoSeed/checkins.go).
-  { x: 35.6, y: 65.8, text: "A check-in asks the channel every weekday, and the answers collect in one thread." },
+  // "On a schedule", not "every weekday": the screenshot's check-in reads
+  // Saturday, and a careful buyer noticed the note and the picture disagree.
+  { x: 35.6, y: 65.8, text: "A check-in asks the channel on a schedule, and the answers collect in one thread." },
 ];
 /** Real things in the hero's screenshot, named on its canvas: the channel, a person in the thread, and the agent. */
 const HERO_THINGS: OrbitThing[] = [
