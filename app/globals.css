@@ -47,6 +47,33 @@
   --warning-ink: 138 83 0;
   --info-ink: 34 87 181;
   --danger-ink: 174 31 51;
+  /* THE CAMP PALETTE (the playful layer, 10 Oct 2026): six identity hues,
+     named for the place the product is named after, in three cuts each.
+     strong: marks, icons, dots and illustration fills (3:1 or more on the
+     page, a card, the muted ground and its own tint). -tint: soft grounds for
+     tiles, chips and bands. -ink: text on its own tint (5.9:1 or more here,
+     10.4:1 in dark). Every person, project and channel takes one
+     (lib/campHue.ts hueFor). The workspace writes the same table as hex, and
+     both repos pin it (lib/palette.ts CAMP): change both or neither. Not
+     status colours, and never the accent. */
+  --camp-sun: 185 130 0;          /* #B98200 */
+  --camp-sun-tint: 255 246 214;   /* #FFF6D6 */
+  --camp-sun-ink: 122 82 0;       /* #7A5200 */
+  --camp-moss: 47 158 91;         /* #2F9E5B */
+  --camp-moss-tint: 230 246 236;  /* #E6F6EC */
+  --camp-moss-ink: 29 106 60;     /* #1D6A3C */
+  --camp-lake: 14 151 166;        /* #0E97A6 */
+  --camp-lake-tint: 225 245 246;  /* #E1F5F6 */
+  --camp-lake-ink: 11 92 101;     /* #0B5C65 */
+  --camp-sky: 59 125 221;         /* #3B7DDD */
+  --camp-sky-tint: 231 239 252;   /* #E7EFFC */
+  --camp-sky-ink: 30 78 154;      /* #1E4E9A */
+  --camp-dusk: 123 97 217;        /* #7B61D9 */
+  --camp-dusk-tint: 239 235 252;  /* #EFEBFC */
+  --camp-dusk-ink: 75 54 153;     /* #4B3699 */
+  --camp-berry: 217 70 124;       /* #D9467C */
+  --camp-berry-tint: 252 232 239; /* #FCE8EF */
+  --camp-berry-ink: 150 37 86;    /* #962556 */
   color-scheme: light;
 }
 
@@ -79,6 +106,25 @@
   --warning-ink: 240 180 76;
   --info-ink: 110 164 245;
   --danger-ink: 255 128 134;
+  /* The camp hues lift on the dark ground and their tints sink into it. */
+  --camp-sun: 245 197 66;         /* #F5C542 */
+  --camp-sun-tint: 46 39 18;      /* #2E2712 */
+  --camp-sun-ink: 251 226 156;    /* #FBE29C */
+  --camp-moss: 76 195 138;        /* #4CC38A */
+  --camp-moss-tint: 20 41 31;     /* #14291F */
+  --camp-moss-ink: 166 231 196;   /* #A6E7C4 */
+  --camp-lake: 60 198 210;        /* #3CC6D2 */
+  --camp-lake-tint: 16 41 47;     /* #10292F */
+  --camp-lake-ink: 163 230 236;   /* #A3E6EC */
+  --camp-sky: 110 164 245;        /* #6EA4F5 */
+  --camp-sky-tint: 21 34 56;      /* #152238 */
+  --camp-sky-ink: 185 211 251;    /* #B9D3FB */
+  --camp-dusk: 167 149 245;       /* #A795F5 */
+  --camp-dusk-tint: 33 27 56;     /* #211B38 */
+  --camp-dusk-ink: 212 203 251;   /* #D4CBFB */
+  --camp-berry: 240 122 166;      /* #F07AA6 */
+  --camp-berry-tint: 51 22 31;    /* #33161F */
+  --camp-berry-ink: 249 194 214;  /* #F9C2D6 */
   color-scheme: dark;
 }
 
@@ -525,6 +571,42 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Makes one camp hue the current one for this element and everything in it,
+     so its parts draw with bg-hue-tint, text-hue-ink, fill-hue and stroke-hue
+     and never name the hue (tailwind.config.ts, colors.hue). Declared on the
+     element itself, so the var() follows the theme: under .dark it picks up
+     the dark cuts. The same classes as the workspace's hue-* utilities. */
+  .hue-sun {
+    --hue: var(--camp-sun);
+    --hue-tint: var(--camp-sun-tint);
+    --hue-ink: var(--camp-sun-ink);
+  }
+  .hue-moss {
+    --hue: var(--camp-moss);
+    --hue-tint: var(--camp-moss-tint);
+    --hue-ink: var(--camp-moss-ink);
+  }
+  .hue-lake {
+    --hue: var(--camp-lake);
+    --hue-tint: var(--camp-lake-tint);
+    --hue-ink: var(--camp-lake-ink);
+  }
+  .hue-sky {
+    --hue: var(--camp-sky);
+    --hue-tint: var(--camp-sky-tint);
+    --hue-ink: var(--camp-sky-ink);
+  }
+  .hue-dusk {
+    --hue: var(--camp-dusk);
+    --hue-tint: var(--camp-dusk-tint);
+    --hue-ink: var(--camp-dusk-ink);
+  }
+  .hue-berry {
+    --hue: var(--camp-berry);
+    --hue-tint: var(--camp-berry-tint);
+    --hue-ink: var(--camp-berry-ink);
   }
 }
 
