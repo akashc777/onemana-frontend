@@ -13,6 +13,8 @@ import { formatINR, formatDate, formatDay } from "@/lib/format";
 import { subscriptionTone } from "@/lib/instanceState";
 import { WorkspaceSection } from "./WorkspaceSection";
 import { CopyField, StatusDot, SummaryTile, glyphs } from "./AccountParts";
+import { SpotWelcome } from "@/components/ui/graphics/spots";
+import { ButtonLink } from "@/components/ui/Button";
 
 type Tab = "overview" | "invoices" | "subscription" | "billing";
 
@@ -154,6 +156,26 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
   const tileLink = "text-small font-medium text-brand-ink underline decoration-brand-ink/35 underline-offset-[3px] transition-colors duration-150 hover:decoration-brand-ink";
   const licences = overview.licenses.length;
   const invoices = overview.invoice_count;
+  // Signed in with an address that has bought nothing yet (or whose payment
+  // has not reached us): say so, with the one thing to do next, instead of
+  // three tiles that each say "none".
+  if (licences === 0 && overview.subscriptions.length === 0 && invoices === 0) {
+    return (
+      <div className="flex flex-col items-start gap-6 rounded-lg border border-border bg-card p-6 sm:flex-row sm:items-center sm:p-8">
+        <SpotWelcome size={96} className="shrink-0" />
+        <div className="min-w-0">
+          <h2 className="text-h3 font-semibold text-foreground">Nothing here yet</h2>
+          <p className="mt-2 max-w-md text-small text-muted-foreground">
+            Your licences, invoices and workspace appear here once you buy OneCamp or claim a free licence, under
+            this address. Paid a minute ago? Your key is on its way by email, and this page shows it on your next visit.
+          </p>
+          <ButtonLink href="/free" variant="brand" className="mt-5">
+            Install free
+          </ButtonLink>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-10">
       <div className="grid gap-3 sm:grid-cols-3">

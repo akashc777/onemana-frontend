@@ -16,6 +16,7 @@ import {
 import { failedLine, paidWithoutWorkspace, stateTone } from "@/lib/instanceState";
 import { StatusDot, glyphs } from "@/components/account/AccountParts";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { SpotWelcome } from "@/components/ui/graphics/spots";
 import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
 
@@ -74,12 +75,15 @@ export function WorkspaceSection({
   if (!instances) return <div role="status" aria-label="Loading your workspace…" className="mb-10 h-40 rounded-lg bg-muted" />;
   if (onItsWay) {
     return (
-      <section className="mb-10 rounded-lg border border-border bg-card p-5">
-        <WorkspaceHeading />
-        <p className="mt-3 text-small text-muted-foreground">
-          Your payment has reached us and your workspace is being set up. It appears here within a few
-          minutes, and this page checks by itself.
-        </p>
+      <section className="mb-10 flex items-center gap-5 rounded-lg border border-border bg-card p-5 sm:p-6">
+        <SpotWelcome size={72} className="shrink-0" />
+        <div className="min-w-0">
+          <h2 className="text-body font-semibold text-foreground">Your workspace is on its way</h2>
+          <p className="mt-1 text-small text-muted-foreground">
+            Your payment has reached us and your workspace is being set up. It appears here within a few
+            minutes, and this page checks by itself.
+          </p>
+        </div>
       </section>
     );
   }

@@ -11,6 +11,7 @@ import { WORKSPACE_ZONE } from "@/lib/workspaceAddress";
 import { fetchPricingClient, setupEstimateFor, type SetupEstimate } from "@/lib/pricing";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { glyphs } from "@/components/account/AccountParts";
+import { Celebration } from "@/components/site/Celebration";
 
 export default function SuccessPage() {
   return (
@@ -82,9 +83,19 @@ function SuccessInner() {
   return (
     <section className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-16">
       <div className="max-w-2xl">
-        <Tile hue={mark.hue} size="lg">
-          {mark.glyph}
-        </Tile>
+        {direct ? (
+          <Tile hue={mark.hue} size="lg">
+            {mark.glyph}
+          </Tile>
+        ) : (
+          // A purchase that just went through gets its moment; a receipt
+          // opened from a bookmark does not.
+          <Celebration>
+            <Tile hue={mark.hue} size="lg">
+              {mark.glyph}
+            </Tile>
+          </Celebration>
+        )}
         <h1 className="mt-5 text-balance text-[1.875rem] leading-[2.25rem] tracking-[-0.022em] text-foreground sm:text-[2.25rem] sm:leading-[2.625rem]">
           {title}
         </h1>
