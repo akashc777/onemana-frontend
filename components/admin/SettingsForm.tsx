@@ -93,6 +93,11 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
         options: ["never", "auto", "always"],
         hint: "never = charge GST to everyone (safe). auto = zero-rate as export only when Razorpay flags the payment international (recommended if you have an LUT). always = zero-rate every non-India sale.",
       },
+      {
+        key: "tax_lut_arn",
+        label: "LUT ARN",
+        hint: "Acknowledgement number of this financial year's Letter of Undertaking. Printed on every zero-rated export invoice beside the LUT endorsement. Renew it each April.",
+      },
     ],
   },
   {

@@ -191,6 +191,18 @@ export const steps = [
   { n: "3", title: "Give the AI a job", body: "Connect a model, build an agent, and read its audit log." },
 ];
 
+/**
+ * "Why am I charged in rupees?" (plan A12), written once. Every price line's
+ * "billed in Indian rupees" links to it (#currency), on the home page and on
+ * /pricing. "Within a percent or two" is a general statement about card
+ * conversion, kept by the owner (D5, 11 Oct 2026).
+ */
+export const whyRupees = {
+  id: "currency",
+  q: "Why am I charged in rupees?",
+  a: "OneMana is an Indian company and our payment provider settles in rupees. Your card converts the amount at its own rate, usually within a percent or two of the figure we show, and some cards add a small foreign transaction fee. The rupee amount never changes after you pay.",
+} as const;
+
 export const faqs = [
   {
     q: "Where does the model run?",
@@ -218,6 +230,7 @@ export const faqs = [
     q: "What if OneMana shuts down?",
     a: "The code is open source: server AGPL-3.0, web app MIT. Your instance does not phone home. It keeps running on your hardware.",
   },
+  whyRupees,
 ];
 
 export const requirementsIntro =

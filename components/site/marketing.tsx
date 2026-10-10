@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 /**
  * Questions and their answers, open, on a shared grid.
  *
@@ -17,14 +19,16 @@ export function QuestionList({
   columns = 1,
   className = "",
 }: {
-  items: readonly { q: string; a: string }[];
+  /** `id` makes a question a link target (#currency); a question that
+   *  depends on the reader passes nodes, and then needs an id for its key. */
+  items: readonly { q: ReactNode; a: ReactNode; id?: string }[];
   columns?: 1 | 2;
   className?: string;
 }) {
   return (
     <ul role="list" className={`m-0 grid list-none gap-x-12 p-0 ${columns === 2 ? "md:grid-cols-2" : ""} ${className}`}>
-      {items.map((f) => (
-        <li key={f.q} className={`border-t border-border pb-8 pt-5 ${columns === 2 ? "md:row-span-2 md:grid md:grid-rows-subgrid md:gap-y-0" : ""}`}>
+      {items.map((f, i) => (
+        <li key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} className={`border-t border-border pb-8 pt-5 ${columns === 2 ? "md:row-span-2 md:grid md:grid-rows-subgrid md:gap-y-0" : ""}`}>
           <h3 className="font-sans text-body font-medium tracking-normal text-foreground">{f.q}</h3>
           <p className="mt-2 max-w-prose text-small text-muted-foreground sm:text-body">{f.a}</p>
         </li>

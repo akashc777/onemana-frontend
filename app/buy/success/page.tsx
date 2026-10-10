@@ -8,7 +8,8 @@ import { LicenseInstall } from "@/components/site/LicenseInstall";
 import { parseLicenseKey } from "@/lib/installCommand";
 import { readPurchase, withoutAddressSecrets } from "@/lib/purchaseHandoff";
 import { WORKSPACE_ZONE } from "@/lib/workspaceAddress";
-import { fetchPricingClient, setupEstimateFor, type SetupEstimate } from "@/lib/pricing";
+import { fetchPricingClient, setupEstimateFor, taxWords, type SetupEstimate } from "@/lib/pricing";
+import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { glyphs } from "@/components/account/AccountParts";
 import { Celebration } from "@/components/site/Celebration";
@@ -44,6 +45,11 @@ function SuccessInner() {
   // to show, so the page says where the receipt is instead of claiming a
   // payment it knows nothing about.
   const direct = !purchase && !pending && !isCloud;
+  // The invoice is named for where the buyer is: the country they chose at
+  // checkout, else the browser's guess. GST is for India only.
+  const region = useVisitorRegion();
+  const invoice = taxWords(purchase?.country ? purchase.country === "IN" : region?.inIndia).invoice;
+  const Invoice = invoice.charAt(0).toUpperCase() + invoice.slice(1);
 
   // An older link still carries the key and email: take them out of the
   // address bar, as the account page does with its sign-in link.
@@ -141,7 +147,7 @@ function SuccessInner() {
               )}
             </div>
             <p className="mt-4 text-small text-muted-foreground">
-              Your GST invoice is on its way to <span className="font-medium text-foreground">{email}</span>.
+              {Invoice} is on its way to <span className="font-medium text-foreground">{email}</span>.
               Your plan also includes a self-host licence, in the same email and on your account page,
               should you ever want to run OneCamp yourself.
             </p>
@@ -149,16 +155,16 @@ function SuccessInner() {
         ) : pending && !key ? (
           <p className="mt-3 text-body-lg text-muted-foreground">
             Thank you for your purchase. Your licence key and setup instructions are being prepared and arrive at{" "}
-            <span className="font-medium text-foreground">{email}</span> within a minute, with your GST invoice.
+            <span className="font-medium text-foreground">{email}</span> within a minute, with {invoice}.
           </p>
         ) : direct ? (
           <p className="mt-3 text-body-lg text-muted-foreground">
             This page shows a purchase made in this browser tab, and there is none here. Your licence key, install
-            command and GST invoice are in the email you paid with, and on your account page.
+            command and {invoice} are in the email you paid with, and on your account page.
           </p>
         ) : (
           <p className="mt-3 text-body-lg text-muted-foreground">
-            Welcome to OneCamp. We&apos;ve also emailed your key, install command, and GST invoice to{" "}
+            Welcome to OneCamp. We&apos;ve also emailed your key, install command, and {invoice} to{" "}
             <span className="font-medium text-foreground">{email}</span>.
           </p>
         )}

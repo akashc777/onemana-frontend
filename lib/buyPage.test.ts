@@ -98,7 +98,10 @@ describe("the buy page quotes the price it charges", () => {
   // "Subscribe for", not "Subscribe -": a spaced hyphen standing in for a
   // dash reads as copy nobody finished.
   it("prices the pay button from the chosen plan", () => {
-    expect(page).toContain("Subscribe for ${dual(price.usd, price.inr, price.per)}")
+    // Rupees first, the figure on Razorpay's window, with the estimate in the
+    // buyer's own currency beside it (plan A6).
+    expect(page).toContain("Subscribe for ${withEstimate(fmtINR(price.inr) + price.per, localEstimate(pricing, price.inr, region))}")
+    expect(page).toContain("Pay ${withEstimate(fmtINR(pricing.lifetime_inr), localEstimate(pricing, pricing.lifetime_inr, region))} and get your key")
     expect(page).not.toMatch(/Subscribe for \$\{fmtUSD\(pricing\.cloud_usd\)/)
     expect(page).not.toMatch(/`[^`]* - \$\{/)
   })

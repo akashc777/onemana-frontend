@@ -112,3 +112,53 @@ describe("the price on the page is the price in the module", () => {
     })
   }
 })
+
+/**
+ * Estimates in a visitor's own currency (plan A2, owner decision D1): every
+ * foreign amount on the page is a rupee amount over the backend's rupees per
+ * unit for the day. None is typed: no source file writes a euro, pound or
+ * Singapore, Australian or Canadian dollar amount.
+ */
+describe("estimates in the visitor's currency", () => {
+  it("are the rupee price over the day's rate, in each display currency", async () => {
+    const { localEstimate, defaultPricing } = await import("./pricing")
+    const { regionFor } = await import("./visitorCurrency")
+    // A fixture of what the backend answers, not a price.
+    const rates = { USD: 96.87, EUR: 112.64, GBP: 129.16, SGD: 74.52, AUD: 63.73, CAD: 70.19 }
+    const p = { ...defaultPricing, rates }
+    for (const [country, cur] of [["US", "USD"], ["DE", "EUR"], ["GB", "GBP"], ["SG", "SGD"], ["AU", "AUD"], ["CA", "CAD"]] as const) {
+      const shown = localEstimate(p, p.lifetime_inr, regionFor(country))
+      const n = Number(shown.replace(/[^\d]/g, ""))
+      expect(n, `${country} ${shown}`).toBe(Math.round(p.lifetime_inr / rates[cur]))
+    }
+    // An older backend with no rates: dollars from usd_rate, as before.
+    expect(localEstimate(defaultPricing, 24999, regionFor("DE"))).toBe(`≈ $${Math.round(24999 / defaultPricing.usd_rate)}`)
+    expect(localEstimate(p, 24999, regionFor("IN"))).toBe("")
+  })
+
+  it("types no foreign amount into the site", async () => {
+    const { readdirSync, statSync } = await import("node:fs")
+    const { join } = await import("node:path")
+    const root = resolve(__dirname, "..")
+    const walk = (dir: string, out: string[] = []): string[] => {
+      for (const e of readdirSync(dir)) {
+        const p = join(dir, e)
+        if (statSync(p).isDirectory()) walk(p, out)
+        else if (/\.tsx?$/.test(p) && !/\.test\.tsx?$/.test(p)) out.push(p)
+      }
+      return out
+    }
+    const sources = Object.fromEntries(
+      ["app", "components", "lib", "hooks"].flatMap((d) => walk(join(root, d))).map((f) => [
+        f.slice(root.length + 1),
+        // Comments may show what an estimate looks like; code may not type one.
+        readFileSync(f, "utf8").replace(/\/\*[\s\S]*?\*\//g, " ").replace(/(^|\s)\/\/[^\n]*/g, "$1"),
+      ]),
+    )
+    const offenders: string[] = []
+    for (const [name, body] of Object.entries(sources)) {
+      for (const m of body.match(/(?:€\s?\d|\d\s?€|£\s?\d|\b(?:S|A|C)\$\s?\d)/g) ?? []) offenders.push(`${name}: ${m}`)
+    }
+    expect(offenders).toEqual([])
+  })
+})

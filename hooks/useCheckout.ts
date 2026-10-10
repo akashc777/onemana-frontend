@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cloudCheckoutDescription } from "@/lib/paymentTerms";
 import { savePurchase } from "@/lib/purchaseHandoff";
+import { checkoutFailure } from "@/lib/checkoutFailure";
 import {
   createCheckoutOrder,
   createCloudSubscription,
@@ -58,6 +59,16 @@ export function useCheckout(): CheckoutController {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
+  // Razorpay's reason picks the sentence (lib/checkoutFailure), and is counted
+  // as a code alone beside the plain checkout-failed the funnel reads.
+  const failed = useCallback((resp: unknown) => {
+    const f = checkoutFailure(resp);
+    trackEvent("checkout-failed");
+    trackEvent(`checkout-failed/${f.code}`);
+    setBusy(false);
+    setError(f.message);
+  }, []);
+
   const start = useCallback(
     async (input: CheckoutInput, contact?: string) => {
       setError("");
@@ -95,16 +106,12 @@ export function useCheckout(): CheckoutController {
             } catch {
               pending = true;
             }
-            savePurchase({ email: input.email, key });
+            savePurchase({ email: input.email, key, country: input.country });
             router.push(pending ? "/buy/success?pending=1" : "/buy/success");
           },
           modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },
         });
-        rzp.on("payment.failed", () => {
-          trackEvent("checkout-failed");
-          setBusy(false);
-          setError("Payment failed or was cancelled. You have not been charged.");
-        });
+        rzp.on("payment.failed", (resp: unknown) => failed(resp));
         rzp.open();
         trackEvent("checkout-opened-lifetime");
       } catch (err) {
@@ -112,7 +119,7 @@ export function useCheckout(): CheckoutController {
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       }
     },
-    [router],
+    [router, failed],
   );
 
   const startCloud = useCallback(
@@ -137,16 +144,12 @@ export function useCheckout(): CheckoutController {
             // Subscription activation + fulfillment is webhook-driven. Route to
             // a reassuring success page; the welcome email carries the license.
             // The address chosen goes with it, so the receipt can name it.
-            savePurchase({ email: input.email, slug: input.slug, size: input.plan_code === "onecamp_cloud_business" ? "business" : "team" });
+            savePurchase({ email: input.email, slug: input.slug, size: input.plan_code === "onecamp_cloud_business" ? "business" : "team", country: input.country });
             router.push("/buy/success?cloud=1");
           },
           modal: { ondismiss: () => { trackEvent("checkout-closed"); setBusy(false); } },
         });
-        rzp.on("payment.failed", () => {
-          trackEvent("checkout-failed");
-          setBusy(false);
-          setError("Payment failed or was cancelled. You have not been charged.");
-        });
+        rzp.on("payment.failed", (resp: unknown) => failed(resp));
         rzp.open();
         trackEvent(`checkout-opened-${checkoutKind(input.plan_code)}`);
       } catch (err) {
@@ -154,7 +157,7 @@ export function useCheckout(): CheckoutController {
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       }
     },
-    [router],
+    [router, failed],
   );
 
   return { busy, error, setError, start, startCloud };

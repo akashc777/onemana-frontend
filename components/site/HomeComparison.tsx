@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ProductName } from "@/components/site/ProductName";
-import { fmtINR, type Pricing } from "@/lib/pricing";
-import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearInr } from "@/lib/teamCost";
+import type { ReactNode } from "react";
+import { type Pricing } from "@/lib/pricing";
+import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearUsd } from "@/lib/teamCost";
+import { Rupees, StackBasis, StackCost } from "@/components/site/RegionalMoney";
 
 /**
  * Facts in rows, four products in columns: the proof that stands in for the
@@ -12,8 +14,10 @@ import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearInr } from "@/lib/teamCost"
  * table where one column wins everything is an advert, and readers discount it
  * the way they discount adverts. Claims about the others are structural (what
  * exists, how you pay) and come from their own pages, linked under the table.
- * The rupee figures are worked out, never typed: OneCamp's from the live
- * pricing, the per-seat stack from its list prices at the day's rate.
+ * The figures are worked out, never typed: OneCamp's from the live pricing,
+ * in rupees because that is the charge; the per-seat stack from its list
+ * prices, in dollars (or the reader's currency at the day's rate) outside
+ * India and in rupees in India (RegionalMoney).
  *
  * OneCamp's tinted column keeps 16 px inside its edges, and the column after
  * it starts 16 px past the tint, as every column starts 16 px after the one
@@ -22,18 +26,20 @@ import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearInr } from "@/lib/teamCost"
 const AFTER_TINT = "pl-4";
 const COLUMNS = ["OneCamp", "Slack + Notion + Zoom", "Mattermost", "Huly"] as const;
 
-type Row = { label: string; cells: [string, string, string, string]; loses?: boolean };
+type Row = { label: string; cells: [ReactNode, ReactNode, ReactNode, ReactNode]; loses?: boolean };
 
 function rows(p: Pricing): Row[] {
-  const stack = stackYearInr(40, false, p.usd_rate);
+  const stack = stackYearUsd(40, false);
   return [
     { label: "Runs on your own server", cells: ["Yes", "No, their cloud", "Yes", "Yes"] },
     { label: "Source code you can read", cells: ["Yes, AGPL-3.0", "No", "Yes, open core", "Yes"] },
     {
       label: "40 people, first year",
       cells: [
-        `${fmtINR(p.lifetime_inr)} once, plus your server`,
-        stack > 0 ? `About ${fmtINR(stack)}` : "Per seat, per tool",
+        <>
+          <Rupees inr={p.lifetime_inr} /> once, plus your server
+        </>,
+        stack > 0 ? <StackCost pricing={p} usd={stack} /> : "Per seat, per tool",
         "Free Team edition; paid editions quoted by sales",
         "Free to self-host (EPL-2.0, community-maintained fork)",
       ],
@@ -112,7 +118,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
             {i < sources.length - 1 ? ", " : ""}
           </span>
         ))}
-        . The stack is Slack Pro, Notion Plus and Zoom Pro at list price and today&apos;s exchange rate.{" "}
+        . The stack is Slack Pro, Notion Plus and Zoom Pro <StackBasis />.{" "}
         <Link href="/compare" className="link">
           The longer comparison
         </Link>

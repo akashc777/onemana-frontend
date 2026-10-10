@@ -12,6 +12,10 @@ export interface CheckoutInput {
   state?: string;
   state_code?: string;
   country?: string;
+  /** Outside India only, both optional: printed on the invoice with address_line
+   *  (onemana-backend business/onecamp/invoiceDetails.go). */
+  company?: string;
+  tax_id?: string;
   /** Cloud only. Empty means monthly; see lib/paymentTerms.cloudPlanCode. */
   plan_code?: string;
   /** Cloud only: the workspace's address and "ai" or "no-ai"; see lib/workspaceAddress. */

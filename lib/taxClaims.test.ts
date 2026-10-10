@@ -27,7 +27,10 @@ const TAX_ON_TOP = [
   /\bexclusive of\b[^.<]{0,80}\b(tax|gst|vat)/i,
   /\bexclud(e|es|ing)\s+(gst|tax|vat)/i,
   /\b(plus|\+)\s*(gst|tax|vat)\b/i,
-  /\b(gst|tax|vat)\s+(is\s+)?(added|extra)\b/i,
+  // "No tax added at checkout" and "Is tax added at checkout?" (what a buyer
+  // outside India reads, lib/pricing taxWords) say the opposite, so a "no"
+  // or a question's "is" in front is not a claim that tax comes on top.
+  /(?<!\b(?:no|is)\s)\b(gst|tax|vat)\s+(is\s+)?(added|extra)\b/i,
   /\badded as a separate line/i,
 ]
 
