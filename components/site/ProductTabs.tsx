@@ -1,5 +1,6 @@
 "use client";
 
+import { getImageProps } from "next/image";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { ProductShot, type ShotName } from "@/components/site/ProductShot";
 import { site } from "@/lib/site";
@@ -63,6 +64,32 @@ const TABS: { id: string; label: string; shot: ShotName; text: string; alt: stri
   },
 ];
 
+/** How wide the panel's screenshot is drawn; the warm-up below asks for the same file. */
+export const SHOT_SIZES = "(min-width: 1120px) 1000px, 220vw";
+
+const warmed = new Set<string>();
+
+/**
+ * Start downloading a tab's screenshot when the pointer or the keyboard
+ * reaches its tab, so the picture is there when the tab is chosen. Choosing a
+ * tab used to show an empty frame for as long as a 60 to 90 kB image took.
+ * The file is the one the panel will ask for: same source, same sizes, so the
+ * browser picks the same width from the srcset and finds it in its cache.
+ * Each file once per visit, in the theme being shown.
+ */
+export function warm(shot: ShotName) {
+  if (typeof window === "undefined") return;
+  const theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+  const key = `${shot}-${theme}`;
+  if (warmed.has(key)) return;
+  warmed.add(key);
+  const { props } = getImageProps({ src: `/product/${shot}-${theme}.webp`, width: 2240, height: 1400, sizes: SHOT_SIZES, alt: "" });
+  const img = new Image();
+  img.sizes = props.sizes ?? SHOT_SIZES;
+  img.srcset = props.srcSet ?? "";
+  img.src = props.src;
+}
+
 export function ProductTabs() {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -106,6 +133,9 @@ export function ProductTabs() {
               aria-controls={`panel-${t.id}`}
               tabIndex={i === active ? 0 : -1}
               onClick={() => setActive(i)}
+              onPointerEnter={() => warm(t.shot)}
+              // Arrow keys choose as they move, so the neighbours are warmed too.
+              onFocus={() => [i - 1, i, i + 1].forEach((n) => warm(TABS[(n + TABS.length) % TABS.length].shot))}
               className={`relative -mb-px shrink-0 border-b-2 px-3 pb-3 pt-1 text-left text-small font-medium transition-colors duration-150 lg:-ml-px lg:mb-0 lg:border-b-0 lg:border-l-2 lg:py-2.5 lg:pl-5 lg:text-body ${
                 i === active
                   ? "border-brand text-foreground"
@@ -135,7 +165,7 @@ export function ProductTabs() {
             Open it in the live demo
           </a>
         </div>
-        <ProductShot key={tab.shot} name={tab.shot} alt={tab.alt} crop sizes="(min-width: 1120px) 1000px, 220vw" />
+        <ProductShot key={tab.shot} name={tab.shot} alt={tab.alt} crop sizes={SHOT_SIZES} />
       </div>
     </div>
   );
