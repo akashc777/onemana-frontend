@@ -86,7 +86,7 @@
    heading is a system decision, not one for each component to remember.
    Inter Tight at 600, never 700: calm comes from a light display weight. */
 h1, h2, h3 {
-  font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-rupee-display), var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
   text-wrap: balance;
