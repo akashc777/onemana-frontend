@@ -21,9 +21,9 @@ export interface CloudOption {
 }
 
 /**
- * Cloud's sizes on /pricing (site.md P2): a 3-way segmented control at the
- * top of the Cloud card, on a sunken track with the raised thumb sliding
- * under the choice. It swaps the price (cross-faded in place), the "fits"
+ * Cloud's sizes on /pricing (site.md P2): a 3-way segmented control under
+ * the Cloud card's price, on a sunken track with the raised thumb sliding
+ * under the choice; 44px tall on a phone. It swaps the price (cross-faded in place), the "fits"
  * line and the button's link. Team monthly first. The rows are the card's
  * subgrid rows, so the card still lines up with its neighbours.
  */
@@ -56,36 +56,42 @@ export function CloudChoice({
     refs.current[next]?.focus();
   };
 
+  const control = (
+    <div role="radiogroup" aria-label="Cloud size" onKeyDown={onKey} className="relative mt-3 grid rounded-md bg-muted p-0.5 ring-1 ring-inset ring-border" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0.5 left-0.5 top-0.5 rounded-[6px] bg-card shadow-e1 transition-transform duration-pop ease-out"
+        style={{ width: `calc((100% - 4px) / ${n})`, transform: `translateX(${at * 100}%)` }}
+      />
+      {options.map((opt, i) => (
+        <button
+          key={opt.id}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
+          type="button"
+          role="radio"
+          aria-checked={i === at}
+          tabIndex={i === at ? 0 : -1}
+          onClick={() => setAt(i)}
+          className={`relative z-10 flex min-h-11 flex-col items-center justify-center px-1 text-[12px] font-[510] leading-4 transition-colors sm:min-h-8 ${i === at ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <span className="hidden sm:inline">{opt.label}</span>
+          <span className="sm:hidden">{opt.short}</span>
+          {opt.hint && <span className="text-[11px] font-normal leading-3 text-camp-moss-ink">{opt.hint}</span>}
+        </button>
+      ))}
+    </div>
+  );
+
+  // The rows are the card's subgrid rows (the name, the price, its lines,
+  // who it is for...). The switch sits under the price it changes, in the
+  // lines' row: at the top of the card it made the name's row tall, and the
+  // Free and Licence cards beside it opened an empty band under their names
+  // (design/site-polish/AUDIT.md, L2).
   return (
     <>
-      <div>
-        {title}
-        <div role="radiogroup" aria-label="Cloud size" onKeyDown={onKey} className="relative mt-3 grid rounded-md bg-muted p-0.5 ring-1 ring-inset ring-border" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
-          <span
-            aria-hidden="true"
-            className="absolute bottom-0.5 left-0.5 top-0.5 rounded-[6px] bg-card shadow-e1 transition-transform duration-pop ease-out"
-            style={{ width: `calc((100% - 4px) / ${n})`, transform: `translateX(${at * 100}%)` }}
-          />
-          {options.map((opt, i) => (
-            <button
-              key={opt.id}
-              ref={(el) => {
-                refs.current[i] = el;
-              }}
-              type="button"
-              role="radio"
-              aria-checked={i === at}
-              tabIndex={i === at ? 0 : -1}
-              onClick={() => setAt(i)}
-              className={`relative z-10 flex min-h-8 flex-col items-center justify-center px-1 text-[12px] font-[510] leading-4 transition-colors ${i === at ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <span className="hidden sm:inline">{opt.label}</span>
-              <span className="sm:hidden">{opt.short}</span>
-              {opt.hint && <span className="text-[11px] font-normal leading-3 text-camp-moss-ink">{opt.hint}</span>}
-            </button>
-          ))}
-        </div>
-      </div>
+      <div>{title}</div>
       <div className="mt-5" aria-live="polite">
         <p key={o.id} className="fx-fade flex flex-wrap items-baseline gap-x-2">
           <span className="font-display text-price tabular-nums text-foreground">{o.price}</span>
@@ -94,6 +100,7 @@ export function CloudChoice({
       </div>
       <div className="mt-1.5">
         <PriceLines pricing={pricing} inr={o.inr} />
+        {control}
       </div>
       <p className="mt-4 text-small font-[510] text-foreground">{o.fits}</p>
       <p className="mt-1.5 text-small text-muted-foreground">{body}</p>

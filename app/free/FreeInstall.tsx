@@ -7,6 +7,33 @@ import { site } from "@/lib/site";
 import { trackEvent } from "@/lib/track";
 import { freeClaimPayload } from "@/lib/freePlan";
 import { installerAsks } from "@/lib/content";
+import { Icon } from "@/components/ui/icons";
+
+/**
+ * A URL that may wrap only after a slash of its path, never inside a word or
+ * its "https://": on a phone the command broke "down" / "load"
+ * (design/site-polish/AUDIT.md, P8).
+ */
+function BreakAtSlashes({ text }: { text: string }) {
+  const at = text.indexOf("://");
+  const head = at < 0 ? "" : text.slice(0, at + 3);
+  const parts = text.slice(head.length).split("/");
+  return (
+    <>
+      {head}
+      {parts.map((p, i) => (
+        <span key={i}>
+          {p}
+          {i < parts.length - 1 && (
+            <>
+              /<wbr />
+            </>
+          )}
+        </span>
+      ))}
+    </>
+  );
+}
 
 /**
  * The two parts of /free that do something: the command with its one-click
@@ -106,9 +133,7 @@ export function FreeCommand() {
             >
               {copied ? (
                 <span key="done" className="fx-spring inline-flex items-center gap-1.5 text-camp-moss">
-                  <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12.5l4.5 4.5L19 7.5" />
-                  </svg>
+                  <Icon name="check" size={14} />
                   Copied
                 </span>
               ) : (
@@ -123,8 +148,8 @@ export function FreeCommand() {
         <pre role={instant ? "status" : undefined} className="overflow-x-auto whitespace-pre-wrap p-4 font-mono text-[0.875rem] leading-6 text-foreground [overflow-wrap:anywhere]">
           {instant ? (
             <>
-              /bin/bash -c &quot;$(curl -fsSL {site.backendUrl}/onecamp/download/
-              <span className="rounded-[4px] px-1 text-camp-moss ring-1 ring-camp-moss/70">
+              /bin/bash -c &quot;$(curl -fsSL <BreakAtSlashes text={`${site.backendUrl}/onecamp/download/`} />
+              <span className="rounded-[4px] px-1 text-camp-moss ring-1 ring-camp-moss/70 [box-decoration-break:clone]">
                 {instant.key.slice(0, typed)}
                 <span className="sr-only">{instant.key.slice(typed)}</span>
               </span>
@@ -132,8 +157,12 @@ export function FreeCommand() {
             </>
           ) : (
             <>
-              /bin/bash -c &quot;$(curl -fsSL {site.backendUrl}/onecamp/download/
-              <span className="rounded-[4px] border border-dashed border-camp-sun px-1 text-camp-sun-ink">your-key</span>)&quot;
+              /bin/bash -c &quot;$(curl -fsSL <BreakAtSlashes text={`${site.backendUrl}/onecamp/download/`} />
+              {/* The key's place stays whole: it broke across two lines as
+                  "your-" and "key", its ring in two halves. */}
+              <span className="whitespace-nowrap">
+                <span className="inline-block rounded-[4px] border border-dashed border-camp-sun px-1 leading-5 text-camp-sun-ink">your-key</span>)&quot;
+              </span>
             </>
           )}
         </pre>
@@ -143,9 +172,7 @@ export function FreeCommand() {
         <p className="mt-3 flex items-start gap-2 text-small text-muted-foreground">
           <Celebration>
             <span className="hue-moss inline-flex size-5 items-center justify-center rounded-full bg-hue text-white">
-              <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 12.5l4.5 4.5L19 7.5" />
-              </svg>
+              <Icon name="check" size={12} />
             </span>
           </Celebration>
           <span>

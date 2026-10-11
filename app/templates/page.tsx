@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { StackedCards } from "@/components/ui/graphics/v3marks";
+import { TemplateTile } from "@/components/site/TemplateTile";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { hueFor } from "@/lib/campHue";
 import { ButtonLink } from "@/components/ui/Button";
@@ -61,13 +62,9 @@ export default function TemplatesPage() {
                   data-hue={hueFor(t.id)}
                   className={`${HUE_CLASS[hueFor(t.id)]} reveal lift group flex h-full flex-col rounded-2xl bg-card p-6 shadow-e1`}
                 >
-                  {/* The project tile (DESIGN_V3): the hue's gradient under a white mark. */}
-                  <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-ctl text-white" style={{ backgroundImage: `linear-gradient(140deg, rgb(var(--camp-${hueFor(t.id)}-a1)), rgb(var(--camp-${hueFor(t.id)}-a2)))` }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 6h16M4 12h10M4 18h6" />
-                    </svg>
-                  </span>
-                  <h2 className="mt-4 font-sans text-body font-[590] tracking-normal text-foreground">
+                  {/* The project tile (DESIGN_V3): the hue's gradient under the template's own white glyph. */}
+                  <TemplateTile id={t.id} />
+                  <h2 className="mt-4 font-sans text-body font-[590] text-foreground">
                     {t.name}
                   </h2>
                   <p className="mt-1.5 flex-1 text-small text-muted-foreground">{t.description}</p>

@@ -16,7 +16,8 @@ describe("hues that follow a thing", () => {
     it("ticks the free plan's list on /free with the moss check, on the free plan's band", () => {
         const html = renderToString(<FreePage />)
         const list = html.slice(html.indexOf("What the free plan includes"))
-        expect(list).toMatch(/<svg class="mt-0\.5 size-4 shrink-0 text-camp-moss"/)
+        // The icon set's check, 16px, in moss.
+        expect(list).toMatch(/<svg viewBox="0 0 24 24" width="16" height="16"[^>]*class="icon shrink-0 mt-0\.5 text-camp-moss"/)
         // ...and the details sit on the free plan's band.
         expect(html).toContain(`data-band="${PLAN_HUE.free}"`)
     })

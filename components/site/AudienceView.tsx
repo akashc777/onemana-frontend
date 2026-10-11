@@ -14,7 +14,8 @@ import { Margin, MarginHeading, SECTION_END, Section } from "@/components/ui/Sec
 import { Arrow, CampCanvas, Dot } from "@/components/ui/v3";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { dual, fmtINR, type Pricing } from "@/lib/pricing";
+import { fmtINR, type Pricing } from "@/lib/pricing";
+import { PriceLines } from "@/components/site/RegionalMoney";
 import type { Audience } from "@/lib/audiences";
 import type { CampHue } from "@/lib/campHue";
 import { ALTERNATIVES_CHECKED } from "@/lib/alternatives";
@@ -44,9 +45,6 @@ function shotFor(a: Audience): { name: ShotName; alt: string } {
  * identity colour or the audience's; the canvas's glow takes it.
  */
 export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) {
-  const lifetime = a.prices === "inr" ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr);
-  const cloud =
-    a.prices === "inr" ? `${fmtINR(pricing.cloud_inr)} a month` : dual(pricing.cloud_usd, pricing.cloud_inr, " a month");
   const hue: CampHue = a.rival ? productHue(a.rival.name) : (AUDIENCE_HUE[a.slug] ?? "sky");
   const shot = shotFor(a);
   return (
@@ -55,7 +53,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
       <section className="pt-6 sm:pt-10">
         <div className="container-x">
           <div className={HUE_CLASS[hue]} style={{ "--page-glow": "var(--hue)" } as CSSProperties}>
-            <CampCanvas rings="plain" className="rounded-[20px] px-5 pt-10 sm:rounded-4xl sm:px-10 sm:pt-14 lg:h-[440px] lg:pt-0">
+            <CampCanvas rings="quiet" className="rounded-[20px] px-5 pt-10 sm:rounded-4xl sm:px-10 sm:pt-14 lg:h-[440px] lg:pt-0">
               <div className="grid h-full gap-8 lg:grid-cols-12 lg:items-center lg:gap-x-8">
                 <div className="lg:col-span-7">
                   <p className="eyebrow in-lift [--eyebrow-dot:rgb(var(--hue))]">{a.eyebrow}</p>
@@ -88,7 +86,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               return (
                 <div key={p.title} className="reveal group grid min-h-[72px] gap-2 border-b border-border py-6 md:grid-cols-12 md:gap-x-8">
                   <dt className="flex items-start gap-3.5 md:col-span-4 md:pr-6">
-                    <Tile hue={mark.hue} size="md" className="mt-0.5 size-9 rounded-ctl transition-transform duration-spring ease-spring group-hover:-rotate-6">
+                    <Tile hue={mark.hue} size="lg" className="mt-0.5 transition-transform duration-spring ease-spring group-hover:-rotate-6">
                       <mark.Glyph />
                     </Tile>
                     <span className="pt-1.5 text-[17px] font-[590] leading-6 text-balance text-foreground">{p.title}</span>
@@ -102,10 +100,10 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
       </section>
 
       {/* AU3: where the rival is better and how to move from it, two raised
-          cards on the rival's own band, with the spot for a finished import. */}
+          cards on the rival's own band; the spot for a finished import heads
+          the moving card, where it used to float alone above both. */}
       {(a.rival || a.move) && (
         <Section band={hue}>
-          <SpotImported size={96} hue={hue} className="mb-8" />
           <div className="grid gap-4 lg:grid-cols-12 lg:gap-x-6">
             {a.rival && (
               <section aria-labelledby="they-win" className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
@@ -131,9 +129,12 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
             )}
             {a.move && (
               <section aria-labelledby="move" className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
-                <h2 id="move" className="text-h3 text-foreground">
-                  {a.move.title}
-                </h2>
+                <div className="flex items-start justify-between gap-4">
+                  <h2 id="move" className="text-h3 text-foreground">
+                    {a.move.title}
+                  </h2>
+                  <SpotImported size={64} hue={hue} className="-my-3 -mr-1 shrink-0" />
+                </div>
                 <ol className="m-0 mt-5 list-none space-y-4 border-t border-border p-0 pt-5">
                   {a.move.steps.map((step, i) => (
                     <li key={step} className="grid grid-cols-[28px_1fr] gap-3 text-small text-foreground">
@@ -182,8 +183,14 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               <Dot hue={PLAN_HUE.lifetime} />
               Own it
             </p>
-            <p className="mt-3 text-[28px] font-semibold leading-8 tracking-[-0.021em] tabular-nums text-foreground">{lifetime} once</p>
-            <p className="mt-1 text-small text-muted-foreground">Everyone on your server, for good.</p>
+            {/* The price at 28/32 and the two-line estimate under it (site.md
+                AU5, S14): "(about $258)" at the price's size wrapped a phone
+                onto two heavy lines. */}
+            <MiniPrice price={fmtINR(pricing.lifetime_inr)} per="once" />
+            <div className="mt-1.5">
+              <PriceLines pricing={pricing} inr={pricing.lifetime_inr} why="/pricing#currency" />
+            </div>
+            <p className="mt-2 text-small text-muted-foreground">Everyone on your server, for good.</p>
             <ButtonLink href="/buy" variant="ghost" size="sm" className="mt-4 max-md:min-h-11">
               Buy a licence
             </ButtonLink>
@@ -194,8 +201,11 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                 <Dot hue={PLAN_HUE.cloud} />
                 Or we run it
               </p>
-              <p className="mt-3 text-[28px] font-semibold leading-8 tracking-[-0.021em] tabular-nums text-foreground">{cloud}</p>
-              <p className="mt-1 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
+              <MiniPrice price={fmtINR(pricing.cloud_inr)} per="a month" />
+              <div className="mt-1.5">
+                <PriceLines pricing={pricing} inr={pricing.cloud_inr} why="/pricing#currency" />
+              </div>
+              <p className="mt-2 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
               <ButtonLink href="/buy?plan=cloud" variant="ghost" size="sm" className="mt-4 max-md:min-h-11">
                 Choose Cloud
               </ButtonLink>
@@ -203,7 +213,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           )}
           <div className="flex items-end sm:col-span-2 lg:col-span-2 lg:justify-end">
             <Link href="/pricing" className="go tap-target">
-              See every plan
+              See every plan <Arrow size={14} />
             </Link>
           </div>
         </div>
@@ -226,5 +236,15 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         )}
       </Section>
     </>
+  );
+}
+
+/** A mini plan card's price (site.md AU5): 28/32 at 600, tabular, with "once" or "a month" on its baseline. */
+function MiniPrice({ price, per }: { price: string; per: string }) {
+  return (
+    <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
+      <span className="font-display text-price-sm tabular-nums text-foreground">{price}</span>
+      <span className="text-body text-muted-foreground">{per}</span>
+    </p>
   );
 }

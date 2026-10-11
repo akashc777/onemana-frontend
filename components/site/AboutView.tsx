@@ -2,12 +2,16 @@ import { TaxText } from "@/components/site/RegionalMoney";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { AgentSquare, LogoRing } from "@/components/ui/v3";
+import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon } from "@/components/ui/icons";
+import type { CampHue } from "@/lib/campHue";
 import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
 
+/** 320px: the photo is drawn at 160 CSS px, so a 2x screen needs 320 (it was 256, soft on a laptop). */
 const FOUNDER_AVATAR =
-  "https://avatars.githubusercontent.com/u/32003795?s=256&v=4";
+  "https://avatars.githubusercontent.com/u/32003795?s=320&v=4";
 
 /**
  * About: who builds OneCamp, and what that means for somebody deciding
@@ -19,6 +23,18 @@ const FOUNDER_AVATAR =
  * he stops" is the useful one, so the page gives it in plain words. Each
  * statement is one the site makes elsewhere (lib/content beforeYouPay).
  */
+/** One fact about buying from one person: its tile, then the sentence. */
+function Fact({ hue, icon, children }: { hue: CampHue | "brand"; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3.5">
+      <Tile hue={hue} size="sm" className="mt-0.5">
+        {icon}
+      </Tile>
+      <span>{children}</span>
+    </li>
+  );
+}
+
 const SECTIONS: { title: string; body: React.ReactNode }[] = [
   {
     title: "Why it exists",
@@ -37,27 +53,31 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
   },
   {
     title: "What one person means for you",
+    // Rows with tiles (site.md AB1), each fact in its own colour: they were
+    // four grey bullets, the plainest block on the page.
     body: (
-      <ul>
-        <li>
+      <ul className="m-0 list-none space-y-4 p-0">
+        <Fact hue="sky" icon={<Icon name="mail" />}>
           I answer support myself, at{" "}
           <a href="mailto:support@onemana.dev" className="link">
             support@onemana.dev
           </a>
           .
-        </li>
-        <li>
+        </Fact>
+        <Fact hue="moss" icon={<Icon name="branch" />}>
           The code is public on{" "}
           <a href={site.githubOrgUrl} target="_blank" rel="noreferrer" className="link">
             GitHub
           </a>
           , so your install does not depend on me. A paid build has no licence server and no phone-home: it keeps
           running if OneMana stops.
-        </li>
-        <li>OneMana runs its own work on OneCamp, every day.</li>
-        <li>
+        </Fact>
+        <Fact hue="brand" icon={<LogoRing size={16} />}>
+          OneMana runs its own work on OneCamp, every day.
+        </Fact>
+        <Fact hue="dusk" icon={<Icon name="receipt" />}>
           You pay {site.company}, the registered company, through Razorpay, and get <TaxText kind="invoice" />.
-        </li>
+        </Fact>
       </ul>
     ),
   },
@@ -102,7 +122,7 @@ export function AboutView() {
         {SECTIONS.map((s) => (
           <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 lg:grid-cols-12 lg:gap-x-8">
             <h2 className="text-h3 text-foreground lg:col-span-4">{s.title}</h2>
-            <div className="max-w-prose space-y-4 text-body text-muted-foreground lg:col-span-8 [&_li]:pl-1 [&_ul]:list-disc [&_ul]:space-y-3 [&_ul]:pl-5">
+            <div className="max-w-prose space-y-4 text-body text-muted-foreground lg:col-span-8">
               {s.body}
             </div>
           </section>

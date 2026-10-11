@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { OverlapRings } from "@/components/ui/graphics/v3marks";
-import { AgentSquare, Face } from "@/components/ui/v3";
+import { AgentSquare } from "@/components/ui/v3";
+import { Icon } from "@/components/ui/icons";
 import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/Section";
 import CostCalculator from "@/components/site/CostCalculator";
 import type { Pricing } from "@/lib/pricing";
@@ -95,10 +96,10 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                             </caption>
                             <thead>
                                 <tr className="border-b border-border">
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">Product</th>
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">What it is</th>
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">How you pay</th>
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">Agent governance</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Product</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">What it is</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">How you pay</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Agent governance</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -167,7 +168,10 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 />
                 {/* The question as a message from you (site.md C4), on the raised surface. */}
                 <div className="reveal mt-10 flex max-w-3xl gap-4 rounded-2xl bg-card p-5 shadow-e2 sm:p-6">
-                    <Face initials="You" hue="sky" size={36} />
+                    {/* The reader as a person: the sky avatar gradient under a person glyph, not the word "You" squeezed into a 36px circle. */}
+                    <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-white shadow-mark" style={{ backgroundImage: "linear-gradient(140deg, rgb(var(--camp-sky-a1)), rgb(var(--camp-sky-a2)))" }}>
+                        <Icon name="user" size={18} />
+                    </span>
                     <blockquote className="m-0">
                         <p className="m-0 text-caption font-[590] text-foreground">You</p>
                         <p className="mt-1 text-balance text-h3 text-foreground">{killQuestion}</p>
@@ -220,10 +224,10 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
                             <caption className="sr-only">How the agents you already pay for connect to OneCamp</caption>
                             <thead>
-                                <tr className="border-b border-border bg-muted/40">
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">Agent</th>
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">How it is billed</th>
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">How it joins OneCamp</th>
+                                <tr className="border-b border-border">
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Agent</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">How it is billed</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">How it joins OneCamp</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -271,9 +275,9 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                                 Record-keeping obligations and what OneCamp produces against each
                             </caption>
                             <thead>
-                                <tr className="border-b border-border bg-muted/40">
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">Asked for</th>
-                                    <th scope="col" className="px-4 py-3 font-semibold text-foreground">What this produces</th>
+                                <tr className="border-b border-border">
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Asked for</th>
+                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">What this produces</th>
                                 </tr>
                             </thead>
                             <tbody>

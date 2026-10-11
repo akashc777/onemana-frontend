@@ -86,7 +86,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                         type="checkbox"
                         checked={withAi}
                         onChange={(e) => setWithAi(e.target.checked)}
-                        className="h-4 w-4 rounded-[5px] accent-camp-moss transition-transform duration-spring ease-spring checked:scale-110"
+                        className="ui-check"
                     />
                     We want AI too.
                 </label>
@@ -135,24 +135,21 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                 </div>
             </div>
 
+            {/* The chip says the multiple once, and the sentence is one text
+                run beside it: it was flex items with a 12px gap, so "49× less"
+                floated with a space before its comma, and said twice in one
+                line (design/site-polish/AUDIT.md, L6). */}
             <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-small text-foreground">
                 {multiple >= 2 && (
                     <span className="hue-moss inline-flex h-7 items-center rounded-full bg-hue-tint px-3 text-caption font-[590] text-hue-ink">
                         {Math.round(multiple)}× less in the first year
                     </span>
                 )}
-                {multiple >= 2 ? (
-                    <>
-                        At {Math.max(1, Math.min(1000, people))} people that is{" "}
-                        <strong className="text-foreground">{Math.round(multiple)}× less</strong>, and the gap widens
-                        with every person you add.
-                    </>
-                ) : (
-                    <>
-                        At this size the difference is small, and honestly the subscriptions may be less hassle. The
-                        maths turns around quickly as you add people.
-                    </>
-                )}
+                <span>
+                    {multiple >= 2
+                        ? `for ${Math.max(1, Math.min(1000, people))} people; the gap widens with every person you add.`
+                        : "At this size the difference is small, and honestly the subscriptions may be less hassle. The maths turns around quickly as you add people."}
+                </span>
             </p>
 
             {/* The objection the buyer already has, and it must be named: published

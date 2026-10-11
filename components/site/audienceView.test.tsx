@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import { AudienceView } from "@/components/site/AudienceView"
 import { FEATURE_MARK } from "@/components/site/featureMarks"
+import { hueOrAgent } from "@/components/ui/graphics/hues"
 import { PLAN_HUE } from "@/components/site/planHues"
 import { alternativeBySlug } from "@/lib/alternatives"
 import { audienceBySlug } from "@/lib/audiences"
@@ -18,9 +19,15 @@ describe("an alternatives page", () => {
     const a = alternativeBySlug("slack")!
     const html = renderToString(<AudienceView a={a} pricing={{ ...defaultPricing, cloud_configured: true }} />)
 
-    it("gives every claim a tile in its feature's hue", () => {
-        const tiles = [...html.matchAll(/<span aria-hidden="true" class="(hue-[a-z]+) inline-flex shrink-0 items-center justify-center bg-hue-tint/g)].map((m) => m[1])
-        expect(tiles).toEqual(a.points.map((p) => `hue-${FEATURE_MARK[p.icon].hue}`))
+    it("gives every claim a tile in its feature's hue, the hue the home page gives that surface", () => {
+        const dl = html.slice(html.indexOf("<dl"), html.indexOf("</dl>"))
+        const tiles = [...dl.matchAll(/<span aria-hidden="true" class="(hue-[a-z]+|\[--hue:var\(--agent\)\][^ ]* [^ ]* [^ ]*) inline-flex shrink-0 items-center justify-center bg-hue-tint/g)].map((m) => m[1])
+        expect(tiles).toEqual(a.points.map((p) => hueOrAgent(FEATURE_MARK[p.icon].hue)))
+        // Design v3 G7: chat is sky, docs dusk, tasks moss, calendar sun, agents indigo.
+        expect(FEATURE_MARK.chat.hue).toBe("sky")
+        expect(FEATURE_MARK.docs.hue).toBe("dusk")
+        expect(FEATURE_MARK.agent.hue).toBe("agent")
+        expect(FEATURE_MARK.ai.hue).toBe("agent")
     })
 
     it("marks the rival with the colour it has in every comparison", () => {
@@ -32,7 +39,11 @@ describe("an alternatives page", () => {
         expect(html).toContain(`data-band="${productHue(a.rival!.name)}"`)
         const band = html.slice(html.indexOf(`data-band="${productHue(a.rival!.name)}"`))
         expect(band.indexOf('id="they-win"')).toBeGreaterThan(-1)
-        expect(band.slice(0, band.indexOf('id="they-win"'))).toContain("<svg")
+        // The spot for a finished import heads the "Moving from" card, not
+        // floating on its own above both cards.
+        const start = band.indexOf('aria-labelledby="move"')
+        expect(band.slice(start, band.indexOf("</section>", start))).toContain("<svg")
+        expect(band.slice(0, band.indexOf('id="they-win"'))).not.toContain("<svg")
     })
 
     it("gives each price its plan's hue", () => {

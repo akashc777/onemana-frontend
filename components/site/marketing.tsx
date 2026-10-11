@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icons";
 import type { ReactNode } from "react";
 
 type QA = { q: ReactNode; a: ReactNode; id?: string };
@@ -15,10 +16,10 @@ export function QuestionAccordion({ items, open = [], plus = "text-camp-sun", cl
       {items.map((f, i) => (
         <details key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} open={open.includes(i)} className="group border-b border-border">
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 [&::-webkit-details-marker]:hidden">
-            <h3 className="m-0 font-sans text-body font-[590] tracking-normal text-foreground">{f.q}</h3>
-            <span aria-hidden="true" className={`text-[22px] font-normal leading-none transition-transform duration-pop ease-out group-open:rotate-45 ${plus}`}>
-              +
-            </span>
+            <h3 className="m-0 font-sans text-body font-[590] text-foreground">{f.q}</h3>
+            {/* The icon set's plus at its one stroke (it was a 22px "+" in the
+                text face, heavier than every icon beside it). */}
+            <Icon name="plus" size={20} className={`transition-transform duration-pop ease-out group-open:rotate-45 ${plus}`} />
           </summary>
           <p className="fx-fade m-0 max-w-prose pb-5 text-body text-muted-foreground">{f.a}</p>
         </details>
@@ -42,10 +43,13 @@ export function QuestionGroups({ groups }: { groups: readonly { label: string; d
             <span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full lg:mt-1.5 ${g.dot}`} />
             {g.label}
           </p>
-          <ul role="list" className="m-0 grid list-none gap-x-10 gap-y-6 p-0 md:grid-cols-2 lg:col-span-9">
+          {/* Side by side, each question and answer are two rows of one
+              subgrid, so a question that wraps moves its neighbour's answer
+              down with its own and both answers start on one line. */}
+          <ul role="list" className="m-0 grid list-none gap-x-10 gap-y-6 p-0 md:grid-cols-2 md:gap-y-0 lg:col-span-9">
             {g.items.map((f, i) => (
-              <li key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} className="border-t border-border pt-4 lg:border-0 lg:pt-0">
-                <h3 className="font-sans text-body font-[590] tracking-normal text-foreground">{f.q}</h3>
+              <li key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} className="border-t border-border pt-4 md:row-span-2 md:grid md:grid-rows-subgrid md:gap-y-0 lg:border-0 lg:pt-0">
+                <h3 className="font-sans text-body font-[590] text-foreground">{f.q}</h3>
                 <p className="mt-2 text-small text-muted-foreground sm:text-body">{f.a}</p>
               </li>
             ))}
@@ -85,7 +89,7 @@ export function QuestionList({
     <ul role="list" className={`m-0 grid list-none gap-x-12 p-0 ${columns === 2 ? "md:grid-cols-2" : ""} ${className}`}>
       {items.map((f, i) => (
         <li key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} className={`border-t border-border pb-8 pt-5 ${columns === 2 ? "md:row-span-2 md:grid md:grid-rows-subgrid md:gap-y-0" : ""}`}>
-          <h3 className="font-sans text-body font-medium tracking-normal text-foreground">{f.q}</h3>
+          <h3 className="font-sans text-body font-[590] text-foreground">{f.q}</h3>
           <p className="mt-2 max-w-prose text-small text-muted-foreground sm:text-body">{f.a}</p>
         </li>
       ))}

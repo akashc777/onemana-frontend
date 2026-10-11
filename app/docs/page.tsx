@@ -4,8 +4,9 @@ import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { listPublishedDocs, groupDocs } from "@/lib/docs";
 import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
-import { SpotDocs } from "@/components/ui/graphics/spots";
+import { SpotDocs, SpotError } from "@/components/ui/graphics/spots";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon } from "@/components/ui/icons";
 import { ButtonLink } from "@/components/ui/Button";
 import { DocsSearch } from "@/components/docs/DocsSearch";
 import { DocsGroupTile } from "@/components/docs/DocsGroupMark";
@@ -70,6 +71,7 @@ export default async function DocsIndexPage() {
       <div className="container-x pb-16 pt-10">
         {docs.length === 0 ? (
           <div className="max-w-md py-10">
+            <SpotError size={96} className="mb-5" />
             <h2 className="text-h3 text-foreground">The guides could not be loaded</h2>
             <p className="mt-2 text-small text-muted-foreground">
               Try again in a minute. Your licence email has the install command, and support@onemana.dev answers
@@ -85,10 +87,8 @@ export default async function DocsIndexPage() {
               {START_HERE.map((c) => (
                 <li key={c.slug}>
                   <Link href={`/docs/${c.slug}`} className="lift flex h-full flex-col gap-3 rounded-xl bg-card p-5 shadow-e1">
-                    <Tile hue={c.hue} className="size-9 rounded-ctl">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
-                        <path d={c.d} />
-                      </svg>
+                    <Tile hue={c.hue} size="lg">
+                      <Icon d={c.d} />
                     </Tile>
                     <span>
                       <span className="block text-body font-[590] text-foreground">{c.title}</span>
@@ -128,9 +128,7 @@ export default async function DocsIndexPage() {
                             </span>
                           )}
                         </span>
-                        <span aria-hidden className="shrink-0 self-center text-faint transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-foreground">
-                          →
-                        </span>
+                        <Icon name="arrow-right" className="self-center text-faint transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-foreground" />
                       </Link>
                     </li>
                   ))}

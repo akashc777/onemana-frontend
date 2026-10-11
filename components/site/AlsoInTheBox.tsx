@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CAMP_HUES } from "@/lib/campHue";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon } from "@/components/ui/icons";
 
 /**
  * "Also in the box" (site.md H5): the breadth that lived only in the docs,
@@ -30,9 +31,7 @@ export function AlsoInTheBox() {
         <li key={b.slug} className="reveal">
           <Link href={`/docs/${b.slug}`} className="group lift flex h-full min-h-24 flex-col rounded-xl bg-card p-4 shadow-e1 focus-visible:outline-offset-2 sm:min-h-28 sm:flex-row sm:gap-3.5 sm:p-5">
             <Tile hue={CAMP_HUES[i % CAMP_HUES.length]!} className="transition-transform duration-spring ease-spring group-hover:-rotate-6">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
-                <path d={b.d} />
-              </svg>
+              <Icon d={b.d} />
             </Tile>
             <span className="mt-3 block min-w-0 sm:mt-0">
               <span className="block text-body font-[590] text-foreground">{b.name}</span>

@@ -40,7 +40,7 @@ export function RecordRows({ rows, caption, className = "", tone = "page" }: { r
             <li key={r.seq} className="relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-3 py-4 [&+li]:border-t [&+li]:border-border">
               {/* The rule from one sequence number to the next is the chain. */}
               {hashMatches && (
-                <span aria-hidden className="absolute bottom-0 left-[0.6rem] top-10 w-px translate-y-4 bg-muted-foreground/70" />
+                <span aria-hidden className="pointer-events-none absolute bottom-0 left-[0.6rem] top-10 w-px translate-y-4 bg-muted-foreground/70" />
               )}
               <span className="pt-px font-mono text-caption tabular-nums text-muted-foreground">#{r.seq}</span>
               <div className="min-w-0">

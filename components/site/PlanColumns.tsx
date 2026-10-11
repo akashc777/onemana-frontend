@@ -5,7 +5,6 @@ import { PLAN_HUE } from "@/components/site/planHues";
 import { PlanBenefit } from "@/components/site/PlanCard";
 import { CloudChoice, type CloudOption } from "@/components/site/CloudChoice";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
-import { Rings } from "@/components/ui/graphics/motifs";
 import { Dot } from "@/components/ui/v3";
 import type { CampHue } from "@/lib/campHue";
 import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
@@ -27,7 +26,9 @@ export const FREE_PILL = "Most teams start here";
  * from the backend's /onecamp/pricing, never from this file.
  *
  * The licence is lifted (e3 and a brand ring at 45%) with no words claiming
- * popularity; Free carries "Most teams start here". The parts of the three
+ * popularity; Free carries "Most teams start here". No drawing sits behind a
+ * price: the licence's two faint rings, cut by the card's edge, read as stray
+ * lines. The parts of the three
  * cards share a subgrid, so every row lines up whatever wraps.
  *
  * NO TRIALS AND NO REFUNDS is said under the cards, before anyone reaches a
@@ -72,7 +73,7 @@ export function PlanColumns({
       price: <PriceFigure price="Free" />,
       lines: <PriceLines pricing={pricing} inr={0} free="No card, no email" />,
       fits: `Up to ${FREE_SEATS} people`,
-      body: "Everything a team uses, on your own server. No card, no email.",
+      body: "Everything a team uses, on your own server.",
       list: detailed ? freeIncludes.slice(1, 5) : planHighlights.free,
       gets: "a free key and one install command",
       cta: (
@@ -135,11 +136,6 @@ export function PlanColumns({
             data-plan={c.key}
             className={`${HUE_CLASS[c.hue]} reveal group relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 lift-2 ${c.lifted ? "lift-move shadow-e3 ring-1 ring-brand/45 hover:ring-brand/55" : "lift shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
           >
-            {c.lifted && (
-              <span aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 -z-10 opacity-60 transition-transform duration-page ease-out group-hover:rotate-[8deg]">
-                <Rings size={170} hue="sun" count={2} core={false} className="opacity-50" />
-              </span>
-            )}
             {c.key === "cloud" && detailed && cloudOptions.length > 1 ? (
               <CloudChoice options={cloudOptions} title={<CardName H={H} hue={c.hue} name={c.name} />} pricing={pricing} body={c.body} list={<BenefitList items={c.list} />} gets={<Gets>{c.gets}</Gets>} />
             ) : (
@@ -198,7 +194,7 @@ interface Card {
 
 function CardName({ H, hue, name }: { H: "h2" | "h3"; hue: CampHue; name: string }) {
   return (
-    <H className="flex items-center gap-2 font-sans text-body font-[590] tracking-normal text-foreground">
+    <H className="flex items-center gap-2 font-sans text-body font-[590] text-foreground">
       <Dot hue={hue} />
       {name}
     </H>
@@ -225,9 +221,15 @@ function BenefitList({ items }: { items: readonly string[] }) {
   );
 }
 
+/**
+ * What you get, at the foot of the card's body. Side by side (lg) it sits at
+ * the bottom of its subgrid row; stacked it stays left. It was self-end in
+ * both, and in a stacked card's flex column that pushed a short line to the
+ * right edge (design/site-polish/AUDIT.md, L1).
+ */
 function Gets({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-5 self-end text-caption text-foreground">
+    <p className="mt-5 text-caption text-foreground lg:self-end">
       <span className="text-muted-foreground">You get: </span>
       <span className="font-[510]">{children}</span>
     </p>

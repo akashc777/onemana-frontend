@@ -21,7 +21,7 @@ const SEEN = "onecamp-close-burst";
  * gradient ring, two rings round it (one dashed), and the six camp hues
  * orbiting at 122px in 40s, with the brand spark at the top right. The
  * first time it is half on screen, once a session, it bursts into fourteen
- * sparks (G11's one burst on this page). Never under reduced motion; the
+ * sparks (G11's one burst on this page) that fade as they land. Never under reduced motion; the
  * orbit pauses off screen and stops for reduced motion. 160px on a phone.
  */
 export function CloseSpot() {
@@ -64,7 +64,7 @@ export function CloseSpot() {
         <SparkMark size={18} className="absolute right-[64px] top-[48px]" />
         {burst &&
           SPARKS.map((s, i) => (
-            <span key={i} className="absolute animate-spark-out" style={{ left: s.left, top: s.top, "--spark-x": s.x, "--spark-y": s.y } as CSSProperties}>
+            <span key={i} className="absolute animate-spark-burst" style={{ left: s.left, top: s.top, "--spark-x": s.x, "--spark-y": s.y } as CSSProperties}>
               <Spark hue={s.hue} size={s.size} />
             </span>
           ))}

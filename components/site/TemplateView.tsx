@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { TemplateTile } from "@/components/site/TemplateTile";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { hueFor } from "@/lib/campHue";
 import { FREE_SEATS } from "@/lib/freePlan";
@@ -39,12 +40,8 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
         size="read"
         title={
           <span className="flex items-center gap-4">
-            {/* The project tile (site.md T2): the hue's avatar gradient under a white mark. */}
-            <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-xl text-white" style={{ backgroundImage: `linear-gradient(140deg, rgb(var(--camp-${hue}-a1)), rgb(var(--camp-${hue}-a2)))` }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 6h16M4 12h10M4 18h6" />
-              </svg>
-            </span>
+            {/* The project tile (site.md T2): the hue's avatar gradient under the template's white glyph. */}
+            <TemplateTile id={t.id} size="lg" />
             {t.name}
           </span>
         }
@@ -67,8 +64,8 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
             <ol className={`${HUE_CLASS[hue]} relative grid gap-10 pl-8 before:absolute before:bottom-2 before:left-[5px] before:top-2 before:w-0.5 before:rounded-full before:bg-line-2 before:content-['']`} aria-label="The plan, week by week">
               {weeks.map((w, i) => (
                 <li key={i} className="reveal relative">
-                  <span aria-hidden="true" className="absolute -left-8 top-1 size-3 rounded-full bg-hue ring-4 ring-background" />
-                  <h2 className="font-sans text-small font-[590] tracking-normal text-foreground">Week {w.week}</h2>
+                  <span aria-hidden="true" className="pointer-events-none absolute -left-8 top-1 size-3 rounded-full bg-hue ring-4 ring-background" />
+                  <h2 className="font-sans text-small font-[590] text-foreground">Week {w.week}</h2>
                   <ul className="mt-3 grid gap-3">
                     {w.tasks.map((task) => (
                       <TaskCard key={task.name} task={task} />
@@ -172,8 +169,9 @@ function TaskCard({ task }: { task: TemplateTask }) {
       {!!task.subtasks?.length && (
         <ul className="mt-3 grid gap-1 text-small text-muted-foreground" aria-label={`Steps in ${task.name}`}>
           {task.subtasks.map((s) => (
-            <li key={s.name} className="flex items-center gap-2">
-              <span aria-hidden className="h-3.5 w-3.5 shrink-0 rounded border border-border" />
+            <li key={s.name} className="flex items-center gap-2.5">
+              {/* The app's checkbox (§3.10), unticked: a step still to do. */}
+              <span aria-hidden className="ui-check" />
               {s.name}
             </li>
           ))}

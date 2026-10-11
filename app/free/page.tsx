@@ -11,13 +11,14 @@ import { Section } from "@/components/ui/Section";
 import { FreeCommand, FreeEmailKey } from "./FreeInstall";
 import { SpotPlug } from "@/components/ui/graphics/spots";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon, type IconName } from "@/components/ui/icons";
 import type { CampHue } from "@/lib/campHue";
 
 /** Each need's tile (site.md F2): the server, the address, the install. */
-const NEED_MARK: { hue: CampHue; d: string }[] = [
-  { hue: "sun", d: "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01" },
-  { hue: "sky", d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" },
-  { hue: "moss", d: "M4 6l5 6-5 6M12 18h8" },
+const NEED_MARK: { hue: CampHue; icon: IconName }[] = [
+  { hue: "sun", icon: "server" },
+  { hue: "sky", icon: "globe" },
+  { hue: "moss", icon: "terminal" },
 ];
 
 /**
@@ -48,10 +49,8 @@ export default function FreePage() {
             <ul className="m-0 mt-5 list-none space-y-4 border-t border-border p-0 pt-5">
               {selfHostNeeds.map((need, i) => (
                 <li key={need} className="flex items-start gap-3 text-small text-foreground">
-                  <Tile hue={NEED_MARK[i % NEED_MARK.length]!.hue} className="size-7 rounded-lg">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
-                      <path d={NEED_MARK[i % NEED_MARK.length]!.d} />
-                    </svg>
+                  <Tile hue={NEED_MARK[i % NEED_MARK.length]!.hue} size="sm">
+                    <Icon name={NEED_MARK[i % NEED_MARK.length]!.icon} />
                   </Tile>
                   <span className="pt-1">{need}</span>
                 </li>

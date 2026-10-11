@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CampHue } from "@/lib/campHue";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon } from "@/components/ui/icons";
 
 /** Each block's tile (site.md H7): a hue and a 1.25px line drawing on a 24 grid. */
 const ICON: Record<string, { hue: CampHue; d: string }> = {
@@ -60,10 +61,8 @@ export function RunSpec() {
       {SPEC.map((s) => (
         <div key={s.term} className="reveal">
           <dt className="flex items-center gap-3 text-body font-[590] text-foreground">
-          <Tile hue={ICON[s.term]!.hue} size="sm" className="size-7 rounded-lg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" className="size-4">
-              <path d={ICON[s.term]!.d} />
-            </svg>
+          <Tile hue={ICON[s.term]!.hue} size="sm">
+            <Icon d={ICON[s.term]!.d} />
           </Tile>
           {s.term}
           </dt>

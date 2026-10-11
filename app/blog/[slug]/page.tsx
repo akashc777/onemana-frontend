@@ -13,6 +13,7 @@ import { Prose } from "@/components/reading/Prose";
 import { PostCover } from "@/components/blog/PostCover";
 import { TopicChip, TopicLabel } from "@/components/blog/Topic";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { Icon } from "@/components/ui/icons";
 
 export const revalidate = 120;
 
@@ -80,12 +81,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   return (
     <article>
-      <div aria-hidden="true" className="read-progress fixed inset-x-0 top-0 z-[60] h-0.5 bg-brand" />
+      <div aria-hidden="true" className="read-progress pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5 bg-brand" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <div className="container-x max-w-prose pt-10 sm:pt-16">
-        <Link href="/blog" className="tap-target text-small text-muted-foreground transition-colors hover:text-foreground">
-          ← All posts
+        <Link href="/blog" className="tap-target gap-1.5 text-small text-muted-foreground transition-colors hover:text-foreground">
+          <Icon name="arrow-left" size={14} />
+          All posts
         </Link>
 
         <header className="mt-8">

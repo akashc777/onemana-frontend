@@ -2,17 +2,23 @@
 
 import { useState } from "react";
 import { site } from "@/lib/site";
+import { Icon } from "@/components/ui/icons";
 
-/** The launch film, loaded from YouTube only when somebody asks to play it. */
+/**
+ * The launch film, loaded from YouTube only when somebody asks to play it
+ * (site.md V1). The film sits in a window at r14 and e4, as product imagery
+ * does: it used to sit in a grey padded box with a bordered box inside it, a
+ * window in a window (design/site-polish/AUDIT.md, P11).
+ */
 export function HeroProductVideo({ className = "" }: { className?: string }) {
   const [playing, setPlaying] = useState(false);
   const id = site.demoVideoId;
 
   return (
     <div className={`w-full ${className}`}>
-      {/* On the same stage as the screenshots (ProductShot's Stage). */}
-      <div className="rounded-lg border border-border bg-muted p-2 sm:p-3 lg:p-4">
-      <div className="relative aspect-video overflow-hidden rounded-md border border-border bg-muted">
+      {/* The night tokens (globals.css .night): the film's own dark frame
+          while the poster loads, and a dark control chip on it in both themes. */}
+      <div className="night relative aspect-video overflow-hidden rounded-[14px] shadow-e4">
         {playing ? (
           <iframe
             title="OneCamp launch film"
@@ -29,25 +35,24 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
             <img
               src="/launch-film-cover.jpg"
               alt="OneCamp. Permissions, not promises. The opening of the launch film"
+              width={1920}
+              height={1080}
               loading="lazy"
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
             />
             {/* Bottom-left, not centred: a centred button sat on the film's
-                wordmark. White on the film's dark frame, as a player's own
-                control is: in the accent it was a second filled orange
-                button in view beside "Try the live demo", and its "1:32"
-                at 80% white on orange read at 3.5:1. */}
-            <span className="absolute bottom-3 left-3 inline-flex h-11 items-center gap-2 rounded-md bg-white px-4 text-small font-medium text-black/90 transition-colors group-hover:bg-white/90 sm:bottom-5 sm:left-5 sm:h-10">
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
-                <path d="M8 5v14l11-7L8 5z" />
-              </svg>
+                wordmark. A chip on the pop surface at e3, with the play glyph
+                on a brand disc that grows a little under the pointer. */}
+            <span className="absolute bottom-3 left-3 inline-flex h-11 items-center gap-2.5 rounded-full bg-pop py-1.5 pl-1.5 pr-4 text-small font-[510] text-foreground shadow-e3 sm:bottom-5 sm:left-5">
+              <span className="inline-flex size-8 items-center justify-center rounded-full bg-brand text-brand-foreground transition-transform duration-hover ease-out group-hover:scale-[1.06]">
+                <Icon name="play" size={14} />
+              </span>
               Watch the film
-              <span className="font-normal tabular-nums text-black/60">1:32</span>
+              <span className="font-normal tabular-nums text-muted-foreground">1:32</span>
             </span>
           </button>
         )}
-      </div>
       </div>
       <p className="mt-3 text-caption text-muted-foreground">92 seconds. The product screens are recorded in the live demo.</p>
     </div>

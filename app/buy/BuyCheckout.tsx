@@ -28,8 +28,8 @@ import { CloudGlyph, KeyGlyph } from "@/components/site/Glyphs";
 import { PlanBenefit } from "@/components/site/PlanCard";
 import { PLAN_HUE } from "@/components/site/planHues";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
-import { Rings } from "@/components/ui/graphics/motifs";
 import { Dot } from "@/components/ui/v3";
+import { Icon } from "@/components/ui/icons";
 
 export type Plan = "lifetime" | "cloud";
 
@@ -249,11 +249,11 @@ export function BuyCheckout({
 
             {/* The plan in its hue, the one its card has on /pricing: sun for
                 the licence, sky for Cloud. */}
+            {/* No rings behind the price: a faint ring cut by the card's edge
+                crossed the figure and read as a stray line, not a drawing
+                (design/site-polish/AUDIT.md, D2). The plan's hue is its dot
+                and its glyph. */}
             <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} relative isolate mt-6 overflow-hidden rounded-2xl bg-card shadow-e1`}>
-              {/* The plan's rings behind its price, turning a little when the plan changes (B2). */}
-              <span aria-hidden="true" className={`pointer-events-none absolute -right-12 -top-12 -z-10 opacity-60 transition-transform duration-page ease-out ${isCloud ? "rotate-[8deg]" : ""}`}>
-                <Rings size={180} hue={isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime} count={2} core={false} className="opacity-40" />
-              </span>
               <div className="p-6">
               <div className="flex items-baseline justify-between gap-4">
                 <span className="flex items-center gap-2 self-center text-body font-[590] text-foreground">
@@ -405,9 +405,9 @@ export function BuyCheckout({
                  company abroad needs its name, address and tax number on the
                  invoice to expense it (owner decision D2). */
               <details className="group rounded-ctl bg-muted px-3.5 py-2.5 ring-1 ring-inset ring-border" open={Boolean(company || address || taxId)}>
-                <summary className="flex min-h-7 cursor-pointer list-none items-center justify-between text-small font-[510] text-foreground [&::-webkit-details-marker]:hidden">
+                <summary className="-my-2.5 flex min-h-11 cursor-pointer list-none items-center justify-between text-small font-[510] text-foreground [&::-webkit-details-marker]:hidden">
                   Add company details for the invoice
-                  <span aria-hidden="true" className="text-[18px] font-normal leading-none text-faint transition-transform duration-pop group-open:rotate-45">+</span>
+                  <Icon name="plus" className="text-muted-foreground transition-transform duration-pop group-open:rotate-45" />
                 </summary>
                 <div className="mt-3 space-y-4">
                   <Field label="Company name">
@@ -432,10 +432,7 @@ export function BuyCheckout({
                 they come as a surprise. */}
             {!isIndia && !(pricing.charge_usd && !isCloud) && (
               <p key={country} className="fx-fade flex gap-2.5 rounded-ctl bg-muted px-3.5 py-3 text-small text-foreground ring-1 ring-inset ring-border">
-                <svg className="mt-0.5 size-4 shrink-0 text-camp-sky" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 11v5M12 8h.01" />
-                </svg>
+                <Icon name="info" className="mt-0.5 text-camp-sky" />
                 <span>
                 Razorpay shows the amount in rupees ({fmtINR(isCloud ? price.inr : pricing.lifetime_inr)}). Your bank may ask you to
                 approve a payment to an Indian company; that&apos;s expected.
@@ -445,10 +442,7 @@ export function BuyCheckout({
 
             {error && (
               <p role="alert" className="fx-slide flex gap-2.5 rounded-xl border-l-[3px] border-danger bg-card px-4 py-3 text-small text-foreground shadow-e1">
-                <svg className="mt-0.5 size-4 shrink-0 text-danger-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7.5v5.5M12 16.5h.01" />
-                </svg>
+                <Icon name="alert" className="mt-0.5 text-danger-ink" />
                 <span>{error}</span>
               </p>
             )}
@@ -458,10 +452,7 @@ export function BuyCheckout({
                 edge. Its width never changes, busy or not. */}
             <div className="sticky bottom-3 z-20 -mx-2 rounded-ctl bg-background/95 p-2 shadow-e3 md:static md:mx-0 md:bg-transparent md:p-0 md:shadow-none">
             <Button type="submit" disabled={busy} variant="brand" size="xl" className="w-full">
-              <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="5" y="11" width="14" height="9" rx="2" />
-                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-              </svg>
+              <Icon name="lock" />
               {busy
                 ? "Processing…"
                 : isCloud
@@ -478,24 +469,15 @@ export function BuyCheckout({
             {/* Under the button, where they reassure at the moment of paying (B4). */}
             <ul className="m-0 list-none space-y-2 p-0 text-caption">
               <li className="flex gap-2 text-muted-foreground">
-                <svg className="mt-0.5 size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="5" y="11" width="14" height="9" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
+                <Icon name="lock" size={14} className="mt-0.5" />
                 Secure payment via Razorpay. We never see your card details.
               </li>
               <li className="flex gap-2 text-foreground">
-                <svg className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 11v5M12 8h.01" />
-                </svg>
+                <Icon name="info" size={14} className="mt-0.5 text-muted-foreground" />
                 {paymentTerms(isCloud ? choice : "lifetime")}
               </li>
               <li className="flex gap-2 text-muted-foreground">
-                <svg className="mt-0.5 size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
-                </svg>
+                <Icon name="globe" size={14} className="mt-0.5" />
                 {currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}
               </li>
               {isCloud && setupEstimateFor(pricing, business) && <li className="pl-[22px] text-muted-foreground">{setupEstimateFor(pricing, business)?.sentence}</li>}

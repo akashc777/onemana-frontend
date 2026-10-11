@@ -90,7 +90,9 @@ function SuccessInner() {
   return (
     <section className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-6 sm:pt-10">
       {/* The page's one camp canvas (site.md B6), with the plan's mark and the title on its paper. */}
-      <CampCanvas className="flex h-[220px] flex-col justify-end rounded-[20px] p-6 sm:h-[280px] sm:rounded-4xl sm:p-10">
+      {/* Quiet rings: the canvas holds the title, and the full set scattered a
+          gradient arc, a dashed ring and two dots across it (AUDIT.md D3). */}
+      <CampCanvas rings="quiet" className="flex h-[220px] flex-col justify-end rounded-[20px] p-6 sm:h-[280px] sm:rounded-4xl sm:p-10">
         {direct ? (
           <Tile hue={mark.hue} size="lg">
             {mark.glyph}

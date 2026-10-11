@@ -26,6 +26,7 @@
 
 import * as React from "react"
 import { verifyRecord, type VerifyReport } from "@/lib/verifyRecord"
+import { SpotImported } from "@/components/ui/graphics/spots"
 
 type State =
     | { kind: "idle" }
@@ -100,8 +101,10 @@ export function VerifyRecord() {
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
                 className={[
-                    "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-card px-6 py-14 text-center transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
-                    dragging ? "border-foreground/50 bg-foreground/5" : "border-border hover:border-foreground/30",
+                    // The drop zone (site.md V2): a dashed line-3 card at r16 with
+                    // the lake spot for a file coming in; lake under a dragged file.
+                    "hue-lake flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed bg-card px-6 py-12 text-center transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
+                    dragging ? "border-hue bg-hue-tint" : "border-line-3 hover:border-hue",
                 ].join(" ")}
             >
                 <input
@@ -113,6 +116,7 @@ export function VerifyRecord() {
                         if (f) void handleFile(f)
                     }}
                 />
+                <SpotImported size={64} hue="lake" className="mb-1" />
                 <span className="text-sm font-medium">Drop the file here, or choose one</span>
                 <span className="text-caption text-muted-foreground">
                     It is read in your browser. Nothing is uploaded.
@@ -124,7 +128,7 @@ export function VerifyRecord() {
                 <button
                     type="button"
                     onClick={() => void tryTheSample()}
-                    className="underline underline-offset-4 hover:text-foreground"
+                    className="tap-target underline underline-offset-4 hover:text-foreground"
                 >
                     Try it with a record from the public demo
                 </button>

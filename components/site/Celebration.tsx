@@ -18,7 +18,9 @@ const SPARKS: { hue: CampHue; size: number; at: string; from: [string, string]; 
 
 export function Celebration({ children }: { children: ReactNode }) {
   return (
-    <span className="relative inline-flex">
+    // w-fit: inside a column flex box (the receipt's canvas) the wrapper
+    // stretched to the full width, and two sparks landed at its far edge.
+    <span className="relative inline-flex w-fit">
       <span className="inline-flex motion-safe:animate-spring">{children}</span>
       <span aria-hidden className="pointer-events-none absolute inset-0 motion-reduce:hidden">
         {SPARKS.map((s) => (

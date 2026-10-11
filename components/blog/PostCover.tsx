@@ -25,7 +25,7 @@ export function PostCover({ src, hue }: { src: string; hue: CampHue }) {
           alt=""
           fill
           priority
-          sizes="(min-width: 768px) 640px, calc(100vw - 56px)"
+          sizes="(min-width: 768px) 680px, 100vw"
           className="object-cover"
           unoptimized={!coverOptimizable(src)}
         />
