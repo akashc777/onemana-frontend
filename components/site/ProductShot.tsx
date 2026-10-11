@@ -117,8 +117,13 @@ const HIGH_PRIORITY = { fetchpriority: "high" } as Record<string, string>;
  * reader who chose the other theme with the toggle gets a lazy copy in it
  * (.hero-alt), shown by CSS only then.
  */
-function HeroPicture({ file, width, height, alt, hideAt, className }: { file: string; width: number; height: number; alt: string; hideAt: string; className: string }) {
-  const pick = (theme: string) => capSrcSet(getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, sizes: `${width}px`, alt, quality: 60 }).props, width);
+function HeroPicture({ file, width, height, alt, hideAt, className, density = false }: { file: string; width: number; height: number; alt: string; hideAt: string; className: string; density?: boolean }) {
+  // density: a 1x and a 2x file for an image drawn at a fixed width (the
+  // phone hero, about 360px), never a desktop width.
+  const pick = (theme: string) =>
+    density
+      ? getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, alt, quality: 60 }).props
+      : capSrcSet(getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, sizes: `${width}px`, alt, quality: 60 }).props, width);
   const light = pick("light");
   const dark = pick("dark");
   return (
@@ -144,8 +149,10 @@ function HeroPicture({ file, width, height, alt, hideAt, className }: { file: st
  * is never faded, being the LCP candidate at 1440); the chips spring in at
  * 420 and 540ms and lean towards the pointer.
  *
- * On a phone the canvas holds the app's own phone layout at 1:1, 520px tall
- * and fading into the canvas at its foot, with one chip.
+ * On a phone the canvas holds the app's own phone capture at its native
+ * framing, the whole screen from the channel's header to the composer,
+ * drawn at the window's width from a 1x and a 2x file (about 30 kB), with
+ * one chip.
  */
 export function HeroShot({ alt, phoneAlt }: { alt: string; phoneAlt: string }) {
   return (
@@ -178,11 +185,9 @@ export function HeroShot({ alt, phoneAlt }: { alt: string; phoneAlt: string }) {
           </div>
         </div>
 
-        {/* Phone: the app's phone layout at 1:1, cut at 520px. */}
-        <div className="in-rise relative mx-auto h-[520px] max-w-[390px] overflow-hidden rounded-[14px] bg-card shadow-e4 sm:hidden">
-          <div className="fade-foot absolute left-1/2 top-0 h-[590px] w-[390px] -translate-x-1/2">
-            <HeroPicture file="channel-phone" width={390} height={590} alt={phoneAlt} hideAt="(min-width: 640px)" className="block h-[590px] w-[390px] max-w-none" />
-          </div>
+        {/* Phone: the phone capture whole, its box reserved by its aspect so nothing moves when it arrives. */}
+        <div className="in-rise relative mx-auto aspect-[390/590] w-full max-w-[390px] overflow-hidden rounded-[14px] bg-card shadow-e4 sm:hidden">
+          <HeroPicture density file="channel-phone" width={360} height={545} alt={phoneAlt} hideAt="(min-width: 640px)" className="block h-full w-full" />
         </div>
       </CampCanvas>
     </figure>

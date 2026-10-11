@@ -126,12 +126,14 @@ export function PlanColumns({
           the price, its two lines, who it is for, what it is, the list, what
           you get, the button), so each row lines up across the three. Stacked
           on a phone, each card is a plain column, Free first. */}
-      <div className="grid gap-6 md:grid-cols-3 md:gap-4 md:gap-y-0">
+      {/* Three across from lg; at a tablet's width two and one, the third
+          centred under them, since three 230px cards were too narrow to read. */}
+      <div className="grid gap-6 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-y-0">
         {cards.map((c) => (
           <div
             key={c.key}
             data-plan={c.key}
-            className={`${HUE_CLASS[c.hue]} reveal group relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 lift-2 ${c.lifted ? "lift-move shadow-e3 ring-1 ring-brand/45 hover:ring-brand/55" : "lift shadow-e1"} md:row-span-8 md:grid md:grid-rows-subgrid md:gap-y-0`}
+            className={`${HUE_CLASS[c.hue]} reveal group relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 lift-2 ${c.lifted ? "lift-move shadow-e3 ring-1 ring-brand/45 hover:ring-brand/55" : "lift shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-0.5rem)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
           >
             {c.lifted && (
               <span aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 -z-10 opacity-60 transition-transform duration-page ease-out group-hover:rotate-[8deg]">

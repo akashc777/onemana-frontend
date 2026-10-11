@@ -48,9 +48,10 @@ describe("the plan cards", () => {
     })
 
     // Each part lines up across the three whatever wraps: the cards share a
-    // subgrid of eight rows from md.
+    // subgrid of eight rows from lg; at a tablet's width they are two and one.
     it("share one row grid side by side, a row per part", () => {
-        for (const c of cards) expect(c).toContain("md:row-span-8 md:grid md:grid-rows-subgrid md:gap-y-0")
+        for (const c of cards) expect(c).toContain("lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0")
+        expect(cards[2]).toContain("md:col-span-2 md:mx-auto")
     })
 
     it("reserve the estimate's two lines on every card, so the currency swap moves nothing", () => {

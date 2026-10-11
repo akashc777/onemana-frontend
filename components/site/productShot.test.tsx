@@ -70,8 +70,15 @@ describe("the hero on a phone and on a wide screen", () => {
         for (const img of alts) expect(img).toMatch(/loading="lazy"/)
     })
 
-    it("draws the shot at 1:1 with its size set, never scaled", () => {
-        for (const img of found) expect(img).toMatch(/width="(1120|390)"/)
+    // The wide shot is drawn at 1:1; the phone capture at its native framing
+    // from a 1x and a 2x file, so a phone never fetches a desktop width.
+    it("sets every image's size, the wide one at 1:1 and the phone one from 1x and 2x files", () => {
+        for (const img of found) expect(img).toMatch(/width="(1120|360)"/)
+        const phone = found.filter((img) => img.includes("channel-phone-"))
+        for (const img of phone) {
+            expect(img).toMatch(/srcSet="[^"]* 1x, [^"]* 2x"/)
+            expect(img).not.toMatch(/w=(1080|1200|1920|2048|3840)/)
+        }
         expect(html).not.toContain("w-[220%]")
     })
 })
