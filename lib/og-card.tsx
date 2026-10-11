@@ -13,7 +13,7 @@ export const OG_SIZE = { width: 1200, height: 630 };
  * 5: the playful layer (10 Oct 2026): the ring from the logo with a workspace's channels, people and
  * agent orbiting it in the camp hues, the home page's own headline at weight 600, no grid or glow.
  */
-export const OG_IMAGE_VERSION = "5";
+export const OG_IMAGE_VERSION = "6";
 
 export const OG_TITLE = `${site.name} · Team chat, docs, tasks and calls on your own server`;
 export const OG_DESCRIPTION =
@@ -188,6 +188,22 @@ export function OgFrame({ children, address = "onemana.dev" }: { children: React
         color: OG.text,
       }}
     >
+      {/* A mini camp canvas (site.md OG1): the paper with the ember glow and
+          the dusk and lake light, bleeding off the right edge, the orbit on it. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 664,
+          top: 40,
+          width: 600,
+          height: 550,
+          borderRadius: 32,
+          display: "flex",
+          backgroundColor: "#F7F4F1",
+          backgroundImage:
+            "radial-gradient(circle at 78% -10%, rgba(255,110,30,0.30), rgba(255,110,30,0) 60%), radial-gradient(circle at 0% 110%, rgba(123,97,217,0.16), rgba(123,97,217,0) 55%), radial-gradient(circle at 100% 110%, rgba(14,151,166,0.13), rgba(14,151,166,0) 55%)",
+        }}
+      />
       <OgOrbit cx={940} cy={315} />
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: 660, padding: "64px 0 60px 72px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -210,8 +226,10 @@ export function OgCard() {
         width but never shrinks, so the line length was checked at this size
         against the 588 px column rather than eyeballed.
       */}
-      <div style={{ display: "flex", fontSize: 58, fontWeight: 600, lineHeight: 1.08, letterSpacing: "-0.03em" }}>
-        Your team&apos;s chat, docs and calls, on a server you own.
+      <div style={{ display: "flex", flexWrap: "wrap", fontSize: 58, fontWeight: 600, lineHeight: 1.08, letterSpacing: "-0.024em" }}>
+        {/* Two tones, as the hero (site.md H1, OG1): the soft half in ink-3, the claim in ink. */}
+        <span style={{ color: "#8A8C92" }}>Your team&apos;s chat, docs and calls,&nbsp;</span>
+        <span style={{ color: OG.text }}>on a server you own.</span>
       </div>
       <div style={{ display: "flex", marginTop: 24, fontSize: 26, lineHeight: 1.4, color: OG.text2 }}>
         AI agents that can only do what you can. Free for up to 25 people.
