@@ -199,7 +199,7 @@ export function BuyCheckout({
           Cloud "Try it before you pay" sat 146 px below the plan. */}
       <section className={SECTION_END}>
         <div className="container-x grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
-          <aside className="lg:col-start-1 lg:row-start-1">
+          <aside className="min-w-0 lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
             <div className="relative grid grid-cols-2 gap-1 rounded-ctl bg-muted p-1 text-small ring-1 ring-inset ring-border">
@@ -207,9 +207,9 @@ export function BuyCheckout({
                 type="button"
                 onClick={() => setPlan("lifetime")}
                 aria-pressed={!isCloud}
-                className={`min-h-11 rounded-sm px-3 py-2 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${!isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 max-sm:px-1.5 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${!isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <Dot hue={PLAN_HUE.lifetime} />
+                <Dot hue={PLAN_HUE.lifetime} className="max-sm:hidden" />
                 {/* Below 380 px the two labels do not fit side by side, and one
                     wrapped while the other did not: the qualifier is then read
                     but not shown. */}
@@ -219,9 +219,9 @@ export function BuyCheckout({
                 type="button"
                 onClick={() => setPlan("cloud")}
                 aria-pressed={isCloud}
-                className={`min-h-11 rounded-sm px-3 py-2 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 max-sm:px-1.5 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <Dot hue={PLAN_HUE.cloud} />
+                <Dot hue={PLAN_HUE.cloud} className="max-sm:hidden" />
                 <span>Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span></span>
               </button>
             </div>
