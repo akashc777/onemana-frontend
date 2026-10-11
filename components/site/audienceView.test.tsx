@@ -57,9 +57,11 @@ describe("an alternatives page", () => {
 describe("the compliance page", () => {
     const html = renderToString(<AudienceView a={audienceBySlug("compliance")!} pricing={defaultPricing} />)
 
-    it("opens on one camp canvas, with a described product crop", () => {
+    it("opens on one camp canvas, with the product drawn beside it and described", () => {
         expect(html.match(/class="camp-canvas/g)).toHaveLength(1)
-        expect(html).toMatch(/<img[^>]*alt="OneCamp&#x27;s record of what agents did/)
+        // The record, as the app draws it on a phone (components/site/showcase): one picture, never a screenshot.
+        expect(html).not.toMatch(/<img\b/)
+        expect(html).toMatch(/<div role="img" aria-label="OneCamp&#x27;s record of what an agent did/)
     })
 
     it("shows the record on a night card", () => {

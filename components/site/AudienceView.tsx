@@ -4,7 +4,8 @@ import { QuestionAccordion } from "@/components/site/marketing";
 import { ProductName } from "@/components/site/ProductName";
 import { FEATURE_MARK } from "@/components/site/featureMarks";
 import { PLAN_HUE } from "@/components/site/planHues";
-import { ProductWindow, type ShotName } from "@/components/site/ProductShot";
+import { Scene } from "@/components/site/showcase/Scene";
+import { AUDIENCE_SCENES, type AudienceSceneKind } from "@/components/site/showcase/audience";
 import { ButtonLink } from "@/components/ui/Button";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
@@ -25,19 +26,20 @@ import { attemptAndRefusal } from "@/lib/recordExcerpt";
 /** The audiences' own hues (site.md §9): agencies berry, compliance dusk, India sun. */
 const AUDIENCE_HUE: Record<string, CampHue> = { agencies: "berry", compliance: "dusk", india: "sun" };
 
-/** The product screen nearest each page's subject, from the live demo's captures. */
-function shotFor(a: Audience): { name: ShotName; alt: string } {
+/** The surface nearest each page's subject, drawn as the app draws it on a phone. */
+function sceneFor(a: Audience): AudienceSceneKind {
   const r = a.rival?.name ?? "";
-  if (a.slug === "compliance") return { name: "agents", alt: "OneCamp's record of what agents did: attempts to post in a channel, each refused by permissions." };
-  if (/Notion/.test(r)) return { name: "docs", alt: "A doc in OneCamp's editor, the Q4 launch plan." };
-  if (/Asana|ClickUp|monday|Basecamp|Toggl/.test(r)) return { name: "tasks", alt: "A OneCamp project as a board of task cards." };
-  if (a.slug === "india") return { name: "calendar", alt: "OneCamp's month calendar, with task due dates across the weeks." };
-  return { name: "chat", alt: "A OneCamp channel: people discussing a launch page." };
+  if (a.slug === "compliance") return "agents";
+  if (/Notion/.test(r)) return "docs";
+  if (/Asana|ClickUp|monday|Basecamp|Toggl/.test(r)) return "tasks";
+  if (a.slug === "india") return "calendar";
+  return "chat";
 }
 
 /**
  * One page for one kind of buyer, or for people leaving one rival (site.md
- * §9): the page's camp canvas with the claim and a 1:1 product crop, the
+ * §9): the page's camp canvas with the claim and the product beside it (the
+ * app's own phone scene for the subject, components/site/showcase), the
  * points as a specification with a tile in each feature's hue, where the
  * rival is better and how to move (on the rival's own band, in two raised
  * cards), the record on a night card for compliance, the price as two mini
@@ -46,14 +48,14 @@ function shotFor(a: Audience): { name: ShotName; alt: string } {
  */
 export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) {
   const hue: CampHue = a.rival ? productHue(a.rival.name) : (AUDIENCE_HUE[a.slug] ?? "sky");
-  const shot = shotFor(a);
+  const scene = AUDIENCE_SCENES[sceneFor(a)];
   return (
     <>
       {/* AU1: the header on the page's camp canvas, its glow in the page hue. */}
       <section className="pt-6 sm:pt-10">
         <div className="container-x">
           <div className={HUE_CLASS[hue]} style={{ "--page-glow": "var(--hue)" } as CSSProperties}>
-            <CampCanvas rings="quiet" className="rounded-[20px] px-5 pt-10 sm:rounded-4xl sm:px-10 sm:pt-14 lg:h-[440px] lg:pt-0">
+            <CampCanvas rings="quiet" className="rounded-[20px] px-5 pb-5 pt-10 sm:rounded-4xl sm:px-10 sm:pb-10 sm:pt-14 lg:py-10">
               <div className="grid h-full gap-8 lg:grid-cols-12 lg:items-center lg:gap-x-8">
                 <div className="lg:col-span-7">
                   <p className="eyebrow in-lift [--eyebrow-dot:rgb(var(--hue))]">{a.eyebrow}</p>
@@ -68,8 +70,13 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                     </ButtonLink>
                   </div>
                 </div>
-                <div className="relative h-[320px] lg:col-span-5 lg:h-[360px]">
-                  <ProductWindow name={shot.name} alt={shot.alt} loading="eager" className="in-rise absolute inset-0 rounded-b-none lg:-right-10 lg:rounded-b-[14px]" />
+                {/* One window, whole: the phone scene, never cropped. */}
+                <div className="flex justify-center lg:col-span-5 lg:justify-end">
+                  <div className="in-rise w-full max-w-[400px] lg:max-w-[320px]">
+                    <Scene w={scene.w} h={scene.h} label={scene.label} script={scene.script}>
+                      {scene.render()}
+                    </Scene>
+                  </div>
                 </div>
               </div>
             </CampCanvas>
