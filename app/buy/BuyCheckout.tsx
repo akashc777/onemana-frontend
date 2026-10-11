@@ -198,7 +198,7 @@ export function BuyCheckout({
           with two equal rows the form's height split between them, and on
           Cloud "Try it before you pay" sat 146 px below the plan. */}
       <section className={SECTION_END}>
-        <div className="container-x grid gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
+        <div className="container-x grid grid-cols-1 gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
           <aside className="min-w-0 lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
