@@ -26,6 +26,10 @@ export const fontMono = JetBrains_Mono({
   variable: "--font-mono",
   display: "swap",
   weight: ["400", "500"],
+  // Not preloaded: mono sets the record's data and code, never above the
+  // fold, and its 31 kB preload competed with the hero image, the phone's
+  // LCP (site.md §19).
+  preload: false,
 });
 
 /**

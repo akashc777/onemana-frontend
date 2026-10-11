@@ -19,6 +19,18 @@ import { AgentSquare, CampCanvas, FloatChip } from "@/components/ui/v3";
  */
 export type ShotName = "channel" | "chat" | "docs" | "tasks" | "calendar" | "agents";
 
+/**
+ * Drop the srcset's candidates wider than the capture at DPR 2: a phone at
+ * DPR 3 asked for the 1200w file of a 390px image (and 3840w of a wide one),
+ * half again the bytes for detail the capture does not have, and the hero
+ * image is the phone's LCP.
+ */
+function capSrcSet<T extends { srcSet?: string }>(props: T, width: number): T {
+  const max = width * 2 + 100;
+  const kept = (props.srcSet ?? "").split(", ").filter((c) => Number(c.match(/ (\d+)w$/)?.[1] ?? 0) <= max);
+  return { ...props, srcSet: kept.length ? kept.join(", ") : props.srcSet };
+}
+
 /** A wide capture's size in CSS pixels (2240 x 1400 at DPR 2). */
 export const SHOT = { width: 1120, height: 700 } as const;
 
@@ -46,7 +58,7 @@ export function ProductWindow({ name, alt, className = "", loading = "lazy" }: {
   return (
     <div className={`${/\b(absolute|fixed|sticky)\b/.test(className) ? "" : "relative"} overflow-hidden rounded-[14px] bg-card shadow-e4 ${className}`}>
       {(["light", "dark"] as const).map((theme) => {
-        const { props } = getImageProps({ src: `/product/${name}-${theme}.webp`, width: SHOT.width, height: SHOT.height, sizes: `${SHOT.width}px`, alt });
+        const props = capSrcSet(getImageProps({ src: `/product/${name}-${theme}.webp`, width: SHOT.width, height: SHOT.height, sizes: `${SHOT.width}px`, alt }).props, SHOT.width);
         return (
           // getImageProps gives the srcSet for 1x and 2x; a plain <img> lets it sit at 1:1.
           // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
@@ -106,7 +118,7 @@ const HIGH_PRIORITY = { fetchpriority: "high" } as Record<string, string>;
  * (.hero-alt), shown by CSS only then.
  */
 function HeroPicture({ file, width, height, alt, hideAt, className }: { file: string; width: number; height: number; alt: string; hideAt: string; className: string }) {
-  const pick = (theme: string) => getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, sizes: `${width}px`, alt }).props;
+  const pick = (theme: string) => capSrcSet(getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, sizes: `${width}px`, alt, quality: 60 }).props, width);
   const light = pick("light");
   const dark = pick("dark");
   return (
