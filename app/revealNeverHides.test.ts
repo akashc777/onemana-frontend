@@ -39,14 +39,21 @@ describe("entrances never hide", () => {
     }
   })
 
-  it("the hero's H1, lead and image never take a fading class", () => {
+  it("the hero's H1 and lead never take a fading class", () => {
     const page = readFileSync(join(process.cwd(), "app/page.tsx"), "utf8")
     const h1 = page.match(/<h1 className="([^"]*)"/)?.[1] ?? ""
     expect(h1).toContain("in-lift")
     expect(h1).not.toMatch(/fx-fade|in-chip|fx-slide/)
-    const shot = readFileSync(join(process.cwd(), "components/site/ProductShot.tsx"), "utf8")
-    const hero = shot.slice(shot.indexOf("export function HeroShot"))
-    expect(hero).toContain("in-rise")
-    expect(hero).not.toMatch(/fx-fade/)
+  })
+
+  it("the hero's product window has one entrance, a rise and a fade, stilled for reduced motion", () => {
+    // The window is drawn in markup now (components/site/showcase), and the H1
+    // is the page's LCP, so the window may fade in: 12px over 520ms, its glow
+    // with it, once. Text a reader is reading never fades.
+    const css = readFileSync(join(process.cwd(), "components/site/showcase/hero.css"), "utf8")
+    expect(css).toMatch(/@keyframes sc-hero-rise \{\s*from \{\s*opacity: 0;\s*transform: translateY\(12px\);/)
+    expect(css).toMatch(/\.sc-hero-rise \{\s*animation: sc-hero-rise 520ms/)
+    const reduced = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"))
+    expect(reduced).toMatch(/\.sc-hero-rise,\s*\.sc-hero-glow \{\s*animation: none;/)
   })
 })

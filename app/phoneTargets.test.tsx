@@ -14,6 +14,7 @@ import { GovernedDemo } from "@/components/site/GovernedDemo"
 import { Nav } from "@/components/site/Nav"
 import { PlanComparison } from "@/components/site/PlanComparison"
 import { ProductTabs } from "@/components/site/ProductTabs"
+import { tourScenes } from "@/components/site/showcase/tour"
 import { SubscribeForm } from "@/components/site/SubscribeForm"
 import { TemplateView } from "@/components/site/TemplateView"
 import { Select } from "@/components/ui/Select"
@@ -88,7 +89,7 @@ describe("a phone's targets", () => {
   })
 
   it("switches: the plan tabs, the Cloud sizes and the walkthrough's controls", () => {
-    expectTall(classesOf(renderToString(<ProductTabs />), /<button[^>]*role="tab"[^>]*>/g), "product tabs")
+    expectTall(classesOf(renderToString(<ProductTabs scenes={tourScenes()} />), /<button[^>]*role="tab"[^>]*>/g), "product tabs")
     const onSale = { ...defaultPricing, cloud_yearly_configured: true, business_configured: true }
     expectTall(classesOf(renderToString(<CloudPlanCard pricing={onSale} />), /<button[^>]*role="radio"[^>]*>/g), "Cloud sizes")
     const demo = renderToString(<GovernedDemo />)
@@ -109,7 +110,7 @@ describe("a phone's targets", () => {
   })
 
   it("links that stand alone", () => {
-    const tabs = renderToString(<ProductTabs />)
+    const tabs = renderToString(<ProductTabs scenes={tourScenes()} />)
     expectTall(classesOf(tabs, /<a[^>]*class="go[^"]*"[^>]*>(?=Open it in the live demo)/g), "Open it in the live demo")
     expectTall(classesOf(renderToString(<PlanComparison pricing={defaultPricing} />), /<a[^>]*class="ui-btn[^"]*"[^>]*>/g), "plan table buttons")
     expectTall(classesOf(renderToString(<AudienceView a={alternatives[0]!} pricing={defaultPricing} />), /<a[^>]*href="\/pricing"[^>]*>(?=See every plan)/g), "See every plan")

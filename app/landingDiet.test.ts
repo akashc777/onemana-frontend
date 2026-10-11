@@ -100,10 +100,13 @@ describe("landing diet", () => {
     expect(tabs).toMatch(/const tab = TABS\[active\]/);
   });
 
-  it("shows the product, not a drawing of it", () => {
+  it("shows the product itself, not a schematic of it", () => {
     // The hero carried a schematic loop and a drawn mockup at once. One real
-    // screenshot from the live demo replaced both.
-    expect(page).toContain("<HeroShot");
+    // screenshot from the live demo replaced both; since 11 Oct 2026 (the
+    // owner's direction) the product is drawn by its own components with the
+    // demo's data (components/site/showcase), held to the app's tokens by
+    // showcase.test.tsx: still the real product, never an illustration.
+    expect(page).toContain("<HeroScene");
     for (const banned of ["HeroLoop", "HeroMedia", "KineticHeadline", "StickyBuyCta", "Reveal", "SectionAmbient", "HeroAmbient"]) {
       expect(page, `${banned} is decoration the 10 Oct redesign removed`).not.toContain(banned);
     }

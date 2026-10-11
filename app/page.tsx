@@ -9,8 +9,9 @@ import { Margin, MarginHeading, SECTION_END, Section, SectionHeading } from "@/c
 import { ButtonLink } from "@/components/ui/Button";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
-import { HeroShot } from "@/components/site/ProductShot";
+import { HeroScene } from "@/components/site/showcase/HeroScene";
 import { ProductTabs } from "@/components/site/ProductTabs";
+import { tourScenes } from "@/components/site/showcase/tour";
 import { FactsStrip } from "@/components/site/FactsStrip";
 import { RunSpec } from "@/components/site/RunSpec";
 import { HomeComparison } from "@/components/site/HomeComparison";
@@ -37,13 +38,12 @@ export const revalidate = 300;
  * Install free (secondary), then buying, in the plan columns. "See pricing"
  * moved to the nav and the facts strip. Nothing is centred.
  *
- * Motion (G5): the hero's copy lifts 8px on load (transform only, the H1 is
- * the LCP), the window rises, two chips spring in and the sun stroke draws;
- * each section's heading rises 8px as it enters, never from hidden.
+ * Motion (G5, design/site-polish/MOTION.md): the hero's copy lifts 8px on
+ * load (transform only, the H1 is the LCP) and the sun stroke draws; the
+ * product window rises 12px and fades in with its glow, then plays one story
+ * in the app's own components (components/site/showcase) while it is on
+ * screen; each section's heading rises 8px as it enters, never from hidden.
  */
-
-/** When the tour's screenshots were taken from the live demo. */
-const SHOTS_TAKEN = "10 Oct";
 
 const FACTS = [
   { hue: "moss", bold: "Open source", rest: ", AGPL-3.0", at: "at-300", d: "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9" },
@@ -102,7 +102,7 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. What it is (H1), with the product on the camp canvas (H2) and the facts (H3). */}
-      <section className={`pt-10 sm:pt-[72px] ${SECTION_END}`}>
+      <section className={`overflow-x-clip pt-10 sm:pt-[72px] ${SECTION_END}`}>
         <div className="container-x">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-x-8">
             <div className="lg:col-span-8">
@@ -145,11 +145,8 @@ export default async function HomePage() {
             </ul>
           </div>
 
-          <div className="mt-10 sm:mt-14">
-            <HeroShot
-              alt="OneCamp's #engineering channel: a release thread where the Release Captain agent reports checklist status, with the sidebar of channels, projects and docs."
-              phoneAlt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
-            />
+          <div className="mt-10 sm:mt-14 md:pb-[104px]">
+            <HeroScene />
           </div>
 
           <div className="mt-14">
@@ -166,10 +163,10 @@ export default async function HomePage() {
           layout="split"
           eyebrow="One app"
           title="Chat, docs, tasks, calendar and agents in one app"
-          subtitle="Every screen here is the live demo. Open any of them without an account."
+          subtitle="Every screen here shows the live demo's own data. Open any of them without an account."
           className="mb-8 lg:mb-10"
         />
-        <ProductTabs taken={SHOTS_TAKEN} />
+        <ProductTabs scenes={tourScenes()} />
       </Section>
 
       {/* 3. The breadth (H5). */}

@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { notFound } from "next/navigation"
 
-import { HeroShot } from "@/components/site/ProductShot"
+import { HeroScene } from "@/components/site/showcase/HeroScene"
+import { ShowcaseGallery } from "@/components/site/showcase/Gallery"
 import {
   Arc,
   HUE_CLASS,
@@ -67,6 +68,10 @@ export default function PlayfulDevPage() {
         </p>
       </header>
 
+      <Section title="The showcase" note="OneCamp drawn by its own components (components/site/showcase), at the sizes the live demo was captured at.">
+        <ShowcaseGallery />
+      </Section>
+
       <Section
         title="The hero's orbit"
         note="The product shot on a hued canvas, the ring and orbit turning slowly behind it, and real things named on it. It pauses off screen and stands still with reduced motion."
@@ -78,7 +83,7 @@ export default function PlayfulDevPage() {
             { label: "Release Captain", kind: "agent" },
           ]}
         >
-          <HeroShot alt="The #engineering channel, with an agent's reply." phoneAlt="The #engineering channel on a phone." />
+          <HeroScene />
         </HeroOrbit>
       </Section>
 

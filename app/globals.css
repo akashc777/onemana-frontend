@@ -345,25 +345,6 @@ body {
     mix-blend-mode: screen;
   }
 
-  /* The hero's picture follows the system theme; a reader who chose the
-     other one with the toggle sees its lazy copy instead (ProductShot.tsx). */
-  @media (prefers-color-scheme: light) {
-    html.dark .hero-os {
-      display: none;
-    }
-    html.dark .hero-alt-dark {
-      display: block;
-    }
-  }
-  @media (prefers-color-scheme: dark) {
-    html.light .hero-os {
-      display: none;
-    }
-    html.light .hero-alt-light {
-      display: block;
-    }
-  }
-
   /* A spot's object stands on the raised surface (DESIGN_V3 §3.13), lifted
      the way e2 lifts a card, drawn as a drop on the shape itself. */
   .spot-up {
@@ -408,11 +389,6 @@ body {
     box-shadow: var(--e-e2);
   }
 
-  /* A phone screenshot fades into the canvas at its foot (site.md S18). */
-  .fade-foot {
-    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 48px), transparent);
-    mask-image: linear-gradient(to bottom, black calc(100% - 48px), transparent);
-  }
   /* A row that scrolls sideways fades at its edges. */
   .fade-x {
     -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);

@@ -1,0 +1,115 @@
+/*
+ * The home page's hero (HeroScene.tsx): one window, the app's #engineering
+ * story in it, a single campfire glow behind it, and the record of the
+ * refusal hanging off its bottom-left edge. Tokens only, as showcase.css.
+ */
+
+.sc-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+/* THE GLOW: the theme's campfire light (--glow, --glow2, the app frame's own),
+   one soft ellipse behind the window's upper half, reaching past its edges.
+   The section clips it at the page's edges (overflow-x: clip). */
+.sc-hero-glow {
+  position: absolute;
+  z-index: -1;
+  left: -14%;
+  right: -14%;
+  top: -18%;
+  height: 92%;
+  pointer-events: none;
+  background:
+    radial-gradient(44% 58% at 30% 42%, rgb(var(--glow) / 0.30), transparent 72%),
+    radial-gradient(40% 52% at 72% 50%, rgb(var(--glow2) / 0.14), transparent 74%);
+}
+.dark .sc-hero-glow {
+  background:
+    radial-gradient(44% 58% at 30% 42%, rgb(var(--glow) / 0.20), transparent 72%),
+    radial-gradient(40% 52% at 72% 50%, rgb(var(--glow2) / 0.12), transparent 74%);
+}
+
+/* A tablet's hero (768 to 1023px): the same window without the sidebar,
+   808px wide, so its text is never drawn under 89% (at 768) and the
+   conversation keeps its desktop width (792 against 800). */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .sc-hero-fit {
+    /* Over the scene's own inline design width. */
+    --sc-w: 808 !important;
+  }
+  .sc-hero-fit .sc-side,
+  .sc-hero-fit .sc-seam {
+    display: none;
+  }
+  .sc-hero-fit .sc-main {
+    padding-left: 8px;
+  }
+  /* Without the sidebar, no glow (AppFrame: the glow is the sidebar's). */
+  .sc-hero-fit .sc-frame::before {
+    display: none;
+  }
+}
+
+/* The desktop window's box: the record's scale follows the window's. */
+.sc-hero-desk {
+  position: relative;
+  container-type: inline-size;
+}
+
+/* THE ANNOTATION: the record of the attempt, on the floating surface,
+   hanging off the window's bottom-left edge over the frame's own margin,
+   never over what the window shows. Drawn at the window's scale. */
+.sc-hero-note {
+  position: absolute;
+  z-index: 2;
+  left: -24px;
+  top: calc(100% - 8px * var(--sc-k, 1));
+  width: 560px;
+  transform-origin: 0 0;
+  transform: scale(var(--sc-k, 1));
+}
+@supports (transform: scale(tan(atan2(1px, 1px)))) {
+  .sc-hero-note {
+    --sc-k: tan(atan2(100cqw, 1056px));
+  }
+}
+@supports (transform: scale(round(nearest, tan(atan2(1px, 1px)), 0.0001))) {
+  .sc-hero-note {
+    --sc-k: round(nearest, tan(atan2(100cqw, 1056px)), 0.0001);
+  }
+}
+
+/* One entrance on load: the window rises 12px and fades in over 520ms,
+   the glow fades in behind it. Transform and opacity; none for a reader who
+   asked for less motion. */
+@keyframes sc-hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sc-hero-glow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.sc-hero-rise {
+  animation: sc-hero-rise 520ms var(--ease-out) 120ms both;
+}
+.sc-hero-glow {
+  animation: sc-hero-glow 900ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-hero-rise,
+  .sc-hero-glow {
+    animation: none;
+  }
+}

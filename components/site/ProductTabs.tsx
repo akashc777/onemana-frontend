@@ -1,198 +1,121 @@
 "use client";
 
-import { getImageProps } from "next/image";
-import { useRef, useState, type ComponentType, type KeyboardEvent, type ReactNode, type SVGProps } from "react";
-import { ProductShot, SHOT, type ShotName } from "@/components/site/ProductShot";
-import { CalendarGlyph, ChatGlyph, DocGlyph, SparkGlyph, TaskGlyph } from "@/components/site/Glyphs";
-import { AgentSquare, Arrow, Face } from "@/components/ui/v3";
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import { Arrow } from "@/components/ui/v3";
 import { hueOrAgent } from "@/components/ui/graphics/hues";
 import type { CampHue } from "@/lib/campHue";
 import { site } from "@/lib/site";
+import type { TourId } from "@/components/site/showcase/tour";
 
 /**
  * The product, one surface at a time (site.md H4): a row of hued chips, the
- * surface's own title and one sentence, and the real screenshot on a stage
- * in the surface's hue, with one small scripted moment playing over it.
+ * surface's own title and one sentence, and the surface itself on a stage in
+ * its hue: OneCamp drawn by its own components (components/site/showcase),
+ * playing one moment when it is chosen and seen.
  *
- * Each surface wears its hue from the chip's dot to the stage to the spot
- * tile (G7: Docs dusk, Tasks moss, Calendar sun, Agents the agent's indigo,
- * Chat sky, as #engineering is in the hero). Chat is last because the hero
- * is already a channel.
+ * Each surface wears its hue from the chip's dot to the stage (G7: Docs dusk,
+ * Tasks moss, Calendar sun, Agents the agent's indigo, Ask lake, Chat sky, as
+ * #engineering is in the hero). Chat is last because the hero is already a
+ * channel.
  *
  * Two rules carried over from the showcase this replaced, and
  * app/landingDiet.test.ts holds them: it never advances on its own (a
  * surface changing while you read it is a carousel), and only the chosen
  * panel is in the page, so four hidden panels are not in the tab order or
- * the HTML. The moments are CSS, keyed to the tab, so they play once per
- * choice with no timer; under reduced motion they show their end state.
+ * the HTML. Choosing a tab cross-fades the stage to the new surface, whose
+ * parts arrive in a short stagger (SceneDirector); under reduced motion it
+ * simply shows.
  */
 type Tab = {
-  id: string;
+  id: TourId;
   label: string;
-  shot: ShotName;
   /** The camp hue, or the agent's indigo. */
   hue: CampHue | "agent";
-  Glyph: ComponentType<SVGProps<SVGSVGElement>>;
   title: string;
   text: string;
-  alt: string;
   place: string;
-  /** The moment's words, for screen readers (the drawn moment is aria-hidden). */
-  momentText: string;
-  moment: () => ReactNode;
 };
-
-const TYPING = (
-  <span className="ml-1 inline-flex items-center gap-[3px]" aria-hidden="true">
-    {[0, 1, 2].map((i) => (
-      <span key={i} className={`bob size-1 rounded-full bg-muted-foreground ${i === 1 ? "at-120" : i === 2 ? "at-240" : ""}`} />
-    ))}
-  </span>
-);
 
 const TABS: Tab[] = [
   {
     id: "docs",
     label: "Docs",
-    shot: "docs",
     hue: "dusk",
-    Glyph: DocGlyph,
     title: "Write together",
     text: "Everyone's cursor on the page. Tasks and channels link straight to the doc.",
-    alt: "The Q4 launch plan open in OneCamp's editor, with goals, owners and risks.",
     place: "docs",
-    momentText: "Jonas added Rollback steps under Decisions.",
-    moment: () => (
-      <>
-        <Face initials="JW" hue="berry" size={24} />
-        <span>
-          <b className="font-[590]">Jonas</b> added &ldquo;Rollback steps&rdquo; under Decisions
-        </span>
-      </>
-    ),
   },
   {
     id: "tasks",
     label: "Tasks",
-    shot: "tasks",
     hue: "moss",
-    Glyph: TaskGlyph,
     title: "Boards, lists and timelines",
     text: "Every project's work in one place, beside the conversation about it.",
-    alt: "The Q4 launch project as a board: To do, In progress and QA columns of task cards.",
     place: "board",
-    momentText: "Q4-17 moved to Done.",
-    moment: () => (
-      <>
-        <span className="fx-spring at-480 hue-moss inline-flex size-6 items-center justify-center rounded-full bg-hue text-white">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M3.5 8.5l3 3 6-7" />
-          </svg>
-        </span>
-        <span>
-          <b className="font-[590]">Q4-17</b> moved to Done
-        </span>
-      </>
-    ),
   },
   {
     id: "calendar",
     label: "Calendar",
-    shot: "calendar",
     hue: "sun",
-    Glyph: CalendarGlyph,
     title: "One calendar for the work",
     text: "Due dates and events together, two-way Google sync, and booking pages for people outside.",
-    alt: "OneCamp's month calendar for October, with task due dates across the weeks.",
     place: "1",
-    momentText: "Acme kickoff booked for Thursday at 14:00, in their time zone.",
-    moment: () => (
-      <>
-        <span className="hue-sun inline-flex size-6 items-center justify-center rounded-md bg-hue-tint text-hue">
-          <CalendarGlyph className="size-3.5" />
-        </span>
-        <span>
-          <b className="font-[590]">Acme kickoff</b> booked for Thu 14:00, in their time zone
-        </span>
-      </>
-    ),
   },
   {
     id: "agents",
     label: "Agents",
-    shot: "agents",
     hue: "agent",
-    Glyph: SparkGlyph,
     title: "Agents on the record",
     text: "An agent can do only what its person can. Every action, and every refusal, is written down.",
-    alt: "Your record of what agents did as you: two attempts to post in a channel, each refused by permissions.",
     place: "drill",
-    momentText: "The agent tried to post to #finance and was refused.",
-    moment: () => (
-      <>
-        <AgentSquare size={24} />
-        <span>
-          Post to <b className="font-[590]">#finance</b>
-        </span>
-        <span className="fx-stamp at-700 ml-1 rounded-[5px] px-1.5 text-[11px] font-[590] uppercase leading-[18px] tracking-[0.04em] text-camp-berry-ink ring-1 ring-camp-berry/60 [background:rgb(var(--camp-berry-tint))]">
-          Refused
-        </span>
-      </>
-    ),
+  },
+  {
+    id: "ask",
+    label: "Ask",
+    hue: "lake",
+    title: "Search, or ask",
+    text: "One box for every message, doc and task. Ask, and OneCamp AI answers only from what you can open.",
+    place: "engineering",
   },
   {
     id: "chat",
     label: "Chat",
-    shot: "chat",
     hue: "sky",
-    Glyph: ChatGlyph,
     title: "Channels, threads and calls",
     text: "Direct messages, mentions, files and check-ins, and a video call from any channel on your own server.",
-    alt: "The #design channel in OneCamp: four people discussing a launch page.",
     place: "engineering",
-    momentText: "Maya Chen is typing.",
-    moment: () => (
-      <>
-        <Face initials="MC" hue="moss" size={24} />
-        <span>
-          <b className="font-[590]">Maya Chen</b> is typing
-        </span>
-        {TYPING}
-      </>
-    ),
   },
 ];
 
 const hueClass = hueOrAgent;
 
-const warmed = new Set<string>();
-
-/**
- * Start downloading a tab's screenshot when the pointer or the keyboard
- * reaches its tab, so the picture is there when the tab is chosen. The file
- * is the one the panel will ask for, so the browser finds it in its cache.
- * Each file once per visit, in the theme being shown.
- */
-export function warm(shot: ShotName) {
-  if (typeof window === "undefined") return;
-  const theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
-  const key = `${shot}-${theme}`;
-  if (warmed.has(key)) return;
-  warmed.add(key);
-  const { props } = getImageProps({ src: `/product/${shot}-${theme}.webp`, width: SHOT.width, height: SHOT.height, sizes: `${SHOT.width}px`, alt: "" });
-  const img = new Image();
-  img.sizes = props.sizes ?? "";
-  img.srcset = props.srcSet ?? "";
-  img.src = props.src;
+/** The tour's ground: the hue's tint with a 22% radial of its strong cut from the top right. Its tint changes over 240ms. */
+function Stage({ children, hue }: { children: ReactNode; hue: CampHue | "agent" }) {
+  return (
+    <div
+      className={`${hueClass(hue)} relative isolate overflow-hidden rounded-3xl bg-hue-tint p-2 transition-colors duration-panel ease-in-out sm:p-8`}
+      style={{ backgroundImage: "radial-gradient(70% 70% at 100% 0%, rgb(var(--hue) / 0.22), transparent 65%)" } as CSSProperties}
+    >
+      {children}
+    </div>
+  );
 }
 
-export function ProductTabs({ taken = "10 Oct" }: { taken?: string }) {
+export function ProductTabs({ scenes }: { scenes: Record<TourId, ReactNode> }) {
   const [active, setActive] = useState(0);
+  // Whether the reader has chosen a surface: from then on a new surface's
+  // parts arrive in a stagger. The page's first surface is drawn as it is.
+  const [chosen, setChosen] = useState(false);
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const choose = (i: number) => {
+    setActive(i);
+    setChosen(true);
+  };
 
   const move = (to: number) => {
     const next = (to + TABS.length) % TABS.length;
-    setActive(next);
+    choose(next);
     refs.current[next]?.focus();
   };
 
@@ -227,10 +150,7 @@ export function ProductTabs({ taken = "10 Oct" }: { taken?: string }) {
             aria-selected={i === active}
             aria-controls={`panel-${t.id}`}
             tabIndex={i === active ? 0 : -1}
-            onClick={() => setActive(i)}
-            onPointerEnter={() => warm(t.shot)}
-            // Arrow keys choose as they move, so the neighbours are warmed too.
-            onFocus={() => [i - 1, i, i + 1].forEach((n) => warm(TABS[(n + TABS.length) % TABS.length].shot))}
+            onClick={() => choose(i)}
             className={`${hueClass(t.hue)} flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-md px-3 text-caption font-[510] transition-[background-color,box-shadow,color] duration-hover sm:min-h-8 ${
               i === active ? "bg-card text-foreground shadow-e2" : "text-muted-foreground hover:bg-hover hover:text-foreground"
             }`}
@@ -245,31 +165,22 @@ export function ProductTabs({ taken = "10 Oct" }: { taken?: string }) {
       <div id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} className="mt-7 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
         <div key={tab.id} className="fx-fade lg:pt-2">
           <h3 className="text-h3 text-foreground">{tab.title}</h3>
-          <p className="mt-3 text-body text-muted-foreground">
-            {tab.text}
-            <span className="sr-only"> In the screenshot: {tab.momentText}</span>
-          </p>
+          <p className="mt-3 text-body text-muted-foreground">{tab.text}</p>
           <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="go tap-target mt-4">
             Open it in the live demo <Arrow size={14} />
           </a>
           <p className={`${hueClass(tab.hue)} mt-6 hidden items-center gap-2 border-y border-border py-3 text-caption text-muted-foreground lg:flex`}>
             <span aria-hidden="true" className="size-[7px] rounded-full bg-hue" />
-            The screen is the demo&apos;s, taken {taken}
+            The live demo&apos;s data, in the app&apos;s own design
           </p>
         </div>
 
-        <ProductShot name={tab.shot} hue={tab.hue} alt={tab.alt} className="h-[440px] sm:h-[600px]">
-          {/* The surface's spot tile, springing in with each choice. */}
-          <span key={`spot-${tab.id}`} aria-hidden="true" className="fx-spring absolute bottom-4 right-4 z-10 flex size-14 items-center justify-center rounded-[20px] bg-pop shadow-e3 sm:bottom-6 sm:right-6 sm:size-[72px]">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-hue-tint text-hue sm:size-11 sm:rounded-xl [&>svg]:size-5">
-              <tab.Glyph />
-            </span>
-          </span>
-          {/* The moment: HTML over the screenshot, never a video. */}
-          <span key={`m-${tab.id}`} aria-hidden="true" className="fx-slide at-300 absolute bottom-4 left-4 right-20 z-10 flex items-center gap-2.5 rounded-xl bg-pop py-2 pl-2 pr-3 text-caption text-foreground shadow-e3 sm:bottom-auto sm:left-24 sm:right-auto sm:top-[66%]">
-            {tab.moment()}
-          </span>
-        </ProductShot>
+        <Stage hue={tab.hue}>
+          {/* Keyed by the surface: a new tab's scene cross-fades in, its parts in a stagger. */}
+          <div key={tab.id} className="sc-swap" data-sc-entering={chosen ? "" : undefined}>
+            {scenes[tab.id]}
+          </div>
+        </Stage>
       </div>
     </div>
   );
