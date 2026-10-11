@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
+import { OverlapRings } from "@/components/ui/graphics/v3marks";
+import { AgentSquare, Face } from "@/components/ui/v3";
 import { Margin, MarginHeading, Section, SectionHeading } from "@/components/ui/Section";
 import CostCalculator from "@/components/site/CostCalculator";
 import type { Pricing } from "@/lib/pricing";
@@ -45,6 +47,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
             <PageHeader
                 title="Where OneCamp wins, and where it does not"
                 subtitle={`${rivalsLine()}, compared on how they bill you and what limits their agents. Each rival's name in the table links to the page its row came from.`}
+                art={<OverlapRings />}
                 divider
             />
 
@@ -53,6 +56,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 <Margin
                     aside={
                         <MarginHeading
+                            eyebrow="Where we lose"
                             title="What the others do better"
                             subtitle={`Each of these is a real reason to buy something else. Checked ${CLAIMS_CHECKED}.`}
                         />
@@ -60,10 +64,10 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 >
                 {/* A list with the product in the margin: four boxes of equal
                     weight made an honest concession look like a feature grid. */}
-                <dl className="divide-y divide-border border-y border-border">
+                <dl className="m-0 divide-y divide-border border-y border-border">
                     {rivals.map((r) => (
-                        <div key={r.name} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-8">
-                            <dt className="font-medium text-foreground">
+                        <div key={r.name} className="reveal grid min-h-14 gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-8">
+                            <dt className="text-body font-[590] text-foreground">
                                 <ProductName name={r.name} />
                             </dt>
                             <dd className="max-w-2xl text-small text-muted-foreground sm:text-body">{r.theyWin}</dd>
@@ -84,13 +88,13 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     {/* The table is the only element on the site allowed to scroll
                         sideways, and it does so inside its own box so the page
                         itself never does. */}
-                    <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
+                    <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
                         <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
                             <caption className="sr-only">
                                 {`OneCamp compared with ${countWord(rivals.length)} alternatives on billing and agent governance`}
                             </caption>
                             <thead>
-                                <tr className="border-b border-border bg-muted/40">
+                                <tr className="border-b border-border">
                                     <th scope="col" className="px-4 py-3 font-semibold text-foreground">Product</th>
                                     <th scope="col" className="px-4 py-3 font-semibold text-foreground">What it is</th>
                                     <th scope="col" className="px-4 py-3 font-semibold text-foreground">How you pay</th>
@@ -98,13 +102,14 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="border-b border-border bg-muted">
-                                    <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
+                                {/* OneCamp's row, lifted (site.md C3): the raised surface with a 2px brand rule. */}
+                                <tr className="bg-card shadow-e1">
+                                    <th scope="row" className="rounded-l-xl border-l-2 border-brand px-4 py-4 align-top font-semibold text-foreground">
                                         <ProductName name={onecampRow.name} />
                                     </th>
-                                    <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.what}</td>
-                                    <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.billing}</td>
-                                    <td className="px-4 py-4 align-top text-muted-foreground">{onecampRow.agents}</td>
+                                    <td className="px-4 py-4 align-top text-foreground">{onecampRow.what}</td>
+                                    <td className="px-4 py-4 align-top text-foreground">{onecampRow.billing}</td>
+                                    <td className="rounded-r-xl px-4 py-4 align-top font-[510] text-foreground">{onecampRow.agents}</td>
                                 </tr>
                                 {rivals.map((r) => (
                                     <tr key={r.name} className="border-b border-border last:border-0">
@@ -160,10 +165,17 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     title="Ask every one of us the same thing"
                     subtitle="You can check OneCamp's answer yourself, in the demo, in about a minute."
                 />
-                <div className="mt-10 max-w-3xl border-l-2 border-foreground pl-6">
+                {/* The question as a message from you (site.md C4), on the raised surface. */}
+                <div className="reveal mt-10 flex max-w-3xl gap-4 rounded-2xl bg-card p-5 shadow-e2 sm:p-6">
+                    <Face initials="You" hue="sky" size={36} />
                     <blockquote className="m-0">
-                        <p className="text-balance font-display text-h3 text-foreground sm:text-h2">{killQuestion}</p>
+                        <p className="m-0 text-caption font-[590] text-foreground">You</p>
+                        <p className="mt-1 text-balance text-h3 text-foreground">{killQuestion}</p>
                     </blockquote>
+                </div>
+                <div className="mt-4 flex max-w-3xl items-center gap-3 pl-5">
+                    <AgentSquare size={28} />
+                    <p className="m-0 text-small font-[510] text-foreground">OneCamp: yes, and the demo shows it.</p>
                 </div>
                 <div className="mt-6">
                     <p className="max-w-2xl text-body text-muted-foreground">

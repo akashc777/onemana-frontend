@@ -85,6 +85,25 @@ export function PlanOrbit() {
   )
 }
 
+/** /compare's art (site.md C1): two overlapping rings, OneCamp's in the logo gradient and a grey one, the overlap in sun. */
+export function OverlapRings() {
+  const id = `or${useId().replace(/:/g, "")}`
+  const [a, b] = APP.logoGradient
+  return (
+    <svg aria-hidden="true" viewBox="0 0 260 200" width="260" height="200" fill="none">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={a} />
+          <stop offset="1" stopColor={b} />
+        </linearGradient>
+      </defs>
+      <path d="M130 52a60 60 0 0 1 0 96a60 60 0 0 1 0-96z" className="fill-camp-sun/25" />
+      <circle cx="166" cy="100" r="60" className="stroke-ink-4" strokeWidth="12" />
+      <circle cx="94" cy="100" r="60" stroke={`url(#${id})`} strokeWidth="12" />
+    </svg>
+  )
+}
+
 /** The footer's corner ring (S16), at 10% ink, cropped by the page's edge. */
 export function FooterRing() {
   return (
