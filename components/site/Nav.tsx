@@ -1,30 +1,33 @@
 import Link from "next/link";
 import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
-import { OneCampLogo } from "@/components/site/BrandMarks";
-import { ThemeToggle } from "@/components/site/ThemeToggle";
-import { MobileMenu, NavLink } from "@/components/site/NavParts";
+import { LogoRing } from "@/components/ui/v3";
+import { ThemeToggle, ThemeSegments } from "@/components/site/ThemeToggle";
+import { MobileMenu, NavBar, NavLink } from "@/components/site/NavParts";
 
 /**
- * The nav: five links, then "Live demo" as a text link and one outline button,
- * "Install free". It used to end in a filled "Get OneCamp" that dropped cold
- * visitors into a GST checkout form; the demo and the free plan are the two
- * ways in that need no money, so they are the two the nav offers.
+ * The nav (design v3, site.md S1): 64px, transparent at the top and the page
+ * under a blur once you scroll. The gradient ring and "OneCamp", five links,
+ * then the theme, Sign in, "Live demo" as a text link and one secondary
+ * button, "Install free". The demo and the free plan are the two ways in that
+ * need no money, so they are the two the nav offers; nothing in it is filled
+ * in the brand.
  *
- * Drawn on the server. Only the current-page mark (NavLink) and the phone
- * menu's open state (MobileMenu) are client parts. On a phone, Pricing stays
- * beside the menu button, so the way to buy is one tap from every page.
+ * Drawn on the server. Only the scroll state (NavBar), the current-page mark
+ * (NavLink) and the phone menu's open state (MobileMenu) are client parts.
+ * On a phone, Pricing stays beside the menu button, so the way to buy is one
+ * tap from every page.
  */
 export function Nav() {
   return (
-    <header className="sticky top-0 z-50 bg-canvas">
-      <nav className="container-x flex h-12 items-center justify-between gap-6" aria-label="Primary">
-        <Link href="/" className="flex min-h-11 items-center gap-2 text-sm font-semibold text-foreground">
-          <OneCampLogo className="h-6 w-6" />
+    <NavBar>
+      <nav className="container-x flex h-14 items-center justify-between gap-6 lg:h-16" aria-label="Primary">
+        <Link href="/" className="flex min-h-11 items-center gap-2 text-[16px] font-[620] tracking-[-0.015em] text-foreground">
+          <LogoRing size={24} />
           {site.name}
         </Link>
 
-        <div className="hidden flex-1 items-center gap-1 lg:flex">
+        <div className="hidden flex-1 items-center gap-0.5 lg:flex">
           {navLinks.map((l) => (
             <NavLink key={l.href} href={l.href}>
               {l.label}
@@ -32,19 +35,14 @@ export function Nav() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-1 lg:flex">
+        <div className="hidden items-center gap-0.5 lg:flex">
           <ThemeToggle />
           {/* Marked as the page you are on, on /account, as it is in the phone menu. */}
           <NavLink href="/account">Sign in</NavLink>
-          <a
-            href={site.demoStartUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="nav-idle rounded-md px-2.5 py-1.5 text-small font-medium"
-          >
+          <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="nav-link rounded-md px-2.5 py-1.5 text-small">
             Live demo
           </a>
-          <ButtonLink href="/free" size="sm" variant="ghost" className="ml-1">
+          <ButtonLink href="/free" size="md" variant="ghost" className="ml-2">
             Install free
           </ButtonLink>
         </div>
@@ -54,7 +52,7 @@ export function Nav() {
             Pricing
           </NavLink>
           <MobileMenu>
-            <div className="container-x flex flex-col pb-4 pt-1">
+            <div className="container-x flex flex-col pb-5 pt-1">
               {navLinks.map((l) => (
                 <NavLink key={l.href} href={l.href} look="menu">
                   {l.label}
@@ -64,14 +62,14 @@ export function Nav() {
                 Sign in
               </NavLink>
               <div className="flex min-h-12 items-center justify-between border-b border-border">
-                <span className="text-small text-muted-foreground">Theme</span>
-                <ThemeToggle />
+                <span className="text-body font-[510] text-foreground">Theme</span>
+                <ThemeSegments />
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <ButtonLink href={site.demoStartUrl} external variant="brand">
-                  Live demo
+              <div className="mt-5 grid gap-2">
+                <ButtonLink href={site.demoStartUrl} external variant="brand" size="xl" arrow>
+                  Try the live demo
                 </ButtonLink>
-                <ButtonLink href="/free" variant="ghost">
+                <ButtonLink href="/free" variant="ghost" size="xl">
                   Install free
                 </ButtonLink>
               </div>
@@ -79,6 +77,6 @@ export function Nav() {
           </MobileMenu>
         </div>
       </nav>
-    </header>
+    </NavBar>
   );
 }

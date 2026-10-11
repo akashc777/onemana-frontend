@@ -107,8 +107,8 @@ export const footerLinks = {
   ],
   "Made for": [
     { label: "Agencies", href: "/for/agencies" },
-    { label: "Teams in India", href: "/for/india" },
     { label: "Regulated teams", href: "/for/compliance" },
+    { label: "Teams in India", href: "/for/india" },
   ],
   // One link per "alternative to" page, from the pages' own data.
   "Switch from": ALTERNATIVE_INDEX.map((a) => ({ label: a.label, href: `/alternatives/${a.slug}` })),
@@ -121,6 +121,6 @@ export const footerLinks = {
     { label: "Privacy policy", href: "/privacy-policy" },
     { label: "Refund policy", href: "/refund-policy" },
     { label: "Account ownership", href: "/account-ownership-policy" },
-    { label: "Taxes on services", href: "/taxes-on-services" },
+    { label: "Tax and invoices", href: "/taxes-on-services" },
   ],
 };

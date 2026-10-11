@@ -1,20 +1,80 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { footerLinks, site } from "@/lib/site";
-import { OneCampLogo } from "@/components/site/BrandMarks";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { LogoRing } from "@/components/ui/v3";
+import { FooterRing } from "@/components/ui/graphics/v3marks";
+
+/** The camp flag's six segments, in chart order (site.md S16). */
+export const FLAG = ["sky", "berry", "sun", "lake", "dusk", "moss"] as const;
+
+type FooterLink = { label: string; href: string; external?: boolean };
+
+function FooterAnchor({ l, className }: { l: FooterLink; className: string }) {
+  return l.external ? (
+    <a href={l.href} target="_blank" rel="noreferrer" className={className}>
+      {l.label}
+    </a>
+  ) : (
+    <Link href={l.href} className={className}>
+      {l.label}
+    </Link>
+  );
+}
+
+function Group({ title, links, children }: { title: string; links: readonly FooterLink[]; children?: ReactNode }) {
+  const row = "flex min-h-12 w-full items-center text-body text-muted-foreground transition-colors hover:text-foreground sm:min-h-0 sm:w-fit sm:text-caption";
+  const list = (
+    <ul className="m-0 list-none p-0 pb-2 sm:mt-3 sm:space-y-2 sm:pb-0">
+      {links.map((l) => (
+        <li key={l.label}>
+          <FooterAnchor l={l} className={row} />
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <div className="lg:col-span-2">
+      {/* A phone folds each group behind its name (48px), so the footer is
+          about one screen, not two; from sm the columns stand open. */}
+      <details className="group border-b border-border sm:hidden">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between text-body font-[590] text-foreground [&::-webkit-details-marker]:hidden">
+          {title}
+          <span aria-hidden className="text-[20px] font-normal leading-none text-faint transition-transform duration-pop group-open:rotate-45">
+            +
+          </span>
+        </summary>
+        {list}
+      </details>
+      <div className="hidden sm:block">
+        <h2 className="font-sans text-caption font-[590] tracking-normal text-foreground">{title}</h2>
+        {list}
+      </div>
+      {children}
+    </div>
+  );
+}
 
 /**
- * A plain footer: the mark, one line about the product, a way to reach a
- * person, and four groups of links. It was six columns, the "link farm" the
- * redesign skill names; the policies now sit with the company that wrote them.
+ * The footer (site.md S16): the camp flag across the top, the brand block,
+ * four groups of links in ink-2, and the legal line. The flag is the only
+ * colour; the close above it hands its hues on. The ring motif sits at 10%
+ * ink in the corner, cropped by the page's edge.
  */
 export function Footer() {
   return (
-    <footer className="border-t border-border">
-      <div className="container-x">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 pb-14 pt-16 sm:grid-cols-4 lg:grid-cols-12 lg:gap-x-8">
-          <div className="col-span-2 sm:col-span-4 lg:col-span-4 lg:pr-8">
-            <Link href="/" className="flex w-fit min-h-11 items-center gap-2 text-sm font-semibold text-foreground sm:min-h-0">
-              <OneCampLogo className="h-6 w-6" />
+    <footer className="relative overflow-hidden">
+      <div aria-hidden="true" className="flex h-1">
+        {FLAG.map((h) => (
+          <span key={h} className={`${HUE_CLASS[h]} flex-1 bg-hue`} />
+        ))}
+      </div>
+      <FooterRing />
+      <div className="container-x relative">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-8 pb-10 pt-12 sm:grid-cols-4 sm:gap-y-10 sm:pb-14 sm:pt-16 lg:grid-cols-12 lg:gap-x-8">
+          <div className="sm:col-span-4 lg:col-span-4 lg:pr-8">
+            <Link href="/" className="flex min-h-11 w-fit items-center gap-2 text-[16px] font-[620] tracking-[-0.015em] text-foreground sm:min-h-0">
+              <LogoRing size={22} />
               {site.name}
             </Link>
             <p className="mt-3 max-w-xs text-small text-muted-foreground">
@@ -28,34 +88,14 @@ export function Footer() {
             </p>
           </div>
 
-          {Object.entries(footerLinks).map(([group, links]) => (
-            <div key={group} className="lg:col-span-2">
-              <h2 className="font-sans text-small font-medium tracking-normal text-foreground">{group}</h2>
-              <ul className="mt-1 sm:mt-3 sm:space-y-2">
-                {links.map((l) => (
-                  <li key={l.label}>
-                    {"external" in l && l.external ? (
-                      <a
-                        href={l.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex min-h-11 w-full items-center text-small text-muted-foreground transition-colors hover:text-foreground sm:min-h-0 sm:w-fit"
-                      >
-                        {l.label}
-                      </a>
-                    ) : (
-                      <Link href={l.href} className="flex min-h-11 w-full items-center text-small text-muted-foreground transition-colors hover:text-foreground sm:min-h-0 sm:w-fit">
-                        {l.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="sm:col-span-4 sm:grid sm:grid-cols-4 sm:gap-x-6 lg:col-span-8 lg:grid-cols-8 lg:gap-x-8">
+            {Object.entries(footerLinks).map(([group, links]) => (
+              <Group key={group} title={group} links={links as readonly FooterLink[]} />
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-1 border-t border-border py-6 text-caption text-muted-foreground sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-1 border-t border-border py-6 text-[12px] leading-4 text-faint sm:flex-row sm:justify-between">
           <p>
             © {new Date().getFullYear()} {site.company}
           </p>

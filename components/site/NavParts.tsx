@@ -11,25 +11,45 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  */
 
 const LOOKS = {
-  /** A link in the desktop bar. */
+  /** A link in the desktop bar: ink-2, the hover overlay, and the current page in ink with a brand mark under it (globals.css .nav-link). */
   bar: {
-    base: "rounded-md px-2.5 py-1.5 text-small transition-colors",
-    current: "nav-active font-medium",
-    other: "nav-idle",
+    base: "nav-link rounded-md px-2.5 py-1.5 text-small",
+    current: "",
+    other: "",
   },
-  /** A row in the phone menu. */
+  /** A 48px row in the phone menu, 16/510. */
   menu: {
-    base: "flex min-h-12 items-center border-b border-border text-body transition-colors",
-    current: "font-medium text-foreground",
+    base: "flex min-h-12 items-center border-b border-border text-body font-[510] transition-colors",
+    current: "text-foreground",
     other: "text-foreground/90 hover:text-foreground",
   },
   /** Pricing, beside the menu button on a phone. */
   compact: {
-    base: "inline-flex min-h-11 items-center rounded-md px-2.5 text-small transition-colors",
-    current: "nav-active font-medium",
-    other: "nav-idle",
+    base: "nav-link inline-flex min-h-11 items-center rounded-md px-2.5 text-small",
+    current: "",
+    other: "",
   },
 } as const;
+
+/**
+ * The header: transparent at the top of the page, and once the page has
+ * moved 40px the page at 85% under a blur with a hairline (globals.css
+ * .nav-bar[data-scrolled]). The blur is a class toggle, never there at the top.
+ */
+export function NavBar({ children }: { children: ReactNode }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 40);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
+  return (
+    <header data-scrolled={scrolled ? "" : undefined} className="nav-bar sticky top-0 z-50">
+      {children}
+    </header>
+  );
+}
 
 /**
  * A nav link that knows whether it is the page you are on. A link to a page is
@@ -87,7 +107,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="mobile-menu"
-        className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-hover hover:text-foreground"
         onClick={() => setOpen((v) => !v)}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" aria-hidden>
@@ -100,7 +120,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         id="mobile-menu"
         hidden={!open}
         onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
-        className="absolute inset-x-0 top-full max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain border-b border-border bg-background shadow-popover lg:hidden"
+        className="fx-slide absolute inset-x-0 top-full max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain bg-background shadow-e3 lg:hidden"
       >
         {children}
       </div>
