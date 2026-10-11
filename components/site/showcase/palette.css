@@ -1,0 +1,599 @@
+/*
+ * The command palette, for the showcase: onecamp-fe components/ui/
+ * CommandPalette.tsx and components/ai/PaletteAsk.tsx, styled by app/
+ * globals.css "V3 SHELL: PALETTE" (design v3, shell P1, P2 and P4; mock
+ * M3). Every rule mirrors one of the app's, named beside it. Tokens only,
+ * as showcase.css; where the palette sets a number of its own (the field's
+ * 16px, the meta's 12.5px, the segment's 10px keys) it is the app's number.
+ *
+ * In a scene the palette is one SceneDirector item, "pal-ask": its state is
+ * the mode (on is Ask, otherwise Search), and everything that differs
+ * between the modes is keyed to it. As in the app, the mode switch itself is
+ * instant but for the segment's knob (120ms) and the field's agent wash
+ * (180ms); what arrives after it (the thinking line, the answer, its
+ * sources) arrives as items of its own.
+ */
+
+/* The layer over the window (the dialog's portal): the scrim and the panel
+   above the app's frame. Two classes, to outrank .sc's own position. */
+.sc.sc-pal-over {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* The scrim (.palette-scrim): ink at 32%, near-black at 56% in dark, no
+   blur; more opaque for a reader who asked for less transparency. */
+.sc-pal-scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--sc-ink) 32%, transparent);
+}
+.dark .sc-pal-scrim {
+  background: rgb(0 0 0 / 0.56);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .sc-pal-scrim {
+    background: color-mix(in oklab, var(--sc-ink) 48%, transparent);
+  }
+  .dark .sc-pal-scrim {
+    background: rgb(0 0 0 / 0.48);
+  }
+}
+
+/* Where it hangs (.palette): centred, its top at 14% of the window so the
+   field never moves; the scene sets the top and the width. */
+.sc-pal-slot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+}
+
+/* The panel (.palette): the pop surface at e4, r16. On a phone it is the
+   whole screen, on the sheet (.palette[data-phone]). */
+.sc-pal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--sc-pop);
+  color: var(--sc-ink);
+  border-radius: 16px;
+  box-shadow: var(--e-e4);
+  overflow: hidden;
+}
+.sc-pal[data-phone] {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  border-radius: 0;
+  background: var(--sc-sheet);
+  box-shadow: none;
+}
+/* As a scene's mode switch it never fades or moves itself. */
+.sc .sc-pal[data-sc-item][data-sc-state] {
+  opacity: 1;
+  transform: none;
+}
+
+/* The field's row (.palette-input-row): 52px, 0 14 0 18, a hairline under
+   it. Ask washes it in the agent's hue from the left, over 180ms. */
+.sc-pal-input {
+  position: relative;
+  height: 52px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px 0 18px;
+  border-bottom: 1px solid var(--sc-line);
+  isolation: isolate;
+}
+.sc-pal-input::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--sc-agent) 9%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+.sc-pal[data-sc-state="on"] .sc-pal-input::before {
+  opacity: 1;
+}
+
+/* What leads the field: the 18px search glyph in ink-3, or in Ask the 20px
+   agent square. The glyph's box is the glyph's, so in Ask the words sit 2px
+   further right, as they do in the app. */
+.sc-pal-lead {
+  position: relative;
+  width: 18px;
+  height: 20px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  color: var(--sc-ink-3);
+}
+.sc-pal-lead > [data-lead="ask"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+.sc-pal[data-sc-state="on"] .sc-pal-lead > [data-lead="search"] {
+  opacity: 0;
+}
+.sc-pal[data-sc-state="on"] .sc-pal-lead > [data-lead="ask"] {
+  opacity: 1;
+}
+
+/* The field (.palette-input): 16/24 at Inter's -0.011em, the caret in the
+   accent. */
+.sc-pal-field {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.011em;
+  color: var(--sc-ink);
+  white-space: nowrap;
+}
+.sc-pal[data-sc-state="on"] .sc-pal-field {
+  transform: translateX(2px);
+}
+.sc-pal-field[data-empty] {
+  color: var(--sc-ink-3);
+}
+.sc-pal-tcaret {
+  width: 1px;
+  height: 19px;
+  margin-left: 1px;
+  flex: none;
+  background: var(--sc-brand);
+}
+
+/* Cancel, on a phone (.palette-cancel): 15px in the accent's ink. */
+.sc-pal-cancel {
+  flex: none;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--sc-brand-text);
+}
+
+/* Search | Ask (.palette-seg): 28px on the press overlay, the knob raised
+   at e1 and sliding 120ms; the chosen word in ink, or in agent ink for Ask. */
+.sc-pal-seg {
+  position: relative;
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 28px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--sc-press);
+}
+.sc-pal-knob {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc(50% - 2px);
+  border-radius: 6px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e1);
+  transition: transform 120ms var(--ease-out);
+}
+.sc-pal[data-sc-state="on"] .sc-pal-knob {
+  transform: translateX(100%);
+}
+.sc-pal-seg > [data-seg] {
+  position: relative;
+  z-index: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font: 510 12px/1 var(--font-sans);
+  color: var(--sc-ink-3);
+  white-space: nowrap;
+}
+.sc-pal-seg > [data-seg="search"] {
+  color: var(--sc-ink);
+}
+.sc-pal[data-sc-state="on"] .sc-pal-seg > [data-seg="search"] {
+  color: var(--sc-ink-3);
+}
+.sc-pal[data-sc-state="on"] .sc-pal-seg > [data-seg="ask"] {
+  color: var(--sc-agent-ink);
+}
+.sc-pal-seg .sc-kbd {
+  height: 16px;
+  min-width: 16px;
+  font-size: 10px;
+}
+/* On a phone the segment sits under the field (.palette-phone-seg). */
+.sc-pal-phone-seg {
+  flex: none;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--sc-line);
+}
+.sc-pal-phone-seg .sc-pal-seg {
+  height: 32px;
+}
+.sc-pal-phone-seg .sc-pal-seg > [data-seg] {
+  height: 28px;
+  font-size: 13px;
+}
+
+/* The list (.palette-list): 6px in. In a scene the two modes' contents are
+   laid out in one cell, so the panel is as tall as the taller of them from
+   the start and nothing moves when the mode changes. */
+.sc-pal-list {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+.sc-pal-stack {
+  display: grid;
+}
+.sc-pal-stack > * {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+.sc-pal-stack > [data-layer="ask"] {
+  align-self: start;
+  opacity: 0;
+}
+.sc-pal[data-sc-state="on"] .sc-pal-stack > [data-layer="search"] {
+  opacity: 0;
+}
+.sc-pal[data-sc-state="on"] .sc-pal-stack > [data-layer="ask"] {
+  opacity: 1;
+}
+
+/* A group's label ([cmdk-group-heading]): 30px, 12/510 ink-3 on its bottom
+   edge. */
+.sc-pal-group {
+  height: 30px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 12px 6px;
+  font: 510 12px/16px var(--font-sans);
+  color: var(--sc-ink-3);
+}
+
+/* A row (.palette-row): 40px at r8, 0 12, its parts 12 apart, 14/20 ink;
+   48px and 15px on a phone. Its icons are 16px in ink-3 (CommandItem's
+   [&_svg]:size-4, .palette-row svg.lucide). */
+.sc-pal-row {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  gap: 12px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sc-ink);
+}
+.sc-pal[data-phone] .sc-pal-row {
+  height: 48px;
+  font-size: 15px;
+}
+.sc-pal-row svg.lucide {
+  color: var(--sc-ink-3);
+}
+/* The Ask row (.palette-row-ask) in the agent's ink. */
+.sc-pal-row[data-ask] {
+  color: var(--sc-agent-ink);
+}
+/* Selected: the press fill and a 2px accent tick 10px in from top and
+   bottom. A layer of its own, so a scene can move it. */
+.sc-pal-sel {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 8px;
+  background: var(--sc-press);
+}
+.sc-pal-sel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--sc-brand);
+}
+/* What matched, in weight (.palette mark): 590 in ink. */
+.sc-pal-hl {
+  font-weight: 590;
+  color: var(--sc-ink);
+}
+
+/* A row's mark (.palette-mark), 20px: a project's tile in its gradient with
+   a white 12px glyph (.palette-ptile); a hit's tile on its identity hue's
+   tint (IdentityMark tile at 20, .palette-mark > [data-hue]) whose 14px glyph
+   takes the row's ink-3; or a quiet glyph. */
+.sc-pal-mark {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+.sc-pal-ptile {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background-image: linear-gradient(140deg, var(--a1), var(--a2));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22);
+}
+.sc-pal-row .sc-pal-ptile svg.lucide {
+  color: rgb(255 255 255);
+}
+.sc-pal-tile {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background: var(--hue-tint);
+}
+/* In a row the agent's spark is the row's 16px, not 55% of the square. */
+.sc-pal-row .sc-av > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* The meta (.palette-meta): 12.5px ink-3, at most 40% (34% on a phone). */
+.sc-pal-meta {
+  flex: none;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--sc-ink-3);
+}
+.sc-pal[data-phone] .sc-pal-meta {
+  max-width: 34%;
+}
+.sc-pal-keys {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+/* ⏎ on the selected row; for a scene, a lit copy over it (the app's lit
+   key, .kbd-hit) that springs when the key is pressed. */
+.sc-pal-enter {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+}
+.sc-pal-lit {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1;
+  letter-spacing: 0;
+  background: var(--sc-brand-muted);
+  color: var(--sc-brand-text);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--sc-brand) 40%, transparent), inset 0 -1px 0 color-mix(in oklab, var(--sc-brand) 40%, transparent);
+}
+.sc .sc-pal .sc-pal-lit[data-sc-item] {
+  transition: opacity 90ms var(--ease-out);
+}
+.sc .sc-pal .sc-pal-lit[data-sc-state="on"] {
+  animation: sc-pal-key 220ms var(--ease-spring);
+}
+@keyframes sc-pal-key {
+  45% {
+    transform: scale(1.12);
+  }
+}
+
+/* The foot (.palette-footer): 40px, a hairline on top, 12px ink-3 hints
+   with their keys. Each mode's hints are laid out in place; the mode shows
+   one. */
+.sc-pal-foot {
+  position: relative;
+  height: 40px;
+  flex: none;
+  border-top: 1px solid var(--sc-line);
+}
+.sc-pal-foot > div {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 14px;
+  font-size: 12px;
+  color: var(--sc-ink-3);
+  white-space: nowrap;
+}
+.sc-pal-foot > div > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sc-pal-foot > [data-for="ask"],
+.sc-pal[data-sc-state="on"] .sc-pal-foot > [data-for="search"] {
+  opacity: 0;
+}
+.sc-pal[data-sc-state="on"] .sc-pal-foot > [data-for="ask"] {
+  opacity: 1;
+}
+
+/* Ask (.palette-answer): the answer at 15/23 within 560px, the 7x16 agent
+   caret while it streams, the sources on e1 and the shield line. */
+.sc-pal-answer {
+  position: relative;
+  padding: 14px 12px 10px;
+}
+.sc-pal-answer p {
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: -0.009em;
+  text-wrap: pretty;
+}
+.sc-pal-answer b {
+  font-weight: 590;
+}
+/* The caret rides at the end of what has arrived: a zero-width anchor after
+   each part, so the words never move for it. */
+.sc-pal-caret-at {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 16px;
+  vertical-align: -2px;
+}
+.sc-pal-caret {
+  position: absolute;
+  left: 2px;
+  top: 0;
+  width: 7px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--sc-agent);
+}
+/* Before the first word: three 4px agent dots and what it is doing, in the
+   first line's place (.palette-dots). */
+.sc-pal-think {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 23px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-3);
+  white-space: nowrap;
+}
+.sc-pal-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.sc-pal-dots > i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--sc-agent);
+}
+.sc .sc-pal-think[data-sc-state="on"] .sc-pal-dots > i {
+  animation: sc-pal-bob 1.2s var(--ease-io) 3;
+}
+.sc .sc-pal-think[data-sc-state="on"] .sc-pal-dots > i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.sc .sc-pal-think[data-sc-state="on"] .sc-pal-dots > i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes sc-pal-bob {
+  0%,
+  60%,
+  100% {
+    transform: none;
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+.sc-pal-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.sc-pal-source {
+  height: 24px;
+  max-width: 220px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e1);
+  font-size: 12px;
+  color: var(--sc-ink-2);
+}
+.sc-pal-source svg.lucide {
+  color: var(--sc-ink-3);
+}
+.sc-pal-prov {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--sc-ink-3);
+}
+.sc-pal-prov svg.lucide {
+  color: var(--sc-agent);
+}
+
+/* What arrives in a scene arrives in place: words fade in where they will
+   stay, the caret jumps as a caret does, and the sources and the shield line
+   rise 4px. Transform and opacity only. */
+.sc .sc-pal [data-sc-item] {
+  transition: opacity 200ms var(--ease-out);
+}
+.sc .sc-pal [data-sc-item][data-sc-state="off"],
+.sc .sc-pal [data-sc-item][data-sc-state="fade"] {
+  transform: none;
+}
+.sc .sc-pal .sc-pal-caret[data-sc-item] {
+  transition: none;
+}
+.sc .sc-pal .sc-pal-rise[data-sc-item] {
+  transition: opacity 240ms var(--ease-out), transform 320ms var(--ease-out);
+}
+.sc .sc-pal .sc-pal-rise[data-sc-item][data-sc-state="off"] {
+  transform: translateY(4px);
+}
+.sc .sc-pal .sc-pal-sel[data-sc-item] {
+  transition: none;
+}
+
+/* For a reader who asked for less motion the key does not spring and the
+   dots stand still (as .palette-dots i does in the app); a scene then shows
+   its last picture at once (SceneDirector). */
+@media (prefers-reduced-motion: reduce) {
+  .sc .sc-pal .sc-pal-lit[data-sc-state="on"],
+  .sc .sc-pal-think[data-sc-state="on"] .sc-pal-dots > i {
+    animation: none;
+  }
+}

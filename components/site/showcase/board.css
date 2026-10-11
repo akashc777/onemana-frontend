@@ -1,0 +1,781 @@
+/*
+ * THE PROJECT BOARD (components/site/showcase/BoardView): the app's project
+ * page in its Board view, as onecamp-fe draws it (components/project
+ * projectTaskDesktop and projectListTabs, components/kanbanComponents
+ * Container and Item, components/task, components/ui/graphics glyphs).
+ * Every value is the app's; colours, lines and shadows are the showcase's
+ * tokens (showcase.css .sc). bd- names are this view's own.
+ */
+
+/* ---------------------------------------------------------- the page */
+
+/* The project's light (work.md W16): a radial of its hue in the top 120px. */
+.sc .bd-band {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: -1;
+  height: 120px;
+  pointer-events: none;
+  background: radial-gradient(420px 120px at 40px 40px, color-mix(in oklab, var(--hue) 7%, transparent), transparent);
+}
+.dark .sc .bd-band {
+  background: radial-gradient(420px 120px at 40px 40px, color-mix(in oklab, var(--hue) 9%, transparent), transparent);
+}
+
+/* What the app draws as a <button> keeps the browser's word gap: preflight
+   inherits a button's letter-spacing but not its word-spacing, so the body's
+   0.01em stops at a button's edge (the glance's counts, the chips, the
+   toolbar). */
+.sc .bd-btn,
+.sc .bd-glance[data-pick] > span {
+  word-spacing: normal;
+}
+
+/* The sheet's header bar: 52px, 24px in, 12px apart. */
+.sc .bd-bar {
+  display: flex;
+  height: 52px;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+}
+.sc .bd-crumb {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.006em;
+  color: var(--sc-ink-2);
+}
+
+/* Who is in it: 22px faces, 6px over each other, on a 2px ring of the sheet. */
+.sc .bd-stack {
+  display: flex;
+  align-items: center;
+}
+.sc .bd-stack > span {
+  display: flex;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px var(--sc-sheet);
+}
+.sc .bd-stack > span + span {
+  margin-left: -6px;
+}
+
+/* A face (IdentityMark's avatar): the app's Avatar root is round and clips
+   what overflows it, so the cut's outer 1px ring never shows; its insets do. */
+.sc .bd-face {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.22);
+}
+
+/* A project's tile (components/ui/graphics/ProjectTile): its hue's avatar
+   cut at 140 degrees holding a white glyph, a soft inner highlight. */
+.sc .bd-tile {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: rgb(255 255 255 / 1);
+  background-image: linear-gradient(140deg, var(--a1), var(--a2));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), inset 0 0 0 1px rgb(0 0 0 / 0.06);
+}
+
+/* The hero: the 36px tile, the name and where it stands. */
+.sc .bd-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 24px 14px;
+}
+.sc .bd-line {
+  display: flex;
+  height: 24px;
+  min-width: 0;
+  margin-top: 6px;
+  align-items: center;
+  column-gap: 12px;
+}
+
+/* Where it stands (ProjectGlanceLine): 13px ink-2, each number at 510 in ink,
+   3px dots between in ink-4, 14px apart. */
+.sc .bd-glance {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-2);
+}
+/* In the header line the counts never give way (the goal's name does). */
+.sc .bd-line > .bd-glance {
+  flex-shrink: 0;
+}
+.sc .bd-glance b {
+  font-weight: 510;
+  color: var(--sc-ink);
+  font-variant-numeric: tabular-nums;
+}
+.sc .bd-glance i {
+  font-style: normal;
+  color: var(--sc-ink-4);
+}
+
+/* The header's chips: 24px. The health chip says no update yet (a dashed
+   dot and 13px ink-3); the goal chip is its ring, its name and how far. */
+.sc .bd-chip24 {
+  height: 24px;
+  flex: none;
+}
+.sc .bd-dashed-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 9999px;
+  border: 1px dashed var(--sc-ink-4);
+}
+.sc .bd-ring-track {
+  stroke: var(--sc-press);
+  stroke-width: 2.5px;
+}
+.sc .bd-ring-fill {
+  stroke-width: 2.5px;
+}
+
+/* The view tabs (WorkTabsList): 40px on a hairline, 14px ink-2 with 14px
+   ink-3 icons; the open one in ink at 510 over a 2px rule inset 8px. */
+.sc .bd-tabs {
+  position: relative;
+  display: flex;
+  height: 40px;
+  flex: none;
+  align-items: stretch;
+  overflow: hidden;
+  border-bottom: 1px solid var(--sc-line);
+  padding: 0 12px;
+}
+.sc .bd-tab {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.006em;
+  color: var(--sc-ink-2);
+}
+.sc .bd-tab > svg {
+  width: 14px;
+  height: 14px;
+  color: var(--sc-ink-3);
+}
+.sc .bd-tab[data-on] {
+  font-weight: 510;
+  color: var(--sc-ink);
+}
+.sc .bd-tab[data-on] > svg {
+  color: var(--sc-ink);
+}
+/* The rule is measured from the tab's offsetWidth, a whole number, and the
+   row's sideways scroll clips the half of it that lies on the hairline. */
+.sc .bd-tab[data-on]::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  bottom: -1px;
+  width: calc(100% - 16px);
+  width: calc(round(100%, 1px) - 16px);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--sc-ink);
+}
+
+/* ---------------------------------------------------- the board's tools */
+
+/* The board (projectTaskKanban): 12px over its toolbar, 20px in, 16px under. */
+.sc .bd-kanban {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px 20px 16px;
+}
+.sc .bd-toolbar {
+  display: flex;
+  min-height: 32px;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sc .bd-toolbar > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* A ghost button (button.tsx): ink-2, its icon in ink-3. */
+.sc .bd-ghost {
+  color: var(--sc-ink-2);
+}
+.sc .bd-ghost > svg {
+  color: var(--sc-ink-3);
+}
+.sc .bd-iconbtn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--sc-ink-3);
+}
+/* The primary's key hint (New task C): 16px on an 18% white fill. */
+.sc .bd-kbd {
+  display: inline-flex;
+  height: 16px;
+  min-width: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1;
+  letter-spacing: 0;
+  background: rgb(255 255 255 / 0.18);
+  color: currentColor;
+}
+
+/* The board under the toolbar, 16px down; what floats over it (a card being
+   moved) is in its own layer. */
+.sc .bd-body {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+  margin-top: 16px;
+}
+.sc .bd-viewport {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+}
+/* Columns 280px apart by 12, 16px of room under them. */
+.sc .bd-row {
+  display: flex;
+  height: 100%;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+.sc .bd-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------ a column */
+
+/* A column (Container, work.md W20): 280px on the sunken surface at r12, no
+   border; white at 2% in dark. A 40px head, the cards 8px apart and 8px in,
+   and the room for "New task" (40px) under them. */
+.sc .bd-col {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 280px;
+  flex: none;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--sc-sunken);
+}
+.dark .sc .bd-col {
+  background: rgb(255 255 255 / 0.02);
+}
+.sc .bd-col-head {
+  position: relative;
+  display: flex;
+  height: 40px;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+}
+.sc .bd-col-name {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 510;
+  color: var(--sc-ink);
+}
+.sc .bd-col-count {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 450;
+  color: var(--sc-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.sc .bd-col-body {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  padding: 0 8px 8px;
+}
+.sc .bd-col-foot {
+  position: relative;
+  display: inline-flex;
+  height: 32px;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin: 0 8px 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-3);
+  opacity: 0;
+}
+.sc .bd-col-foot[data-empty] {
+  opacity: 1;
+}
+/* A card from another column over this one: brand-muted at 45% over the
+   sunken surface, an inset ring of the accent at 35%. */
+.sc .bd-col-over {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--sc-brand-muted) 45%, var(--sc-sunken));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--sc-brand) 35%, transparent);
+}
+
+/* -------------------------------------------------------------- a card */
+
+/* A card (Item, work.md W21): raised, resting at e1, r10, 12px in, its parts
+   8px apart. */
+.sc .bd-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e1);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.sc .bd-card-title {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  padding-right: 24px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.006em;
+  font-weight: 510;
+  color: var(--sc-ink);
+}
+.sc .bd-card[data-done] .bd-card-title {
+  color: var(--sc-ink-3);
+}
+.sc .bd-card-fields {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink);
+}
+.sc .bd-card-meta {
+  display: flex;
+  min-height: 22px;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+.sc .bd-card-meta > span:first-child {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-3);
+}
+.sc .bd-card-done {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: flex;
+}
+
+/* A due date (DueLabel): 12px tabular ink-2; Today as the one sun chip; a
+   done task's in ink-3. */
+.sc .bd-due {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-ink-2);
+}
+.sc .bd-due[data-due="done"] {
+  color: var(--sc-ink-3);
+}
+.sc .bd-due[data-due="today"] {
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.005em;
+  font-weight: 510;
+  background: rgb(var(--camp-sun-tint));
+  color: rgb(var(--camp-sun-ink));
+}
+/* Waiting on open tasks (BlockedBadge): a lock and how many, in sun ink. */
+.sc .bd-blocked {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 510;
+  color: rgb(var(--camp-sun-ink));
+}
+
+/* The status and priority glyphs (components/ui/graphics/glyphs). Their
+   lines are the glyphs' own weights, not an icon's stroke. */
+.sc .bd-g-ring {
+  fill: none;
+  stroke-width: 1.5px;
+}
+.sc .bd-g-tick {
+  fill: none;
+  stroke: var(--sc-sheet);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sc .bd-p-on {
+  fill: var(--sc-ink-2);
+}
+.sc .bd-p-off {
+  fill: var(--sc-ink-4);
+}
+
+/* A card being moved (Item.module.scss, W22): its copy floats at e3; the
+   card it left is a dashed slot of the same size. */
+.sc .bd-fly {
+  position: absolute;
+}
+.sc .bd-fly .bd-card {
+  box-shadow: var(--e-e3);
+}
+.sc .bd-slot {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: var(--sc-press);
+  outline: 1.5px dashed var(--sc-line-3);
+  outline-offset: -1.5px;
+}
+
+/* ----------------------------------------------------------- the moment */
+/* Each part of the scene's one moment (scenes/board.tsx) starts at
+   data-sc-state="off" as the board stands before it, and turns "on" as the
+   card moves: transform and opacity only. These outrank showcase.css's
+   general off state (opacity 0, 8px down), which suits none of them. */
+
+.sc [data-bd][data-sc-item] {
+  transition: opacity 160ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.sc [data-bd][data-sc-item][data-sc-state="off"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* The copy in the hand: hidden, then over the card; lifted 3% and tilted
+   1.5 degrees on the spring, and put down on the drop curve. */
+.sc [data-bd="fly"][data-sc-item] {
+  transition: opacity 120ms var(--ease-out);
+}
+.sc [data-bd="fly"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+}
+.sc [data-bd="lift"][data-sc-item] {
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+.sc [data-bd="lift"][data-sc-item][data-sc-state="on"] {
+  transform: scale(1.03) rotate(1.5deg);
+  transition: transform 160ms var(--ease-spring);
+}
+.sc [data-bd="move"][data-sc-item] {
+  transition: transform 560ms var(--ease-io);
+}
+.sc [data-bd="move"][data-sc-item][data-sc-state="on"] {
+  transform: translateX(var(--bd-move));
+}
+
+/* The card it leaves goes, and the dashed slot shows where it was. */
+.sc [data-bd="src"][data-sc-item] {
+  transition: opacity 120ms var(--ease-out);
+}
+.sc [data-bd="src"][data-sc-item][data-sc-state="on"] {
+  opacity: 0;
+}
+.sc [data-bd="slot"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+}
+
+/* The column it goes to lights while it is over it, and its cards make room
+   (160ms) for it. */
+.sc [data-bd="over"][data-sc-item] {
+  transition: opacity 140ms var(--ease-out);
+}
+.sc [data-bd="over"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+}
+.sc [data-bd="room"][data-sc-item][data-sc-state="off"] {
+  transform: translateY(var(--bd-room));
+}
+.sc [data-bd="room"][data-sc-item] {
+  transition: transform 160ms var(--ease-out);
+}
+
+/* It lands done: the card in its place, its title gone to ink-3, and the
+   moss check springing in (check-fill, .4 to 1 on the spring). */
+.sc [data-bd="land"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+}
+.sc [data-bd="check"][data-sc-item] {
+  transition: opacity 120ms var(--ease-out), transform 220ms var(--ease-spring);
+}
+.sc [data-bd="check"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+/* A count that changes (CountTick): the old digit leaves up, the new rises
+   in, 180ms. */
+.sc .bd-digit {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.sc .bd-digit > span {
+  display: inline-block;
+}
+.sc .bd-digit > span:first-child {
+  position: absolute;
+  inset: 0;
+}
+.sc [data-bd="tick-out"][data-sc-item],
+.sc [data-bd="tick-in"][data-sc-item] {
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+.sc [data-bd="tick-out"][data-sc-item][data-sc-state="on"] {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.sc [data-bd="tick-in"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* An emptied column offers "New task". */
+.sc [data-bd="empty"][data-sc-item] {
+  transition: opacity 180ms var(--ease-out);
+}
+.sc [data-bd="empty"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+}
+
+/* On a phone the board scrolls a column at a time, and its dots follow. */
+.sc [data-bd="scroll"][data-sc-item] {
+  transform: translateX(var(--bd-to));
+  transition: transform 480ms var(--ease-io);
+}
+.sc [data-bd="scroll"][data-sc-item][data-sc-state="off"] {
+  transform: translateX(var(--bd-from));
+}
+.sc [data-bd="dot-from"][data-sc-item],
+.sc [data-bd="dot-to"][data-sc-item] {
+  transition: opacity 140ms var(--ease-out);
+}
+.sc [data-bd="dot-from"][data-sc-item][data-sc-state="on"],
+.sc [data-bd="dot-to"][data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+}
+
+/* -------------------------------------------------------------- a phone */
+
+/* The phone's bar (mobileTopNavigationBar, Ph1): 52px on the sheet, equal
+   sides, the title centred; no hairline at the top of a page. */
+.sc .bd-pbar {
+  display: grid;
+  height: 52px;
+  flex: none;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  background: var(--sc-sheet);
+}
+.sc .bd-pbar-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 8px;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.011em;
+  font-weight: 590;
+  color: var(--sc-ink);
+}
+/* The project's colour as a 16px square (ColorIcon xs). */
+.sc .bd-pmark {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--hue);
+}
+
+/* The project's block over the tabs (projectListTabs): its line and its
+   one menu, then its chips, 16px in. */
+.sc .bd-phead {
+  display: grid;
+  flex: none;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  padding: 12px 16px 0;
+}
+.sc .bd-phead > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sc .bd-phead > div + div {
+  height: 32px;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/* The phone's tabs (SectionTabs): 48px, 14px at 510 in ink-2; the open one
+   in ink at 590 over a 2px accent rule 12px in. */
+.sc .bd-ptabs {
+  display: flex;
+  height: 48px;
+  flex: none;
+  align-items: stretch;
+  padding: 0 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sc-line) 60%, transparent);
+  background: var(--sc-sheet);
+}
+.sc .bd-ptabs > span {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0%;
+  align-items: stretch;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+}
+.sc .bd-ptab {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.006em;
+  font-weight: 510;
+  color: var(--sc-ink-2);
+}
+.sc .bd-ptab[data-on] {
+  font-weight: 590;
+  color: var(--sc-ink);
+}
+.sc .bd-ptab[data-on]::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--sc-brand-text);
+}
+
+/* The phone's board: 16px in, one column the width of the screen less 32,
+   8px apart, scrolled a column at a time; a dot per column under it. */
+.sc .bd-kanban[data-phone] {
+  padding: 12px 16px 16px;
+}
+.sc .bd-kanban[data-phone] .bd-row {
+  gap: 8px;
+}
+.sc .bd-kanban[data-phone] .bd-col {
+  width: 328px;
+}
+.sc .bd-pager {
+  display: flex;
+  flex: none;
+  justify-content: center;
+  gap: 6px;
+  padding-bottom: 8px;
+}
+.sc .bd-pager > span {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--sc-ink-4);
+}
+.sc .bd-pager > span > i {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--sc-ink);
+}

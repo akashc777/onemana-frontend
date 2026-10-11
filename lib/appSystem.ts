@@ -38,6 +38,10 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     "brand-ink": [194, 65, 12], // --brand-text #C2410C
     "brand-soft": [252, 239, 230], // --brand-muted #FCEFE6
     background: [255, 255, 255], // --sheet
+    // The app's own sheet, for the product scenes (components/site/showcase):
+    // the page's white in light, but a step above the frame in dark, where
+    // the storefront page is the frame's #0B0C0E.
+    sheet: [255, 255, 255], // --sheet #FFFFFF
     foreground: [22, 23, 27], // --ink #16171B
     card: [255, 255, 255], // --raised
     pop: [255, 255, 255], // --pop
@@ -70,6 +74,7 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     "brand-ink": [255, 138, 76], // #FF8A4C
     "brand-soft": [42, 26, 16], // #2A1A10
     background: [11, 12, 14], // the storefront page, #0B0C0E
+    sheet: [19, 20, 22], // --sheet #131416
     foreground: [238, 238, 240], // #EEEEF0
     card: [27, 28, 31], // --raised #1B1C1F
     pop: [31, 32, 36], // --pop #1F2024
@@ -293,6 +298,27 @@ export const APP = {
    * tracking from the size.
    */
   heading: { weight: 600, opsz: 32 },
+
+  /**
+   * onecamp-fe app/globals.css @theme, the v3 type ROLES the app sets its
+   * screens in: size and line height in px, tracking in em and weight. The
+   * product scenes (components/site/showcase) draw the app with exactly
+   * these, and showcase.test.ts holds their CSS to this table.
+   */
+  roles: {
+    micro: [11, 14, 0.005, 510],
+    meta: [12, 16, 0, 400],
+    "ui-sm": [13, 18, -0.003, 400],
+    ui: [14, 20, -0.006, 400],
+    body: [15, 23, -0.009, 400],
+    "body-lg": [16, 26, -0.011, 400],
+    heading: [15, 20, -0.012, 590],
+    "title-3": [17, 24, -0.013, 590],
+    "title-2": [20, 27, -0.017, 590],
+    "title-1": [24, 30, -0.019, 590],
+    display: [30, 36, -0.021, 600],
+    "doc-title": [32, 38, -0.021, 600],
+  } as Record<string, readonly [number, number, number, number]>,
 
   /**
    * onecamp-fe app/globals.css body: Inter's optical sizes, cv11 ss01 ss03,

@@ -1,0 +1,194 @@
+/*
+ * The agents record (components/ai/aiActivityFeedRow, components/ui/hubRow,
+ * components/activity/hubFrame and activityFeedFrame; app/hub.css), for the
+ * showcase. Tokens only, as showcase.css.
+ */
+
+/* The hub's 52px header: the page's icon and name, its tabs inline. */
+.sc-hubhead {
+  position: relative;
+  display: flex;
+  height: 52px;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--sc-line);
+  background: var(--sc-sheet);
+  padding: 0 16px 0 24px;
+}
+.sc-hubtabs {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-self: stretch;
+}
+.sc-hubtabs > span {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-2);
+}
+.sc-hubtabs > span[data-on] {
+  color: var(--sc-ink);
+  font-weight: 510;
+}
+/* The one ink indicator under the chosen tab, inset 8px each side. */
+.sc-hubtabs > span[data-on]::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--sc-ink);
+}
+
+/* A feed row (HubRow density feed): [12 gutter][32 lead][content][meta],
+   64px and up, separators inset to the content column. */
+.sc-feedrow {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px 32px minmax(0, 1fr) auto;
+  column-gap: 12px;
+  align-items: start;
+  min-height: 64px;
+  padding: 12px 16px 12px 0;
+  border-radius: 8px;
+  color: var(--sc-ink);
+}
+.sc-feedrow + .sc-feedrow::before {
+  content: "";
+  position: absolute;
+  left: 56px;
+  right: 16px;
+  top: 0;
+  height: 1px;
+  background: var(--sc-line);
+}
+.sc-feedrow-lead {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+}
+.sc-feedrow-meta {
+  padding-top: 2px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* The kind badge on the lead (A5): 16px, a 2px ring in the row's surface. */
+.sc-kind {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background: var(--sc-agent-muted);
+  color: var(--sc-agent-ink);
+  box-shadow: 0 0 0 2px var(--sc-row-ground, var(--sc-sheet));
+}
+.sc-kind > svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* The outcome tag (AI14): 18px, r5, 11/510. A refusal is the agent's tint
+   with a shield: the permission system answering, never danger red. */
+.sc-outcome {
+  display: inline-flex;
+  height: 18px;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  border-radius: 5px;
+  padding: 0 6px;
+  vertical-align: 1px;
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+}
+.sc-outcome[data-outcome="refused"] {
+  background: var(--sc-agent-muted);
+  color: var(--sc-agent-ink);
+}
+.sc-outcome[data-outcome="done"] {
+  background: rgb(var(--camp-moss-tint));
+  color: rgb(var(--camp-moss-ink));
+}
+.sc-outcome[data-outcome="attempt"],
+.sc-outcome[data-outcome="drill"] {
+  background: var(--sc-hover);
+  color: var(--sc-ink-2);
+  box-shadow: inset 0 0 0 1px var(--sc-line);
+}
+.sc-outcome > svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* The record as a card on its own (the hero's annotation): the floating
+   surface at e3, r12. */
+.sc-recordcard {
+  --sc-row-ground: var(--sc-pop);
+  border-radius: 12px;
+  background: var(--sc-pop);
+  box-shadow: var(--e-e3);
+}
+
+/* Prove it (MyAIActivityCard, aiActivityFeedRow): the chain link in each
+   entry's gutter ticks moss in turn, and the result is the moss line
+   "Chain intact". */
+.sc-chain {
+  position: absolute;
+  left: -10px;
+  top: 9px;
+  display: grid;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+  color: rgb(var(--camp-moss));
+}
+.sc-proved {
+  position: absolute;
+  inset: 2px auto 2px -10px;
+  display: flex;
+  max-width: calc(100% + 10px);
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  background: rgb(var(--camp-moss-tint));
+  padding: 0 12px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 510;
+  color: rgb(var(--camp-moss-ink));
+}
+/* On a phone it spans the toolbar's row, over the buttons it replaces. */
+.sc-proved[data-wide] {
+  inset: 2px 16px;
+  max-width: none;
+}
+.sc-proved > svg {
+  width: 16px;
+  height: 16px;
+}

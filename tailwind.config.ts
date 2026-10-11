@@ -35,6 +35,8 @@ const config: Config = {
           foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
         },
         card: "rgb(var(--card) / <alpha-value>)",
+        /** The app's sheet (the product scenes): white, or #131416 in dark. */
+        sheet: "rgb(var(--sheet) / <alpha-value>)",
         /** The pressed step, the app's bg-highlight: --press as an alpha. */
         highlight: alphaColour("press"),
         agent: {

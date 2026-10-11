@@ -1,0 +1,1029 @@
+/*
+ * THE SHOWCASE: OneCamp drawn by its own components (components/site/showcase).
+ *
+ * Every rule here mirrors a rule of the app's (onecamp-fe app/globals.css and
+ * the components named beside each block), under an sc- prefix so it can
+ * never touch the site. Colours, lines and shadows are the site's tokens,
+ * which are the app's (lib/appSystem.ts); type is the app's roles
+ * (APP.roles); radii are the app's (APP.radius). showcase.test.ts holds this
+ * file to that: no colour literal, no shadow of its own, no size off the
+ * tables.
+ *
+ * A scene is a picture, so nothing in it reacts to the pointer: no hover, no
+ * focus, no cursor. Motion is transform and opacity only, driven by
+ * data-sc-* states (SceneDirector), and stands still for reduced motion.
+ */
+
+/* ---------------------------------------------------------------- root */
+
+/* At no specificity, so a utility on the same element (absolute, a colour)
+   always wins over the scene's defaults. */
+:where(.sc) {
+  /* The app's surface and ink names, from the site's tokens. */
+  --sc-frame: rgb(var(--canvas));
+  --sc-sheet: rgb(var(--sheet));
+  --sc-sunken: rgb(var(--muted));
+  --sc-raised: rgb(var(--card));
+  --sc-pop: rgb(var(--pop));
+  --sc-ink: rgb(var(--foreground));
+  --sc-ink-2: rgb(var(--muted-foreground));
+  --sc-ink-3: rgb(var(--faint));
+  --sc-ink-4: rgb(var(--ink-4));
+  --sc-line: var(--line-c);
+  --sc-line-2: var(--line-2-c);
+  --sc-line-3: var(--line-3-c);
+  --sc-hover: var(--hover-c);
+  --sc-press: var(--press-c);
+  --sc-sel: var(--sel-c);
+  --sc-brand: rgb(var(--brand));
+  --sc-brand-text: rgb(var(--brand-ink));
+  --sc-brand-muted: rgb(var(--brand-soft));
+  --sc-on-brand: rgb(var(--brand-foreground));
+  --sc-agent: rgb(var(--agent));
+  --sc-agent-muted: rgb(var(--agent-muted));
+  --sc-agent-ink: rgb(var(--agent-ink));
+  --sc-ok: rgb(var(--camp-moss));
+  --sc-danger-ink: rgb(var(--danger-ink));
+  /* The shadow ink of the elevation ladder (ELEVATION), for the few app
+     materials that draw their own ring: an avatar's, a primary's drop. */
+  --sc-shade: 16 18 26;
+
+  position: relative;
+  color: var(--sc-ink);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.006em;
+  font-weight: 400;
+  text-align: left;
+  user-select: none;
+  pointer-events: none;
+}
+.sc *,
+.sc *::before,
+.sc *::after {
+  box-sizing: border-box;
+}
+.sc svg.lucide {
+  flex: none;
+}
+
+/* The app's type roles (APP.roles): size / line height, tracking, weight. */
+.sc .t-micro { font-size: 11px; line-height: 14px; letter-spacing: 0.005em; font-weight: 510; }
+.sc .t-meta { font-size: 12px; line-height: 16px; letter-spacing: 0em; }
+.sc .t-ui-sm { font-size: 13px; line-height: 18px; letter-spacing: -0.003em; }
+.sc .t-ui { font-size: 14px; line-height: 20px; letter-spacing: -0.006em; }
+.sc .t-body { font-size: 15px; line-height: 23px; letter-spacing: -0.009em; }
+.sc .t-body-lg { font-size: 16px; line-height: 26px; letter-spacing: -0.011em; }
+.sc .t-heading { font-size: 15px; line-height: 20px; letter-spacing: -0.012em; font-weight: 590; }
+.sc .t-title-3 { font-size: 17px; line-height: 24px; letter-spacing: -0.013em; font-weight: 590; }
+.sc .t-title-2 { font-size: 20px; line-height: 27px; letter-spacing: -0.017em; font-weight: 590; }
+.sc .t-title-1 { font-size: 24px; line-height: 30px; letter-spacing: -0.019em; font-weight: 590; }
+.sc .t-display { font-size: 30px; line-height: 36px; letter-spacing: -0.021em; font-weight: 600; }
+.sc .t-doc-title { font-size: 32px; line-height: 38px; letter-spacing: -0.021em; font-weight: 600; }
+
+.sc .ink { color: var(--sc-ink); }
+.sc .ink-2 { color: var(--sc-ink-2); }
+.sc .ink-3 { color: var(--sc-ink-3); }
+.sc .ink-4 { color: var(--sc-ink-4); }
+.sc .w-book { font-weight: 450; }
+.sc .w-medium { font-weight: 510; }
+.sc .w-semibold { font-weight: 590; }
+.sc .w-bold { font-weight: 600; }
+.sc .tnum { font-variant-numeric: tabular-nums; }
+.sc .truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ------------------------------------------------- the frame and the sheet */
+/* .app-frame and .app-sheet (DESIGN_V3 §3.2): neutral graphite with the
+   theme's campfire glow from the top left, and the sheet on it at e-sheet. */
+
+.sc-frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--sc-frame);
+}
+.sc-frame::before,
+.sc-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.sc-frame:not([data-glow])::before {
+  display: none;
+}
+.sc-frame::before {
+  background:
+    radial-gradient(760px 520px at -80px -100px, rgb(var(--glow) / 0.24), transparent 68%),
+    radial-gradient(480px 340px at 80px 1000px, rgb(var(--glow2) / 0.09), transparent 70%),
+    linear-gradient(180deg, rgb(var(--glow) / 0.045), transparent 55%);
+}
+.dark .sc-frame::before {
+  background:
+    radial-gradient(700px 480px at -80px -100px, rgb(var(--glow) / 0.17), transparent 68%),
+    radial-gradient(480px 340px at 80px 1000px, rgb(var(--glow2) / 0.08), transparent 70%),
+    linear-gradient(180deg, rgb(var(--glow) / 0.03), transparent 55%);
+}
+/* The frame's grain, from the site's own tile (globals.css .camp-grain),
+   only where the window is large enough to show it. */
+.sc-frame::after {
+  display: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("/grain.png");
+  background-size: 96px 96px;
+}
+.dark .sc-frame::after {
+  mix-blend-mode: screen;
+}
+@media (min-width: 640px) {
+  .sc-frame[data-grain]::after {
+    display: block;
+  }
+}
+
+.sc-sheet {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--sc-sheet);
+  border-radius: 12px;
+  box-shadow: var(--e-sheet);
+}
+
+/* -------------------------------------------------------------- the sidebar */
+/* .shell-side and its parts (design v3 shell S2 to S12). */
+
+.sc-side {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 10px 0 8px 8px;
+}
+.sc-ws {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px;
+  border-radius: 8px;
+  color: var(--sc-ink);
+}
+.sc-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  /* The logo's gradient comes from the table (APP.logoGradient), set where
+     the mark is drawn. Its drop is the ember's own shade. */
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), inset 0 0 0 1px rgb(0 0 0 / 0.08), 0 1px 2px color-mix(in oklab, rgb(var(--glow2)) 25%, transparent);
+}
+.sc-mark-ring {
+  fill: none;
+  stroke: white;
+  stroke-width: 3.6px;
+}
+.sc-iconbtn {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--sc-ink-3);
+}
+.sc-iconbtn[data-size="24"] {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+.sc-pill {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px 0 10px;
+  border-radius: 8px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e1);
+  color: var(--sc-ink-3);
+  font-size: 13.5px;
+}
+:root:not(.dark) .sc-pill {
+  background: rgb(255 255 255 / 0.7);
+}
+.sc-ai {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--sc-agent);
+}
+.sc-row {
+  position: relative;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  min-width: 0;
+  color: var(--sc-ink-2);
+}
+.sc-row > svg.lucide {
+  color: var(--sc-ink-3);
+}
+.sc-row[data-active] {
+  background: var(--sc-raised);
+  box-shadow: var(--e-sel);
+  color: var(--sc-ink);
+  font-weight: 510;
+}
+.sc-row[data-active] > svg.lucide {
+  color: var(--sc-brand);
+}
+.sc-row[data-active] > svg.lucide-house,
+.sc-row[data-active] > svg.lucide-inbox,
+.sc-row[data-active] > svg.lucide-bookmark,
+.sc-row[data-active] > svg.lucide-calendar,
+.sc-row[data-active] > svg.lucide-file-text {
+  fill: color-mix(in oklab, var(--sc-brand) 20%, transparent);
+}
+.sc-row[data-unread]:not([data-active]) {
+  color: var(--sc-ink);
+  font-weight: 590;
+}
+.sc-count {
+  margin-left: auto;
+  flex: none;
+  font-size: 12px;
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.sc-badge {
+  position: relative;
+  margin-left: auto;
+  flex: none;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--sc-brand);
+  color: var(--sc-on-brand);
+  font-size: 11px;
+  font-weight: 590;
+  line-height: 18px;
+  letter-spacing: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.sc-sect {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  margin-top: 14px;
+  padding: 0 0 0 8px;
+  gap: 4px;
+}
+.sc-sect-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 510;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+}
+.sc-ptile {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  background-image: linear-gradient(140deg, var(--a1), var(--a2));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 0 0 1px rgb(0 0 0 / 0.06);
+}
+.sc-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 6px 4px;
+  border-top: 1px solid var(--sc-line);
+}
+
+/* --------------------------------------------------------------- the atoms */
+
+/* The hue an avatar or a tile is cut from (the app's hue-* a1 and a2). */
+.sc [data-hue="sun"] { --a1: rgb(var(--camp-sun-a1)); --a2: rgb(var(--camp-sun-a2)); --hue: rgb(var(--camp-sun)); --hue-tint: rgb(var(--camp-sun-tint)); --hue-ink: rgb(var(--camp-sun-ink)); }
+.sc [data-hue="moss"] { --a1: rgb(var(--camp-moss-a1)); --a2: rgb(var(--camp-moss-a2)); --hue: rgb(var(--camp-moss)); --hue-tint: rgb(var(--camp-moss-tint)); --hue-ink: rgb(var(--camp-moss-ink)); }
+.sc [data-hue="lake"] { --a1: rgb(var(--camp-lake-a1)); --a2: rgb(var(--camp-lake-a2)); --hue: rgb(var(--camp-lake)); --hue-tint: rgb(var(--camp-lake-tint)); --hue-ink: rgb(var(--camp-lake-ink)); }
+.sc [data-hue="sky"] { --a1: rgb(var(--camp-sky-a1)); --a2: rgb(var(--camp-sky-a2)); --hue: rgb(var(--camp-sky)); --hue-tint: rgb(var(--camp-sky-tint)); --hue-ink: rgb(var(--camp-sky-ink)); }
+.sc [data-hue="dusk"] { --a1: rgb(var(--camp-dusk-a1)); --a2: rgb(var(--camp-dusk-a2)); --hue: rgb(var(--camp-dusk)); --hue-tint: rgb(var(--camp-dusk-tint)); --hue-ink: rgb(var(--camp-dusk-ink)); }
+.sc [data-hue="berry"] { --a1: rgb(var(--camp-berry-a1)); --a2: rgb(var(--camp-berry-a2)); --hue: rgb(var(--camp-berry)); --hue-tint: rgb(var(--camp-berry-tint)); --hue-ink: rgb(var(--camp-berry-ink)); }
+
+/* AVATARS (§3.9): a person is a circle in their hue's avatar cut with white
+   initials; an agent a 32% square in the agent gradient with the spark; a
+   bot a 32% square on the sunken surface. */
+.sc-av {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  background-image: linear-gradient(140deg, var(--a1), var(--a2));
+  /* The app's Avatar root clips the fallback (overflow hidden, round), so
+     of avatar-person's rings only the inset ones show. */
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.22);
+}
+.sc-av[data-kind="agent"] {
+  border-radius: 32%;
+  background-image: linear-gradient(140deg, rgb(var(--agent-a1)), rgb(var(--agent-a2)));
+}
+.sc-av[data-kind="bot"] {
+  border-radius: 32%;
+  background: var(--sc-sunken);
+  color: var(--sc-ink-2);
+  box-shadow: 0 0 0 1px var(--sc-line-2);
+}
+.sc-av > svg {
+  width: 55%;
+  height: 55%;
+}
+.sc-presence {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 30%;
+  height: 30%;
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 9999px;
+  background: var(--sc-ok);
+  box-shadow: 0 0 0 2px var(--presence-ring, var(--sc-sheet));
+}
+
+/* A tag (Agent, Guest, Bot): 18px, r5, 11/510, the spark before the word. */
+.sc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  flex: none;
+}
+.sc-tag[data-kind="agent"] {
+  background: var(--sc-agent-muted);
+  color: var(--sc-agent-ink);
+}
+.sc-tag[data-kind="guest"] {
+  background: rgb(var(--camp-sun-tint));
+  color: rgb(var(--camp-sun-ink));
+}
+.sc-tag[data-kind="neutral"] {
+  background: var(--sc-hover);
+  color: var(--sc-ink-2);
+  box-shadow: inset 0 0 0 1px var(--sc-line);
+}
+.sc-tag > svg {
+  width: 10px;
+  height: 10px;
+  flex: none;
+}
+
+/* KBD (§3.10): 18px, r4, 11/510 ink-3 on the sheet in a line-2 ring. */
+.sc-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+  background: var(--sc-sheet);
+  box-shadow: 0 0 0 1px var(--sc-line-2), inset 0 -1px 0 var(--sc-line-2);
+}
+
+/* A chip (§3.10): 22px, r6, 12/510 ink-2 on the hover overlay in a hairline. */
+.sc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 510;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  background-color: var(--sc-hover);
+  color: var(--sc-ink-2);
+  box-shadow: inset 0 0 0 1px var(--sc-line);
+}
+
+/* Buttons (components/ui/button.tsx): the primary in the accent with its
+   highlight, the secondary raised at e1. */
+.sc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 510;
+  white-space: nowrap;
+  flex: none;
+}
+.sc-btn[data-variant="primary"] {
+  background: var(--sc-brand);
+  color: var(--sc-on-brand);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), inset 0 -1px 0 rgb(0 0 0 / 0.08), 0 0 0 1px color-mix(in oklab, var(--sc-brand) 82%, black), 0 1px 2px rgb(var(--sc-shade) / 0.18), 0 2px 6px -2px color-mix(in oklab, var(--sc-brand) 45%, transparent);
+}
+.dark .sc-btn[data-variant="primary"] {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), inset 0 -1px 0 rgb(0 0 0 / 0.12), 0 0 0 1px color-mix(in oklab, var(--sc-brand) 70%, black), 0 2px 8px -2px color-mix(in oklab, var(--sc-brand) 35%, transparent);
+}
+.sc-btn[data-variant="secondary"] {
+  background: var(--sc-raised);
+  color: var(--sc-ink);
+  box-shadow: var(--e-e1);
+}
+.sc-btn > svg {
+  width: 16px;
+  height: 16px;
+}
+.sc-btn.sc-btn-14 > svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* A mention (C14): a neutral chip with the person's dot; you, in the accent;
+   an agent, in the agent's tint with the spark. */
+.sc-mention {
+  border-radius: 5px;
+  padding: 0 4px;
+  background-color: var(--sc-hover);
+  color: var(--sc-ink);
+  font-weight: 510;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.sc-mention[data-kind="person"]::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  vertical-align: 0.12em;
+  background: var(--hue, var(--sc-ink-3));
+}
+.sc-mention[data-kind="me"] {
+  background-color: var(--sc-brand-muted);
+  color: var(--sc-brand-text);
+}
+.dark .sc-mention[data-kind="me"] {
+  background-color: color-mix(in oklab, var(--sc-brand) 18%, transparent);
+}
+.sc-mention[data-kind="agent"] {
+  background-color: var(--sc-agent-muted);
+  color: var(--sc-agent-ink);
+}
+.sc-mention > svg {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 3px;
+  vertical-align: -0.02em;
+  fill: currentColor;
+}
+
+/* A day's heading (C15): a hairline 20px in, the day in a 24px pill at e1. */
+.sc-day {
+  position: relative;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 10px 0 6px;
+}
+.sc-day::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: calc(50% + 2px);
+  height: 1px;
+  background: var(--sc-line);
+}
+.sc-day > span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--sc-sheet);
+  box-shadow: var(--e-e1);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  font-weight: 510;
+  color: var(--sc-ink-2);
+}
+
+/* ------------------------------------------------------------- the channel */
+/* The header (chanelIdDesktop, C01): 52px on the sheet, a hairline below. */
+.sc-head {
+  display: flex;
+  height: 52px;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--sc-line);
+  background: var(--sc-sheet);
+  padding: 0 12px 0 20px;
+}
+.sc-head-topic {
+  margin-left: 2px;
+  border-left: 1px solid var(--sc-line-2);
+  padding-left: 10px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-4);
+  white-space: nowrap;
+}
+.sc-stack {
+  display: flex;
+  height: 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px 0 4px;
+}
+.sc-stack > span:first-child {
+  display: flex;
+}
+.sc-stack > span:first-child > * + * {
+  margin-left: -6px;
+}
+.sc-stack .sc-av {
+  box-shadow: 0 0 0 2px var(--sc-sheet);
+}
+
+/* A message row (baseMessageCard, design v3 chat §2.1): a 36px avatar column
+   and the text, 12px apart, 20px in from the left and 24 from the right. */
+.sc-msg {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  column-gap: 12px;
+  padding: 6px 24px 6px 20px;
+}
+.sc-msg[data-for-me] {
+  background: color-mix(in oklab, var(--sc-brand-muted) 70%, transparent);
+}
+.dark .sc-msg[data-for-me] {
+  background: color-mix(in oklab, var(--sc-brand) 10%, transparent);
+}
+.sc-msg[data-for-me]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 9999px;
+  background: var(--sc-brand);
+}
+.sc-msg-name {
+  display: flex;
+  height: 20px;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+.sc-msg-name > b {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.006em;
+  font-weight: 590;
+  color: var(--sc-ink);
+  white-space: nowrap;
+}
+.sc-msg-name > time {
+  flex: none;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.sc-msg[data-for-me] .sc-msg-name > time {
+  color: var(--sc-brand-text);
+}
+.sc-msg-body {
+  max-width: 760px;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: -0.009em;
+  /* A message is a ProseMirror view in the app, which keeps ligatures off
+     (globals.css html .ProseMirror). */
+  font-feature-settings: "liga" 0, "cv11", "ss01", "ss03";
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+.sc-prov {
+  margin-top: 6px;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+}
+.sc-prov > svg {
+  width: 12px;
+  height: 12px;
+  color: var(--sc-agent);
+}
+/* A Check-in's question as a prompt card (C13): the sunken surface, the
+   question at 590, who answered under a hairline. */
+.sc-checkin {
+  margin-top: 4px;
+  max-width: 560px;
+  border-radius: 12px;
+  background: var(--sc-sunken);
+  padding: 12px 14px;
+}
+.sc-checkin-foot {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--sc-line);
+  padding-top: 10px;
+}
+
+/* The typing line (C59): 22px, three 4px dots and the words in ink-3; an
+   agent at work in its own ink. */
+.sc-typing {
+  display: flex;
+  height: 22px;
+  align-items: center;
+  gap: 8px;
+  padding-left: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+}
+.sc-typing > span:first-child {
+  display: flex;
+  gap: 3px;
+}
+.sc-typing i {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--sc-ink-3);
+}
+.sc-typing[data-agent] i {
+  background: var(--sc-agent);
+}
+.sc-typing[data-agent] > span:last-child {
+  color: var(--sc-agent-ink);
+}
+
+/* The composer (chatComposerShell, C38): a card raised at e2, r12, the
+   words at 15/23, one 32px row of tools under them. */
+.sc-composer {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 800px;
+  flex-direction: column;
+  border-radius: 12px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e2);
+  padding: 12px 10px 8px 14px;
+}
+.sc-composer-text {
+  min-height: 24px;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: -0.009em;
+  font-feature-settings: "liga" 0, "cv11", "ss01", "ss03";
+  /* The editor's placeholder is ink-2 (minimal-tiptap placeholder.css). */
+  color: var(--sc-ink-2);
+}
+.sc-composer-row {
+  margin-top: 8px;
+  display: flex;
+  height: 32px;
+  align-items: center;
+  gap: 2px;
+}
+.sc-tool {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--sc-ink-3);
+}
+.sc-send {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--sc-press);
+  color: var(--sc-ink-3);
+}
+
+/* ------------------------------------------------------------ the phone */
+/* The phone shell (components/navigationBar/mobile): the frame's status
+   area, a 52px bar, the sheet and the tab bar. */
+.sc-phone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sc-sheet);
+}
+.sc-phone-bar {
+  position: relative;
+  display: flex;
+  height: 52px;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--sc-line);
+  background: var(--sc-sheet);
+}
+.sc-tabbar {
+  display: flex;
+  flex: none;
+  height: 56px;
+  align-items: stretch;
+  border-top: 1px solid var(--sc-line);
+  background: var(--sc-frame);
+}
+.sc-tabbar > span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 510;
+  color: var(--sc-ink-3);
+}
+.sc-tabbar > span[data-active] {
+  color: var(--sc-ink);
+}
+/* The tab's capsule (phone.css .phone-tab-cap): 44 by 28, r14, the accent
+   at 10% behind the current place's icon. */
+.sc-tabcap {
+  display: grid;
+  width: 44px;
+  height: 28px;
+  place-items: center;
+  border-radius: 14px;
+}
+.sc-tabbar > span[data-active] > .sc-tabcap {
+  background: color-mix(in oklab, var(--sc-brand) 10%, transparent);
+  color: var(--sc-brand);
+}
+
+/* The conversation (channelMessageList): bottom-anchored, 8px above the
+   typing line. A scene's arrivals wait under it, out of sight, and the track
+   rises by their height to bring each one up (SceneDirector). While it
+   moves, rows leaving at the top fade under a 24px edge, as the sidebar's
+   scroll does; at rest every row in view is whole. */
+.sc-list {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+.sc-list::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 auto;
+  height: 24px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--sc-sheet), transparent);
+  opacity: 0;
+  transition: opacity 240ms var(--ease-out);
+}
+.sc-list[data-moving]::before {
+  opacity: 1;
+}
+.sc-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  transform: translateY(var(--sc-shift, 0px));
+  transition: transform 560ms var(--ease-out);
+}
+.sc-arrivals {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+}
+
+/* What a scene brings in: off is out of sight, on is in place. Transform
+   and opacity only. */
+.sc [data-sc-item] {
+  transition: opacity 360ms var(--ease-out), transform 420ms var(--ease-out);
+}
+.sc [data-sc-item][data-sc-state="off"] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.sc [data-sc-item][data-sc-state="fade"] {
+  opacity: 0;
+  transform: none;
+}
+.sc [data-sc-item][data-sc-pop][data-sc-state="off"] {
+  transform: scale(0.92);
+}
+.sc [data-sc-item][data-sc-pop] {
+  transition: opacity 240ms var(--ease-out), transform 360ms var(--ease-spring);
+}
+
+/* The typing dots bob while the line is shown, three times at most. */
+@keyframes sc-bob {
+  0%, 60%, 100% { transform: none; }
+  30% { transform: translateY(-3px); }
+}
+.sc [data-sc-state="on"] .sc-bob {
+  animation: sc-bob 1.2s var(--ease-io) 3;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc [data-sc-state="on"] .sc-bob {
+    animation: none;
+  }
+}
+
+/* A message on a phone (mobileMessageRow, C07 phone): 32px faces 10px
+   from the words, 16px in, the body at 16/24. */
+.sc-msg-phone {
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 10px;
+  padding: 8px 16px;
+}
+.sc-msg-phone .sc-msg-body {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.011em;
+}
+.sc .t-base { font-size: 16px; line-height: 24px; letter-spacing: -0.011em; }
+
+/* The phone composer (phoneComposerShell, C48): a card at e2, r16, a 36px
+   round + and mic either side of the words. */
+.sc-phone-composer {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e2);
+}
+.sc-round {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--sc-press);
+  color: var(--sc-ink-2);
+}
+
+/* ---------------------------------------------------------------- scenes */
+/* A scene (Scene.tsx) is designed at one size and drawn at its column's
+   width, scaled as a whole: the box keeps the design's aspect (so its height
+   is reserved before anything paints), and the stage inside is the design
+   size scaled by the column's width over the design's. The scale is CSS
+   (100cqw over the design width, as a number through atan2), so the server's
+   picture is already the right size; SceneDirector sets the same number for
+   a browser without trigonometric functions. */
+.sc-fit {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--sc-w) / var(--sc-h);
+  container-type: inline-size;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sc-fit[data-window] {
+  border-radius: 14px;
+  box-shadow: var(--e-e4);
+}
+.sc-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--sc-w) * 1px);
+  height: calc(var(--sc-h) * 1px);
+  transform-origin: 0 0;
+  transform: scale(var(--sc-k, 1));
+}
+@supports (transform: scale(tan(atan2(1px, 1px)))) {
+  .sc-stage {
+    --sc-k: tan(atan2(100cqw, calc(var(--sc-w) * 1px)));
+  }
+}
+/* Rounded where the browser can: at its own size the quotient is
+   0.9999999999999999, and a transform a hair off the identity sets text off
+   its pixel grid (uneven gaps between letters). */
+@supports (transform: scale(round(nearest, tan(atan2(1px, 1px)), 0.0001))) {
+  .sc-stage {
+    --sc-k: round(nearest, tan(atan2(100cqw, calc(var(--sc-w) * 1px))), 0.0001);
+  }
+}
+
+/* A scene a reader just chose arrives part by part (SceneDirector), each
+   rising 6px into place: transform and opacity, from --sc-delay. */
+.sc [data-sc-enter] {
+  transition: opacity 320ms var(--ease-out) var(--sc-delay, 0ms), transform 380ms var(--ease-out) var(--sc-delay, 0ms);
+}
+.sc [data-sc-enter][data-sc-state="off"] {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: none;
+}
+
+/* A product tab a reader chose cross-fades in (ProductTabs); the page's
+   first is drawn as it is. */
+@keyframes sc-swap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.sc-swap[data-sc-entering] {
+  animation: sc-swap 240ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-swap[data-sc-entering] {
+    animation: none;
+  }
+}

@@ -1,0 +1,625 @@
+/*
+ * The calendar (onecamp-fe components/calendar: calendarApp's header and
+ * PhoneBar, weekView, HueBlock, NowLine, calendar.css; components/ui/calendar's
+ * DayCell; app/content.css focus-hatch), for the showcase. Tokens only, as
+ * showcase.css: the sc colours, the e-ladder, a camp hue through data-hue.
+ * Nothing here moves on its own: the arrival is SceneDirector's, and the now
+ * disc's breathing (an infinite loop) is left out.
+ */
+
+/* The page (calendarApp, data-calendar): the sheet, one column. */
+.sc-cal {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sc-sheet);
+}
+
+/* ------------------------------------------------------------ the header */
+/* data-calendar-header: 52px on the sheet, a hairline below, 16px in; the
+   period, back, forward and Today on the left; search, Calendars, the view
+   switch and New event on the right. */
+.sc-cal-head {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  height: 52px;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--sc-line);
+  background: var(--sc-sheet);
+  padding: 0 16px;
+}
+.sc-cal-title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buttons (components/ui/button): xs is 24px, r6, 12/510; sm 28px, r8,
+   13/510. Secondary is the raised surface at e1; ghost is ink-2 with its icon
+   in ink-3. */
+.sc-cal-btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 510;
+  white-space: nowrap;
+}
+.sc-cal-btn[data-size="xs"] {
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+}
+.sc-cal-btn[data-variant="secondary"] {
+  background: var(--sc-raised);
+  color: var(--sc-ink);
+  box-shadow: var(--e-e1);
+}
+.sc-cal-btn[data-variant="ghost"] {
+  color: var(--sc-ink-2);
+}
+.sc-cal-btn[data-variant="ghost"] > svg {
+  color: var(--sc-ink-3);
+}
+/* The calendars on show, as their colours: a 6px dot (IdentityMark dot). */
+.sc-cal-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--hue);
+}
+/* New event (button sm, primary): the icon at 16px, and its key on an 18%
+   white fill, 16px, with no ring (buttonVariants default, [&_.kbd]). */
+.sc .sc-cal-new > svg {
+  width: 16px;
+  height: 16px;
+}
+.sc .sc-cal-new .sc-kbd {
+  height: 16px;
+  min-width: 16px;
+  background: rgb(255 255 255 / 0.18);
+  color: currentColor;
+  box-shadow: none;
+}
+
+/* The view switch (data-calendar-views): four 64px views over one thumb on
+   the sunken track, r12 and 2px in; the thumb is raised at e1. */
+.sc-cal-views {
+  position: relative;
+  display: flex;
+  flex: none;
+  border-radius: 12px;
+  background: var(--sc-sunken);
+  padding: 2px;
+}
+.sc-cal-views > i {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 64px;
+  border-radius: 8px;
+  background: var(--sc-raised);
+  box-shadow: var(--e-e1);
+}
+/* Each view is a button: its words centred by text-align, an 18px line in
+   the 24px box (centred as a grid item, they land half a pixel off). */
+.sc-cal-views > span {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 24px;
+  padding-top: 3px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 510;
+  color: var(--sc-ink-3);
+}
+.sc-cal-views > span[data-on] {
+  color: var(--sc-ink);
+}
+
+/* -------------------------------------------------------------- the week */
+/* weekView: the day headers, the all-day rail and the time grid, a 56px
+   gutter on the left of each. A week's columns are at least 90px. */
+.sc-cal-week {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sc-cal-gutter {
+  position: relative;
+  width: 56px;
+  flex: none;
+}
+
+/* Day headers: 56px; the weekday 11/510 ink-3 over the date at 20/24 590 in
+   a 32px circle. Today: both in the accent's ink, the date in a 1.5px brand
+   ring. */
+.sc-cal-days {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex: none;
+  border-bottom: 1px solid var(--sc-line);
+  background: var(--sc-sheet);
+}
+.sc-cal-dayhead {
+  position: relative;
+  display: flex;
+  height: 56px;
+  min-width: 90px;
+  flex: 1 1 0%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--sc-line);
+}
+.sc-cal-dayhead[data-single] {
+  min-width: 0;
+  align-items: flex-start;
+  padding: 0 12px;
+}
+.sc-cal-wd {
+  color: var(--sc-ink-3);
+}
+.sc-cal-date {
+  margin-top: 2px;
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  /* text-xl font-semibold leading-6: title-2's size and tracking at 24px. */
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-ink);
+}
+.sc-cal-dayhead[data-today] .sc-cal-wd,
+.sc-cal-dayhead[data-today] .sc-cal-date {
+  color: var(--sc-brand-text);
+}
+.sc-cal-dayhead[data-today] .sc-cal-date {
+  box-shadow: inset 0 0 0 1.5px var(--sc-brand);
+}
+
+/* Weekends sit on sunken; in dark, where sunken is barely below the sheet, a
+   step further down, still a neutral (calendar.css). The rail's weekend
+   cells are plain sunken, as the app's carry no data-weekend. */
+.sc-cal [data-weekend],
+.sc-cal [data-weekend-rail] {
+  background-color: var(--sc-sunken);
+}
+.dark .sc-cal [data-weekend] {
+  background-color: color-mix(in oklab, var(--sc-sheet) 62%, black);
+}
+
+/* The all-day rail (data-all-day-rail): 32px a track, chips 22px with 2px
+   between, "All day" 11/510 ink-3 at the gutter's top right. */
+.sc-cal-rail {
+  position: relative;
+  display: flex;
+  flex: none;
+  border-bottom: 1px solid var(--sc-line-2);
+  background: var(--sc-sheet);
+}
+.sc-cal-railgutter {
+  position: relative;
+  display: flex;
+  width: 56px;
+  flex: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 8px 8px 0 0;
+  color: var(--sc-ink-3);
+}
+.sc-cal-railcell {
+  display: flex;
+  min-width: 90px;
+  min-height: 32px;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid var(--sc-line);
+  padding: 5px 4px;
+}
+.sc-cal-railcell[data-single] {
+  min-width: 0;
+}
+
+/* The time grid: 56px an hour, the working day (9 to 6) on the sheet and the
+   rest on sunken at 60%, an hour's hairline and a dashed half hour at half
+   strength. The grid shows from a chosen hour, as the app opens scrolled. */
+.sc-cal-grid {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+}
+.sc-cal-hours {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+}
+.sc-cal-hour {
+  position: relative;
+  height: 56px;
+}
+.sc-cal-hour > span {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-ink-3);
+}
+.sc-cal-cols {
+  position: relative;
+  display: flex;
+  flex: 1 1 0%;
+}
+.sc-cal-col {
+  position: relative;
+  min-width: 90px;
+  flex: 1 1 0%;
+  border-left: 1px solid var(--sc-line);
+}
+.sc-cal-col[data-single] {
+  min-width: 0;
+}
+.sc-cal-off {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: color-mix(in oklab, var(--sc-sunken) 60%, transparent);
+}
+.sc-cal-line {
+  position: relative;
+  height: 56px;
+  border-bottom: 1px solid var(--sc-line);
+}
+.sc-cal-line > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px dashed var(--sc-line);
+  opacity: 0.5;
+}
+
+/* --------------------------------------------------------- an item on time */
+/* HueBlock: an event takes its calendar's hue, a task its project's: the
+   tint mixed 60% into the sheet, the title in the hue's ink, and for an event
+   a 3px bar of the strong cut on its leading edge. A past one drops to 33%
+   with ink-2 text. Focus time is never a hue: sunken with a 135deg hatch of
+   line-2, an ink-3 bar and a moon. */
+.sc-hb {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  text-align: left;
+}
+.sc-hb[data-kind="event"],
+.sc-hb[data-kind="task"] {
+  --fill: 60%;
+  background: color-mix(in oklab, var(--hue-tint) var(--fill), var(--sc-sheet));
+  color: var(--hue-ink);
+}
+.sc-hb[data-kind="event"][data-past],
+.sc-hb[data-kind="task"][data-past] {
+  --fill: 33%;
+  color: var(--sc-ink-2);
+}
+.sc-hb[data-kind="focus"] {
+  background-color: var(--sc-sunken);
+  background-image: repeating-linear-gradient(135deg, var(--sc-line-2) 0 1px, transparent 1px 6px);
+  color: var(--sc-ink-2);
+}
+.sc-hb[data-kind="focus"][data-past] {
+  opacity: 0.55;
+}
+.sc-hb > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: var(--hue);
+}
+.sc-hb[data-kind="focus"] > i {
+  background: var(--sc-ink-3);
+}
+
+/* A chip in the all-day rail: 22px, 12/510, the task's status glyph first. */
+.sc-hb[data-variant="chip"] {
+  width: 100%;
+  height: 22px;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 9px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  font-weight: 510;
+}
+.sc-hb[data-variant="chip"][data-kind="task"] {
+  padding-left: 6px;
+}
+
+/* A block on the grid: 12/16 510, 4px top and bottom from 28px tall;
+   shorter ones centre a single 11px line. */
+.sc-hb[data-variant="block"] {
+  position: absolute;
+  z-index: 10;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 6px 4px 9px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  font-weight: 510;
+}
+.sc-hb[data-variant="block"][data-short] {
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.sc-hb-lead {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  opacity: 0.8;
+}
+.sc-hb-trunc {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.sc-hb-clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+/* The times: 450, tabular, at 75%. */
+.sc-hb-at {
+  font-weight: 450;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+.sc-hb-time {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.005em;
+}
+/* Under 28px: one 11/12 line. */
+.sc-hb-micro {
+  font-size: 11px;
+  line-height: 12px;
+  letter-spacing: 0.005em;
+}
+
+/* A task's status glyph (components/ui/graphics StatusGlyph), at 12px: an
+   ink-2 ring for to do, a dashed ink-3 ring for the backlog. A drawn mark,
+   so it keeps its own 1.5 stroke on the 16 grid. */
+.sc-glyph {
+  flex: none;
+}
+.sc-glyph circle {
+  fill: none;
+  stroke-width: 1.5;
+}
+.sc-glyph[data-status="todo"] circle {
+  stroke: var(--sc-ink-2);
+}
+.sc-glyph[data-status="backlog"] circle {
+  stroke: var(--sc-ink-3);
+  stroke-dasharray: 2.2 2.1;
+}
+
+/* ------------------------------------------------------------ the now line */
+/* NowLine: the brand, never red. The time in an 18px pill in the gutter, a
+   1px line at 30% across the week, and on today 1.5px with a 7px disc ringed
+   in the sheet. */
+.sc-cal-now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 25;
+  height: 0;
+}
+.sc-cal-now > b {
+  position: absolute;
+  right: calc(100% - 52px);
+  display: flex;
+  height: 18px;
+  align-items: center;
+  transform: translateY(-50%);
+  border-radius: 5px;
+  background: var(--sc-brand);
+  padding: 0 4px;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-on-brand);
+}
+.sc-cal-now > div {
+  position: absolute;
+  top: 0;
+  left: 56px;
+  right: 0;
+  height: 0;
+}
+.sc-cal-now > div > i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  transform: translateY(-50%);
+  background: color-mix(in oklab, var(--sc-brand) 30%, transparent);
+}
+.sc-cal-now > div > em {
+  position: absolute;
+  top: 0;
+  height: 1.5px;
+  transform: translateY(-50%);
+  background: var(--sc-brand);
+}
+.sc-cal-now > div > em > span {
+  position: absolute;
+  left: -3.5px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: var(--sc-brand);
+  box-shadow: 0 0 0 2px var(--sc-sheet);
+}
+
+/* -------------------------------------------------------------- the phone */
+/* The phone's top bar (mobileTopNavigationBar): 52px on the sheet, three
+   equal columns so the title sits in the middle; no hairline at the top of
+   a page. */
+.sc-cal-ptop {
+  display: grid;
+  height: 52px;
+  flex: none;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  background: var(--sc-sheet);
+}
+.sc-cal-ptarget {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: var(--sc-ink-3);
+}
+
+/* The phone's calendar bar (calendarApp PhoneBar): the period with Today and
+   New event, the week's days with their dots, and the views. */
+.sc-cal-pbar {
+  flex: none;
+  border-bottom: 1px solid var(--sc-line);
+  background: var(--sc-sheet);
+}
+.sc-cal-pstrip {
+  display: flex;
+  align-items: center;
+  padding: 0 4px 8px;
+}
+.sc-cal-pviews {
+  margin: 0 12px 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-radius: 12px;
+  background: var(--sc-sunken);
+  padding: 2px;
+}
+.sc-cal-pviews > span {
+  display: block;
+  height: 32px;
+  padding-top: 7px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 510;
+  color: var(--sc-ink-3);
+}
+.sc-cal-pviews > span[data-on] {
+  background: var(--sc-raised);
+  color: var(--sc-ink);
+  box-shadow: var(--e-e1);
+}
+
+/* A day (components/ui/calendar DayCell): 32px, r12, 13/450 tabular. Today
+   is a 26px brand ring with the number in brand-text at 590; the chosen day
+   an ink fill with sheet text; a day with something on it a 4px dot. */
+.sc-daycell {
+  position: relative;
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  font-weight: 450;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-ink);
+}
+.sc-daycell[data-today] {
+  font-weight: 590;
+  color: var(--sc-brand-text);
+}
+.sc-daycell[data-today]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1.5px var(--sc-brand);
+}
+.sc-daycell[data-selected] {
+  background: var(--sc-ink);
+  color: var(--sc-sheet);
+}
+.sc-daycell[data-selected]::before {
+  box-shadow: none;
+}
+.sc-daycell > i {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  background: var(--sc-ink-3);
+}
+.sc-daycell[data-selected] > i {
+  background: var(--sc-sheet);
+}
