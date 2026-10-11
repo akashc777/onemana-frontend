@@ -104,6 +104,25 @@ export function OverlapRings() {
   )
 }
 
+/** /templates' art (site.md T1): three tilted cards in template hues, stacked. */
+export function StackedCards() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 240 200" width="240" height="200" fill="none">
+      <g transform="rotate(-10 120 100)">
+        <rect x="58" y="44" width="124" height="96" rx="14" className="hue-dusk fill-hue-tint stroke-hue" strokeWidth="1.5" />
+      </g>
+      <g transform="rotate(6 120 100)">
+        <rect x="58" y="52" width="124" height="96" rx="14" className="hue-sky fill-hue-tint stroke-hue" strokeWidth="1.5" />
+      </g>
+      <rect x="58" y="60" width="124" height="96" rx="14" className="fill-card stroke-line-3" strokeWidth="1.5" />
+      <rect x="74" y="76" width="22" height="22" rx="6" className="hue-moss fill-hue" />
+      <rect x="74" y="112" width="92" height="6" rx="3" className="hue-moss fill-hue" />
+      <rect x="74" y="124" width="62" height="6" rx="3" className="hue-moss fill-hue opacity-60" />
+      <rect x="74" y="136" width="36" height="6" rx="3" className="hue-moss fill-hue opacity-30" />
+    </svg>
+  )
+}
+
 /** The footer's corner ring (S16), at 10% ink, cropped by the page's edge. */
 export function FooterRing() {
   return (

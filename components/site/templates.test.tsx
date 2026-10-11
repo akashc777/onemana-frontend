@@ -19,7 +19,7 @@ describe("the template gallery", () => {
     it("lifts a card under the pointer and keeps the site's focus ring", () => {
         expect(cards.length).toBe(templates.length)
         for (const a of cards) {
-            expect(a).toContain("hover-lift")
+            expect(a).toMatch(/(^|\s)lift(\s|$)/)
             expect(a).not.toMatch(/outline-none|focus-visible:ring/)
         }
     })

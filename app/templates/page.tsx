@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
+import { StackedCards } from "@/components/ui/graphics/v3marks";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { hueFor } from "@/lib/campHue";
 import { ButtonLink } from "@/components/ui/Button";
-import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import { gallerySpans } from "@/components/site/gallery";
 import { landingMetadata } from "@/lib/landingMetadata";
 import { taskCount, templates, weeksLong } from "@/lib/templates";
@@ -17,6 +19,15 @@ const meta = {
 
 export const metadata: Metadata = landingMetadata(meta, "/templates");
 
+/** Each week's share of the plan's tasks, 0 to 1 against the busiest week. */
+function weekShares(t: Parameters<typeof taskCount>[0]): number[] {
+  const weeks = Math.max(1, weeksLong(t));
+  const counts = Array.from({ length: Math.min(weeks, 8) }, () => 0);
+  for (const task of t.tasks) for (const d of [task.due_day ?? 0, ...(task.subtasks ?? []).map((x) => x.due_day ?? 0)]) counts[Math.min(counts.length - 1, Math.floor(d / 7))]! += 1;
+  const most = Math.max(1, ...counts);
+  return counts.map((c) => c / most);
+}
+
 export default function TemplatesPage() {
   return (
     <>
@@ -27,6 +38,7 @@ export default function TemplatesPage() {
         title="Start a project with its plan already in it"
         subtitle={`Each template is a whole plan: the tasks in order, what done looks like for each, and dates that count from the day you start. They're built into OneCamp, free for up to ${FREE_SEATS} people on your own server.`}
         align="left"
+        art={<StackedCards />}
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href={site.demoUrlTo("templates")} external variant="brand" size="lg">
@@ -46,15 +58,28 @@ export default function TemplatesPage() {
               <li key={t.id} className={gallerySpans(templates.length)[i]}>
                 <Link
                   href={`/templates/${t.id}`}
-                  className="hover-lift group flex h-full flex-col rounded-lg border border-border bg-card p-6"
+                  data-hue={hueFor(t.id)}
+                  className={`${HUE_CLASS[hueFor(t.id)]} reveal lift group flex h-full flex-col rounded-2xl bg-card p-6 shadow-e1`}
                 >
-                  <h2 className="flex items-center gap-2.5 font-sans text-body font-semibold tracking-normal text-foreground">
-                    <IdentityMark id={t.id} variant="square" />
+                  {/* The project tile (DESIGN_V3): the hue's gradient under a white mark. */}
+                  <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-ctl text-white" style={{ backgroundImage: `linear-gradient(140deg, rgb(var(--camp-${hueFor(t.id)}-a1)), rgb(var(--camp-${hueFor(t.id)}-a2)))` }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 6h16M4 12h10M4 18h6" />
+                    </svg>
+                  </span>
+                  <h2 className="mt-4 font-sans text-body font-[590] tracking-normal text-foreground">
                     {t.name}
                   </h2>
-                  <p className="mt-2 flex-1 text-small text-muted-foreground">{t.description}</p>
-                  <p className="mt-4 text-caption font-medium tabular-nums text-muted-foreground">
-                    {taskCount(t)} tasks, {weeksLong(t)} {weeksLong(t) === 1 ? "week" : "weeks"}
+                  <p className="mt-1.5 flex-1 text-small text-muted-foreground">{t.description}</p>
+                  {/* A mini timeline: one bar a week, its length the share of the
+                      plan's tasks due that week; the bars fill out on hover. */}
+                  <div aria-hidden="true" className="mt-5 flex h-1.5 gap-1">
+                    {weekShares(t).map((w, i) => (
+                      <span key={i} className="h-full flex-1 origin-left scale-x-[0.85] rounded-[3px] bg-hue transition-transform duration-page ease-out group-hover:scale-x-100" style={{ opacity: 0.3 + 0.7 * w, transitionDelay: `${i * 30}ms` }} />
+                    ))}
+                  </div>
+                  <p className="mt-3 text-caption tabular-nums text-faint">
+                    {taskCount(t)} tasks · {weeksLong(t)} {weeksLong(t) === 1 ? "week" : "weeks"}
                   </p>
                 </Link>
               </li>

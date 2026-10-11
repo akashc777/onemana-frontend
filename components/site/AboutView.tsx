@@ -1,6 +1,7 @@
 import { TaxText } from "@/components/site/RegionalMoney";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
+import { AgentSquare, LogoRing } from "@/components/ui/v3";
 import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
@@ -62,12 +63,37 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
   },
 ];
 
+/**
+ * The about page's art (site.md AB1): the founder's photo in a ring of the
+ * page, the gradient logo ring orbiting it with three people as hue dots and
+ * the agent's square: one person, a team's tools, an agent that answers to
+ * them.
+ */
+function FounderOrbit() {
+  return (
+    <div className="relative size-[120px] lg:size-[220px]">
+      <div className="spin-60 absolute inset-0">
+        <LogoRing size={220} stroke={1.2} className="absolute inset-0 size-full opacity-70" />
+        <span className="hue-sky absolute left-[12%] top-[8%] size-3 rounded-full bg-hue" />
+        <span className="hue-moss absolute bottom-[6%] left-[30%] size-2.5 rounded-full bg-hue" />
+        <span className="hue-berry absolute right-[4%] top-[42%] size-3 rounded-full bg-hue" />
+        <span className="absolute right-[14%] top-[6%]">
+          <AgentSquare size={20} />
+        </span>
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={FOUNDER_AVATAR} alt="" width={160} height={160} className="absolute left-1/2 top-1/2 size-[88px] -translate-x-1/2 -translate-y-1/2 rounded-full object-cover shadow-e3 ring-[3px] ring-background lg:size-[160px]" />
+    </div>
+  );
+}
+
 export function AboutView() {
   return (
     <>
       <PageHeader
         title="One person builds OneCamp, in Bengaluru"
         subtitle="OneMana Solutions is a one-person company. This is what that means if you are deciding whether to run your team on what it makes."
+        art={<FounderOrbit />}
         divider
       />
 
