@@ -4,9 +4,13 @@
  * pays, so its building blocks are the app's. Every core value the site draws
  * with is here, copied from the app with the file each comes from:
  *
- *   - SHARED and CAMP: the colours, light and dark;
- *   - APP: radii, the type scale, headings, buttons, fields, chips, cards,
- *     motion, shadows, icons and the logo.
+ *   - SHARED, ALPHA, CAMP and AVATAR: the colours, light and dark, the alpha
+ *     lines and overlays, the camp hues and the avatar cut;
+ *   - ELEVATION and GLOW: the shadow ladder and the house theme's light;
+ *   - APP: radii, the type scales, headings, buttons, fields, chips, cards,
+ *     motion, icons and the logo.
+ *
+ * Design v3 (11 Oct 2026) changed every row of it, in step with the app.
  *
  * Nothing else writes these numbers. lib/tailwindAppSystem.ts builds the
  * site from this table: the colour custom properties for :root and .dark, the
@@ -21,36 +25,36 @@
  */
 
 /**
- * The palette, as sRGB triples (the app writes the same colours in OKLCH and
- * converts them in its test). Named as this site names them: --brand-ink is
- * the app's --brand-text, --brand-soft its --brand-muted, --border-strong its
- * --input, --faint its --faint-foreground, --danger its --destructive.
+ * The palette, as sRGB triples: design v3 of 11 Oct 2026 (onecamp-fe
+ * app/globals.css :root and .dark, DESIGN_V3.md §3.2 to §3.5). Named as this
+ * site names them; the app's v3 name is beside each. The page is the sheet:
+ * white in light and the frame's #0B0C0E in dark (§3.2, "storefront page"),
+ * on the canvas (the app's frame).
  */
 export const SHARED: Record<"light" | "dark", Record<string, [number, number, number]>> = {
-  // The 10 October 2026 palette (DESIGN.md): cool graphite and signal orange.
   light: {
-    brand: [204, 74, 11],
+    brand: [204, 74, 11], // #CC4A0B
     "brand-foreground": [255, 255, 255],
-    "brand-ink": [194, 65, 12],
-    "brand-soft": [255, 241, 232],
-    background: [252, 252, 253],
-    foreground: [20, 22, 26],
-    card: [255, 255, 255],
-    muted: [245, 246, 247],
-    "muted-foreground": [95, 100, 112],
-    faint: [138, 143, 153],
-    // The app's --accent is surface-2 (the muted step); its hover step is
-    // --sidebar-accent, bg-highlight there and here.
-    accent: [245, 246, 247],
-    "accent-foreground": [20, 22, 26],
-    highlight: [237, 238, 240],
-    // The app's canvas: --brand-wash of the house theme (app/themes.css).
-    canvas: [249, 245, 241],
-    border: [228, 229, 232],
-    "border-strong": [211, 213, 218],
-    "agent": [79, 91, 213],
+    "brand-ink": [194, 65, 12], // --brand-text #C2410C
+    "brand-soft": [252, 239, 230], // --brand-muted #FCEFE6
+    background: [255, 255, 255], // --sheet
+    foreground: [22, 23, 27], // --ink #16171B
+    card: [255, 255, 255], // --raised
+    pop: [255, 255, 255], // --pop
+    muted: [248, 249, 250], // --sunken #F8F9FA
+    "muted-foreground": [91, 93, 101], // --ink-2 #5B5D65
+    faint: [138, 140, 146], // --ink-3 #8A8C92
+    "ink-4": [185, 187, 192], // --ink-4 #B9BBC0
+    accent: [248, 249, 250],
+    "accent-foreground": [22, 23, 27],
+    // The hover and press steps are alphas in the app (ALPHA below); an
+    // opaque press for a solid ground: press over the sheet.
+    highlight: [238, 238, 239],
+    canvas: [243, 244, 246], // --frame #F3F4F6
+    agent: [91, 99, 214], // #5B63D6
     "agent-foreground": [255, 255, 255],
-    "agent-muted": [238, 240, 253],
+    "agent-muted": [238, 239, 252], // --agent-t #EEEFFC
+    "agent-ink": [59, 63, 166], // --agent-i #3B3FA6
     success: [31, 138, 76],
     warning: [178, 107, 0],
     danger: [209, 41, 61],
@@ -61,25 +65,26 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     "danger-ink": [174, 31, 51],
   },
   dark: {
-    brand: [255, 122, 51],
-    "brand-foreground": [14, 15, 17],
-    "brand-ink": [255, 138, 76],
-    "brand-soft": [42, 26, 16],
-    background: [14, 15, 17],
-    foreground: [237, 238, 240],
-    card: [22, 24, 28],
-    muted: [29, 32, 37],
-    "muted-foreground": [155, 160, 170],
-    faint: [107, 112, 122],
-    accent: [29, 32, 37],
-    "accent-foreground": [237, 238, 240],
-    highlight: [37, 40, 46],
-    canvas: [35, 28, 23],
-    border: [38, 40, 45],
-    "border-strong": [51, 54, 61],
-    "agent": [163, 171, 245],
-    "agent-foreground": [14, 15, 17],
-    "agent-muted": [30, 33, 64],
+    brand: [255, 122, 51], // #FF7A33
+    "brand-foreground": [11, 12, 14], // #0B0C0E
+    "brand-ink": [255, 138, 76], // #FF8A4C
+    "brand-soft": [42, 26, 16], // #2A1A10
+    background: [11, 12, 14], // the storefront page, #0B0C0E
+    foreground: [238, 238, 240], // #EEEEF0
+    card: [27, 28, 31], // --raised #1B1C1F
+    pop: [31, 32, 36], // --pop #1F2024
+    muted: [15, 16, 18], // --sunken #0F1012
+    "muted-foreground": [168, 171, 177], // #A8ABB1
+    faint: [114, 116, 123], // #72747B
+    "ink-4": [74, 76, 82], // #4A4C52
+    accent: [15, 16, 18],
+    "accent-foreground": [238, 238, 240],
+    highlight: [29, 30, 32],
+    canvas: [11, 12, 14], // --frame #0B0C0E
+    agent: [154, 162, 246], // #9AA2F6
+    "agent-foreground": [11, 12, 14],
+    "agent-muted": [30, 32, 64], // #1E2040
+    "agent-ink": [201, 205, 251], // #C9CDFB
     success: [76, 195, 138],
     warning: [240, 180, 76],
     danger: [242, 85, 90],
@@ -89,6 +94,73 @@ export const SHARED: Record<"light" | "dark", Record<string, [number, number, nu
     "info-ink": [110, 164, 245],
     "danger-ink": [255, 128, 134],
   },
+}
+
+/**
+ * ALPHA OVER HEX FOR STRUCTURE (§3.1, §3.3): hairlines, hover, press and
+ * selection are ink at a low alpha, so one token reads on the page, a card
+ * and a menu. Each is an RGB triple and its alpha; Tailwind multiplies the
+ * alpha by any opacity a class asks for (border-line/50).
+ */
+export const ALPHA: Record<"light" | "dark", Record<string, [[number, number, number], number]>> = {
+  light: {
+    line: [[20, 22, 30], 0.075],
+    "line-2": [[20, 22, 30], 0.12],
+    "line-3": [[20, 22, 30], 0.18],
+    hover: [[20, 22, 30], 0.04],
+    press: [[20, 22, 30], 0.07],
+    sel: [[20, 22, 30], 0.055],
+  },
+  dark: {
+    line: [[255, 255, 255], 0.065],
+    "line-2": [[255, 255, 255], 0.1],
+    "line-3": [[255, 255, 255], 0.16],
+    hover: [[255, 255, 255], 0.04],
+    press: [[255, 255, 255], 0.07],
+    sel: [[255, 255, 255], 0.06],
+  },
+}
+
+/** The avatar cut (§3.5): two gradient stops per hue, the same in both modes. */
+export const AVATAR: Record<string, string> = {
+  "camp-sun-a1": "#AD7300", "camp-sun-a2": "#855500",
+  "camp-moss-a1": "#3F945B", "camp-moss-a2": "#0E7344",
+  "camp-lake-a1": "#0F919C", "camp-lake-a2": "#006E7D",
+  "camp-sky-a1": "#427FD8", "camp-sky-a2": "#315CB0",
+  "camp-dusk-a1": "#816BD8", "camp-dusk-a2": "#6749AC",
+  "camp-berry-a1": "#CA4B85", "camp-berry-a2": "#A32B5E",
+  "agent-a1": "#6572E4", "agent-a2": "#5050B9",
+}
+
+/** The house theme's campfire glow (§3.4), as RGB triples. */
+export const GLOW = { glow: [255, 110, 30], glow2: [255, 61, 0] } as const
+
+/**
+ * THE ELEVATION LADDER (§3.8), light and dark: every step a ring plus drops,
+ * and in dark a top highlight. onecamp-fe app/globals.css --e1 to --e-sheet.
+ */
+export const ELEVATION: Record<"light" | "dark", Record<"e1" | "sel" | "e2" | "e3" | "e4" | "sheet", string>> = {
+  light: {
+    e1: "0 0 0 1px rgb(16 18 26 / 0.09), 0 1px 2px rgb(16 18 26 / 0.05)",
+    sel: "0 0 0 1px rgb(16 18 26 / 0.07), 0 1px 2px rgb(16 18 26 / 0.06), 0 2px 6px -2px rgb(16 18 26 / 0.06)",
+    e2: "0 0 0 1px rgb(16 18 26 / 0.07), 0 1px 2px rgb(16 18 26 / 0.05), 0 4px 12px -4px rgb(16 18 26 / 0.08)",
+    e3: "0 0 0 1px rgb(16 18 26 / 0.08), 0 4px 8px -2px rgb(16 18 26 / 0.07), 0 16px 32px -8px rgb(16 18 26 / 0.16)",
+    e4: "0 0 0 1px rgb(16 18 26 / 0.08), 0 8px 16px -4px rgb(16 18 26 / 0.08), 0 32px 64px -16px rgb(16 18 26 / 0.24)",
+    sheet: "0 0 0 1px rgb(16 18 26 / 0.06), 0 1px 3px rgb(16 18 26 / 0.04), 0 12px 32px -16px rgb(16 18 26 / 0.10)",
+  },
+  dark: {
+    e1: "inset 0 1px 0 rgb(255 255 255 / 0.04), 0 0 0 1px rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.4)",
+    sel: "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(255 255 255 / 0.06), 0 1px 2px rgb(0 0 0 / 0.4)",
+    e2: "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(255 255 255 / 0.08), 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 16px -6px rgb(0 0 0 / 0.5)",
+    e3: "inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(255 255 255 / 0.09), 0 8px 16px -4px rgb(0 0 0 / 0.5), 0 24px 48px -12px rgb(0 0 0 / 0.7)",
+    e4: "inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(255 255 255 / 0.09), 0 16px 32px -8px rgb(0 0 0 / 0.6), 0 40px 80px -20px rgb(0 0 0 / 0.8)",
+    sheet: "inset 0 1px 0 rgb(255 255 255 / 0.035), 0 0 0 1px rgb(255 255 255 / 0.06), 0 12px 32px -16px rgb(0 0 0 / 0.8)",
+  },
+}
+
+/** Inter's tracking for a size (§3.6): -0.0223 + 0.185 * e^(-0.1745 * px), in em, to 3 places. */
+export function tracking(px: number): number {
+  return Math.round((-0.0223 + 0.185 * Math.exp(-0.1745 * px)) * 1000) / 1000
 }
 
 /**
@@ -124,19 +196,20 @@ export function hexToTriple(hex: string): [number, number, number] {
 }
 
 export const APP = {
-  /** onecamp-fe app/globals.css, @theme: --radius is 0.375rem; sm is 2px less, lg and xl 4px more, 2xl 8px more. */
-  radius: { sm: 4, md: 6, lg: 10, xl: 10, "2xl": 14 },
+  /** onecamp-fe app/globals.css, @theme: --radius is 0.5rem; xs 4, sm 6, md 8, lg and xl 12, 2xl 16, 3xl 20. */
+  radius: { xs: 4, sm: 6, md: 8, lg: 12, xl: 12, "2xl": 16, "3xl": 20 },
 
   /**
    * onecamp-fe app/globals.css, @theme "THE APP SCALE": size and line height
-   * in px. The site's names for the app's steps: caption is xs, small is sm,
-   * h3 is xl.
+   * in px; the tracking is Inter's for the size (tracking()). The site's
+   * names for the app's steps: caption is xs, small is sm, h3 is title-1.
    */
   type: {
     "3xs": [11, 14],
     "2xs": [12, 16],
     xs: [13, 18],
     sm: [14, 20],
+    body: [15, 23],
     base: [16, 24],
     lg: [18, 28],
     xl: [20, 28],
@@ -146,66 +219,96 @@ export const APP = {
   },
 
   /**
-   * onecamp-fe app/globals.css (h1, h2, h3 take --font-display; no
-   * letter-spacing on text) and components/ui/pageHeader.tsx (the page
-   * title: font-display font-semibold tracking-normal). Marketing display
-   * sizes may be larger than the app's largest title (36px, text-4xl); only
-   * those take the app's one tightening step, Tailwind's tracking-tight.
+   * The marketing scale (DESIGN_V3.md §3.6): desktop and phone size/line
+   * height in px, weight and tracking. Headings are Inter Display (Inter at
+   * opsz 32), the owner's choice of 11 Oct 2026.
    */
-  heading: { weight: 600, tracking: "normal", tightStep: "-0.025em", largestTitle: 36 },
-
-  /** onecamp-fe app/globals.css @layer components: * { font-feature-settings: "calt" 0 }. */
-  text: { featureSettings: '"calt" 0' },
-
-  /**
-   * onecamp-fe components/ui/button.tsx, buttonVariants: height, horizontal
-   * padding and text size in px. The site's md is the app's default. Below md
-   * the default and lg sizes reach 44px for a finger, as the app's fields do.
-   */
-  button: {
-    sizes: {
-      sm: { height: 32, paddingX: 12, text: "xs", phoneHeight: 32 },
-      md: { height: 36, paddingX: 16, text: "sm", phoneHeight: 44 },
-      lg: { height: 40, paddingX: 32, text: "sm", phoneHeight: 44 },
-    },
-    weight: 500,
-    radius: "md",
-    disabledOpacity: 0.5,
-    /** default (the accent): bg-primary, which is --brand-text, the site's --brand-ink; hover:bg-primary/90. */
-    hoverAlpha: 0.9,
-    /** FILLED_FOCUS: a 1.5px outline 2px off the fill, in the ring colour. */
-    filledFocus: { width: 1.5, offset: 2 },
-    /** Everything else: ring-2 ring-ring/70 ring-offset-1. */
-    focus: { width: 2, alpha: 0.7, offset: 1 },
+  marketing: {
+    hero: { desktop: [68, 70], phone: [42, 46], weight: 600, tracking: -0.024 },
+    h2: { desktop: [44, 50], phone: [32, 38], weight: 600, tracking: -0.022 },
+    h3: { desktop: [24, 30], phone: [20, 26], weight: 590, tracking: -0.019 },
+    lead: { desktop: [20, 30], phone: [18, 28], weight: 400, tracking: -0.012 },
+    body: { desktop: [16, 26], phone: [16, 26], weight: 400, tracking: -0.011 },
+    small: { desktop: [14, 20], phone: [14, 20], weight: 400, tracking: -0.006 },
+    eyebrow: { desktop: [13, 16], phone: [13, 16], weight: 510, tracking: 0 },
+    price: { desktop: [44, 48], phone: [36, 40], weight: 600, tracking: -0.022 },
   },
 
   /**
-   * onecamp-fe components/ui/input.tsx, BASE and inputSizing: 44px and 16px
-   * text on a phone, 36px and 14px from md; a transparent ground, the strong
-   * border, text-3 on hover, the accent border and a soft ring on focus.
+   * onecamp-fe app/globals.css: h1 to h3 take the display face, which is
+   * Inter at opsz 32 here (Inter Display); weight 600 from 28px (590 below),
+   * tracking from the size.
    */
-  field: { height: 36, phoneHeight: 44, paddingX: 12, text: "sm", phoneText: "base", radius: "md", ringAlpha: 0.25, disabledOpacity: 0.7 },
+  heading: { weight: 600, opsz: 32 },
 
-  /** onecamp-fe components/ui/badge.tsx, the default badge: a neutral label on the highlight step. */
-  chip: { paddingX: 10, paddingY: 2, text: "xs", weight: 500, radius: "md" },
+  /**
+   * onecamp-fe app/globals.css body: Inter's optical sizes, cv11 ss01 ss03,
+   * no optimizeLegibility (it ran words together on Linux at 1x), and a word
+   * gap that gives back what the tracking takes.
+   */
+  text: { featureSettings: '"cv11", "ss01", "ss03"', wordSpacing: "0.01em" },
 
-  /** onecamp-fe components/ui/card.tsx: a hairline, the card ground, radius lg, no shadow. */
-  card: { radius: "lg", border: 1 },
+  /**
+   * onecamp-fe components/ui/button.tsx, buttonVariants (design v3): height,
+   * horizontal padding and text size in px. The site's sm is the app's sm,
+   * md the app's default, lg and xl the app's. Below md, md and up reach 44px
+   * for a finger, as the app's fields do.
+   */
+  button: {
+    sizes: {
+      sm: { height: 28, paddingX: 10, text: "xs", phoneHeight: 28 },
+      md: { height: 32, paddingX: 12, text: "xs", phoneHeight: 44 },
+      lg: { height: 40, paddingX: 16, text: "sm", phoneHeight: 44 },
+      xl: { height: 46, paddingX: 20, text: "body", phoneHeight: 46 },
+    },
+    weight: 510,
+    radius: "md",
+    xlRadius: 10,
+    disabledOpacity: 0.5,
+    /** Primary hover: the accent mixed 92% with black. */
+    hoverMix: 92,
+    /** Press: half a pixel down, in 90ms. */
+    press: { y: 0.5, ms: 90 },
+    /** Every button: a 2px accent ring 2px off (§3.11). */
+    focus: { width: 2, offset: 2 },
+    /** The primary's inner highlight and tinted drop, light and dark (§3.8). */
+    primaryShadow: {
+      light: "inset 0 1px 0 rgb(255 255 255 / 0.2), inset 0 -1px 0 rgb(0 0 0 / 0.08), 0 0 0 1px color-mix(in oklab, rgb(var(--brand)) 82%, black), 0 1px 2px rgb(16 18 26 / 0.18), 0 2px 6px -2px color-mix(in oklab, rgb(var(--brand)) 45%, transparent)",
+      dark: "inset 0 1px 0 rgb(255 255 255 / 0.3), inset 0 -1px 0 rgb(0 0 0 / 0.12), 0 0 0 1px color-mix(in oklab, rgb(var(--brand)) 70%, black), 0 2px 8px -2px color-mix(in oklab, rgb(var(--brand)) 35%, transparent)",
+    },
+  },
 
-  /** onecamp-fe app/globals.css @theme, MOTION: 120ms for hover and press, one easing; the spring for a knob. */
-  motion: { duration: 120, ease: "cubic-bezier(0.2, 0.8, 0.2, 1)", spring: "cubic-bezier(0.3, 1.35, 0.5, 1)" },
+  /**
+   * onecamp-fe components/ui/input.tsx (field-surface in globals.css): 44px
+   * and 16px text on a phone, 32px and 14px from md; the raised surface at
+   * e1 with no border, a 1px accent ring at 50% and a 3px halo at 12% on
+   * focus.
+   */
+  field: { height: 32, phoneHeight: 44, paddingX: 10, text: "sm", phoneText: "base", radius: "md", ringMix: 50, haloMix: 12, disabledOpacity: 0.7 },
+
+  /** onecamp-fe app/globals.css @utility chip: 22px, r6, 12/510, the hover overlay in a hairline. */
+  chip: { height: 22, paddingX: 8, text: "2xs", weight: 510, radius: "sm" },
+
+  /** onecamp-fe cards (design v3): r12 at e1, no border. */
+  card: { radius: "lg", elevation: "e1" },
+
+  /** onecamp-fe app/globals.css @theme MOTION: press 90, hover 140, pop 180, panel 240, spring 220, page 320. */
+  motion: {
+    duration: 140,
+    ease: "cubic-bezier(0.22, 1, 0.36, 1)",
+    easeInOut: "cubic-bezier(0.65, 0, 0.35, 1)",
+    spring: "cubic-bezier(0.3, 1.35, 0.5, 1)",
+    durations: { press: 90, hover: 140, pop: 180, panel: 240, spring: 220, page: 320 },
+  },
 
   /** onecamp-fe public/logo.svg: a bare ring, no tile, one literal colour in both themes. */
   logo: { viewBox: 512, r: 176, stroke: 56, colour: "#c84f00" },
 
-  /** onecamp-fe components/navigationBar/desktop/desktopNavigationTopBar.tsx: h-12 on bg-canvas. */
+  /** onecamp-fe components/navigationBar/desktop/desktopNavigationTopBar.tsx: h-12 on the frame. */
   topBar: { height: 48 },
 
-  /** onecamp-fe app/globals.css: svg.lucide[stroke-width="2"] { stroke-width: 1.5 }. */
-  icon: { stroke: 1.5 },
-
-  /** onecamp-fe app/globals.css @theme: shadows only for what floats. */
-  shadow: { popover: "0 4px 16px rgb(0 0 0 / 0.08)", dialog: "0 16px 48px rgb(0 0 0 / 0.16)" },
+  /** onecamp-fe app/globals.css: one rendered 1.25px stroke whatever the size (stroke-width = 30 / size). */
+  icon: { renderedStroke: 1.25 },
 } as const
 
 export type TypeStep = keyof typeof APP.type

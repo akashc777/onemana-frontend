@@ -42,7 +42,8 @@ const PAIRS: [fg: string, bg: string, min: number][] = [
   ["brand-ink", "brand-soft", 4.5],
   ["brand-foreground", "brand", 4.5],
   ["agent-foreground", "agent", 4.5],
-  ["agent", "agent-muted", 4.5],
+  // An agent tag is agent-i on agent-t (design v3).
+  ["agent-ink", "agent-muted", 4.5],
   // A filled button against the page, and the focus ring: non-text, 3:1.
   ["brand", "background", 3],
   ["success", "background", 3],

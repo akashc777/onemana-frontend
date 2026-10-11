@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { fontDisplay, fontMono, fontRupee, fontRupeeDisplay, fontSans } from "@/lib/fonts";
+import { fontMono, fontRupee, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
 import { jsonLdScript } from "@/lib/jsonLd";
@@ -99,7 +99,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       lang="en"
-      className={`${fontSans.variable} ${fontMono.variable} ${fontDisplay.variable} ${fontRupee.variable} ${fontRupeeDisplay.variable}`}
+      className={`${fontSans.variable} ${fontMono.variable} ${fontRupee.variable}`}
       suppressHydrationWarning
     >
       {/* font-sans, not Inter's own class: the stack puts the one-glyph rupee

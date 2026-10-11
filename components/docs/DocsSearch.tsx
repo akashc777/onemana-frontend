@@ -130,8 +130,8 @@ export function DocsSearch({ className = "" }: { className?: string }) {
         Search the docs
       </label>
       <svg aria-hidden viewBox="0 0 16 16" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground">
-        <circle cx="7" cy="7" r="4.25" fill="none" stroke="currentColor" strokeWidth="1.17" />
-        <path d="M10.25 10.25L13.5 13.5" stroke="currentColor" strokeWidth="1.17" strokeLinecap="round" />
+        <circle cx="7" cy="7" r="4.25" fill="none" stroke="currentColor" strokeWidth="1.254" />
+        <path d="M10.25 10.25L13.5 13.5" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" />
       </svg>
       <input
         ref={field}

@@ -8,36 +8,36 @@
      table, lib/appSystem.ts, which mirrors the app; lib/tailwindAppSystem.ts
      writes them into :root and .dark. Change a colour there, in step with
      the app. Values are space-separated sRGB so Tailwind can add alpha. */
-  /* .hover-lift's shadow: a card a pixel off the page, not floating. */
-  --shadow-lift: 0 1px 2px rgb(20 22 26 / 0.04), 0 6px 16px -6px rgb(20 22 26 / 0.12);
+  /* .hover-lift's shadow: e2, a card a pixel off the page (design v3). */
+  --shadow-lift: var(--e-e2);
   color-scheme: light;
 }
 
 .dark {
-  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 20px -8px rgb(0 0 0 / 0.6);
+  --shadow-lift: var(--e-e2);
   color-scheme: dark;
 }
 
-/* Headings take the display face, as the app's do: which face is a heading
-   is a system decision, not one for each component to remember. Inter Tight
-   at 600 and at the font's own spacing, as the app sets its titles; the
-   display sizes that are larger than any the app has carry the app's one
-   tightening step in their size (tailwind.config.ts). */
+/* Headings are Inter Display (the owner's choice of 11 Oct 2026): the same
+   Inter at its opsz 32 cut, at 600, with the tracking each size carries
+   (tailwind.config.ts, Inter's own metrics). It retired Inter Tight, whose
+   built-in tightening plus our tracking crushed the hero. */
+h1, h2, h3, .font-display {
+  font-family: var(--font-rupee), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+}
 h1, h2, h3 {
-  font-family: var(--font-rupee-display), var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
-  letter-spacing: normal;
   text-wrap: balance;
 }
 
 /* A heading set at a text size (a card's title, a group's label, a plan's
-   name) takes the text face at normal tracking. Inter Tight is drawn for 20 px
-   and up; at 14 px with the display tracking its words ran together: the
-   template pages read "Firstdraft", "Finaldelivery" and "Ataglance". The
-   size class decides it, so no call site has to remember font-sans. */
+   name) takes the text cut and the weight of an app heading (590), with its
+   size's own tracking. */
 :is(h1, h2, h3, h4):is(.text-body, .text-small, .text-caption, .text-base, .text-sm, .text-xs) {
   font-family: var(--font-rupee), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: normal;
+  font-variation-settings: normal;
+  font-weight: 590;
 }
 
 /* Paragraphs avoid a lone last word (Web Interface Guidelines, typography). */
@@ -60,26 +60,27 @@ html {
 
 body {
   @apply bg-canvas font-sans text-foreground antialiased;
-  /* Inter as the app draws it: its own glyphs, contextual alternates off. */
-  font-feature-settings: "calt" 0;
-  text-rendering: optimizeLegibility;
+  /* Inter as the app draws it (design v3): its optical sizes, cv11 ss01 ss03,
+     a word gap that gives back what the tracking takes, and no
+     optimizeLegibility, which ran words together on Linux at 1x. */
+  font-optical-sizing: auto;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  word-spacing: 0.01em;
 }
 
 /* The app's selection: a tint of the accent mixed into the page, under the
    text's own ink. */
 ::selection {
-  background: color-mix(in oklab, rgb(var(--brand)) 26%, rgb(var(--background)));
+  background: color-mix(in oklab, rgb(var(--brand)) 22%, rgb(var(--background)));
   color: rgb(var(--foreground));
 }
 
 /* One visible focus state for everything a keyboard can reach, in the accent:
-   the ring is one of the few places the accent is allowed. The app's ring
-   (ring-2 ring-ring/70 ring-offset-1), drawn as an outline so forced-colours
-   mode still shows it. A filled button takes a thinner one 2px off its fill
-   (components/ui/Button.tsx). */
+   the app's ring (design v3), 2px of the accent 2px off, drawn as an outline
+   so forced-colours mode still shows it. */
 :focus-visible {
-  outline: 2px solid rgb(var(--ring) / 0.7);
-  outline-offset: 1px;
+  outline: 2px solid rgb(var(--ring));
+  outline-offset: 2px;
   border-radius: 4px;
 }
 
@@ -104,35 +105,25 @@ body {
   }
   @media (min-width: 768px) {
     .site-sheet {
-      @apply mx-2 mb-2 rounded-lg border border-border;
+      @apply mx-2 mb-2 rounded-lg shadow-sheet;
       overflow: clip;
     }
   }
 
-  /* The app's navigation marks (its globals.css .nav-active and .nav-idle):
-     the current place is the soft accent ground taken a step deeper with the
-     accent, and a 2px bar of the accent at its start; hover is a step of
-     ink over the canvas. */
+  /* The app's navigation marks (design v3): the current place is a raised
+     chip at e-sel in ink at 510, hover the alpha overlay. */
   .nav-active {
     position: relative;
-    background: color-mix(in oklab, rgb(var(--brand)) 12%, rgb(var(--brand-soft)));
+    background: rgb(var(--card));
+    box-shadow: var(--e-sel);
     color: rgb(var(--foreground));
-  }
-  .nav-active::before {
-    content: "";
-    position: absolute;
-    inset-block: 6px;
-    inset-inline-start: 0;
-    width: 2px;
-    border-start-end-radius: 2px;
-    border-end-end-radius: 2px;
-    background: rgb(var(--brand));
+    font-weight: 510;
   }
   .nav-idle {
     color: rgb(var(--muted-foreground));
   }
   .nav-idle:hover {
-    background: color-mix(in oklab, rgb(var(--foreground)) 6%, rgb(var(--canvas)));
+    background: var(--hover-c);
     color: rgb(var(--foreground));
   }
 
@@ -143,21 +134,21 @@ body {
 
   /* The app's buttons as classes, for a form that draws its own <button>
      (components/ui/Button.tsx has the reasons): btn-brand is the app's
-     default, the accent fill; btn-ghost its outline; btn-primary its
-     secondary, a muted fill. The shape is ui-btn (lib/tailwindAppSystem.ts). */
+     primary, btn-primary and btn-ghost its secondary. The shape and the
+     elevation are ui-btn (lib/tailwindAppSystem.ts). */
   .btn-primary {
-    @apply ui-btn ui-btn-md bg-muted text-foreground hover:bg-muted/80;
+    @apply ui-btn ui-btn-md ui-btn-secondary;
   }
 
   .btn-brand {
-    @apply ui-btn ui-btn-md ui-btn-filled bg-brand-ink text-brand-foreground hover:bg-brand-ink/90;
+    @apply ui-btn ui-btn-md ui-btn-primary;
   }
 
   .btn-ghost {
-    @apply ui-btn ui-btn-md border border-border-strong bg-background text-foreground hover:bg-highlight;
+    @apply ui-btn ui-btn-md ui-btn-secondary;
   }
 
-  /* Structure is a hairline, never a shadow. */
+  /* A card rests at e1 (design v3). */
   .card {
     @apply ui-card p-6;
   }
@@ -227,15 +218,15 @@ body {
     --tw-prose-bold: rgb(var(--foreground));
     --tw-prose-counters: rgb(var(--muted-foreground));
     --tw-prose-bullets: rgb(var(--faint));
-    --tw-prose-hr: rgb(var(--border));
+    --tw-prose-hr: var(--line-c);
     --tw-prose-quotes: rgb(var(--muted-foreground));
-    --tw-prose-quote-borders: rgb(var(--border-strong));
+    --tw-prose-quote-borders: var(--line-3-c);
     --tw-prose-captions: rgb(var(--muted-foreground));
     --tw-prose-code: rgb(var(--foreground));
     --tw-prose-pre-code: rgb(var(--foreground));
     --tw-prose-pre-bg: rgb(var(--muted));
-    --tw-prose-th-borders: rgb(var(--border-strong));
-    --tw-prose-td-borders: rgb(var(--border));
+    --tw-prose-th-borders: var(--line-3-c);
+    --tw-prose-td-borders: var(--line-c);
   }
 
   .prose :where(h1, h2, h3, h4):not(:where([class~="not-prose"] *)) {
@@ -261,7 +252,7 @@ body {
   }
 
   .prose :where(pre) {
-    border: 1px solid rgb(var(--border));
+    border: 1px solid var(--line-c);
     border-radius: 10px;
   }
 
@@ -324,7 +315,8 @@ body {
   }
 
   .reading :where(h2, h3, h4) {
-    font-family: var(--font-display-face), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-rupee), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-variation-settings: "opsz" 32;
     color: rgb(var(--foreground));
     font-weight: 600;
     max-width: var(--reading-measure);
@@ -396,7 +388,7 @@ body {
   .reading :where(code):not(:where(pre *)) {
     font-size: 0.8125em;
     padding: 0.15em 0.4em;
-    border: 1px solid rgb(var(--border));
+    border: 1px solid var(--line-c);
     border-radius: 4px;
     background-color: rgb(var(--muted));
     white-space: break-spaces;
@@ -413,7 +405,7 @@ body {
     align-items: flex-start;
     gap: 0.5rem;
     margin: 1.4em 0;
-    border: 1px solid rgb(var(--border));
+    border: 1px solid var(--line-c);
     border-radius: 10px;
     background-color: rgb(var(--muted));
   }
@@ -440,7 +432,7 @@ body {
     margin: 0.5rem 0.5rem 0.5rem 0;
     min-height: 1.75rem;
     padding: 0 0.625rem;
-    border: 1px solid rgb(var(--border-strong));
+    border: 1px solid var(--line-3-c);
     border-radius: 6px;
     background-color: rgb(var(--card));
     color: rgb(var(--muted-foreground));
@@ -466,7 +458,7 @@ body {
   }
   .reading .code-copy:hover {
     color: rgb(var(--foreground));
-    background-color: rgb(var(--highlight));
+    background-color: var(--press-c);
   }
   .reading .code-copy[data-copied] {
     color: rgb(var(--success-ink));
@@ -506,7 +498,7 @@ body {
   .reading :where(blockquote) {
     margin: 1.4em 0;
     padding-left: 1em;
-    border-left: 2px solid rgb(var(--border-strong));
+    border-left: 2px solid var(--line-3-c);
     color: rgb(var(--muted-foreground));
     font-style: normal;
     font-weight: 400;
@@ -582,7 +574,7 @@ body {
 
   .reading :where(hr) {
     margin: 2.5em 0;
-    border-color: rgb(var(--border));
+    border-color: var(--line-c);
   }
 
   /* Figures: a hairline frame, the description under it. An image whose size
@@ -593,7 +585,7 @@ body {
   }
   .reading :where(img) {
     margin: 1.8em 0;
-    border: 1px solid rgb(var(--border));
+    border: 1px solid var(--line-c);
     border-radius: 10px;
   }
   .reading .article-figure img {

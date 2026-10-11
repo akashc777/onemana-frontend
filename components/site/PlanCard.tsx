@@ -75,7 +75,7 @@ export function PlanCard({
 export function PlanBenefit({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <svg className="mt-0.5 size-4 shrink-0 text-hue" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.46" aria-hidden="true">
+      <svg className="mt-0.5 size-4 shrink-0 text-hue" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.564" aria-hidden="true">
         <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       {children}

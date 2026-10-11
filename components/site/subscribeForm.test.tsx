@@ -26,9 +26,9 @@ describe("the email form", () => {
         expect(input).toContain("ui-field")
     })
 
-    it("asks with an outline button, not a second filled one", () => {
+    it("asks with a secondary button (raised at e1), not a second filled one", () => {
         expect(button).not.toContain("btn-primary")
-        expect(button).toContain("border-border-strong")
+        expect(button).toContain("ui-btn-secondary")
     })
 
     it("announces its answer where it appears", () => {

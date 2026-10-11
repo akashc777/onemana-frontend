@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
-import { APP } from "./lib/appSystem";
-import appSystem, { appTheme } from "./lib/tailwindAppSystem";
+import { APP, tracking } from "./lib/appSystem";
+import appSystem, { alphaColour, appTheme } from "./lib/tailwindAppSystem";
 
 const config: Config = {
   darkMode: "class",
@@ -17,22 +17,31 @@ const config: Config = {
         },
         /** Placeholders and disabled text only: it is not body-text contrast. */
         faint: "rgb(var(--faint) / <alpha-value>)",
+        // Hairlines are ink at a low alpha (design v3): border is --line,
+        // strong is --line-3, so one token reads on the page, a card and a menu.
         border: {
-          DEFAULT: "rgb(var(--border) / <alpha-value>)",
-          subtle: "rgb(var(--border) / 0.6)",
-          strong: "rgb(var(--border-strong) / <alpha-value>)",
+          DEFAULT: alphaColour("line"),
+          subtle: alphaColour("line", 0.6),
+          strong: alphaColour("line-3"),
         },
+        line: { DEFAULT: alphaColour("line"), 2: alphaColour("line-2"), 3: alphaColour("line-3") },
+        hover: alphaColour("hover"),
+        press: alphaColour("press"),
+        sel: alphaColour("sel"),
+        pop: "rgb(var(--pop) / <alpha-value>)",
+        "ink-4": "rgb(var(--ink-4) / <alpha-value>)",
         accent: {
           DEFAULT: "rgb(var(--accent) / <alpha-value>)",
           foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
         },
         card: "rgb(var(--card) / <alpha-value>)",
-        /** The hover and pressed step, the app's bg-highlight. */
-        highlight: "rgb(var(--highlight) / <alpha-value>)",
+        /** The pressed step, the app's bg-highlight: --press as an alpha. */
+        highlight: alphaColour("press"),
         agent: {
           DEFAULT: "rgb(var(--agent) / <alpha-value>)",
           foreground: "rgb(var(--agent-foreground) / <alpha-value>)",
           muted: "rgb(var(--agent-muted) / <alpha-value>)",
+          ink: "rgb(var(--agent-ink) / <alpha-value>)",
         },
         ring: "rgb(var(--ring) / <alpha-value>)",
         // Pointed at the tokens, never hardcoded, so the palette in globals.css
@@ -84,33 +93,32 @@ const config: Config = {
       // A border with no colour of its own is a hairline in the token, as the
       // app's base layer has it (* { border-border }), not Tailwind's gray-200.
       borderColor: {
-        DEFAULT: "rgb(var(--border))",
+        DEFAULT: "var(--line-c)",
       },
       fontFamily: {
         // The one-glyph rupee faces come first (lib/fonts.ts): their
         // unicode-range is U+20B9 alone, so they draw ₹ and nothing else.
         sans: ["var(--font-rupee)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["var(--font-rupee-display)", "var(--font-display-face)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        // Inter Display: the same Inter at its opsz 32 cut (globals.css sets
+        // the axis on headings and .font-display). Inter Tight is retired.
+        display: ["var(--font-rupee)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
-      // The marketing scale (DESIGN.md, Type). Size / line height / tracking.
-      // Display sizes are larger than any the app has (a hero is a hero);
-      // above the app's largest title (36 px) they take its one tightening
-      // step, and at or under it the font's own spacing, as the app's do.
-      // The display headline steps down on a tablet and a phone; a page's
-      // title (h1) is "title" on a phone; a reading page's title (a guide, a
-      // policy, the account) is title-sm on a phone and title from sm.
+      // The marketing scale (DESIGN_V3.md §3.6). Size / line height /
+      // tracking. The sizes are the site's own layouts; the tracking is
+      // Inter's for each size, and the hero's display steps take the spec's
+      // -0.024em (Inter Display at 600).
       fontSize: {
-        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: APP.heading.tightStep }],
-        "display-md": ["3.5rem", { lineHeight: "3.6875rem", letterSpacing: APP.heading.tightStep }],
-        "display-sm": ["2.75rem", { lineHeight: "2.875rem", letterSpacing: APP.heading.tightStep }],
-        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: APP.heading.tightStep }],
-        title: ["2.25rem", { lineHeight: "2.625rem", letterSpacing: APP.heading.tracking }],
-        "title-sm": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: APP.heading.tracking }],
-        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: APP.heading.tracking }],
+        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: `${APP.marketing.hero.tracking}em` }],
+        "display-md": ["3.5rem", { lineHeight: "3.6875rem", letterSpacing: `${APP.marketing.hero.tracking}em` }],
+        "display-sm": ["2.75rem", { lineHeight: "2.875rem", letterSpacing: `${APP.marketing.hero.tracking}em` }],
+        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: `${tracking(48)}em` }],
+        title: ["2.25rem", { lineHeight: "2.625rem", letterSpacing: `${tracking(36)}em` }],
+        "title-sm": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: `${tracking(30)}em` }],
+        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: `${tracking(32)}em` }],
         h3: appTheme.fontSize.h3,
-        "body-lg": ["1.125rem", { lineHeight: "1.75rem" }],
-        body: ["1rem", { lineHeight: "1.625rem" }],
+        "body-lg": ["1.125rem", { lineHeight: "1.75rem", letterSpacing: `${tracking(18)}em` }],
+        body: ["1rem", { lineHeight: "1.625rem", letterSpacing: `${tracking(16)}em` }],
         small: appTheme.fontSize.small,
         caption: appTheme.fontSize.caption,
       },
@@ -118,10 +126,10 @@ const config: Config = {
         content: "1120px",
         prose: "720px",
       },
-      // The app's radii, shadows and timing, from the one table
-      // (lib/appSystem.ts, built by lib/tailwindAppSystem.ts). 4 chips, 6
-      // controls, 10 surfaces, 14 dialogs; shadows only for what floats;
-      // 120 ms on one curve, and the spring for a knob that travels.
+      // The app's radii, elevation and timing, from the one table
+      // (lib/appSystem.ts, built by lib/tailwindAppSystem.ts), design v3:
+      // 4 kbd, 6 chips, 8 controls, 12 cards, 16 dialogs, 20 the canvas; the
+      // e1 to e4 ladder; 140 ms on the out-curve, the spring for a knob.
       borderRadius: appTheme.borderRadius,
       boxShadow: appTheme.boxShadow,
       transitionDuration: appTheme.transitionDuration,
@@ -164,13 +172,13 @@ const config: Config = {
         },
       },
       animation: {
-        "popover-in": "popover-in 160ms cubic-bezier(.2,.8,.2,1) both",
+        "popover-in": "popover-in 180ms cubic-bezier(.22,1,.36,1) both",
         "spark-out": "spark-out 460ms cubic-bezier(0.3,1.35,0.5,1) both",
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
         "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",
         "icon-pop": "icon-pop 0.35s ease-out",
-        spring: "spring-pop 220ms cubic-bezier(0.2,0.8,0.2,1)",
+        spring: "spring-pop 220ms cubic-bezier(0.22,1,0.36,1)",
       },
     },
   },

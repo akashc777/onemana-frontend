@@ -5,8 +5,8 @@ import { renderToString } from "react-dom/server"
 
 import { buttonClasses } from "@/components/ui/Button"
 import { OneCampLogo } from "@/components/site/BrandMarks"
-import { APP } from "@/lib/appSystem"
-import { appComponents, appTheme } from "@/lib/tailwindAppSystem"
+import { ALPHA, APP, ELEVATION, tracking } from "@/lib/appSystem"
+import { appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
 
 /**
  * The site is built from the one table (lib/appSystem.ts), which mirrors the
@@ -38,10 +38,31 @@ describe("the theme is the table's", () => {
     }
   })
 
-  it("shadows, and nothing in the page has one", () => {
-    expect(appTheme.boxShadow.popover).toBe(APP.shadow.popover)
-    expect(appTheme.boxShadow.dialog).toBe(APP.shadow.dialog)
-    for (const flat of ["sm", "card", "product"] as const) expect(appTheme.boxShadow[flat]).toBe("none")
+  // Design v3 reversed "nothing in the page has a shadow": every surface
+  // sits on the app's ladder, per mode, and the old names fold onto it.
+  it("the elevation ladder, per mode, and the old names folded onto it", () => {
+    for (const mode of ["light", "dark"] as const) {
+      const tokens = colourTokens(mode)
+      for (const [step, value] of Object.entries(ELEVATION[mode])) expect(tokens[`--e-${step}`], `${mode} --e-${step}`).toBe(value)
+    }
+    expect(ELEVATION.light.e1).toBe("0 0 0 1px rgb(16 18 26 / 0.09), 0 1px 2px rgb(16 18 26 / 0.05)")
+    expect(ELEVATION.dark.e1).toMatch(/^inset 0 1px 0 rgb\(255 255 255 \/ 0\.04\)/)
+    const s = appTheme.boxShadow
+    expect([s.e1, s.sel, s.e2, s.e3, s.e4, s.sheet]).toEqual(["var(--e-e1)", "var(--e-sel)", "var(--e-e2)", "var(--e-e3)", "var(--e-e4)", "var(--e-sheet)"])
+    expect([s.card, s.popover, s.dialog, s.product]).toEqual(["var(--e-e1)", "var(--e-e3)", "var(--e-e4)", "var(--e-e4)"])
+  })
+
+  it("the alpha lines and overlays, with their alphas", () => {
+    for (const mode of ["light", "dark"] as const) {
+      const tokens = colourTokens(mode)
+      for (const [name, [rgb, a]] of Object.entries(ALPHA[mode])) {
+        expect(tokens[`--${name}`]).toBe(rgb.join(" "))
+        expect(tokens[`--${name}-a`]).toBe(String(a))
+        expect(tokens[`--${name}-c`]).toBe(`rgb(${rgb.join(" ")} / ${a})`)
+      }
+    }
+    expect(ALPHA.light.line[1]).toBe(0.075)
+    expect(ALPHA.dark.line[1]).toBe(0.065)
   })
 
   it("motion", () => {
@@ -50,12 +71,22 @@ describe("the theme is the table's", () => {
     expect(appTheme.transitionTimingFunction.spring).toBe(APP.motion.spring)
   })
 
-  it("the app's text steps under the site's names", () => {
-    const pairs = { caption: "xs", small: "sm", h3: "xl" } as const
+  it("the app's text steps under the site's names, with Inter's tracking", () => {
+    const pairs = { caption: "xs", small: "sm" } as const
     for (const [site, app] of Object.entries(pairs)) {
-      const [size, { lineHeight }] = appTheme.fontSize[site as keyof typeof pairs]
+      const [size, { lineHeight, letterSpacing }] = appTheme.fontSize[site as keyof typeof pairs]
       expect([rem(size), rem(lineHeight)], `text-${site} is the app's text-${app}`).toEqual(APP.type[app])
+      expect(letterSpacing).toBe(`${tracking(rem(size))}em`)
     }
+    const [h3, { lineHeight, letterSpacing, fontWeight }] = appTheme.fontSize.h3
+    expect([rem(h3), rem(lineHeight)]).toEqual(APP.marketing.h3.desktop)
+    expect(letterSpacing).toBe("-0.019em")
+    expect(fontWeight).toBe("590")
+  })
+
+  it("Inter's tracking formula, at the spec's table", () => {
+    const table: Array<[number, number]> = [[11, 0.005], [12, 0], [13, -0.003], [14, -0.006], [15, -0.009], [16, -0.011], [20, -0.017], [24, -0.019], [32, -0.021], [44, -0.022]]
+    for (const [px, em] of table) expect(Math.abs(tracking(px) - em), `${px}px`).toBeLessThanOrEqual(0.001)
   })
 
   it("tailwind.config.ts takes them from the table rather than writing its own", () => {
@@ -65,10 +96,10 @@ describe("the theme is the table's", () => {
     }
     for (const key of ["small", "caption", "h3"]) expect(config).toContain(`${key}: appTheme.fontSize.${key}`)
     expect(config).toMatch(/plugins: \[[^\]]*appSystem\]/)
-    // Display sizes: the app's tightening step above its largest title, its
-    // own spacing at or under it.
-    for (const m of config.matchAll(/"?([\w-]+)"?: \["([\d.]+)rem", \{ lineHeight: "[\d.]+rem", letterSpacing: ([^ }]+) \}\]/g)) {
-      const want = rem(m[2]) > APP.heading.largestTitle ? "APP.heading.tightStep" : "APP.heading.tracking"
+    // Display sizes: the hero's three steps take the spec's -0.024em, every
+    // other size Inter's own tracking for it, from the table's formula.
+    for (const m of config.matchAll(/"?([\w-]+)"?: \["([\d.]+)rem", \{ lineHeight: "[\d.]+rem", letterSpacing: `\$\{([^}]+)\}em` \}\]/g)) {
+      const want = m[1].startsWith("display") ? "APP.marketing.hero.tracking" : `tracking(${rem(m[2])})`
       expect(m[3], `text-${m[1]}`).toBe(want)
     }
   })
@@ -76,60 +107,78 @@ describe("the theme is the table's", () => {
 
 describe("the components are the app's shapes", () => {
   for (const [name, s] of Object.entries(APP.button.sizes)) {
-    it(`ui-btn-${name}: ${s.height}px from md, ${s.phoneHeight}px on a phone, filled or outlined`, () => {
+    it(`ui-btn-${name}: ${s.height}px from md, ${s.phoneHeight}px on a phone`, () => {
       const c = comps[`.ui-btn-${name}`] as Record<string, unknown>
       expect(rem((c[MD] as Record<string, unknown>).minHeight)).toBe(s.height)
       expect(rem(c.minHeight)).toBe(s.phoneHeight)
       const [py, pxv] = String(c.padding).split(" ").map(rem)
       expect(pxv).toBe(s.paddingX)
       expect([rem(c.fontSize), rem(c.lineHeight)]).toEqual(APP.type[s.text])
-      // An outline's two border pixels still fit, so filled and outlined match.
-      expect(2 * py + APP.type[s.text][1] + 2).toBeLessThanOrEqual(s.height)
+      expect(2 * py + APP.type[s.text][1]).toBeLessThanOrEqual(s.height)
     })
   }
 
-  it("ui-btn: radius, weight, press, disabled fade and timing", () => {
-    const c = comps[".ui-btn"] as Record<string, unknown>
-    expect(rem(c.borderRadius)).toBe(APP.radius[APP.button.radius])
-    expect(c.fontWeight).toBe(String(APP.button.weight))
-    expect((c["&:disabled, &[aria-disabled='true']"] as Record<string, string>).opacity).toBe(String(APP.button.disabledOpacity))
-    expect(c.transitionDuration).toBe(`${APP.motion.duration}ms`)
-    const filled = comps[".ui-btn-filled:focus-visible"] as Record<string, string>
-    expect(filled.outlineWidth).toBe(`${APP.button.filledFocus.width}px`)
-    expect(filled.outlineOffset).toBe(`${APP.button.filledFocus.offset}px`)
+  it("the spec's sizes: sm 28, md 32, lg 40, xl 46 at r10", () => {
+    expect(Object.values(APP.button.sizes).map((s) => s.height)).toEqual([28, 32, 40, 46])
+    expect(rem((comps[".ui-btn-xl"] as Record<string, unknown>).borderRadius)).toBe(10)
   })
 
-  it("ui-field: the app's Input", () => {
+  it("ui-btn: radius 8, weight 510, a half-pixel press in 90ms, disabled fade, the 2px ring 2px off", () => {
+    const c = comps[".ui-btn"] as Record<string, unknown>
+    expect(rem(c.borderRadius)).toBe(8)
+    expect(c.fontWeight).toBe("510")
+    expect(c["&:active"]).toEqual({ transform: "translateY(0.5px)", transitionDuration: "90ms" })
+    expect((c["&:disabled, &[aria-disabled='true']"] as Record<string, string>).opacity).toBe(String(APP.button.disabledOpacity))
+    expect(c.transitionDuration).toBe("140ms")
+    expect(c["&:focus-visible"]).toEqual({ outline: "2px solid rgb(var(--ring))", outlineOffset: "2px" })
+  })
+
+  it("ui-btn-primary: the accent with its inner highlight, light and dark; ui-btn-secondary: raised at e1, e2 on hover", () => {
+    const p = comps[".ui-btn-primary"] as Record<string, unknown>
+    expect(p.backgroundColor).toBe("rgb(var(--brand))")
+    expect(p.boxShadow).toBe(APP.button.primaryShadow.light)
+    expect(String(p.boxShadow)).toMatch(/^inset 0 1px 0 rgb\(255 255 255 \/ 0\.2\)/)
+    expect((comps[".dark .ui-btn-primary"] as Record<string, unknown>).boxShadow).toBe(APP.button.primaryShadow.dark)
+    const sec = comps[".ui-btn-secondary"] as Record<string, unknown>
+    expect(sec.boxShadow).toBe("var(--e-e1)")
+    expect(sec["&:hover"]).toEqual({ boxShadow: "var(--e-e2)" })
+  })
+
+  it("ui-field: the app's Input, raised at e1 with a halo on focus", () => {
     const f = comps[".ui-field"] as Record<string, unknown>
     expect(rem(f.height)).toBe(APP.field.phoneHeight)
-    expect(rem((f[MD] as Record<string, unknown>).height)).toBe(APP.field.height)
+    expect(rem((f[MD] as Record<string, unknown>).height)).toBe(32)
     expect(rem(f.fontSize)).toBe(APP.type[APP.field.phoneText][0])
     expect(rem((f[MD] as Record<string, unknown>).fontSize)).toBe(APP.type[APP.field.text][0])
-    expect(rem(f.paddingLeft)).toBe(APP.field.paddingX)
-    expect(rem(f.borderRadius)).toBe(APP.radius[APP.field.radius])
-    expect(f.backgroundColor).toBe("transparent")
-    expect((f["&:focus-visible"] as Record<string, string>).boxShadow).toContain(`/ ${APP.field.ringAlpha})`)
+    expect(rem(f.paddingLeft)).toBe(10)
+    expect(rem(f.borderRadius)).toBe(8)
+    expect(f.backgroundColor).toBe("rgb(var(--card))")
+    expect(f.boxShadow).toBe("var(--e-e1)")
+    expect((f["&:focus-visible"] as Record<string, string>).boxShadow).toBe("0 0 0 1px color-mix(in oklab, rgb(var(--brand)) 50%, transparent), 0 0 0 3px color-mix(in oklab, rgb(var(--brand)) 12%, transparent)")
   })
 
-  it("ui-chip: the app's Badge", () => {
+  it("ui-chip: the app's chip, 22px r6 12/510 on the hover overlay in a hairline", () => {
     const c = comps[".ui-chip"] as Record<string, unknown>
-    expect(rem(c.borderRadius)).toBe(APP.radius[APP.chip.radius])
-    expect(String(c.padding).split(" ").map(rem)).toEqual([APP.chip.paddingY, APP.chip.paddingX])
-    expect(rem(c.fontSize)).toBe(APP.type[APP.chip.text][0])
-    expect(c.backgroundColor).toBe("rgb(var(--highlight))")
+    expect(rem(c.height)).toBe(22)
+    expect(rem(c.borderRadius)).toBe(6)
+    expect(rem(c.fontSize)).toBe(12)
+    expect(c.fontWeight).toBe("510")
+    expect(c.backgroundColor).toBe("var(--hover-c)")
+    expect(c.boxShadow).toBe("inset 0 0 0 1px var(--line-c)")
   })
 
-  it("ui-card: the app's Card", () => {
+  it("ui-card: r12 at e1, no border", () => {
     const c = comps[".ui-card"] as Record<string, unknown>
-    expect(rem(c.borderRadius)).toBe(APP.radius[APP.card.radius])
-    expect(c.border).toBe(`${APP.card.border}px solid rgb(var(--border))`)
+    expect(rem(c.borderRadius)).toBe(12)
+    expect(c.boxShadow).toBe("var(--e-e1)")
+    expect(c.border).toBeUndefined()
   })
 })
 
 describe("nothing is written around the table", () => {
   it("every Button is ui-btn, in one of the table's sizes, with only colour in its variant", () => {
     for (const variant of ["brand", "primary", "ghost", "subtle"] as const) {
-      for (const size of ["sm", "md", "lg"] as const) {
+      for (const size of ["sm", "md", "lg", "xl"] as const) {
         const cls = buttonClasses(variant, size).split(/\s+/)
         expect(cls).toContain("ui-btn")
         expect(cls).toContain(`ui-btn-${size}`)
@@ -138,11 +187,11 @@ describe("nothing is written around the table", () => {
     }
   })
 
-  it("the accent button fills the way the app's default does", () => {
-    const cls = buttonClasses("brand", "md")
-    expect(cls).toContain("bg-brand-ink")
-    expect(cls).toContain(`hover:bg-brand-ink/${APP.button.hoverAlpha * 100}`)
-    expect(cls).toContain("ui-btn-filled")
+  it("the accent button is the app's primary, and the others its secondary and ghost", () => {
+    expect(buttonClasses("brand", "md")).toContain("ui-btn-primary")
+    expect(buttonClasses("primary", "md")).toContain("ui-btn-secondary")
+    expect(buttonClasses("ghost", "md")).toContain("ui-btn-secondary")
+    expect(buttonClasses("subtle", "md")).toMatch(/hover:bg-hover/)
   })
 
   it("a text field is ui-field, not a hand-drawn box", () => {
@@ -159,24 +208,28 @@ describe("nothing is written around the table", () => {
     expect(offenders).toEqual([])
   })
 
-  it("the focus ring is the app's: 2px at 70% of the accent, 1px off", () => {
+  it("the focus ring is the app's: 2px of the accent, 2px off", () => {
     const css = read("app/globals.css")
     const at = css.indexOf("\n:focus-visible {")
     const rule = css.slice(at, css.indexOf("}", at))
-    expect(rule).toContain(`outline: ${APP.button.focus.width}px solid rgb(var(--ring) / ${APP.button.focus.alpha})`)
+    expect(rule).toContain(`outline: ${APP.button.focus.width}px solid rgb(var(--ring))`)
     expect(rule).toContain(`outline-offset: ${APP.button.focus.offset}px`)
   })
 
-  it("text is drawn as the app draws Inter", () => {
-    expect(read("app/globals.css")).toContain(`font-feature-settings: ${APP.text.featureSettings};`)
+  it("text is drawn as the app draws Inter: features, optical sizes, word gap, no optimizeLegibility", () => {
+    const css = read("app/globals.css")
+    expect(css).toContain(`font-feature-settings: ${APP.text.featureSettings};`)
+    expect(css).toContain(`word-spacing: ${APP.text.wordSpacing};`)
+    expect(css).toContain("font-optical-sizing: auto;")
+    expect(css.replace(/\/\*[\s\S]*?\*\//g, "")).not.toMatch(/optimizeLegibility|"calt" 0/)
   })
 
-  it("headings are the app's weight at the font's own spacing", () => {
+  it("headings are Inter Display at 600", () => {
     const css = read("app/globals.css")
     const at = css.indexOf("\nh1, h2, h3 {")
     const rule = css.slice(at, css.indexOf("}", at))
     expect(rule).toContain(`font-weight: ${APP.heading.weight};`)
-    expect(rule).toContain(`letter-spacing: ${APP.heading.tracking};`)
+    expect(css).toMatch(new RegExp(`h1, h2, h3, \\.font-display \\{[^}]*"opsz" ${APP.heading.opsz}`))
     expect(css.replace(/\/\*[\s\S]*?\*\//g, ""), "a heading weight under 600 overrides it").not.toMatch(/\nh1 \{\s*font-weight: [1-5]00/)
   })
 })
@@ -209,12 +262,12 @@ describe("the frame is the app's", () => {
     expect(nav).not.toMatch(/<header className="[^"]*\bborder-b\b/)
   })
 
-  it("the page is a sheet on the canvas", () => {
+  it("the page is a sheet on the canvas, at e-sheet", () => {
     expect(read("app/layout.tsx")).toMatch(/className="site-sheet[\s"]/)
     expect(read("app/layout.tsx")).toMatch(/<body className="[^"]*\bbg-canvas\b/)
     const css = read("app/globals.css")
     const at = css.indexOf("@media (min-width: 768px) {\n    .site-sheet")
     expect(at, "the sheet's md rule").toBeGreaterThan(-1)
-    expect(css.slice(at, css.indexOf("}", at))).toMatch(/rounded-lg border border-border/)
+    expect(css.slice(at, css.indexOf("}", at))).toMatch(/rounded-lg shadow-sheet/)
   })
 })

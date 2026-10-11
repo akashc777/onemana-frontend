@@ -32,6 +32,19 @@ describe("shared tokens", () => {
     })
   }
 
+  // Design v3 (DESIGN_V3.md §3.2 to §3.5), the values onecamp-fe's
+  // app/sharedTokens.test.ts pins on the app's side, under this site's names.
+  it("is design v3's table", () => {
+    const hex = (t: [number, number, number]) => "#" + t.map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase()
+    const want = {
+      light: { background: "#FFFFFF", foreground: "#16171B", card: "#FFFFFF", pop: "#FFFFFF", muted: "#F8F9FA", "muted-foreground": "#5B5D65", faint: "#8A8C92", "ink-4": "#B9BBC0", canvas: "#F3F4F6", brand: "#CC4A0B", "brand-ink": "#C2410C", "brand-soft": "#FCEFE6", agent: "#5B63D6", "agent-muted": "#EEEFFC", "agent-ink": "#3B3FA6" },
+      dark: { background: "#0B0C0E", foreground: "#EEEEF0", card: "#1B1C1F", pop: "#1F2024", muted: "#0F1012", "muted-foreground": "#A8ABB1", faint: "#72747B", "ink-4": "#4A4C52", canvas: "#0B0C0E", brand: "#FF7A33", "brand-ink": "#FF8A4C", "brand-soft": "#2A1A10", "brand-foreground": "#0B0C0E", agent: "#9AA2F6", "agent-muted": "#1E2040", "agent-ink": "#C9CDFB" },
+    } as const
+    for (const mode of ["light", "dark"] as const) {
+      for (const [name, value] of Object.entries(want[mode])) expect(hex(SHARED[mode][name]), `${mode} --${name}`).toBe(value)
+    }
+  })
+
   it("light and dark carry the same names", () => {
     expect(Object.keys(SHARED.dark).sort()).toEqual(Object.keys(SHARED.light).sort())
   })

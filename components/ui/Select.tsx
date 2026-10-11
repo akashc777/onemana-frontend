@@ -121,7 +121,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.46"
+          strokeWidth="1.564"
         >
           <path d="M5 8l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -151,7 +151,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
               >
                 <span className="truncate">{opt.label}</span>
                 {isSelected && (
-                  <svg className="h-4 w-4 flex-shrink-0 text-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.46">
+                  <svg className="h-4 w-4 flex-shrink-0 text-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.564">
                     <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}

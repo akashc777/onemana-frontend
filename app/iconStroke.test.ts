@@ -3,9 +3,11 @@ import { join, resolve } from "node:path"
 import { describe, expect, it } from "vitest"
 
 /**
- * One icon stroke: 1.75 on the 24 grid (the bar's, and the app's Lucide
- * icons'), which is 1.46 on a 20 grid and 1.17 on a 16 grid, so a line is the
- * same weight at the same size whatever grid an icon was drawn on. Measured
+ * One icon stroke: design v3's one rendered 1.25px line (the app's Lucide
+ * icons, stroke-width = 30 / size). Icons beside text are 16px (below), so
+ * that is 1.875 on the 24 grid, 1.5625 on a 20 grid and 1.25 on a 16 grid:
+ * the same weight at the same size whatever grid an icon was drawn on. It was
+ * 1.75 on 24 (1.17px) before v3. Measured
  * before, a 16 px icon's line was 1.0 px (Glyphs, the menu, the theme switch),
  * 1.2 or 1.4 (the select's chevron, the plan ticks) or 1.5 (the docs and
  * account glyphs), and a 20 px tile's 1.25 or 1.9: the docs index's group
@@ -30,7 +32,7 @@ function tsx(dir: string, out: string[] = []): string[] {
 }
 
 describe("icons", () => {
-  it("have one stroke: 1.75 on the 24 grid, scaled to the grid they are drawn on", () => {
+  it("have one stroke: 1.875 on the 24 grid (1.25px at 16), scaled to the grid they are drawn on", () => {
     const offenders: string[] = []
     let icons = 0
     for (const f of [...tsx(join(ROOT, "app")), ...tsx(join(ROOT, "components"))]) {
@@ -43,7 +45,7 @@ describe("icons", () => {
         icons++
         for (const w of widths.length ? widths : [Number.NaN]) {
           const on24 = (w * 24) / grid
-          if (!(Math.abs(on24 - 1.75) <= 0.02)) offenders.push(`${f.slice(ROOT.length + 1)}: ${w} on a ${grid} grid (${on24.toFixed(2)} on 24)`)
+          if (!(Math.abs(on24 - 1.875) <= 0.02)) offenders.push(`${f.slice(ROOT.length + 1)}: ${w} on a ${grid} grid (${on24.toFixed(2)} on 24)`)
         }
       }
     }

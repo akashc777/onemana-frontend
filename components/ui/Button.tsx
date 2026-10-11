@@ -2,36 +2,35 @@ import Link from "next/link";
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 type Variant = "primary" | "brand" | "brandPremium" | "ghost" | "subtle";
-type Size = "sm" | "md" | "lg";
+type Size = "sm" | "md" | "lg" | "xl";
 
-// The app's Button (onecamp-fe components/ui/button.tsx), on this site's
-// names. The shape (radius, weight, sizes, press, disabled fade, timing) is
-// ui-btn and ui-btn-{size}, built from the one table (lib/appSystem.ts) by
-// lib/tailwindAppSystem.ts; the variants here are only colour. Keyboard focus
-// is the global ring (globals.css); a filled button takes a thin outline off
-// its fill instead (ui-btn-filled), because a 2px ring pressed against orange
-// reads as one thick slab.
+// The app's Button (onecamp-fe components/ui/button.tsx, design v3), on this
+// site's names. The shape and the elevation (radius, weight, sizes, press,
+// focus ring, the primary's inner highlight, the secondary's e1) are ui-btn,
+// ui-btn-{size} and ui-btn-{primary|secondary}, built from the one table
+// (lib/appSystem.ts) by lib/tailwindAppSystem.ts; nothing here writes them.
 const base = "ui-btn";
 
 const variants: Record<Variant, string> = {
-  /** The app's secondary: a muted fill, for an action that matters but is not the page's one primary. */
-  primary: "bg-muted text-foreground hover:bg-muted/80",
-  /** The app's default: the accent fill (--brand-ink, the app's --brand-text). One per view. */
-  brand: "ui-btn-filled bg-brand-ink text-brand-foreground hover:bg-brand-ink/90",
+  /** The app's secondary: the raised surface at e1, e2 under the cursor. */
+  primary: "ui-btn-secondary",
+  /** The app's primary: the accent with its inner highlight. One per view. */
+  brand: "ui-btn-primary",
   /** Kept as a name for older call sites; it is the same as brand now. */
-  brandPremium: "ui-btn-filled bg-brand-ink text-brand-foreground hover:bg-brand-ink/90",
-  /** The app's outline: the secondary action beside a primary one. */
-  ghost: "border border-border-strong bg-background text-foreground hover:bg-highlight",
-  /** The app's ghost: no ground until the pointer is on it. */
-  subtle: "text-foreground hover:bg-highlight",
+  brandPremium: "ui-btn-primary",
+  /** The app's secondary, beside a primary (was the outline). */
+  ghost: "ui-btn-secondary",
+  /** The app's ghost: ink-2, the hover overlay and ink under the pointer. */
+  subtle: "text-muted-foreground hover:bg-hover hover:text-foreground",
 };
 
-// The app's sm, default and lg; below md the two larger reach 44 px for a
-// finger, as the app's own fields do.
+// The app's sm (28), default (32), lg (40) and the marketing xl (46); below
+// md, md and lg reach 44 px for a finger, as the app's own fields do.
 const sizes: Record<Size, string> = {
   sm: "ui-btn-sm",
   md: "ui-btn-md",
   lg: "ui-btn-lg",
+  xl: "ui-btn-xl",
 };
 
 interface CommonProps {
