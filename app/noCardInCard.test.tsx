@@ -39,7 +39,8 @@ function nestedCards(html: string): string[] {
 describe("no card in a card", () => {
   it("the calculator's two totals sit on the page, not in a frame", () => {
     const html = renderToString(<CostCalculator lifetimeUsd={258} pricing={defaultPricing} />)
-    expect(html.match(/rounded-lg border border-(border|border-strong)/g)).toHaveLength(2)
+    // Design v3 (site.md C7): two raised cards side by side, neither inside the other.
+    expect(html.match(/rounded-2xl bg-card p-6 shadow-e[13]/g)).toHaveLength(2)
     expect(nestedCards(html)).toEqual([])
   })
 

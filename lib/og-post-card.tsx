@@ -75,6 +75,21 @@ export function PostOgCard({ eyebrow, title, meta, hue = "sky" }: { eyebrow: str
         color: OG.text,
       }}
     >
+      {/* The topic's own canvas in the right third (site.md OG3): its tint
+          lit by its strong cut, so each topic has a colour in a feed. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 820,
+          top: 40,
+          width: 440,
+          height: 550,
+          borderRadius: 32,
+          display: "flex",
+          backgroundColor: c.tint,
+          backgroundImage: `radial-gradient(circle at 80% 0%, ${c.strong}55, ${c.strong}00 65%)`,
+        }}
+      />
       <CornerRings hue={hue} />
       <div
         style={{
@@ -120,7 +135,7 @@ export function PostOgCard({ eyebrow, title, meta, hue = "sky" }: { eyebrow: str
               lineHeight: 1.08,
               letterSpacing: "-0.03em",
               color: OG.text,
-              maxWidth: 960,
+              maxWidth: 720,
             }}
           >
             {t}

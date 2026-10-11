@@ -86,16 +86,28 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                         type="checkbox"
                         checked={withAi}
                         onChange={(e) => setWithAi(e.target.checked)}
-                        className="h-4 w-4 rounded-sm"
+                        className="h-4 w-4 rounded-[5px] accent-camp-moss transition-transform duration-spring ease-spring checked:scale-110"
                     />
                     We want AI too.
                 </label>
             </div>
+            {/* The same number on a slider (site.md C7): the brand fills the
+                track up to the team's size; the thumb is the raised disc. */}
+            <input
+                type="range"
+                min={1}
+                max={200}
+                value={Math.min(200, people)}
+                onChange={(e) => setPeople(Number(e.target.value))}
+                aria-label="Team size"
+                className="team-range mt-4 h-10 w-full max-w-xl cursor-pointer"
+                style={{ "--fill": `${((Math.min(200, people) - 1) / 199) * 100}%` } as React.CSSProperties}
+            />
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-lg border border-border bg-card p-5">
-                    <div className="text-small font-medium text-muted-foreground">Slack + Notion + Zoom</div>
-                    <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(saasYear)}</div>
+                <div className="rounded-2xl bg-card p-6 shadow-e1">
+                    <div className="text-small font-[510] text-muted-foreground">Slack + Notion + Zoom</div>
+                    <div key={`s${saasYear}`} className="fx-fade mt-1 font-display text-price tabular-nums">{fmt(saasYear)}</div>
                     <div className="text-caption text-muted-foreground">per year, and it grows with the team</div>
                     <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
                         {lines.map((t) => (
@@ -110,9 +122,9 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     </ul>
                 </div>
 
-                <div className="rounded-lg border border-border-strong bg-muted p-5">
-                    <div className="text-small font-medium text-foreground">OneCamp, self-hosted</div>
-                    <div className="mt-1 font-display text-h2 font-semibold tabular-nums">{fmt(oneCampYear)}</div>
+                <div className="rounded-2xl bg-card p-6 shadow-e3 ring-1 ring-brand/45">
+                    <div className="text-small font-[510] text-foreground">OneCamp, self-hosted</div>
+                    <div key={`o${oneCampYear}`} className="fx-fade mt-1 font-display text-price tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>
                     <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
                         <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${licence} licence, paid once, unlimited users`}</li>
@@ -123,7 +135,12 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                 </div>
             </div>
 
-            <p className="mt-5 text-small text-foreground">
+            <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-small text-foreground">
+                {multiple >= 2 && (
+                    <span className="hue-moss inline-flex h-7 items-center rounded-full bg-hue-tint px-3 text-caption font-[590] text-hue-ink">
+                        {Math.round(multiple)}× less in the first year
+                    </span>
+                )}
                 {multiple >= 2 ? (
                     <>
                         At {Math.max(1, Math.min(1000, people))} people that is{" "}

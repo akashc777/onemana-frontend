@@ -16,8 +16,11 @@ import { PostOgCard } from "@/lib/og-post-card"
 describe("the post and guide card", () => {
   const html = renderToString(<PostOgCard eyebrow="Running it" title="The demo worked" meta="Akash Hadagali · 2026" hue="sun" />)
 
-  it("drops the grid, the glow, the orange rule and the heavy weight", () => {
-    expect(html).not.toMatch(/linear-gradient\(#e8eaed|radial-gradient/)
+  // Design v3 (site.md OG3): the topic's canvas in the right third is lit
+  // by its own hue, once; the old grid, orange rule and heavy weight stay gone.
+  it("drops the grid, the orange rule and the heavy weight, and lights only the topic's canvas", () => {
+    expect(html).not.toMatch(/linear-gradient\(#e8eaed/)
+    expect(html.match(/radial-gradient/g) ?? []).toHaveLength(1)
     expect(html).not.toMatch(/font-weight:(700|800)/)
     expect(html.toLowerCase()).not.toContain("#cc4a0b")
   })

@@ -35,7 +35,29 @@ describe("the link preview card", () => {
     it("is a new version, so social caches fetch it again", () => {
         expect(OG_IMAGE_VERSION).toBe("6")
         const buy = readFileSync(join(process.cwd(), "app/buy/layout.tsx"), "utf8")
-        expect(buy).toContain("/buy/opengraph-image?v=5")
-        expect(buy).not.toContain("?v=4")
+        expect(buy).toContain("/buy/opengraph-image?v=6")
+        expect(buy).not.toContain("?v=5")
+    })
+})
+
+/**
+ * The buy card's money (site.md OG2): rupees from getPricing, with the sign
+ * when its glyph could be fetched and "INR" when not, and en-US grouping,
+ * since the card is seen worldwide.
+ */
+describe("the buy card's prices", () => {
+    const src = readFileSync(join(process.cwd(), "app/buy/opengraph-image.tsx"), "utf8")
+    it("come from getPricing, in en-US grouping, never lakh", () => {
+        expect(src).toContain("getPricing()")
+        expect(src).not.toContain('toLocaleString("en-IN")')
+        expect(src).toContain('toLocaleString("en-US")')
+    })
+    it("write the rupee sign only when its glyph is loaded, and INR otherwise", () => {
+        expect(src).toContain("loadRupeeFont()")
+        expect(src).toMatch(/rupeeFont \? `₹\$\{/)
+        expect(src).toContain("`INR ${")
+        const fonts = readFileSync(join(process.cwd(), "lib/og-fonts.ts"), "utf8")
+        expect(fonts).toContain("text=%E2%82%B9")
+        expect(fonts).toMatch(/catch \{\s*return null/)
     })
 })

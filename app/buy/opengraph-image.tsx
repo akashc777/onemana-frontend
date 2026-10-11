@@ -1,13 +1,13 @@
 import { ImageResponse } from "next/og";
 import { getPricing } from "@/lib/pricing";
-import { loadOgFonts } from "@/lib/og-fonts";
+import { loadOgFonts, loadRupeeFont } from "@/lib/og-fonts";
 import { OG, OgFrame } from "@/lib/og-card";
 
 export const runtime = "edge";
 // alt cannot be async, and a price in it would be a constant that outlives
-// the price. Rupees on the card (the charge), written "INR" because the OG
-// font subset has no rupee sign. So it names the
-// choice, and the image below carries the live figures.
+// the price. So it names the choice, and the image below carries the live
+// figures: rupees (the charge), with the rupee sign when its glyph could be
+// fetched (loadRupeeFont) and "INR" when it could not.
 export const alt = "Get OneCamp: buy once, or let us host it";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -22,11 +22,15 @@ export default async function BuyOpenGraphImage() {
   // The price on the card is the price we charge. It used to be a build-time
   // constant, so an admin price change updated the page and left every shared
   // link advertising the old number until somebody happened to redeploy.
-  const [fonts, pricing] = await Promise.all([loadOgFonts(), getPricing()]);
+  const [fonts, pricing, rupeeFont] = await Promise.all([loadOgFonts(), getPricing(), loadRupeeFont()]);
+  // The card is seen worldwide: en-US grouping (₹24,999, never ₹24,999 in
+  // lakh form for a larger figure), the sign only when its glyph is loaded.
+  const money = (inr: number) => (rupeeFont ? `₹${inr.toLocaleString("en-US")}` : `INR ${inr.toLocaleString("en-US")}`);
   const plans = [
-    { name: "Licence", hue: OG.camp.sun, price: `INR ${pricing.lifetime_inr.toLocaleString("en-IN")} once`, fits: "Any number of people" },
-    { name: "Cloud", hue: OG.camp.sky, price: `INR ${pricing.cloud_inr.toLocaleString("en-IN")} a month`, fits: "Run by us" },
+    { name: "Licence", hue: OG.camp.sun, price: `${money(pricing.lifetime_inr)} once`, fits: "Any number of people" },
+    { name: "Cloud", hue: OG.camp.sky, price: `${money(pricing.cloud_inr)} a month`, fits: "Run by us" },
   ];
+  const allFonts = rupeeFont ? [...fonts, { name: "Inter Rupee", data: rupeeFont, weight: 600 as const, style: "normal" as const }] : fonts;
   return new ImageResponse(
     (
       <OgFrame address="onemana.dev/buy">
@@ -52,13 +56,13 @@ export default async function BuyOpenGraphImage() {
               >
                 {p.name}
               </div>
-              <div style={{ display: "flex", fontSize: 26, fontWeight: 600, color: OG.text }}>{p.price}</div>
+              <div style={{ display: "flex", fontSize: 26, fontWeight: 600, color: OG.text, fontFamily: "Inter, Inter Rupee" }}>{p.price}</div>
               <div style={{ display: "flex", fontSize: 22, color: OG.text2 }}>{p.fits}</div>
             </div>
           ))}
         </div>
       </OgFrame>
     ),
-    { ...size, fonts },
+    { ...size, fonts: allFonts },
   );
 }
