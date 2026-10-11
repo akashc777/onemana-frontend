@@ -13,7 +13,7 @@ import { HUE_CLASS } from "./hues"
  */
 
 /** The canvas's rings and hue dots (G6): four rings round a point off the top right, the innermost in the logo gradient. */
-export function CanvasRings({ still = false }: { still?: boolean }) {
+export function CanvasRings({ still = false, dots = true }: { still?: boolean; dots?: boolean }) {
   const id = `cr${useId().replace(/:/g, "")}`
   const [a, b] = APP.logoGradient
   const at = (r: number, t: number) => ({ cx: 600 - r * Math.cos(t), cy: 600 + r * Math.sin(t) })
@@ -31,11 +31,11 @@ export function CanvasRings({ still = false }: { still?: boolean }) {
         <circle cx="600" cy="600" r="560" strokeDasharray="2 8" />
       </g>
       <circle cx="600" cy="600" r="200" stroke={`url(#${id})`} strokeWidth="3" opacity="0.55" />
-      <g className={still ? undefined : "spin-60"} style={{ transformOrigin: "600px 600px" }}>
+      {dots && <g className={still ? undefined : "spin-60"} style={{ transformOrigin: "600px 600px" }}>
         <circle {...at(420, 0.5)} r="6" className="fill-camp-sun" />
         <circle {...at(310, 1.15)} r="5" className="fill-camp-berry" />
-      </g>
-      {!still && (
+      </g>}
+      {dots && !still && (
         <g className="spin-90r" style={{ transformOrigin: "600px 600px" }}>
           <circle {...at(560, 1.25)} r="5" className="fill-camp-lake" />
           <circle {...at(560, 0.12)} r="6" className="fill-camp-sky" />

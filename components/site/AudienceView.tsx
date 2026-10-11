@@ -1,67 +1,99 @@
-import { PageHeader } from "@/components/site/PageHeader";
-import { QuestionList } from "@/components/site/marketing";
+import type { CSSProperties } from "react";
+import Link from "next/link";
+import { QuestionAccordion } from "@/components/site/marketing";
 import { ProductName } from "@/components/site/ProductName";
 import { FEATURE_MARK } from "@/components/site/featureMarks";
 import { PLAN_HUE } from "@/components/site/planHues";
+import { ProductWindow, type ShotName } from "@/components/site/ProductShot";
 import { ButtonLink } from "@/components/ui/Button";
-import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import { Tile } from "@/components/ui/graphics/Tile";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { SpotImported } from "@/components/ui/graphics/spots";
 import { productHue } from "@/components/site/productHues";
-import { SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
+import { Margin, MarginHeading, SECTION_END, Section } from "@/components/ui/Section";
+import { Arrow, CampCanvas, Dot } from "@/components/ui/v3";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { dual, fmtINR, type Pricing } from "@/lib/pricing";
 import type { Audience } from "@/lib/audiences";
+import type { CampHue } from "@/lib/campHue";
 import { ALTERNATIVES_CHECKED } from "@/lib/alternatives";
 import { RecordRows } from "@/components/site/RecordRows";
 import { attemptAndRefusal } from "@/lib/recordExcerpt";
-import Link from "next/link";
+
+/** The audiences' own hues (site.md §9): agencies berry, compliance dusk, India sun. */
+const AUDIENCE_HUE: Record<string, CampHue> = { agencies: "berry", compliance: "dusk", india: "sun" };
+
+/** The product screen nearest each page's subject, from the live demo's captures. */
+function shotFor(a: Audience): { name: ShotName; alt: string } {
+  const r = a.rival?.name ?? "";
+  if (a.slug === "compliance") return { name: "agents", alt: "OneCamp's record of what agents did: attempts to post in a channel, each refused by permissions." };
+  if (/Notion/.test(r)) return { name: "docs", alt: "A doc in OneCamp's editor, the Q4 launch plan." };
+  if (/Asana|ClickUp|monday|Basecamp|Toggl/.test(r)) return { name: "tasks", alt: "A OneCamp project as a board of task cards." };
+  if (a.slug === "india") return { name: "calendar", alt: "OneCamp's month calendar, with task due dates across the weeks." };
+  return { name: "chat", alt: "A OneCamp channel: people discussing a launch page." };
+}
 
 /**
- * One page for one kind of buyer, or for people leaving one rival: what fits
- * them, the price, and where to go next. Rival pages add where the rival is
- * better (with its pricing page as the source) and how to move.
- *
- * The points are a specification, not a card grid: each is a claim with the
- * mechanism behind it, the claim in the margin and the detail beside it. Each
- * claim carries a tile in its feature's hue (featureMarks.ts: the same hue for
- * the same kind of feature on every page), the rival carries its identity
- * mark (the colour it has in every comparison table), and the two prices
- * carry their plans' hues. On the compliance page the record sits on the dusk
- * band, the site's colour for agents and the record.
+ * One page for one kind of buyer, or for people leaving one rival (site.md
+ * §9): the page's camp canvas with the claim and a 1:1 product crop, the
+ * points as a specification with a tile in each feature's hue, where the
+ * rival is better and how to move (on the rival's own band, in two raised
+ * cards), the record on a night card for compliance, the price as two mini
+ * plan cards, and questions as accordions. The page hue is the rival's
+ * identity colour or the audience's; the canvas's glow takes it.
  */
 export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) {
   const lifetime = a.prices === "inr" ? fmtINR(pricing.lifetime_inr) : dual(pricing.lifetime_usd, pricing.lifetime_inr);
   const cloud =
     a.prices === "inr" ? `${fmtINR(pricing.cloud_inr)} a month` : dual(pricing.cloud_usd, pricing.cloud_inr, " a month");
+  const hue: CampHue = a.rival ? productHue(a.rival.name) : (AUDIENCE_HUE[a.slug] ?? "sky");
+  const shot = shotFor(a);
   return (
     <>
-      <PageHeader eyebrow={a.eyebrow} title={a.title} subtitle={a.subtitle}>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href={a.demo ? site.demoUrlTo(a.demo) : site.demoStartUrl} external variant="brand" size="lg">
-            Try the live demo
-          </ButtonLink>
-          <ButtonLink href="/free" variant="ghost" size="lg">
-            Install free, up to {FREE_SEATS} people
-          </ButtonLink>
-        </div>
-      </PageHeader>
-
-      <section className={SECTION_END}>
+      {/* AU1: the header on the page's camp canvas, its glow in the page hue. */}
+      <section className="pt-6 sm:pt-10">
         <div className="container-x">
-          <dl className="border-t border-border">
+          <div className={HUE_CLASS[hue]} style={{ "--page-glow": "var(--hue)" } as CSSProperties}>
+            <CampCanvas rings="plain" className="rounded-[20px] px-5 pt-10 sm:rounded-4xl sm:px-10 sm:pt-14 lg:h-[440px] lg:pt-0">
+              <div className="grid h-full gap-8 lg:grid-cols-12 lg:items-center lg:gap-x-8">
+                <div className="lg:col-span-7">
+                  <p className="eyebrow in-lift [--eyebrow-dot:rgb(var(--hue))]">{a.eyebrow}</p>
+                  <h1 className="in-lift text-balance text-page text-foreground">{a.title}</h1>
+                  <p className="in-lift at-60 mt-5 max-w-[600px] text-lead text-muted-foreground">{a.subtitle}</p>
+                  <div className="in-lift at-120 mt-8 grid gap-2.5 sm:flex sm:gap-3">
+                    <ButtonLink href={a.demo ? site.demoUrlTo(a.demo) : site.demoStartUrl} external variant="brand" size="xl" arrow>
+                      Try the live demo
+                    </ButtonLink>
+                    <ButtonLink href="/free" variant="ghost" size="xl">
+                      Install free, up to {FREE_SEATS} people
+                    </ButtonLink>
+                  </div>
+                </div>
+                <div className="relative h-[320px] lg:col-span-5 lg:h-[360px]">
+                  <ProductWindow name={shot.name} alt={shot.alt} loading="eager" className="in-rise absolute inset-0 rounded-b-none lg:-right-10 lg:rounded-b-[14px]" />
+                </div>
+              </div>
+            </CampCanvas>
+          </div>
+        </div>
+      </section>
+
+      {/* AU2: the points, a claim with its mechanism, each with its feature's tile. */}
+      <section className={`pt-16 sm:pt-24 ${SECTION_END}`}>
+        <div className="container-x">
+          <dl className="m-0 border-t border-border">
             {a.points.map((p) => {
               const mark = FEATURE_MARK[p.icon];
               return (
-                <div key={p.title} className="grid gap-2 border-b border-border py-6 md:grid-cols-12 md:gap-x-8">
-                  <dt className="flex items-start gap-3 md:col-span-4 md:pr-6">
-                    <Tile hue={mark.hue} size="md" className="mt-0.5">
+                <div key={p.title} className="reveal group grid min-h-[72px] gap-2 border-b border-border py-6 md:grid-cols-12 md:gap-x-8">
+                  <dt className="flex items-start gap-3.5 md:col-span-4 md:pr-6">
+                    <Tile hue={mark.hue} size="md" className="mt-0.5 size-9 rounded-ctl transition-transform duration-spring ease-spring group-hover:-rotate-6">
                       <mark.Glyph />
                     </Tile>
-                    <span className="font-display text-h3 font-semibold text-balance text-foreground">{p.title}</span>
+                    <span className="pt-1.5 text-[17px] font-[590] leading-6 text-balance text-foreground">{p.title}</span>
                   </dt>
-                  <dd className="text-body text-muted-foreground md:col-span-8 md:pt-0.5">{p.body}</dd>
+                  <dd className="m-0 text-body text-muted-foreground md:col-span-7 md:pt-1.5">{p.body}</dd>
                 </div>
               );
             })}
@@ -69,27 +101,27 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         </div>
       </section>
 
-      {/* Where the rival is better and how to move from it, on the rival's own
-          hue (the colour its mark has in every comparison), with the spot for
-          an import that finished. */}
+      {/* AU3: where the rival is better and how to move from it, two raised
+          cards on the rival's own band, with the spot for a finished import. */}
       {(a.rival || a.move) && (
-        <Section band={a.rival ? productHue(a.rival.name) : "moss"}>
-          <SpotImported size={64} hue={a.rival ? productHue(a.rival.name) : "moss"} className="mb-6" />
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
+        <Section band={hue}>
+          <SpotImported size={96} hue={hue} className="mb-8" />
+          <div className="grid gap-4 lg:grid-cols-12 lg:gap-x-6">
             {a.rival && (
-              <section aria-labelledby="they-win" className="lg:col-span-6">
+              <section aria-labelledby="they-win" className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
                 <h2 id="they-win" className="text-h3 text-foreground">
                   <ProductName name={a.rival.name}>Where {a.rival.name} is better</ProductName>
                 </h2>
-                <ul className="mt-4 border-t border-border">
-                  {a.rival.theyWin.map((w) => (
-                    <li key={w} className="border-b border-border py-3 text-small text-foreground">
-                      {w}
+                <ul className="m-0 mt-5 list-none border-t border-border p-0">
+                  {a.rival.theyWin.map((w, i) => (
+                    <li key={w} className="flex items-start justify-between gap-3 border-b border-border py-3 text-small text-foreground last:border-0">
+                      <span>{w}</span>
+                      {i === 0 && <span className="hue-berry inline-flex h-[22px] shrink-0 items-center rounded-md bg-hue-tint px-2 text-[12px] font-[510] text-hue-ink">We lose this one</span>}
                     </li>
                   ))}
                 </ul>
                 <p className="mt-4 text-small text-muted-foreground">
-                  <span className="font-medium text-foreground">How it&apos;s billed:</span> {a.rival.billing}{" "}
+                  <span className="font-[510] text-foreground">How it&apos;s billed:</span> {a.rival.billing}{" "}
                   <a href={a.rival.source} target="_blank" rel="noopener noreferrer" className="link">
                     Their pricing
                   </a>
@@ -98,31 +130,35 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               </section>
             )}
             {a.move && (
-              <section aria-labelledby="move" className="lg:col-span-6">
+              <section aria-labelledby="move" className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
                 <h2 id="move" className="text-h3 text-foreground">
                   {a.move.title}
                 </h2>
-                <ol className="mt-4 border-t border-border">
+                <ol className="m-0 mt-5 list-none space-y-4 border-t border-border p-0 pt-5">
                   {a.move.steps.map((step, i) => (
-                    <li key={step} className="grid grid-cols-[2rem_1fr] border-b border-border py-3 text-small text-foreground">
-                      <span className="font-mono tabular-nums text-muted-foreground">{i + 1}</span>
-                      <span>{step}</span>
+                    <li key={step} className="grid grid-cols-[28px_1fr] gap-3 text-small text-foreground">
+                      <span className="hue-moss flex size-7 items-center justify-center rounded-full bg-hue text-caption font-[590] tabular-nums text-white">{i + 1}</span>
+                      <span className="pt-1">{step}</span>
                     </li>
                   ))}
                 </ol>
+                <Link href="/docs/import-from-other-tools" className="go tap-target mt-5">
+                  Import guide <Arrow size={14} />
+                </Link>
               </section>
             )}
           </div>
         </Section>
       )}
 
-      {/* The evidence, on the page that sells it: rows of the demo's record. */}
+      {/* AU4: the evidence, on the page that sells it, as a compact night card. */}
       {a.slug === "compliance" && (
-        <Section band="dusk">
-          <div className="grid gap-8 md:grid-cols-12 md:gap-x-8">
+        <Section>
+          <div data-record className="night grid gap-8 rounded-2xl p-6 shadow-e3 sm:p-8 md:grid-cols-12 md:gap-x-8">
             <h2 className="text-h3 text-foreground md:col-span-4 md:pr-6">What the record looks like</h2>
             <div className="min-w-0 md:col-span-8">
               <RecordRows
+                tone="night"
                 rows={attemptAndRefusal}
                 caption={
                   <>
@@ -139,42 +175,46 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
       )}
 
       <Section>
-        {/* The price as two plain figures and a link, each with its plan's
-            hue: a three-cell card with a button in the last cell was a
-            pricing table in miniature. */}
-        <div className="border-t border-border pt-8">
-          <div className="grid gap-6 sm:grid-cols-2 sm:items-end sm:gap-x-8 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <p className="flex items-center gap-2 text-small text-muted-foreground">
-                <IdentityMark hue={PLAN_HUE.lifetime} variant="square" />
-                Own it
-              </p>
-              <p className="mt-1 font-display text-h3 font-semibold text-foreground">{lifetime} once</p>
-              <p className="mt-0.5 text-small text-muted-foreground">Everyone on your server, for good.</p>
-            </div>
-            {pricing.cloud_configured && (
-              <div className="lg:col-span-5">
-                <p className="flex items-center gap-2 text-small text-muted-foreground">
-                  <IdentityMark hue={PLAN_HUE.cloud} variant="square" />
-                  Or we run it
-                </p>
-                <p className="mt-1 font-display text-h3 font-semibold text-foreground">{cloud}</p>
-                <p className="mt-0.5 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
-              </div>
-            )}
-            <div className="sm:col-span-2 lg:col-span-3 lg:justify-self-end">
-              <Link href="/pricing" className="link tap-target text-small font-medium">
-                See every plan
-              </Link>
-            </div>
+        {/* AU5: the price as two mini plan cards, each in its plan's hue. */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lift rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
+            <p data-hue={PLAN_HUE.lifetime} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
+              <Dot hue={PLAN_HUE.lifetime} />
+              Own it
+            </p>
+            <p className="mt-3 text-[28px] font-semibold leading-8 tracking-[-0.021em] tabular-nums text-foreground">{lifetime} once</p>
+            <p className="mt-1 text-small text-muted-foreground">Everyone on your server, for good.</p>
+            <ButtonLink href="/buy" variant="ghost" size="sm" className="mt-4 max-md:min-h-11">
+              Buy a licence
+            </ButtonLink>
           </div>
-          <p className="mt-4 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
+          {pricing.cloud_configured && (
+            <div className="lift rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
+              <p data-hue={PLAN_HUE.cloud} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
+                <Dot hue={PLAN_HUE.cloud} />
+                Or we run it
+              </p>
+              <p className="mt-3 text-[28px] font-semibold leading-8 tracking-[-0.021em] tabular-nums text-foreground">{cloud}</p>
+              <p className="mt-1 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
+              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="sm" className="mt-4 max-md:min-h-11">
+                Choose Cloud
+              </ButtonLink>
+            </div>
+          )}
+          <div className="flex items-end sm:col-span-2 lg:col-span-2 lg:justify-end">
+            <Link href="/pricing" className="go tap-target">
+              See every plan
+            </Link>
+          </div>
         </div>
+        <p className="mt-5 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-12 lg:gap-x-8">
-          <SectionHeading title="Questions" className="lg:col-span-4" />
-          <QuestionList items={a.faqs} className="lg:col-span-8" />
-        </div>
+        {/* AU6: questions as accordions, the plus in the page hue. */}
+        <Margin className="mt-20" aside={<MarginHeading title="Questions" />}>
+          <div className={HUE_CLASS[hue]}>
+            <QuestionAccordion items={a.faqs} plus="text-hue" />
+          </div>
+        </Margin>
 
         {a.proof && (
           <p className="mt-10 text-small text-muted-foreground">

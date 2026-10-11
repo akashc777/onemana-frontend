@@ -44,7 +44,7 @@ const CROP: Record<ShotName, { x: number; y: number }> = {
 export function ProductWindow({ name, alt, className = "", loading = "lazy" }: { name: ShotName; alt: string; className?: string; loading?: "lazy" | "eager" }) {
   const c = CROP[name];
   return (
-    <div className={`relative overflow-hidden rounded-[14px] bg-card shadow-e4 ${className}`}>
+    <div className={`${/\b(absolute|fixed|sticky)\b/.test(className) ? "" : "relative"} overflow-hidden rounded-[14px] bg-card shadow-e4 ${className}`}>
       {(["light", "dark"] as const).map((theme) => {
         const { props } = getImageProps({ src: `/product/${name}-${theme}.webp`, width: SHOT.width, height: SHOT.height, sizes: `${SHOT.width}px`, alt });
         return (

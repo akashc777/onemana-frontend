@@ -136,7 +136,8 @@ export function CampCanvas({
   className?: string
   /** The account page's ground: the glow at 16%, no window. */
   soft?: boolean
-  rings?: boolean
+  /** The rings and their hue dots; "plain" keeps the rings without dots, for a canvas whose text runs under them. */
+  rings?: boolean | "plain"
   /** Let the floating chips lean towards the pointer. */
   drift?: boolean
   as?: "div" | "section"
@@ -147,10 +148,10 @@ export function CampCanvas({
       {rings && (
         <>
           <span className="hidden sm:contents">
-            <CanvasRings />
+            <CanvasRings dots={rings !== "plain"} />
           </span>
           <span className="contents sm:hidden">
-            <CanvasRings still />
+            <CanvasRings still dots={rings !== "plain"} />
           </span>
         </>
       )}

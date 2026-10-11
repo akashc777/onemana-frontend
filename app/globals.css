@@ -302,7 +302,7 @@ body {
      at the top right, dusk and lake light at the foot, and 2% grain. One a
      page. A page hue may set --canvas-glow to its own strong cut. */
   .camp-canvas {
-    --canvas-glow: var(--glow);
+    --canvas-glow: var(--page-glow, var(--glow));
     --glow-a: 0.3;
     --paper: 247 244 241;
     position: relative;
@@ -315,7 +315,7 @@ body {
       rgb(var(--paper));
   }
   .dark .camp-canvas {
-    --canvas-glow: 255 61 0;
+    --canvas-glow: var(--page-glow, 255 61 0);
     --glow-a: 0.26;
     --paper: 18 19 22;
   }

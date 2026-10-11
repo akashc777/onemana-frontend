@@ -41,12 +41,20 @@ describe("an alternatives page", () => {
     })
 })
 
+// Design v3 (site.md AU1, AU4): one camp canvas per page, its product crop
+// described; the record on a compact night card, its rows in the night tone.
 describe("the compliance page", () => {
     const html = renderToString(<AudienceView a={audienceBySlug("compliance")!} pricing={defaultPricing} />)
 
-    it("shows the record on the dusk band", () => {
-        const band = html.slice(html.indexOf('data-band="dusk"'))
-        expect(band.length).toBeGreaterThan(0)
-        expect(band.indexOf("What the record looks like")).toBeGreaterThan(-1)
+    it("opens on one camp canvas, with a described product crop", () => {
+        expect(html.match(/class="camp-canvas/g)).toHaveLength(1)
+        expect(html).toMatch(/<img[^>]*alt="OneCamp&#x27;s record of what agents did/)
+    })
+
+    it("shows the record on a night card", () => {
+        const card = html.slice(html.indexOf("data-record"))
+        expect(card).toMatch(/^data-record="true" class="night /)
+        expect(card.indexOf("What the record looks like")).toBeGreaterThan(-1)
+        expect(card).toContain("border-camp-berry")
     })
 })
