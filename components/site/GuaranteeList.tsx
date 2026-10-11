@@ -37,11 +37,17 @@ export interface Guarantee {
 // side, each guarantee takes two rows of one subgrid, the claim and its
 // explanation, so a claim that wraps to two lines moves its neighbours'
 // explanations down with its own and all three start on one line.
-export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string; layout?: "list" | "row"; hue?: CampHue }> = ({ items, className = "", layout = "list", hue }) => (
+// On the night section (site.md H6) each number is a 28px circle in the
+// agent's indigo with a white numeral, popping in with the section.
+export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: string; layout?: "list" | "row"; hue?: CampHue; night?: boolean }> = ({ items, className = "", layout = "list", hue, night = false }) => (
     <ol className={`list-none p-0 ${layout === "row" ? "grid gap-x-10 gap-y-8 border-t border-border pt-8 md:grid-cols-3 md:gap-y-0" : "border-t border-border"} ${className}`}>
         {items.map((g, i) => (
             <li key={g.title} className={`grid grid-cols-[2rem_1fr] gap-x-3 ${layout === "row" ? "md:row-span-2 md:grid-rows-subgrid md:gap-y-0" : "border-b border-border py-5"}`}>
-                {hue ? (
+                {night ? (
+                    <span aria-hidden className={`reveal flex size-7 items-center justify-center rounded-full text-caption font-[590] tabular-nums text-white`} style={{ backgroundImage: "linear-gradient(140deg, rgb(var(--agent-a1)), rgb(var(--agent-a2)))" }}>
+                        {i + 1}
+                    </span>
+                ) : hue ? (
                     <span aria-hidden className={`${HUE_CLASS[hue]} flex size-7 items-center justify-center rounded-md bg-card font-mono text-small tabular-nums text-hue-ink`}>
                         {i + 1}
                     </span>
@@ -50,8 +56,8 @@ export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: 
                         {i + 1}
                     </span>
                 )}
-                <h3 className="min-w-0 text-h3 text-foreground">{g.title}</h3>
-                <p className="col-start-2 mt-1.5 min-w-0 text-small text-muted-foreground sm:text-body">{g.body}</p>
+                <h3 className={`min-w-0 text-foreground ${night ? "pt-0.5 text-[20px] font-[590] leading-[26px] tracking-[-0.017em]" : "text-h3"}`}>{g.title}</h3>
+                <p className={`col-start-2 mt-1.5 min-w-0 text-muted-foreground ${night ? "text-[15px] leading-6" : "text-small sm:text-body"}`}>{g.body}</p>
             </li>
         ))}
     </ol>

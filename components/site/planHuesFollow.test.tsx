@@ -12,11 +12,11 @@ import { PLAN_HUE } from "@/components/site/planHues"
  * onto the numbers inside it.
  */
 describe("hues that follow a thing", () => {
-    it("ticks the free plan's list on /free in the free plan's hue", () => {
+    // Ticks are a 16px moss check everywhere (site.md H9).
+    it("ticks the free plan's list on /free with the moss check, on the free plan's band", () => {
         const html = renderToString(<FreePage />)
         const list = html.slice(html.indexOf("What the free plan includes"))
-        expect(list).toContain(`hue-${PLAN_HUE.free}`)
-        expect(list).toMatch(/<svg class="mt-0\.5 size-4 shrink-0 text-hue"/)
+        expect(list).toMatch(/<svg class="mt-0\.5 size-4 shrink-0 text-camp-moss"/)
         // ...and the details sit on the free plan's band.
         expect(html).toContain(`data-band="${PLAN_HUE.free}"`)
     })

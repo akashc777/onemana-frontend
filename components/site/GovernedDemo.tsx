@@ -6,31 +6,30 @@
 // counted, and they are what the plan budgets for this section.
 
 /**
- * GovernedDemo — the one path the product is sold on, walked through.
+ * GovernedDemo — the one path the product is sold on, walked through, on the
+ * home page's night section (design v3, site.md H6).
  *
- * WHY. The critique's finding was a mismatch: the site sells a refusal on the
- * record, and the demo it linked to opened on a chatbot panel. A visitor was
- * asked to believe the wedge in prose and then shown something else. This is
- * the wedge itself, four steps, on the page that makes the claim.
+ * WHY. The site sells a refusal on the record, so the page that makes the
+ * claim shows it: Priya asks, her agent tries, it is refused, and the
+ * decision is written down. Four steps, 1.1s each, played once when the card
+ * is 60% on screen, then at rest; "Replay" runs it again. Under reduced
+ * motion it opens on the finished state and Replay steps without movement.
  *
  * THE ROW IS THE PRODUCT'S OWN. `mcp.tool_call.refused` is the action the MCP
- * layer actually writes, one row per decision rather than an attempt followed by
- * an outcome, carrying the tool, the named agent, the human who authorised it
- * and the reason. "You are not a member of this channel" is the sentence the
- * permission layer produces, quoted rather than written for marketing. A
- * walkthrough that showed a shape the product does not produce would be the
- * exact failure it exists to answer.
+ * layer actually writes, one row per decision, carrying the tool, the named
+ * agent, the human who authorised it and the reason. "You are not a member of
+ * this channel" is the sentence the permission layer produces, quoted rather
+ * than written for marketing.
  *
  * IT SAYS WHAT IT IS. "Interactive walkthrough" and not "live app": there is no
  * session behind it. The live demo is one link away and a reader can check.
  *
- * Motion explains the state change and nothing else: no loop, no autoplay for
- * anyone who asked for less, and the reduced-motion reader gets the finished
- * state rather than a control they have to operate to see the point.
+ * Colour: the agent is indigo, the refusal berry and the chain dusk (G7).
  */
 
 import React from "react"
-import { buttonClasses } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/Button"
+import { AgentSquare, Face } from "@/components/ui/v3"
 
 interface Step {
     /** What this step is, in the reader's terms. */
@@ -58,6 +57,9 @@ export const STEPS: Step[] = [
 /** Steps at which the audit row is visible. */
 const AUDIT_FROM = 3
 
+/** One step's length when the walkthrough plays (site.md H6). */
+const STEP_MS = 1100
+
 /**
  * The row the MCP layer actually writes, quoted rather than composed for
  * marketing. One row per decision, not an attempt followed by an outcome, and
@@ -75,6 +77,8 @@ export const AUDIT_ROW = {
     ] as const,
     hashes: "prev 9f2c…41ab → this 7d10…c8e5",
 }
+
+const [PREV, THIS] = AUDIT_ROW.hashes.replace("prev ", "").split(" → this ")
 
 /**
  * Which step to open on.
@@ -99,10 +103,24 @@ function usePrefersReducedMotion(): boolean {
     return reduced
 }
 
+/** A hash as a chip (S20); the two that chain share a dusk ring, which pulses once when the row lands. */
+function HashChip({ value, chain = false, pulse = false }: { value: string; chain?: boolean; pulse?: boolean }) {
+    return (
+        <span
+            translate="no"
+            className={`inline-flex h-5 items-center rounded-[5px] bg-white/[0.06] px-1.5 font-mono text-[11px] text-[#C9CCD2] ${chain ? "ring-1 ring-camp-dusk/70" : ""} ${pulse ? "fx-spring" : ""}`}
+        >
+            {value}
+        </span>
+    )
+}
+
 export const GovernedDemo: React.FC = () => {
     const reduced = usePrefersReducedMotion()
     const [step, setStep] = React.useState(0)
     const [playing, setPlaying] = React.useState(false)
+    const played = React.useRef(false)
+    const card = React.useRef<HTMLElement>(null)
 
     // Reduced motion, or a sales link that wants the answer: start at the end.
     // Reading the query off window rather than useSearchParams keeps a Suspense
@@ -111,8 +129,28 @@ export const GovernedDemo: React.FC = () => {
         const deepLinked =
             typeof window !== "undefined" &&
             new URLSearchParams(window.location.search).get("demo") === "refusal"
+        if (reduced || deepLinked) played.current = true
         setStep((s) => Math.max(s, initialStep({ reduced, deepLinked })))
     }, [reduced])
+
+    // Plays once, the first time the card is 60% on screen; never again on
+    // its own, and never for a reader who asked for less motion.
+    React.useEffect(() => {
+        const el = card.current
+        if (!el || typeof IntersectionObserver === "undefined") return
+        const io = new IntersectionObserver(
+            ([e]) => {
+                if (!e.isIntersecting || played.current) return
+                if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+                played.current = true
+                setPlaying(true)
+                io.disconnect()
+            },
+            { threshold: 0.6 },
+        )
+        io.observe(el)
+        return () => io.disconnect()
+    }, [])
 
     React.useEffect(() => {
         if (!playing) return
@@ -120,7 +158,7 @@ export const GovernedDemo: React.FC = () => {
             setPlaying(false)
             return
         }
-        const t = setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 1400)
+        const t = setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), STEP_MS)
         return () => clearTimeout(t)
     }, [playing, step])
 
@@ -131,60 +169,62 @@ export const GovernedDemo: React.FC = () => {
 
     const said = STEPS.slice(0, step + 1).flatMap((s) => (s.said ? [s.said] : []))
     const call = STEPS[step].call
+    const done = step >= STEPS.length - 1
 
     return (
         <figure
-            className="m-0 overflow-hidden rounded-lg border border-border bg-card"
+            ref={card}
+            className="m-0 overflow-hidden rounded-2xl bg-[#141518] text-[#EEEEF0] shadow-e3 ring-1 ring-white/[0.08]"
             onKeyDown={onKeyDown}
         >
-            <figcaption className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2.5">
-                <span className="text-caption font-medium text-foreground">
-                    Interactive walkthrough
-                </span>
-                <span className="text-caption text-muted-foreground">
-                    Same permission rules as production
-                </span>
+            <figcaption className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-white/[0.08] px-5 py-3">
+                <span className="text-caption font-[510] text-[#EEEEF0]">Interactive walkthrough</span>
+                <span className="text-caption text-[#A8ABB1]">Same permission rules as production</span>
             </figcaption>
 
-            <div className="grid gap-px bg-border md:grid-cols-2">
+            <div className="grid md:grid-cols-2">
                 {/* The conversation. */}
-                <div className="min-w-0 bg-card p-4">
-                    <p className="m-0 text-caption font-medium text-muted-foreground">
-                        #finance
-                    </p>
-                    <ol className="m-0 mt-3 list-none space-y-3 p-0">
+                <div className="min-w-0 p-5 md:min-h-[300px] md:border-r md:border-white/[0.08]">
+                    <p className="m-0 font-mono text-caption text-[#A8ABB1]">#finance</p>
+                    <ol className="m-0 mt-4 list-none space-y-4 p-0">
                         {said.map((s, i) => (
-                            <li key={i} className="min-w-0">
-                                <span className="flex flex-wrap items-baseline gap-x-2">
-                                    <span className="text-small font-medium text-foreground">{s.who}</span>
-                                    {s.agent && (
-                                        <span className="rounded-sm bg-agent-muted px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-agent">
-                                            Agent
-                                        </span>
-                                    )}
-                                </span>
-                                <span className="mt-0.5 block text-small text-muted-foreground">
-                                    {s.text}
+                            <li key={i} className="fx-slide flex min-w-0 gap-3">
+                                {s.agent ? <AgentSquare size={32} dim={call === "refused"} /> : <Face initials="PN" hue="berry" size={32} />}
+                                <span className="min-w-0">
+                                    <span className="flex flex-wrap items-center gap-x-2">
+                                        <span className="text-small font-[590] text-[#EEEEF0]">{s.who}</span>
+                                        {s.agent && (
+                                            <span className="rounded-[5px] bg-agent-muted px-1.5 text-[11px] font-[510] leading-[18px] text-agent-ink">
+                                                Agent
+                                            </span>
+                                        )}
+                                    </span>
+                                    <span className="mt-0.5 block text-small text-[#A8ABB1]">{s.text}</span>
                                 </span>
                             </li>
                         ))}
                     </ol>
 
                     {call && (
-                        <div className="mt-4 rounded-md border border-border px-3 py-2.5">
-                            <span className="flex flex-wrap items-baseline gap-x-2">
-                                <span className="font-mono text-caption text-foreground">channel.post</span>
-                                <span
-                                    className={
-                                        call === "refused"
-                                            ? "rounded-sm bg-danger/10 px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-danger-ink"
-                                            : "rounded-sm bg-agent-muted px-1.5 py-0.5 text-[0.75rem] font-medium leading-4 text-agent"
-                                    }
-                                >
-                                    {call === "refused" ? "Refused" : "Checking"}
-                                </span>
+                        <div key={call} className={`relative mt-5 rounded-xl bg-white/[0.04] px-3.5 py-3 ring-1 ring-white/[0.08] ${call === "refused" && step === 2 ? "fx-shake" : "fx-slide"}`}>
+                            <span className="flex flex-wrap items-center gap-x-2">
+                                <span className="font-mono text-caption text-[#EEEEF0]">channel.post</span>
+                                {call === "refused" ? (
+                                    <span className="fx-stamp inline-block rounded-[5px] px-1.5 text-[11px] font-[590] uppercase leading-[18px] tracking-[0.04em] text-[#F9C2D6] ring-1 ring-[#F07AA6]/70 [background:rgb(51_22_31)]">
+                                        Refused
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 rounded-[5px] bg-agent-muted px-1.5 text-[11px] font-[510] leading-[18px] text-agent-ink">
+                                        Checking
+                                        <span className="inline-flex gap-[2px]" aria-hidden="true">
+                                            {[0, 1, 2].map((d) => (
+                                                <span key={d} className={`bob size-[3px] rounded-full bg-current ${d === 1 ? "at-120" : d === 2 ? "at-240" : ""}`} />
+                                            ))}
+                                        </span>
+                                    </span>
+                                )}
                             </span>
-                            <span className="mt-1 block text-caption text-muted-foreground">
+                            <span className="mt-1 block text-caption text-[#A8ABB1]">
                                 {call === "refused"
                                     ? "You are not a member of this channel."
                                     : "Checking Priya's membership, now, not when the agent was set up."}
@@ -194,61 +234,47 @@ export const GovernedDemo: React.FC = () => {
                 </div>
 
                 {/* The record. */}
-                <div className="min-w-0 bg-card p-4">
-                    <p className="m-0 text-caption font-medium text-muted-foreground">
-                        Audit log
-                    </p>
-                    {step >= AUDIT_FROM ? (
-                        <div className="mt-3 min-w-0">
-                            <span className="flex flex-wrap items-baseline gap-x-2">
-                                <span className="font-mono text-caption text-foreground">
-                                    {AUDIT_ROW.action}
-                                </span>
-                                <span className="font-mono text-caption tabular-nums text-muted-foreground">
-                                    {AUDIT_ROW.seq}
-                                </span>
+                <div className="min-w-0 border-t border-white/[0.08] p-5 md:border-t-0">
+                    <p className="m-0 font-mono text-caption text-[#A8ABB1]">Audit log</p>
+                    <ol className="m-0 mt-4 list-none space-y-3 p-0">
+                        <li className="border-l-[3px] border-white/20 pl-3 font-mono text-[12px] leading-[18px] text-[#A8ABB1]">
+                            <span className="text-[#EEEEF0]">message.posted</span> #1411
+                            <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                this <HashChip value={PREV!} chain={step >= AUDIT_FROM} pulse={step >= AUDIT_FROM && !reduced} />
                             </span>
-                            <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-                                {AUDIT_ROW.fields.map(([k, v]) => (
-                                    <React.Fragment key={k}>
-                                        <dt className="font-mono text-caption text-muted-foreground">{k}</dt>
-                                        <dd className="m-0 min-w-0 truncate text-caption text-foreground">{v}</dd>
-                                    </React.Fragment>
-                                ))}
-                            </dl>
-                            <p className="m-0 mt-2.5 break-all font-mono text-caption text-muted-foreground">
-                                {AUDIT_ROW.hashes}
-                            </p>
-                        </div>
-                    ) : (
-                        <p className="m-0 mt-3 text-caption text-muted-foreground">
-                            The decision is written here before the tool runs. If it cannot be
-                            written, the call does not happen.
-                        </p>
-                    )}
+                        </li>
+                        {step >= AUDIT_FROM ? (
+                            <li className="fx-slide border-l-[3px] border-camp-berry pl-3 font-mono text-[12px] leading-[18px] text-[#A8ABB1]">
+                                <span className="flex flex-wrap items-baseline gap-x-2">
+                                    <span className="text-[#F9C2D6]">{AUDIT_ROW.action}</span>
+                                    <span className="tabular-nums">{AUDIT_ROW.seq}</span>
+                                </span>
+                                <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
+                                    {AUDIT_ROW.fields.map(([k, v]) => (
+                                        <React.Fragment key={k}>
+                                            <dt className="text-[#72747B]">{k}</dt>
+                                            <dd className="m-0 min-w-0 truncate font-sans text-caption text-[#EEEEF0]">{v}</dd>
+                                        </React.Fragment>
+                                    ))}
+                                </dl>
+                                <span className="mt-2 flex flex-wrap items-center gap-1.5">
+                                    prev <HashChip value={PREV!} chain pulse={!reduced} /> this <HashChip value={THIS!} />
+                                </span>
+                            </li>
+                        ) : (
+                            <li className="pl-[15px] text-caption text-[#A8ABB1]">
+                                The decision is written here before the tool runs. If it cannot be written, the call does not happen.
+                            </li>
+                        )}
+                    </ol>
                 </div>
             </div>
 
-            {/* Controls. */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border px-4 py-2.5">
-                <button
-                    type="button"
-                    onClick={() => {
-                        if (step >= STEPS.length - 1) setStep(0)
-                        setPlaying((p) => !p)
-                    }}
-                    className={buttonClasses("ghost", "sm", "max-md:min-h-11")}
-                >
-                    {playing ? "Pause" : step >= STEPS.length - 1 ? "Replay" : "Play"}
-                </button>
-
+            {/* Controls: the step dots, the active one a 24px indigo pill, and Replay. */}
+            <div className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2 border-t border-white/[0.08] px-3 py-1.5 sm:px-4">
                 {/* Each step is a 44 px target on a phone and 24 px from sm
-                    (WCAG 2.2, target size) round the same 8 px dot: the dot is
-                    what is drawn, the square is what a finger hits. The dots
-                    sit a target apart, the least that keeps targets from
-                    overlapping, and the negative margin keeps the first and
-                    last where they were beside the button and label. */}
-                <ol className="-mx-[1.125rem] my-0 flex list-none flex-wrap items-center p-0 sm:-mx-2">
+                    (WCAG 2.2, target size) round the drawn dot. */}
+                <ol className="my-0 flex list-none flex-wrap items-center p-0">
                     {STEPS.map((s, i) => (
                         <li key={s.label}>
                             <button
@@ -259,12 +285,12 @@ export const GovernedDemo: React.FC = () => {
                                     setPlaying(false)
                                     setStep(i)
                                 }}
-                                className="group flex h-11 w-11 items-center justify-center rounded-full sm:h-6 sm:w-6"
+                                className="group flex h-11 min-w-11 items-center justify-center rounded-full sm:h-6 sm:w-6 sm:min-w-6"
                             >
                                 <span
                                     aria-hidden
-                                    className={`h-2 w-2 rounded-full transition-colors ${
-                                        i <= step ? "bg-foreground" : "bg-foreground/20 group-hover:bg-foreground/40"
+                                    className={`h-2 rounded-full transition-colors duration-pop ${
+                                        i === step ? "w-6 bg-agent" : i < step ? "w-2 bg-white/60" : "w-2 bg-white/20 group-hover:bg-white/40"
                                     }`}
                                 />
                             </button>
@@ -273,9 +299,24 @@ export const GovernedDemo: React.FC = () => {
                 </ol>
 
                 {/* The step's name, announced as it changes rather than only drawn. */}
-                <p aria-live="polite" className="m-0 text-caption text-muted-foreground">
+                <p aria-live="polite" className="m-0 text-caption text-[#A8ABB1]">
                     {STEPS[step].label}
                 </p>
+
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (reduced) {
+                            setStep((s) => (s >= STEPS.length - 1 ? 0 : s + 1))
+                            return
+                        }
+                        setStep(0)
+                        setPlaying(true)
+                    }}
+                    className={buttonClasses("subtle", "sm", "ml-auto text-[#A8ABB1] hover:bg-white/[0.06] hover:text-[#EEEEF0] max-md:min-h-11")}
+                >
+                    {playing ? "Playing" : reduced && !done ? "Next step" : "Replay"}
+                </button>
             </div>
         </figure>
     )

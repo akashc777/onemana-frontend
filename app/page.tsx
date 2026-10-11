@@ -1,12 +1,10 @@
 import Link from "next/link";
-import type { ShotNote } from "@/components/site/ProductShot";
-import type { OrbitThing } from "@/components/ui/graphics/HeroOrbit";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
-import { faqs, governance } from "@/lib/content";
+import { faqs, governance, whyRupees } from "@/lib/content";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { getPricing } from "@/lib/pricing";
-import { getReleaseFacts } from "@/lib/releases";
+import { getReleaseFacts, type ReleaseFacts } from "@/lib/releases";
 import { Margin, MarginHeading, SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { GuaranteeList } from "@/components/site/GuaranteeList";
@@ -17,165 +15,204 @@ import { FactsStrip } from "@/components/site/FactsStrip";
 import { RunSpec } from "@/components/site/RunSpec";
 import { HomeComparison } from "@/components/site/HomeComparison";
 import { PlanColumns } from "@/components/site/PlanColumns";
-import { QuestionList } from "@/components/site/marketing";
+import { QuestionGroups } from "@/components/site/marketing";
 import { RecordRows } from "@/components/site/RecordRows";
-import { SpotWelcome } from "@/components/ui/graphics/spots";
+import { AlsoInTheBox } from "@/components/site/AlsoInTheBox";
+import { CloseSpot } from "@/components/site/CloseSpot";
+import { Tile } from "@/components/ui/graphics/Tile";
+import { Arrow } from "@/components/ui/v3";
+import { SunStroke } from "@/components/ui/graphics/v3marks";
 import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
 
 export const revalidate = 300;
 
 /**
- * The home page tells one story in seven parts (design direction, 10 Oct 2026):
- * what it is, with the product itself; the facts; the product by surface; the
- * argument, shown rather than told; what running it involves; how it compares;
- * and the price. It used to be eleven sections from one template and 12,700 px
- * tall, with a drawn mockup, a beam grid, scroll reveals, a sticky buy bar and
- * four calls to action at once.
+ * The home page, design v3 (design/v3-areas/site.md §4): what it is, with the
+ * product itself on the camp canvas; the facts; the product by surface; what
+ * else is in the box; the argument, shown, on the page's one night section;
+ * what running it involves; how it compares; the price; the questions people
+ * ask before paying; and the close, on the page's one band.
  *
- * Calls to action, in rank: the live demo (filled), Install free (outline),
- * a "See pricing" text link beside them, then buying, in the plan columns.
- * Nothing is centred but the final call.
+ * Calls to action, in rank: the live demo (the one primary per screen),
+ * Install free (secondary), then buying, in the plan columns. "See pricing"
+ * moved to the nav and the facts strip. Nothing is centred.
  *
- * The two ideas that make it OneCamp's own page rather than a well-kept
- * template (design/audit/storefront.md): the hero's image is two real rows of
- * the product's record, chained by a hash; and the screenshots are figures,
- * on a stage, with numbered notes saying what to look at.
+ * Motion (G5): the hero's copy lifts 8px on load (transform only, the H1 is
+ * the LCP), the window rises, two chips spring in and the sun stroke draws;
+ * each section's heading rises 8px as it enters, never from hidden.
  */
 
-/** What to look at in the hero screenshot, placed in percent of the wide image. */
-const HERO_NOTES: ShotNote[] = [
-  { x: 40, y: 32.9, text: "Release Captain is an agent, and every message it posts says so." },
-  { x: 94.6, y: 35.4, text: "It reports what is done and leaves the load test open until someone posts the numbers." },
-  // "On a schedule", not "every weekday": the screenshot's check-in reads
-  // Saturday, and a careful buyer noticed the note and the picture disagree.
-  { x: 35.6, y: 65.8, text: "A check-in asks the channel on a schedule, and the answers collect in one thread." },
-];
-/** Real things in the hero's screenshot, named on its canvas: the channel, a person in the thread, and the agent. */
-const HERO_THINGS: OrbitThing[] = [
-  { label: "#engineering", kind: "channel" },
-  { label: "Maya Chen", kind: "person" },
-  { label: "Release Captain", kind: "agent" },
-];
+/** When the tour's screenshots were taken from the live demo. */
+const SHOTS_TAKEN = "10 Oct";
+
+const FACTS = [
+  { hue: "moss", bold: "Open source", rest: ", AGPL-3.0", at: "at-300", d: "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9" },
+  { hue: "sky", bold: "One command", rest: " on a 4 GB server", at: "at-340", d: "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01" },
+  { hue: "dusk", bold: "Agents on the record", rest: ", every attempt", at: "at-380", d: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4" },
+] as const;
+
+/** The release pill (site.md H1): the version and its own headline, read from GitHub; nothing when GitHub is silent. */
+function ReleasePill({ release }: { release: ReleaseFacts | null }) {
+  if (!release) return null;
+  return (
+    <a
+      href={release.url ?? `${site.serverGithubUrl}/releases`}
+      target="_blank"
+      rel="noreferrer"
+      className="in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1 transition-shadow duration-hover hover:shadow-e2"
+    >
+      <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
+      <span className="truncate">
+        {release.version}
+        {release.headline && <span className="max-sm:hidden"> · {release.headline}</span>}
+      </span>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" aria-hidden="true" className="go-arrow shrink-0">
+        <path d="M6 4l4 4-4 4" />
+      </svg>
+    </a>
+  );
+}
+
+/** The two ways in, each with its hint (site.md H1, H11); on a phone, stacked full width with one shared hint. */
+function WaysIn() {
+  return (
+    <div className="grid gap-2.5 sm:flex sm:items-start sm:gap-3">
+      <div className="grid gap-2">
+        <ButtonLink href={site.demoStartUrl} external variant="brand" size="xl" arrow>
+          Try the live demo
+        </ButtonLink>
+        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-faint sm:block">No sign-up · opens in seconds</span>
+      </div>
+      <div className="grid gap-2">
+        <ButtonLink href="/free" variant="ghost" size="xl">
+          Install free
+        </ButtonLink>
+        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-faint sm:block">Up to {FREE_SEATS} people, no card</span>
+      </div>
+      <span className="mt-1 text-center text-[12.5px] leading-4 text-faint sm:hidden">No sign-up · free for up to {FREE_SEATS} people</span>
+    </div>
+  );
+}
 
 export default async function HomePage() {
   const [pricing, release] = await Promise.all([getPricing(), getReleaseFacts()]);
+  const byQ = (q: string) => faqs.find((f) => f.q === q)!;
 
   return (
     <>
-      {/* 1. What it is, with the evidence beside it. */}
-      <section className={`pt-14 sm:pt-20 lg:pt-24 ${SECTION_END}`}>
+      {/* 1. What it is (H1), with the product on the camp canvas (H2) and the facts (H3). */}
+      <section className={`pt-10 sm:pt-[72px] ${SECTION_END}`}>
         <div className="container-x">
-          <h1 className="max-w-[16ch] text-display-sm text-foreground sm:max-w-[20ch] sm:text-display-md lg:max-w-none lg:text-display">
-            Your team&apos;s chat, docs and calls, on a server you own.
-          </h1>
-
-          <div className="mt-10 grid gap-12 lg:mt-12 lg:grid-cols-12 lg:gap-x-8">
-            <div className="lg:col-span-6">
-              <p className="max-w-xl text-body-lg text-muted-foreground">
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-x-8">
+            <div className="lg:col-span-8">
+              <ReleasePill release={release} />
+              {/* Two tones (G2, H1): the soft half in ink-3, the claim in ink,
+                  and one hand-drawn sun stroke under "own." */}
+              <h1 className="in-lift at-60 max-w-[900px] text-hero text-foreground">
+                <span className="text-faint dark:text-[#8B8E96]">Your team&apos;s chat, docs and calls,</span>{" "}
+                <span>
+                  on a server you{" "}
+                  <span className="relative inline-block whitespace-nowrap">
+                    own.
+                    <SunStroke />
+                  </span>
+                </span>
+              </h1>
+              <p className="in-lift at-120 mt-6 max-w-[600px] text-lead text-muted-foreground">
                 Like Slack, Notion and Zoom in one open-source app, with AI agents that can only do what you can.
               </p>
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start">
-                <div className="flex flex-col gap-1.5">
-                  <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
-                    Try the live demo
-                  </ButtonLink>
-                  <span className="text-caption text-muted-foreground">No sign-up</span>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <ButtonLink href="/free" variant="ghost" size="lg">
-                    Install free
-                  </ButtonLink>
-                  <span className="text-caption text-muted-foreground">Up to {FREE_SEATS} people, no card</span>
-                </div>
-                {/* Tertiary, and only a text link: for the visitor who came to
-                    see what it costs. Without it the first way to pay was the
-                    plan columns, about 5,000 px down. Level with the buttons. */}
-                <Link href="/pricing" className="link inline-flex min-h-11 items-center self-start text-small font-medium">
-                  See pricing
-                </Link>
+              <div className="in-lift at-180 mt-8">
+                <WaysIn />
               </div>
             </div>
 
-            {/* The image is the record: an agent's attempt and its refusal. */}
-            <div className="lg:col-span-5 lg:col-start-8">
-              <RecordRows
-                rows={attemptAndRefusal}
-                caption={
-                  <>
-                    From the live demo&apos;s record, {recordDay(attemptAndRefusal[1].at)}. Each row carries the hash of the
-                    one before it.{" "}
-                    <Link href="/verify" className="link">
-                      Check the file yourself
-                    </Link>
-                  </>
-                }
-              />
-            </div>
+            {/* The facts column: three rows on hairlines (on a phone the strip under the canvas carries them). */}
+            <ul className="m-0 hidden list-none border-t border-border p-0 lg:col-span-4 lg:block">
+              {FACTS.map((f) => (
+                <li key={f.bold} className="flex h-[52px] items-center gap-3 border-b border-border text-small text-muted-foreground">
+                  <Tile hue={f.hue} className={`in-pop size-7 rounded-lg ${f.at}`}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
+                      <path d={f.d} />
+                    </svg>
+                  </Tile>
+                  <span>
+                    <b className="font-[510] text-foreground">{f.bold}</b>
+                    {f.rest}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="mt-16 sm:mt-20">
-            {/* The canvas is #engineering's own hue (hueFor gives it sky, as the
-                app does), and the three things named on it are in the shot. */}
+          <div className="mt-10 sm:mt-14">
             <HeroShot
               alt="OneCamp's #engineering channel: a release thread where the Release Captain agent reports checklist status, with the sidebar of channels, projects and docs."
               phoneAlt="OneCamp on a phone: the #engineering channel, with a reply from the Release Captain agent."
-              notes={HERO_NOTES}
-              hue="sky"
-              things={HERO_THINGS}
             />
           </div>
 
-          {/* 2. Facts, where a logo wall would go. */}
           <div className="mt-14">
             <FactsStrip release={release} />
           </div>
         </div>
       </section>
 
-      {/* 3. The product, by surface. Old links to #features and #tour land here. */}
+      {/* 2. The product, by surface (H4). Old links to #features and #tour land here. */}
       <Section id="product">
         <span id="features" aria-hidden />
         <span id="tour" aria-hidden />
         <SectionHeading
+          layout="split"
+          eyebrow="One app"
           title="Chat, docs, tasks, calendar and agents in one app"
-          subtitle="Each screen is from the live demo, which opens without an account."
-          className="mb-10 lg:mb-14"
+          subtitle="Every screen here is the live demo. Open any of them without an account."
+          className="mb-8 lg:mb-10"
         />
-        <ProductTabs />
+        <ProductTabs taken={SHOTS_TAKEN} />
       </Section>
 
-      {/* 4. The argument, shown. The id is the one the nav's "Safe AI" and old links use.
-          Dusk is the site's colour for agents and the record. */}
-      <Section id="demo" band="dusk">
+      {/* 3. The breadth (H5). */}
+      <Section id="also">
+        <SectionHeading title="Also in the box" className="mb-10" />
+        <AlsoInTheBox />
+      </Section>
+
+      {/* 4. The argument, shown, on the page's one night section (H6). The id
+          is the one the nav's "Safe AI" and old links use. */}
+      <Section id="demo" night>
         <span id="governance" aria-hidden />
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
-          <div className="lg:col-span-5">
-            <SectionHeading
-              eyebrow="Safe AI"
-              title="Watch an agent get stopped"
-              subtitle="Priya can't post in #finance. Neither can her AI agent, and the attempt is written down."
-            />
-          </div>
-          <div className="lg:col-span-7">
-            <GovernedDemo />
-            {/* The proof path: run the same refusal in the demo, then check its record yourself. */}
-            <p className="mt-4 text-small text-muted-foreground">
-              The live demo runs the same check.{" "}
-              <Link href={site.demoDrillUrl()} className="link">
-                Run the drill yourself
-              </Link>
-              , then{" "}
-              <Link href="/verify" className="link">
-                check the record it wrote
-              </Link>
-              . No account, nothing to install.
-            </p>
-          </div>
+        <SectionHeading
+          layout="split"
+          eyebrow="Safe AI"
+          eyebrowDot="agent"
+          title="Watch an agent get stopped"
+          subtitle="Priya can't post in #finance. Neither can her AI agent, and the attempt is written down."
+          className="mb-10"
+        />
+        <GovernedDemo />
+        <GuaranteeList items={governance.points} layout="row" night className="mt-16" />
+        <div className="mt-14 grid gap-8 border-t border-border pt-8 lg:grid-cols-12 lg:gap-x-8">
+          <p className="m-0 text-body text-muted-foreground lg:col-span-5">
+            The live demo runs the same check.{" "}
+            <Link href={site.demoDrillUrl()} className="link">
+              Run the drill yourself
+            </Link>
+            , then{" "}
+            <Link href="/verify" className="link">
+              check the record it wrote
+            </Link>
+            . No account, nothing to install.
+          </p>
+          <RecordRows
+            tone="night"
+            className="lg:col-span-7"
+            rows={attemptAndRefusal}
+            caption={<>From the live demo&apos;s record, {recordDay(attemptAndRefusal[1].at)}. Each row carries the hash of the one before it.</>}
+          />
         </div>
-        <GuaranteeList items={governance.points} layout="row" hue="dusk" className="mt-16" />
       </Section>
 
-      {/* 5. What running it involves. Old links to #enterprise land here. */}
+      {/* 5. What running it involves (H7). Old links to #enterprise land here. */}
       <Section id="run">
         <span id="enterprise" aria-hidden />
         <Margin
@@ -190,7 +227,7 @@ export default async function HomePage() {
         </Margin>
       </Section>
 
-      {/* 6. How it compares, including where it loses. */}
+      {/* 6. How it compares, including where it loses (H8). */}
       <Section id="compare">
         <SectionHeading
           title="Against a Slack, Notion and Zoom stack, Mattermost and Huly"
@@ -200,55 +237,51 @@ export default async function HomePage() {
         <HomeComparison pricing={pricing} />
       </Section>
 
-      {/* 7. The price, and the questions people ask before paying. */}
+      {/* 7. The price (H9). */}
       <Section id="pricing">
-        <SectionHeading
-          eyebrow="Pricing"
-          title="Free for small teams. Pay once when you grow."
-          className="mb-10"
-        />
+        <SectionHeading eyebrow="Pricing" title="Free for small teams. Pay once when you grow." className="mb-10" />
         <PlanColumns pricing={pricing} />
         <p className="mt-6 text-small">
-          <Link href="/pricing" className="link tap-target">
-            Compare every plan, side by side
+          <Link href="/pricing" className="go tap-target">
+            Compare every plan <Arrow size={14} />
           </Link>
         </p>
       </Section>
 
+      {/* 8. Before you pay (H10): three groups, answers open. */}
       <Section id="faq">
-        <h2 className="text-h2 text-foreground">Before you pay</h2>
-        <QuestionList items={faqs} columns={2} className="mt-8" />
+        <SectionHeading title="Before you pay" className="mb-10" />
+        <QuestionGroups
+          groups={[
+            { label: "Paying", dot: "bg-camp-sun", items: [whyRupees, byQ("I pay once. What is included?")] },
+            { label: "Running it", dot: "bg-camp-lake", items: [byQ("What if OneMana shuts down?"), byQ("Do you support SSO and SCIM?")] },
+            { label: "AI and data", dot: "bg-agent", items: [byQ("Where does the model run?"), byQ("Can the assistant I already use work in OneCamp?")] },
+          ]}
+        />
       </Section>
 
-      {/* The close: the claim, the two ways in, and a quieter way to keep in
-          touch. It was a centred band followed by a separate email strip, the
-          last two blocks of every template; now one section on the grid, the
-          claim on the left and what to do about it on the right. */}
+      {/* The close (H11): the page's one band, the welcome spot with the six
+          hues turning round the ring, the claim, both ways in, and a quieter
+          way to keep in touch. The footer's camp flag follows straight on. */}
       <Section id="start" band="sky">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
-          <div className="lg:col-span-7">
-            {/* The workspace's ring with its people and channels round it: the
-                close's spot, on the band it sits on. */}
-            <SpotWelcome size={72} className="mb-6" />
-            <h2 className="text-balance text-h2 text-foreground">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-x-8">
+          <div className="lg:col-span-4">
+            <CloseSpot />
+          </div>
+          <div className="lg:col-span-8">
+            <h2 className="reveal text-balance text-close text-foreground">
               If you can&apos;t say what your AI is allowed to do, this is for you.
             </h2>
             {/* Specified verbatim by the redesign plan's §3.4 (landingDiet.test.ts pins it). */}
-            <p className="mt-4 max-w-xl text-body-lg text-muted-foreground">
+            <p className="mt-5 max-w-[620px] text-lead text-muted-foreground">
               It can only do what you can. It writes down everything it does. It runs on your own server.
             </p>
-          </div>
-          <div className="lg:col-span-5">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href={site.demoStartUrl} external variant="brand" size="lg">
-                Try the live demo
-              </ButtonLink>
-              <ButtonLink href="/free" variant="ghost" size="lg">
-                Install free
-              </ButtonLink>
+            <div className="mt-8">
+              {/* Try the live demo, Install free: the two ways in. */}
+              <WaysIn />
             </div>
-            <div className="mt-8 border-t border-border pt-6">
-              <h3 className="font-sans text-small font-medium tracking-normal text-foreground">Release notes by email</h3>
+            <div className="mt-10 max-w-[560px] border-t border-camp-sky/20 pt-6">
+              <h3 className="font-sans text-caption font-[590] tracking-normal text-foreground">Release notes by email</h3>
               <div className="mt-3">
                 <SubscribeForm
                   source="pricing"

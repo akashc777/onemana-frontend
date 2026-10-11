@@ -1,4 +1,16 @@
 import Link from "next/link";
+import type { CampHue } from "@/lib/campHue";
+import { Tile } from "@/components/ui/graphics/Tile";
+
+/** Each block's tile (site.md H7): a hue and a 1.25px line drawing on a 24 grid. */
+const ICON: Record<string, { hue: CampHue; d: string }> = {
+  Install: { hue: "sun", d: "M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4" },
+  Updates: { hue: "sky", d: "M12 3q1.4 7.6 9 9-7.6 1.4-9 9-1.4-7.6-9-9 7.6-1.4 9-9z" },
+  Backups: { hue: "lake", d: "M12 4a8 8 0 1 0 8 8M12 8a4 4 0 1 0 4 4M20 4v4h-4" },
+  "Company sign-in": { hue: "dusk", d: "M14.5 9.5a4 4 0 1 1-1.2-2.8M13.3 10.7 21 18.4V21h-2.6l-.9-.9v-1.6h-1.6l-1.2-1.2v-1.6h-1.6" },
+  "Moving from Slack": { hue: "berry", d: "M4 12h14M13 6l6 6-6 6" },
+  "Who runs it": { hue: "moss", d: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0" },
+};
 
 /**
  * What running OneCamp yourself involves, as a specification: the term in the
@@ -44,11 +56,18 @@ const SPEC: { term: string; detail: string; href?: string; link?: string }[] = [
 
 export function RunSpec() {
   return (
-    <dl className="grid gap-x-10 gap-y-8 border-t border-border pt-8 sm:grid-cols-2">
+    <dl className="m-0 grid gap-x-10 gap-y-8 border-t border-border pt-8 sm:grid-cols-2">
       {SPEC.map((s) => (
-        <div key={s.term}>
-          <dt className="text-small font-medium text-foreground">{s.term}</dt>
-          <dd className="mt-1.5 text-small text-muted-foreground">
+        <div key={s.term} className="reveal">
+          <dt className="flex items-center gap-3 text-body font-[590] text-foreground">
+          <Tile hue={ICON[s.term]!.hue} size="sm" className="size-7 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" className="size-4">
+              <path d={ICON[s.term]!.d} />
+            </svg>
+          </Tile>
+          {s.term}
+          </dt>
+          <dd className="m-0 mt-1.5 pl-10 text-small leading-[22px] text-muted-foreground">
             {s.detail}
             {s.href && (
               <>

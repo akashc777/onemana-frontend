@@ -1,7 +1,10 @@
 import { renderToString } from "react-dom/server"
 import { afterEach, describe, expect, it } from "vitest"
 
-import { ProductTabs, SHOT_SIZES, warm } from "@/components/site/ProductTabs"
+import { ProductTabs, warm } from "@/components/site/ProductTabs"
+
+/** Every screenshot is drawn at 1:1 (site.md S18): 1120 CSS pixels wide. */
+const SHOT_SIZES = "1120px"
 
 /**
  * A tab's screenshot starts downloading when the pointer or the keyboard
@@ -61,19 +64,28 @@ describe("warming a product tab", () => {
 })
 
 /**
- * Each surface keeps one camp hue from its tab to its picture: a tile on the
- * tab, the tint on the screenshot's stage.
+ * Each surface wears its hue from its chip to its stage (site.md H4, G7):
+ * Docs dusk, Tasks moss, Calendar sun, Agents the agent's indigo (never
+ * dusk), Chat sky. The tabs never move on their own, only the chosen panel
+ * renders, and each surface plays one moment whose words a screen reader
+ * hears in the panel.
  */
-describe("the product tabs' colour", () => {
+describe("the product tabs' colour and moments", () => {
     const html = renderToString(<ProductTabs />)
 
-    it("gives every tab a tile in its own hue, in the palette's chart order", () => {
-        const tiles = [...html.matchAll(/<span aria-hidden="true" class="(hue-[a-z]+) [^"]*bg-hue-tint/g)].map((m) => m[1])
-        expect(tiles).toEqual(["hue-sky", "hue-moss", "hue-sun", "hue-dusk", "hue-berry"])
+    it("gives every chip a dot in its own hue, in the tour's order", () => {
+        const tabs = [...html.matchAll(/<button[^>]*role="tab"[^>]*class="([^"]*)"/g)].map((m) => m[1]!.split(" ")[0])
+        expect(tabs).toEqual(["hue-dusk", "hue-moss", "hue-sun", "[--hue:var(--agent)]", "hue-sky"])
     })
 
-    it("sets the chosen surface's screenshot on that hue's tint", () => {
+    it("sets the chosen surface's screenshot on that hue's stage", () => {
         const panel = html.slice(html.indexOf('role="tabpanel"'))
-        expect(panel).toMatch(/class="rounded-lg border [^"]*hue-sky border-hue\/25 bg-hue-tint/)
+        expect(panel).toMatch(/class="hue-dusk relative isolate overflow-hidden rounded-3xl bg-hue-tint/)
+    })
+
+    it("plays one moment, hidden from screen readers, and says it in words", () => {
+        const panel = html.slice(html.indexOf('role="tabpanel"'))
+        expect(panel).toMatch(/<span aria-hidden="true" class="fx-slide/)
+        expect(panel.replace(/<!-- -->/g, "")).toContain("In the screenshot: Jonas added Rollback steps under Decisions.")
     })
 })

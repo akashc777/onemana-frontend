@@ -26,7 +26,8 @@ import { recordTime, shortHash, type RecordRow } from "@/lib/recordExcerpt";
  * Mono is for the record's data only (sequence, action, time, hashes); the
  * sentence a person reads is in the text face.
  */
-export function RecordRows({ rows, caption, className = "" }: { rows: RecordRow[]; caption?: ReactNode; className?: string }) {
+export function RecordRows({ rows, caption, className = "", tone = "page" }: { rows: RecordRow[]; caption?: ReactNode; className?: string; tone?: "page" | "night" }) {
+  if (tone === "night") return <NightRows rows={rows} caption={caption} className={className} />;
   return (
     <figure className={`m-0 ${className}`}>
       <ol className="m-0 list-none border-y border-border p-0" aria-label="Rows from the record">
@@ -75,6 +76,58 @@ function Hash({ value, matches }: { value: string; matches?: "above" | "below" }
   return (
     <>
       <span translate="no" className={matches ? "rounded-sm border border-muted-foreground/70 px-1 text-foreground" : undefined}>
+        {shortHash(value)}
+      </span>
+      {matches && <span className="sr-only">{` (matches the row ${matches})`}</span>}
+    </>
+  );
+}
+
+/**
+ * The record on a night ground (site.md S20): 12/18 mono in ink-2, the
+ * action in the agent's ink for an attempt and berry for a refusal, a 3px
+ * rule in the same, and each hash as a chip; the hashes two rows share wear
+ * one dusk ring, which is the chain.
+ */
+function NightRows({ rows, caption, className }: { rows: RecordRow[]; caption?: ReactNode; className: string }) {
+  return (
+    <figure className={`m-0 ${className}`}>
+      <ol className="m-0 list-none space-y-3 p-0" aria-label="Rows from the record">
+        {rows.map((r, i) => {
+          const prevMatches = i > 0 && rows[i - 1].hash === r.prev;
+          const hashMatches = i < rows.length - 1 && rows[i + 1].prev === r.hash;
+          return (
+            <li key={r.seq} className={`reveal border-l-[3px] pl-3 font-mono text-[12px] leading-[18px] text-muted-foreground ${r.refused ? "border-camp-berry" : "border-agent"}`}>
+              <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3">
+                <span>
+                  <span className={r.refused ? "text-camp-berry-ink" : "text-agent-ink"}>{r.action}</span> <span className="tabular-nums">#{r.seq}</span>
+                </span>
+                <time dateTime={r.at} className="tabular-nums">
+                  {recordTime(r.at)} UTC
+                </time>
+              </p>
+              <p className="m-0 mt-1 font-sans text-caption text-foreground">{r.summary}</p>
+              <p className="m-0 mt-2 flex flex-wrap items-center gap-1.5">
+                <span aria-hidden>prev</span>
+                <span className="sr-only">Hash of the row before: </span>
+                <Chip value={r.prev} matches={prevMatches ? "above" : undefined} />
+                <span aria-hidden className="ml-1.5">this</span>
+                <span className="sr-only">This row&apos;s hash: </span>
+                <Chip value={r.hash} matches={hashMatches ? "below" : undefined} />
+              </p>
+            </li>
+          );
+        })}
+      </ol>
+      {caption && <figcaption className="mt-4 text-caption text-muted-foreground">{caption}</figcaption>}
+    </figure>
+  );
+}
+
+function Chip({ value, matches }: { value: string; matches?: "above" | "below" }) {
+  return (
+    <>
+      <span translate="no" className={`inline-flex h-5 items-center rounded-[5px] bg-white/[0.06] px-1.5 text-foreground ${matches ? "ring-1 ring-camp-dusk/70" : ""}`}>
         {shortHash(value)}
       </span>
       {matches && <span className="sr-only">{` (matches the row ${matches})`}</span>}

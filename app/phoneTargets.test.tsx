@@ -35,7 +35,7 @@ import { templates } from "@/lib/templates"
  */
 // ui-field, ui-btn-md and ui-btn-lg are 44 px below md by construction
 // (lib/tailwindAppSystem.ts, held by app/appSystem.test.tsx).
-const TALL = /(^|\s)(min-h-11|max-md:min-h-11|h-11|w-11 h-11|tap-target|ui-field|ui-btn-md|ui-btn-lg)(\s|$)/
+const TALL = /(^|\s)(min-h-11|min-h-12|max-md:min-h-11|h-11|w-11 h-11|tap-target|ui-field|ui-btn-md|ui-btn-lg|ui-btn-xl)(\s|$)/
 
 /** The class attribute of each opening tag that matches. */
 function classesOf(html: string, tag: RegExp): string[] {
@@ -75,7 +75,7 @@ describe("a phone's targets", () => {
     const links = classesOf(html, /<a [^>]*>/g).filter((c) => !c.includes("link"))
     expectTall(links, "footer links")
     // Wide as well as tall: a one-word link ("Blog") is the column's width.
-    for (const c of links.filter((l) => l.includes("text-small"))) expect(c).toMatch(/(^|\s)w-full(\s|$)/)
+    for (const c of links.filter((l) => l.includes("text-body"))) expect(c).toMatch(/(^|\s)w-full(\s|$)/)
   })
 
   it("fields: the update form's address and a select", () => {
@@ -93,7 +93,7 @@ describe("a phone's targets", () => {
     expectTall(classesOf(renderToString(<CloudPlanCard pricing={onSale} />), /<button[^>]*role="radio"[^>]*>/g), "Cloud sizes")
     const demo = renderToString(<GovernedDemo />)
     expectTall(classesOf(demo, /<button[^>]*aria-label="Step[^>]*>/g), "walkthrough steps")
-    expectTall(classesOf(demo, /<button type="button" class="[^"]*ui-btn-secondary[^"]*"[^>]*>/g), "walkthrough play")
+    expectTall(classesOf(demo, /<button type="button" class="ui-btn [^"]*"[^>]*>/g), "walkthrough replay")
     const buy = readFileSync(join(__dirname, "../app/buy/BuyCheckout.tsx"), "utf8")
     expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(2)
     expect(buy).toContain("className={`flex min-h-11 flex-col")
@@ -110,7 +110,7 @@ describe("a phone's targets", () => {
 
   it("links that stand alone", () => {
     const tabs = renderToString(<ProductTabs />)
-    expectTall(classesOf(tabs, /<a[^>]*class="link[^"]*self-start[^"]*"[^>]*>/g), "Open it in the live demo")
+    expectTall(classesOf(tabs, /<a[^>]*class="go[^"]*"[^>]*>(?=Open it in the live demo)/g), "Open it in the live demo")
     expectTall(classesOf(renderToString(<PlanComparison pricing={defaultPricing} />), /<a[^>]*class="link[^"]*"[^>]*>/g), "plan table links")
     expectTall(classesOf(renderToString(<AudienceView a={alternatives[0]!} pricing={defaultPricing} />), /<a[^>]*href="\/pricing"[^>]*>(?=See every plan)/g), "See every plan")
     const t = renderToString(<TemplateView t={templates[0]!} />)

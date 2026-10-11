@@ -2,23 +2,38 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
 import { CloudPlanCard } from "@/components/site/CloudPlanCard"
-import { PlanColumns } from "@/components/site/PlanColumns"
+import { FREE_PILL, PlanColumns } from "@/components/site/PlanColumns"
 import { PlanComparison } from "@/components/site/PlanComparison"
 import { PLAN_HUE } from "@/components/site/planHues"
 import { defaultPricing, fmtINR } from "@/lib/pricing"
 
 /**
- * The plan cards: each in its own hue, saying who it is for and what arrives,
- * with prices from the pricing payload and nowhere else.
+ * The plan cards (design v3, site.md H9 and P2): three neutral cards, each
+ * plan's identity a dot in its hue, the licence lifted with e3 and a brand
+ * ring and no words claiming popularity, Free carrying "Most teams start
+ * here", one primary button, and prices from the pricing payload only.
  */
 describe("the plan cards", () => {
     const pricing = { ...defaultPricing, lifetime_inr: 31337, cloud_inr: 12345, cloud_seats: 42 }
     const html = renderToString(<PlanColumns pricing={pricing} />)
+    const cards = html.match(/<div data-plan="[a-z]+" class="[^"]*"/g) ?? []
 
-    it("give each plan a header in its hue, the same hue it has everywhere", () => {
-        const heads = [...html.matchAll(/class="(hue-[a-z]+) flex flex-col overflow-hidden/g)].map((m) => m[1])
-        expect(heads).toEqual([`hue-${PLAN_HUE.free}`, `hue-${PLAN_HUE.lifetime}`, `hue-${PLAN_HUE.cloud}`])
-        expect(html.match(/bg-hue-tint/g)).toHaveLength(3)
+    it("are three neutral cards, each plan's hue on its dot", () => {
+        expect(cards.map((c) => c.match(/class="(hue-[a-z]+)/)?.[1])).toEqual([`hue-${PLAN_HUE.free}`, `hue-${PLAN_HUE.lifetime}`, `hue-${PLAN_HUE.cloud}`])
+        for (const c of cards) expect(c).toMatch(/rounded-2xl bg-card p-6/)
+        expect(html).not.toContain("bg-hue-tint px-6")
+    })
+
+    it("lift the licence with e3 and a brand ring, and say nothing about popularity", () => {
+        expect(cards[1]).toMatch(/shadow-e3 ring-1 ring-brand\/45/)
+        expect(cards[0]).toMatch(/shadow-e1/)
+        expect(html).toContain(FREE_PILL)
+        expect(html).not.toMatch(/most popular|best value|save \d/i)
+    })
+
+    it("have one primary button, and Free reads Free, never a rupee zero", () => {
+        expect(html.match(/ui-btn-primary/g)).toHaveLength(1)
+        expect(html).not.toContain("₹0")
     })
 
     it("take every price from the pricing payload", () => {
@@ -32,18 +47,14 @@ describe("the plan cards", () => {
         expect(html.match(/You get: /g)).toHaveLength(3)
     })
 
-    // At 768 px the headers and descriptions wrapped to different heights and
-    // the prices and "You get" lines drifted out of line. Side by side, the
-    // cards now share a subgrid of seven rows, one per part, so each part
-    // lines up across the three whatever wraps.
+    // Each part lines up across the three whatever wraps: the cards share a
+    // subgrid of eight rows from md.
     it("share one row grid side by side, a row per part", () => {
-        const cards = html.match(/<div class="hue-[a-z]+ flex flex-col[^"]*"/g) ?? []
-        expect(cards).toHaveLength(3)
-        for (const c of cards) expect(c).toContain("md:row-span-7 md:grid md:grid-rows-subgrid md:gap-y-0")
-        const first = html.slice(html.indexOf(cards[0]!), html.indexOf(cards[1]!))
-        // header, price, estimate, who it is for, what it is, what you get, button
-        expect(first.match(/^<div class="hue-[^"]*">(<div|<p)/)).not.toBeNull()
-        expect((first.match(/<\/p><(p|div) class=/g) ?? []).length + 1).toBeGreaterThanOrEqual(6)
+        for (const c of cards) expect(c).toContain("md:row-span-8 md:grid md:grid-rows-subgrid md:gap-y-0")
+    })
+
+    it("reserve the estimate's two lines on every card, so the currency swap moves nothing", () => {
+        expect(html.match(/<span class="block h-9 text-caption/g)).toHaveLength(3)
     })
 })
 
@@ -68,21 +79,3 @@ describe("a plan's colour follows it", () => {
     })
 })
 
-/**
- * Stacked on a phone, the free plan's card showed a blank line where the
- * others show "≈ $258 at today's rate": its estimate line is empty and held
- * a minimum height. It is hidden while empty below md and keeps its subgrid
- * row from md, where the cards sit side by side.
- */
-describe("the free plan's card on a phone", () => {
-    it("has no blank line for the estimate it does not have", () => {
-        const html = renderToString(<PlanColumns pricing={defaultPricing} />)
-        // The line is the estimate in the reader's currency (RegionalMoney),
-        // in the text colour; Free's is empty.
-        const estimates = html.match(/<p class="mt-1 px-6 text-small text-foreground[^"]*">/g) ?? []
-        expect(estimates).toHaveLength(3)
-        for (const e of estimates) expect(e).toContain("empty:hidden md:empty:block")
-        expect(html).toMatch(/<p class="mt-1 px-6 text-small text-foreground empty:hidden md:empty:block"><\/p>/)
-        expect(html).not.toContain("min-h-5 px-6")
-    })
-})

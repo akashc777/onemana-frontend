@@ -1,5 +1,36 @@
 import type { ReactNode } from "react";
 
+type QA = { q: ReactNode; a: ReactNode; id?: string };
+
+/**
+ * Open questions in labelled groups (site.md S13, home's "Before you pay"):
+ * the group's name after its dot on the left (3 of 12 columns), its
+ * questions and answers open on the right. On a phone the group's name sits
+ * above its questions as a pill that sticks under the nav while they scroll.
+ */
+export function QuestionGroups({ groups }: { groups: readonly { label: string; dot: string; items: readonly QA[] }[] }) {
+  return (
+    <div className="space-y-10 lg:space-y-0">
+      {groups.map((g) => (
+        <div key={g.label} className="reveal grid gap-4 lg:grid-cols-12 lg:gap-x-8 lg:border-t lg:border-border lg:pb-10 lg:pt-6">
+          <p className="sticky top-16 z-10 m-0 flex h-8 w-fit items-center gap-2 rounded-full bg-background/90 pr-3 text-caption font-[510] text-foreground lg:static lg:col-span-3 lg:h-auto lg:items-start lg:bg-transparent">
+            <span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full lg:mt-1.5 ${g.dot}`} />
+            {g.label}
+          </p>
+          <ul role="list" className="m-0 grid list-none gap-x-10 gap-y-6 p-0 md:grid-cols-2 lg:col-span-9">
+            {g.items.map((f, i) => (
+              <li key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} className="border-t border-border pt-4 lg:border-0 lg:pt-0">
+                <h3 className="font-sans text-body font-[590] tracking-normal text-foreground">{f.q}</h3>
+                <p className="mt-2 text-small text-muted-foreground sm:text-body">{f.a}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /**
  * Questions and their answers, open, on a shared grid.
  *

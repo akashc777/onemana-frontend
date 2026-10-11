@@ -400,3 +400,13 @@ export const lifetimeBenefits = [
   "Runs on your own server",
   "Free updates within your major version",
 ];
+
+/**
+ * Each plan in three or four lines, for the home page's cards (site.md H9);
+ * /pricing shows the full lists. Facts only, each shipped.
+ */
+export const planHighlights = {
+  free: ["Chat, docs, tasks, calls and agents", "Your server, one command", "Updates within your major version"],
+  lifetime: ["Unlimited people, no per-seat fees", "SSO, LDAP, SCIM and audit export", "Commercial licence, no AGPL duties", "Email support from the person who builds it"],
+  cloud: ["Your own machine, no shared database", "SSL, monitoring and backups handled", "A model on your server, no key needed"],
+} as const;

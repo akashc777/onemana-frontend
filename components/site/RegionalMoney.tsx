@@ -32,6 +32,55 @@ export function PriceEstimate({ pricing, inr, why = "#currency" }: { pricing: Pr
   );
 }
 
+/**
+ * THE PRICE BLOCK'S TWO FIXED LINES (site.md S14). A 36px block reserved on
+ * every card, Free's included, so the currency swap after mount never moves
+ * anything (CLS 0):
+ *
+ *   ≈ $258                                    (13, ink, the figure at 590)
+ *   Billed in Indian rupees, your card converts (13, ink-2, linking to why)
+ *
+ * India sees "GST included" and no estimate; Free carries its own line.
+ * The figure sits in a 7ch tabular span, so dollars, euros or pounds never
+ * reflow, and it cross-fades in place (opacity only) when the reader's own
+ * currency arrives. No count-up: a number that moves reads as a deal timer.
+ */
+export function PriceLines({ pricing, inr, why = "#currency", free }: { pricing: Pricing; inr: number; why?: string; free?: string }) {
+  const region = useVisitorRegion();
+  if (free) {
+    return (
+      <span className="block h-9 text-caption text-muted-foreground">
+        <span className="block">{free}</span>
+      </span>
+    );
+  }
+  const estimate = localEstimate(pricing, inr, region);
+  const [billed, converts] = BILLED_IN_RUPEES.split(", ");
+  return (
+    <span className="block h-9 text-caption">
+      {region?.inIndia ? (
+        <>
+          <span className="block">&nbsp;</span>
+          <span className="block text-muted-foreground">GST included</span>
+        </>
+      ) : (
+        <>
+          <span key={estimate} className={`inline-block min-w-[7ch] font-[590] tabular-nums text-foreground ${region ? "fx-fade" : ""}`}>
+            {estimate}
+          </span>
+          <span className="sr-only"> · </span>
+          <span className="block text-muted-foreground first-letter:uppercase">
+            <a href={why} className="link text-muted-foreground decoration-current/40">
+              {billed}
+            </a>
+            , {converts}
+          </span>
+        </>
+      )}
+    </span>
+  );
+}
+
 /** One of taxWords' phrases, for the reader's region. */
 export function TaxText({ kind }: { kind: "priceLine" | "invoice" }) {
   const region = useVisitorRegion();

@@ -13,6 +13,10 @@ export interface ReleaseFacts {
   date: string;
   /** Server releases published in the 30 days before `now`. */
   last30: number;
+  /** The release's own headline, its notes' first bold line ("A calmer workspace"), when it has one. */
+  headline?: string;
+  /** Where the release's notes are read. */
+  url?: string;
 }
 
 export interface GithubRelease {
@@ -20,6 +24,14 @@ export interface GithubRelease {
   published_at?: string;
   draft?: boolean;
   prerelease?: boolean;
+  body?: string;
+  html_url?: string;
+}
+
+/** The first **bold** line of a release's notes, which is how every release names itself. */
+export function releaseHeadline(body: string | undefined): string | undefined {
+  const m = body?.match(/^\s*\*\*([^*\n]{3,80})\*\*\s*$/m);
+  return m ? m[1]!.trim() : undefined;
 }
 
 const SERVER_TAG = /^v2\.(\d+)\.(\d+)$/;
@@ -38,6 +50,8 @@ export function summariseReleases(list: GithubRelease[], now: Date): ReleaseFact
     version: `v2.${minor}`,
     date: published.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }),
     last30: server.filter((r) => Date.parse(r.published_at as string) >= since).length,
+    ...(releaseHeadline(latest.body) ? { headline: releaseHeadline(latest.body) } : {}),
+    ...(latest.html_url ? { url: latest.html_url } : {}),
   };
 }
 

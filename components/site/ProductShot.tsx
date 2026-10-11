@@ -1,206 +1,178 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
 import type { CampHue } from "@/lib/campHue";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
-import { HeroOrbit, type OrbitThing } from "@/components/ui/graphics/HeroOrbit";
+import { hueOrAgent } from "@/components/ui/graphics/hues";
+import { AgentSquare, CampCanvas, FloatChip } from "@/components/ui/v3";
 
 /**
- * A real screenshot of the product, in the reader's theme.
+ * Real screenshots of the product, in the reader's theme, shown the way the
+ * product is used: at 1:1 CSS pixels inside a window, cropped and never
+ * scaled (site.md S18).
  *
- * Taken from the live demo (the shared visitor's workspace) at 1440 by 900,
- * once in each theme, and saved under public/product. The page shows the
- * product rather than drawing it: the schematic mockups this replaces were the
- * single biggest reason the site read as a template.
+ * Taken from the live demo (the shared visitor's workspace) at 1120 by 700
+ * CSS pixels at DPR 2, once in each theme, and saved under public/product.
+ * They are the wave-2 captures, retaken once the app's v3 shell is live;
+ * until then they are cropped the same way.
  *
- * Both images are in the markup and CSS shows the one that matches the theme.
- * The hidden one is display:none, so a lazy one is never fetched.
- *
- * Both carry the real alt. display:none also takes the hidden one out of the
- * accessibility tree, so a screen reader hears one description in either
- * theme. (The dark one used to be alt="" and aria-hidden, which left a dark-mode
- * reader with no image at all.)
+ * Both themes are in the markup and CSS shows the one that matches. The
+ * hidden one is display:none, so a lazy one is never fetched; each carries
+ * the real alt, and display:none keeps the hidden one from being read.
  */
 export type ShotName = "channel" | "chat" | "docs" | "tasks" | "calendar" | "agents";
 
-export function ProductShot({
-  name,
-  alt,
-  priority = false,
-  className = "",
-  sizes = "(min-width: 1120px) 1120px, 220vw",
-  crop = false,
-  hue,
-}: {
-  name: ShotName;
-  /** The surface's camp hue: the stage takes its tint, as the tab's tile does. */
-  hue?: CampHue;
-  /** Leave the app's sidebar out on a wide screen, so the working area is shown nearer its real size. */
-  crop?: boolean;
-  alt: string;
-  priority?: boolean;
-  className?: string;
-  sizes?: string;
-}) {
-  const common = { width: 2240, height: 1400, sizes, priority } as const;
-  // On a phone the whole window would be too small to read, so the frame
-  // shows the working area at a readable size: the image at 220% width,
-  // shifted past the sidebar. From sm up it is the whole window.
-  // With crop, the same move on a wide screen: the sidebar is the left 16.5%
-  // of every capture, so the image is drawn at 120% and shifted by that much.
-  const img = `block h-auto w-[220%] max-w-none -ml-[34%] ${crop ? "sm:-ml-[19.8%] sm:w-[120%]" : "sm:ml-0 sm:w-full"}`;
+/** A wide capture's size in CSS pixels (2240 x 1400 at DPR 2). */
+export const SHOT = { width: 1120, height: 700 } as const;
+
+/**
+ * Where each tour shot's window starts reading, in CSS pixels of the
+ * capture: past the app's sidebar on every surface but the channel, whose
+ * sidebar is part of the story.
+ */
+const CROP: Record<ShotName, { x: number; y: number }> = {
+  channel: { x: 12, y: 0 },
+  chat: { x: 190, y: 0 },
+  docs: { x: 190, y: 40 },
+  tasks: { x: 190, y: 40 },
+  calendar: { x: 190, y: 40 },
+  agents: { x: 190, y: 40 },
+};
+
+/**
+ * A screenshot in its window (S18): r14, e4, clipped, the capture drawn at
+ * its own size from the crop's corner, so it reads as the app continuing
+ * past the frame. No border on the image itself.
+ */
+export function ProductWindow({ name, alt, className = "", loading = "lazy" }: { name: ShotName; alt: string; className?: string; loading?: "lazy" | "eager" }) {
+  const c = CROP[name];
   return (
-    <Stage className={className} hue={hue}>
-      {/* Keyed by the surface, so a new tab draws fresh images rather than
-          the old one until the new one loads; the stage around them stays,
-          and its tint follows the hue. */}
-      <div key={name} className="aspect-[4/3] overflow-hidden rounded-md border border-border bg-card sm:aspect-auto">
-        <Image src={`/product/${name}-light.webp`} {...common} alt={alt} className={`${img} dark:hidden`} />
-        <Image src={`/product/${name}-dark.webp`} {...common} alt={alt} className={`${img} hidden dark:block`} />
-      </div>
+    <div className={`relative overflow-hidden rounded-[14px] bg-card shadow-e4 ${className}`}>
+      {(["light", "dark"] as const).map((theme) => {
+        const { props } = getImageProps({ src: `/product/${name}-${theme}.webp`, width: SHOT.width, height: SHOT.height, sizes: `${SHOT.width}px`, alt });
+        return (
+          // getImageProps gives the srcSet for 1x and 2x; a plain <img> lets it sit at 1:1.
+          // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
+          <img
+            key={theme}
+            {...props}
+            loading={loading}
+            style={{ left: -c.x, top: -c.y, width: SHOT.width, height: SHOT.height }}
+            className={`absolute max-w-none ${theme === "light" ? "dark:hidden" : "hidden dark:block"}`}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * A tour shot on its stage (S18): a 20px-radius hue tint lit from the top
+ * right in the hue's strong cut, the window 48px in from the top and left and
+ * running off the right and bottom edges. `children` float over it (the
+ * tour's moment and spot tile).
+ */
+export function ProductShot({ name, alt, hue, className = "", children }: { name: ShotName; alt: string; hue: CampHue | "agent"; className?: string; children?: React.ReactNode }) {
+  return (
+    <Stage hue={hue} className={className}>
+      {/* Keyed by the surface: a new tab's window cross-fades in over the old (fx-fade). */}
+      <ProductWindow key={name} name={name} alt={alt} className="fx-fade absolute left-6 top-6 h-[640px] w-[1120px] sm:left-12 sm:top-12" />
+      {children}
     </Stage>
   );
 }
 
-/**
- * The ground a screenshot sits on, one hairline, no shadow. On the page's own
- * background the app's grey sidebar ran into the page and the image had no
- * edge; on a step of the palette it reads as a picture placed with care
- * (design/audit/storefront.md, idea 2). Given a camp hue, the ground is that
- * hue's tint, so a surface keeps the colour its tab gives it; otherwise the
- * muted surface.
- */
-export function Stage({ children, className = "", hue }: { children: React.ReactNode; className?: string; hue?: CampHue }) {
-  const ground = hue ? `${HUE_CLASS[hue]} border-hue/25 bg-hue-tint` : "border-border bg-muted";
-  return <div className={`rounded-lg border p-2 transition-colors duration-200 sm:p-3 lg:p-4 ${ground} ${className}`}>{children}</div>;
-}
-
-/** A numbered note on a figure: where it points, in percent of the image, and what it says. */
-export interface ShotNote {
-  /** Horizontal position of the marker, percent of the image width. */
-  x: number;
-  /** Vertical position of the marker, percent of the image height. */
-  y: number;
-  text: string;
-}
-
-/**
- * A figure's marker: a small square with a number, neutral, so it reads as an
- * annotation laid over the screenshot rather than as part of the app.
- */
-function Marker({ n, x, y }: { n: number; x: number; y: number }) {
+/** The tour's ground: the hue's tint with a 22% radial of its strong cut from the top right. Its tint changes over 240ms. */
+export function Stage({ children, className = "", hue }: { children: React.ReactNode; className?: string; hue: CampHue | "agent" }) {
   return (
-    <span
-      aria-hidden
-      style={{ left: `${x}%`, top: `${y}%` }}
-      className="absolute flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-sm bg-foreground font-mono text-caption font-medium text-background ring-4 ring-foreground/10"
+    <div
+      className={`${hueOrAgent(hue)} relative isolate overflow-hidden rounded-3xl bg-hue-tint transition-colors duration-panel ease-in-out ${className}`}
+      style={{ backgroundImage: "radial-gradient(70% 70% at 100% 0%, rgb(var(--hue) / 0.22), transparent 65%)" }}
     >
-      {n}
-    </span>
+      {children}
+    </div>
   );
 }
 
-/** The notes under a figure, numbered to match its markers. */
-function Notes({ notes }: { notes: ShotNote[] }) {
-  return (
-    <ol className="m-0 mt-5 grid list-none gap-x-8 gap-y-4 p-0 sm:grid-cols-3">
-      {notes.map((note, i) => (
-        <li key={note.text} className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-2 text-small text-muted-foreground">
-          <span aria-hidden className="hidden pt-px font-mono text-caption font-medium text-foreground sm:block">
-            {i + 1}
-          </span>
-          <span className="col-span-2 sm:col-span-1">{note.text}</span>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
-/**
- * The two hero images, phone and wide, for one theme. Each is its own <img>
- * with its own alt: a <picture> could pick the file by width, but a <source>
- * cannot carry an alt, so a phone reader heard the desktop description
- * (sidebar and all) for a phone screenshot that has no sidebar.
- */
-// The wide shot sits inside the hero's canvas (HeroOrbit: px-10 from sm up,
-// inside the page's gutters), so it is drawn about 128 px narrower than the
-// window, and at most 976 px wide.
-const HERO = {
-  desktop: { file: "channel", width: 2240, height: 1400, sizes: "(min-width: 1120px) 976px, calc(100vw - 128px)", show: "hidden sm:block" },
-  phone: { file: "channel-phone", width: 780, height: 1180, sizes: "384px", show: "block sm:hidden" },
-} as const;
+/** The 1px gif a hidden breakpoint's <picture> resolves to, so it never downloads a screenshot. */
+const NOTHING = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
 // React 18 knows the attribute only in lower case (next/image does the same).
 const HIGH_PRIORITY = { fetchpriority: "high" } as Record<string, string>;
 
-function HeroImage({ theme, kind, alt }: { theme: "light" | "dark"; kind: keyof typeof HERO; alt: string }) {
-  const v = HERO[kind];
-  const { props } = getImageProps({ src: `/product/${v.file}-${theme}.webp`, width: v.width, height: v.height, sizes: v.sizes, alt });
+/**
+ * One breakpoint's hero image, eager and at high priority because it is the
+ * LCP candidate (G8). A <picture> chooses the theme by the reader's system
+ * setting and resolves to a 1px gif at the other breakpoint, so exactly one
+ * screenshot downloads; the <img> carries this breakpoint's own alt. A
+ * reader who chose the other theme with the toggle gets a lazy copy in it
+ * (.hero-alt), shown by CSS only then.
+ */
+function HeroPicture({ file, width, height, alt, hideAt, className }: { file: string; width: number; height: number; alt: string; hideAt: string; className: string }) {
+  const pick = (theme: string) => getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, sizes: `${width}px`, alt }).props;
+  const light = pick("light");
+  const dark = pick("dark");
   return (
-    // getImageProps gives the optimised srcSet and the alt; a plain <img> is how it is used.
-    // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
-    <img {...props} {...HIGH_PRIORITY} loading="lazy" className={`${v.show} h-auto w-full rounded-md border border-border bg-card shadow-popover`} />
+    <>
+      <picture className="hero-os">
+        <source media={hideAt} srcSet={NOTHING} />
+        <source media="(prefers-color-scheme: dark)" srcSet={dark.srcSet} />
+        {/* eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element */}
+        <img {...light} {...HIGH_PRIORITY} loading="eager" className={className} />
+      </picture>
+      {(["light", "dark"] as const).map((t) => (
+        // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
+        <img key={t} {...(t === "light" ? light : dark)} loading="lazy" className={`hero-alt hero-alt-${t} hidden ${className}`} />
+      ))}
+    </>
   );
 }
 
 /**
- * The hero: the #engineering channel, wide on a wide screen and the app's own
- * phone layout below 640 px, in the reader's theme. Exactly one file is
- * fetched per visit, and the one a reader meets is described for what it
- * shows:
- * - four <img>, one per theme and width, each with its own alt (the phone
- *   one says phone);
- * - CSS shows one of them: the theme wrapper is display:none for the theme
- *   not in use (a next-themes class, not prefers-color-scheme, so a media
- *   query cannot choose it) and a breakpoint class hides the other width;
- * - all four are lazy, and a lazy image that is display:none is never
- *   fetched, so only the shown one downloads. display:none also takes the
- *   other three out of the accessibility tree, so one description is heard;
- * - nothing is preloaded: a preload link cannot carry these conditions, and
- *   preloading all four was what fetched every variant on every visit.
+ * THE HERO (site.md H2): the camp canvas, 720px tall and r24, with the
+ * #engineering channel at 1:1 in an e4 window and two floating chips that
+ * name real things in it. The window rises 24px on load (transform only: it
+ * is never faded, being the LCP candidate at 1440); the chips spring in at
+ * 420 and 540ms and lean towards the pointer.
  *
- * It sits on the hero's canvas (the playful layer's HeroOrbit): a camp tint
- * with the logo's ring and a dotted orbit turning slowly behind the shot, and
- * a few real things from the shot named on it. The notes stay under the
- * canvas, where the chips cannot cover them.
+ * On a phone the canvas holds the app's own phone layout at 1:1, 520px tall
+ * and fading into the canvas at its foot, with one chip.
  */
-export function HeroShot({
-  alt,
-  phoneAlt,
-  notes = [],
-  things = [],
-  hue = "sky",
-}: {
-  alt: string;
-  phoneAlt: string;
-  notes?: ShotNote[];
-  /** Real things from the screenshot, named on the canvas (at most three). */
-  things?: OrbitThing[];
-  /** The canvas's camp hue. */
-  hue?: CampHue;
-}) {
+export function HeroShot({ alt, phoneAlt }: { alt: string; phoneAlt: string }) {
   return (
     <figure className="m-0">
-      <HeroOrbit hue={hue} things={things}>
-        {/* Markers are placed on the wide screenshot only; on a phone the
-            app's phone layout is shown and the notes stand as a list. */}
-        <div className="relative mx-auto max-w-sm sm:max-w-none">
-          {(["light", "dark"] as const).map((theme) => (
-            <div key={theme} className={theme === "light" ? "dark:hidden" : "hidden dark:block"}>
-              <HeroImage theme={theme} kind="phone" alt={phoneAlt} />
-              <HeroImage theme={theme} kind="desktop" alt={alt} />
-            </div>
-          ))}
-          <div className="hidden sm:block">
-            {notes.map((note, i) => (
-              <Marker key={note.text} n={i + 1} x={note.x} y={note.y} />
-            ))}
+      <CampCanvas drift className="rounded-[20px] px-3.5 pb-3.5 pt-14 sm:h-[720px] sm:rounded-4xl sm:p-0">
+        {/* The agent: what matters most in the shot, at the top left. */}
+        <FloatChip
+          className="drift in-chip at-420 absolute left-3.5 top-3 z-20 sm:left-6 sm:top-6"
+          mark={<AgentSquare size={28} />}
+          title="Release Captain"
+          tag="Agent"
+          line="Acts for Sam, never beyond what Sam can do"
+          lineClassName="hidden sm:block"
+        />
+        <FloatChip
+          className="drift in-chip at-540 absolute right-6 top-6 z-20 hidden lg:inline-flex"
+          mark={
+            <span className="hue-sky inline-flex size-7 items-center justify-center rounded-lg bg-hue-tint text-[15px] font-semibold text-hue-ink" aria-hidden="true">
+              #
+            </span>
+          }
+          title="engineering"
+          line="4 people · 1 agent · 6 tasks"
+        />
+
+        {/* Wide: the window at 1:1, 60px in from the canvas's sides and 84 from its top. */}
+        <div className="in-rise relative hidden h-[596px] overflow-hidden rounded-[14px] bg-card shadow-e4 sm:absolute sm:inset-x-8 sm:top-[84px] sm:block lg:inset-x-[60px]">
+          <div className="absolute left-[-190px] top-0 h-[700px] w-[1120px] lg:left-[-12px]">
+            <HeroPicture file="channel" width={1120} height={700} alt={alt} hideAt="(max-width: 639px)" className="block h-[700px] w-[1120px] max-w-none" />
           </div>
         </div>
-      </HeroOrbit>
-      {notes.length > 0 && (
-        <figcaption>
-          <Notes notes={notes} />
-        </figcaption>
-      )}
+
+        {/* Phone: the app's phone layout at 1:1, cut at 520px. */}
+        <div className="in-rise relative mx-auto h-[520px] max-w-[390px] overflow-hidden rounded-[14px] bg-card shadow-e4 sm:hidden">
+          <div className="fade-foot absolute left-1/2 top-0 h-[590px] w-[390px] -translate-x-1/2">
+            <HeroPicture file="channel-phone" width={390} height={590} alt={phoneAlt} hideAt="(min-width: 640px)" className="block h-[590px] w-[390px] max-w-none" />
+          </div>
+        </div>
+      </CampCanvas>
     </figure>
   );
 }

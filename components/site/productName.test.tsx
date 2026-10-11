@@ -26,7 +26,10 @@ describe("names in the comparison table", () => {
         }
     })
 
-    it("draws the app's mark with no gradient, so no id can repeat on a page", () => {
+    // The nav's and the footer's rings are drawn in the campfire gradient
+    // (design v3, site.md S1); each gradient's id comes from useId, so two on
+    // one page can never share one.
+    it("draws the app's mark in the table, and gives every gradient on a page its own id", () => {
         const page = renderToString(
             <>
                 <Nav />
@@ -34,8 +37,10 @@ describe("names in the comparison table", () => {
                 <Footer />
             </>,
         )
-        expect(page).not.toContain("<linearGradient")
-        expect(page.match(/stroke="#c84f00"/g)?.length).toBeGreaterThanOrEqual(3)
+        const ids = [...page.matchAll(/<linearGradient id="([^"]+)"/g)].map((m) => m[1])
+        expect(ids.length).toBeGreaterThanOrEqual(2)
+        expect(new Set(ids).size).toBe(ids.length)
+        expect(page.match(/stroke="#c84f00"/g)?.length).toBeGreaterThanOrEqual(1)
     })
 })
 

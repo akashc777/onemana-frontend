@@ -26,8 +26,13 @@ describe("questions and answers", () => {
         expect(html).toContain("md:grid-cols-2")
     })
 
-    it("is what the home page, /pricing and the audience pages use", () => {
-        for (const rel of ["app/page.tsx", "app/pricing/page.tsx", "components/site/AudienceView.tsx"]) {
+    // The home page groups its six (site.md S13): Paying, Running it, AI and data.
+    it("is what the home page (in groups), /pricing and the audience pages use", () => {
+        const home = readFileSync(join(process.cwd(), "app/page.tsx"), "utf8")
+        expect(home).toContain("<QuestionGroups")
+        for (const label of ["Paying", "Running it", "AI and data"]) expect(home).toContain(`label: "${label}"`)
+        expect(home.indexOf("whyRupees")).toBeLessThan(home.indexOf('label: "Running it"'))
+        for (const rel of ["app/pricing/page.tsx", "components/site/AudienceView.tsx"]) {
             const src = readFileSync(join(process.cwd(), rel), "utf8")
             expect(src, rel).toContain("<QuestionList")
             expect(src, rel).not.toMatch(/FaqItem|<details/)

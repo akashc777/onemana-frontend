@@ -71,11 +71,11 @@ export function PlanCard({
   );
 }
 
-/** A benefit line with a tick in the plan's hue (the strong cut, a mark, not text). */
+/** A benefit line with a 16px moss check (site.md H9): a mark, not text. */
 export function PlanBenefit({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <svg className="mt-0.5 size-4 shrink-0 text-hue" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.564" aria-hidden="true">
+      <svg className="mt-0.5 size-4 shrink-0 text-camp-moss" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5625" aria-hidden="true">
         <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       {children}

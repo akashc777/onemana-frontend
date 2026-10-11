@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { type Pricing } from "@/lib/pricing";
 import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearUsd } from "@/lib/teamCost";
 import { Rupees, StackBasis, StackCost } from "@/components/site/RegionalMoney";
+import { LogoRing } from "@/components/ui/v3";
 
 /**
  * Facts in rows, four products in columns: the proof that stands in for the
@@ -24,6 +25,13 @@ import { Rupees, StackBasis, StackCost } from "@/components/site/RegionalMoney";
  * before: it used to start on the tint's edge, its words touching it.
  */
 const AFTER_TINT = "pl-4";
+/** The lifted column's cells: the raised surface between two hairlines. */
+const LIFT = "bg-card shadow-[inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)]";
+
+/** The row OneCamp loses, said with a berry chip. */
+function LoseChip() {
+  return <span className="hue-berry mt-1 inline-flex h-[22px] items-center rounded-md bg-hue-tint px-2 text-[12px] font-[510] text-hue-ink sm:flex sm:w-fit">We lose this one</span>;
+}
 const COLUMNS = ["OneCamp", "Slack + Notion + Zoom", "Mattermost", "Huly"] as const;
 
 type Row = { label: string; cells: [ReactNode, ReactNode, ReactNode, ReactNode]; loses?: boolean };
@@ -74,40 +82,76 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
     { name: "Mattermost", href: "https://mattermost.com/pricing/" },
     { name: "Huly", href: "https://huly.io/pricing" },
   ];
+  const all = rows(pricing);
   return (
     <div>
-      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <table className="w-full min-w-[44rem] border-collapse text-left text-small">
-          <caption className="sr-only">OneCamp compared with Slack, Notion and Zoom together, Mattermost and Huly</caption>
-          <thead>
-            <tr className="border-b border-border-strong">
-              <th scope="col" className="w-[22%] py-3 pr-4 font-medium text-muted-foreground">
-                <span className="sr-only">Fact</span>
-              </th>
-              {COLUMNS.map((c, i) => (
-                <th key={c} scope="col" className={`py-3 pr-4 align-bottom font-semibold ${i === 0 ? "rounded-t-md bg-muted pl-4 text-foreground" : "text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
+      {/* From sm: the table, with OneCamp's column lifted (site.md S12): the
+          raised surface in a hairline frame, standing 8px above and below
+          the table, under a 2px brand rule, its header carrying the ring. */}
+      <table className="reveal hidden w-full border-collapse text-left text-small sm:table">
+        <caption className="sr-only">OneCamp compared with Slack, Notion and Zoom together, Mattermost and Huly</caption>
+        <thead>
+          <tr>
+            <th scope="col" className="w-[22%] pb-3 pr-4 pt-5 font-[510] text-muted-foreground">
+              <span className="sr-only">Fact</span>
+            </th>
+            {COLUMNS.map((c, i) => (
+              <th key={c} scope="col" className={`pb-3 pr-4 align-bottom text-caption font-[510] ${i === 0 ? `${LIFT} rounded-t-xl border-t-2 border-brand pl-4 pt-5 text-foreground` : "pt-5 text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
+                {i === 0 ? (
+                  <span className="text-body font-[590]">
+                    <ProductName name={c} />
+                  </span>
+                ) : (
                   <ProductName name={c} />
-                </th>
+                )}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {all.map((r, ri) => (
+            <tr key={r.label} className="group">
+              <th scope="row" className="min-h-[52px] border-t border-border py-4 pr-4 align-top font-normal text-muted-foreground">
+                {r.label}
+                {r.loses && <LoseChip />}
+              </th>
+              {r.cells.map((cell, i) => (
+                <td
+                  key={i}
+                  className={`py-4 pr-4 align-top ${i === 0 ? `${LIFT} border-t border-border pl-4 font-[510] text-foreground ${ri === all.length - 1 ? "rounded-b-xl pb-6" : ""}` : "border-t border-border text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}
+                >
+                  {cell}
+                </td>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {rows(pricing).map((r) => (
-              <tr key={r.label} className="border-b border-border">
-                <th scope="row" className="py-3.5 pr-4 align-top font-normal text-muted-foreground">
-                  {r.label}
-                  {r.loses && <span className="mt-0.5 block text-caption text-muted-foreground">Where OneCamp loses</span>}
-                </th>
-                {r.cells.map((cell, i) => (
-                  <td key={i} className={`py-3.5 pr-4 align-top ${i === 0 ? "bg-muted pl-4 font-medium text-foreground" : "text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
-                    {cell}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
+
+      {/* A phone: one card per row, OneCamp's answer on a raised line and the
+          others in two columns under it. Nothing scrolls sideways. */}
+      <ul className="m-0 list-none space-y-3 p-0 sm:hidden">
+        {all.map((r) => (
+          <li key={r.label} className="rounded-xl bg-card p-4 shadow-e1">
+            <p className="m-0 flex flex-wrap items-center gap-2 text-caption font-[510] text-foreground">
+              {r.label}
+              {r.loses && <LoseChip />}
+            </p>
+            <p className="m-0 mt-3 flex gap-2 rounded-lg bg-muted px-3 py-2 text-small font-[510] text-foreground ring-1 ring-inset ring-border">
+              <LogoRing size={16} className="mt-0.5 shrink-0" />
+              <span>{r.cells[0]}</span>
+            </p>
+            <dl className="m-0 mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
+              {r.cells.slice(1).map((cell, i) => (
+                <div key={i}>
+                  <dt className="text-[12px] leading-4 text-faint">{COLUMNS[i + 1]}</dt>
+                  <dd className="m-0 mt-0.5 text-caption text-muted-foreground">{cell}</dd>
+                </div>
+              ))}
+            </dl>
+          </li>
+        ))}
+      </ul>
       <p className="mt-4 text-caption text-muted-foreground">
         From each product&apos;s own pages, checked {PRICES_CHECKED}:{" "}
         {sources.map((s, i) => (

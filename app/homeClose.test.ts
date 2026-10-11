@@ -15,15 +15,19 @@ const page = readFileSync(join(process.cwd(), "app/page.tsx"), "utf8")
 const close = page.slice(page.indexOf('<Section id="start"'))
 
 describe("the close of the home page", () => {
-    it("is one section, left-aligned, with nothing centred", () => {
+    // The one centred line is the phone's shared hint under the stacked
+    // buttons (site.md H1); every heading and block is left-aligned.
+    it("is one section, left-aligned, with nothing centred but the phone's hint", () => {
         expect(close.length, "no close section").toBeGreaterThan(100)
-        expect(page).not.toMatch(/text-center|justify-center/)
+        expect(page.match(/text-center/g) ?? []).toHaveLength(1)
+        expect(page).toMatch(/text-center text-\[12\.5px\][^"]*sm:hidden/)
+        expect(page).not.toMatch(/justify-center/)
     })
 
-    it("sits on a band with the welcome spot, the workspace's ring and its people", () => {
+    it("sits on a band with the 280px welcome spot: the ring, its people turning round it", () => {
         expect(page).toMatch(/<Section id="start" band="[a-z]+">/)
-        expect(close.indexOf("<SpotWelcome")).toBeGreaterThan(-1)
-        expect(close.indexOf("<SpotWelcome")).toBeLessThan(close.indexOf("this is for you."))
+        expect(close.indexOf("<CloseSpot")).toBeGreaterThan(-1)
+        expect(close.indexOf("<CloseSpot")).toBeLessThan(close.indexOf("this is for you."))
     })
 
     it("holds the claim, both ways in and the email form, in that order", () => {
