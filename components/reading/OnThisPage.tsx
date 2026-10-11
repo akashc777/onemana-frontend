@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ArticleHeading } from "@/lib/article";
 
 /**
@@ -12,6 +12,15 @@ import type { ArticleHeading } from "@/lib/article";
  */
 export function OnThisPage({ headings }: { headings: ArticleHeading[] }) {
   const [current, setCurrent] = useState(headings[0]?.id ?? "");
+  // The brand bar slides to the current item (site.md D2): it moves by
+  // transform alone, and takes the item's height at once, so nothing is laid
+  // out again as it moves.
+  const list = useRef<HTMLUListElement>(null);
+  const [bar, setBar] = useState<{ y: number; h: number } | null>(null);
+  useLayoutEffect(() => {
+    const a = list.current?.querySelector<HTMLElement>(`a[href="#${CSS.escape(current)}"]`);
+    if (a) setBar({ y: a.offsetTop, h: a.offsetHeight });
+  }, [current]);
 
   useEffect(() => {
     const ids = headings.map((h) => h.id);
@@ -45,7 +54,10 @@ export function OnThisPage({ headings }: { headings: ArticleHeading[] }) {
       <p id="on-this-page" className="mb-3 font-medium text-foreground">
         On this page
       </p>
-      <ul className="border-l border-border">
+      <ul ref={list} className="relative border-l border-border">
+        {bar && (
+          <li aria-hidden="true" className="pointer-events-none absolute -left-px top-0 w-0.5 rounded-full bg-brand transition-transform duration-panel ease-in-out" style={{ height: bar.h, transform: `translateY(${bar.y}px)` }} />
+        )}
         {headings.map((h) => {
           const active = h.id === current;
           return (
@@ -55,7 +67,7 @@ export function OnThisPage({ headings }: { headings: ArticleHeading[] }) {
                 onClick={() => setCurrent(h.id)}
                 aria-current={active ? "location" : undefined}
                 className={`-ml-px block border-l py-1.5 pr-2 transition-colors ${h.level === 3 ? "pl-6" : "pl-3"} ${
-                  active ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  active ? "border-transparent font-[510] text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {h.text}

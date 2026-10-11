@@ -161,7 +161,7 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
   // three tiles that each say "none".
   if (licences === 0 && overview.subscriptions.length === 0 && invoices === 0) {
     return (
-      <div className="flex flex-col items-start gap-6 rounded-lg border border-border bg-card p-6 sm:flex-row sm:items-center sm:p-8">
+      <div className="flex flex-col items-start gap-6 rounded-2xl bg-card shadow-e1 p-6 sm:flex-row sm:items-center sm:p-8">
         <SpotWelcome size={96} className="shrink-0" />
         <div className="min-w-0">
           <h2 className="text-h3 font-semibold text-foreground">Nothing here yet</h2>
@@ -242,7 +242,7 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
         ) : (
           <ul className="mt-4 space-y-3">
             {overview.licenses.map((l) => (
-              <li key={l.key} className="rounded-lg border border-border bg-card p-4 sm:p-5">
+              <li key={l.key} className="rounded-2xl bg-card shadow-e1 p-4 sm:p-5">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="text-small font-medium text-foreground">{licenceKind(l)}</p>
                   <p className="text-caption text-muted-foreground">Issued {formatDay(l.issued_at)}</p>
@@ -276,7 +276,7 @@ function Loading({ label }: { label: string }) {
 
 function ErrorState({ msg, onRetry }: { msg: string; onRetry: () => void }) {
   return (
-    <div role="alert" className="rounded-lg border border-border bg-card p-5">
+    <div role="alert" className="rounded-2xl bg-card shadow-e1 p-5">
       <p className="text-small font-medium text-foreground">This did not load</p>
       <p className="mt-1 text-small text-muted-foreground">{msg}</p>
       <button onClick={onRetry} className="btn-ghost mt-4 h-9 px-3.5 py-0">
@@ -342,7 +342,7 @@ function InvoicesTab() {
     <>
       {/* A phone gets a list: in the table, three lines a row and the download
           button off the right edge of the screen. */}
-      <ul className="divide-y divide-border rounded-lg border border-border bg-card tabular-nums sm:hidden">
+      <ul className="divide-y divide-border rounded-2xl bg-card shadow-e1 tabular-nums sm:hidden">
         {invoices.map((inv) => (
           <li key={inv.id} className="px-4 py-3">
             <div className="flex items-start justify-between gap-4">
@@ -364,7 +364,7 @@ function InvoicesTab() {
       {/* relative: the header's screen-reader label is absolutely positioned, and
           without a containing block inside the scroll box it escaped it and
           widened the page by 39 px on a phone. */}
-      <div className="relative hidden overflow-x-auto rounded-lg border border-border bg-card sm:block">
+      <div className="relative hidden overflow-x-auto rounded-2xl bg-card shadow-e1 sm:block">
         <table className="w-full min-w-[34rem] text-left text-small">
           <thead className="border-b border-border text-caption text-muted-foreground">
             <tr>
@@ -509,7 +509,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
     <div className="space-y-4">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       {subs.map((s) => (
-        <div key={s.id} className="rounded-lg border border-border bg-card p-4 sm:p-5">
+        <div key={s.id} className="rounded-2xl bg-card shadow-e1 p-4 sm:p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <div className="min-w-0">
               <p className="text-body font-semibold text-foreground">{s.label || "OneCamp Cloud"}</p>
@@ -604,7 +604,7 @@ function BillingTab({ overview, onChanged }: { overview: PortalOverview; onChang
   return (
     <div className="max-w-2xl">
       <p className="text-small text-muted-foreground">These appear on your GST invoices. To change the others, reply to your invoice email.</p>
-      <dl className="mt-4 rounded-lg border border-border bg-card px-4 sm:px-5">
+      <dl className="mt-4 rounded-2xl bg-card shadow-e1 px-4 sm:px-5">
         <Row label="Name" value={c.name} />
         <div className="grid gap-1 border-b border-border py-3 text-small sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-4">
           <dt className="text-muted-foreground">Email</dt>

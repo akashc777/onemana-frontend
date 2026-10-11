@@ -62,7 +62,7 @@ export function ChangeEmail({ current, onChanged }: { current: string; onChanged
   }
 
   return (
-    <div className="mt-3 space-y-2.5 rounded-lg border border-border bg-muted p-3 sm:p-4">
+    <div className="mt-3 space-y-2.5 rounded-xl bg-muted ring-1 ring-inset ring-border p-3 sm:p-4">
       {!sent ? (
         <>
           <label htmlFor="new-email" className="block text-caption text-muted-foreground">

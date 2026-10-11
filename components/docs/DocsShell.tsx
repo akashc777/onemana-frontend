@@ -125,21 +125,21 @@ export function DocsPager({
 }) {
   if (!prev && !next) return null;
   const card =
-    "hover-lift group flex min-h-[4.5rem] flex-col justify-start rounded-lg border border-border bg-card px-4 py-3 hover:border-border-strong";
+    "lift group flex min-h-[4.5rem] flex-col justify-start rounded-xl bg-card px-4 py-3 shadow-e1";
   return (
     <nav aria-label="More guides" className="mt-14 grid gap-3 sm:grid-cols-2">
       {prev ? (
         <Link href={`/docs/${prev.slug}`} rel="prev" className={card}>
-          <span className="text-caption text-muted-foreground">Previous</span>
-          <span className="mt-0.5 text-small font-medium text-foreground">{prev.title}</span>
+          <span className="text-[12px] font-[510] leading-4 text-faint">Previous</span>
+          <span className="mt-1 text-body font-[590] text-foreground">{prev.title}</span>
         </Link>
       ) : (
         <span className="hidden sm:block" />
       )}
       {next ? (
         <Link href={`/docs/${next.slug}`} rel="next" className={`${card} sm:items-end sm:text-right`}>
-          <span className="text-caption text-muted-foreground">Next</span>
-          <span className="mt-0.5 text-small font-medium text-foreground">{next.title}</span>
+          <span className="text-[12px] font-[510] leading-4 text-faint">Next</span>
+          <span className="mt-1 text-body font-[590] text-foreground">{next.title}</span>
         </Link>
       ) : null}
     </nav>

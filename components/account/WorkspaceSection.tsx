@@ -76,7 +76,7 @@ export function WorkspaceSection({
   if (!instances) return <div role="status" aria-label="Loading your workspace…" className="mb-10 h-40 rounded-lg bg-muted" />;
   if (onItsWay) {
     return (
-      <section className="mb-10 flex items-center gap-5 rounded-lg border border-border bg-card p-5 sm:p-6">
+      <section className="mb-10 flex items-center gap-5 rounded-2xl bg-card shadow-e1 p-5 sm:p-6">
         <SpotWelcome size={72} className="shrink-0" />
         <div className="min-w-0">
           <h2 className="text-body font-semibold text-foreground">Your workspace is on its way</h2>
@@ -92,7 +92,7 @@ export function WorkspaceSection({
   if (instances.length === 0) return null;
 
   return (
-    <section className="mb-10 rounded-lg border border-border bg-card p-5 sm:p-6">
+    <section className="mb-10 rounded-2xl bg-card shadow-e1 p-5 sm:p-6">
       <WorkspaceHeading />
       <div className="mt-5 space-y-6">
         {instances.map((inst) => (
@@ -287,7 +287,7 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
   const subject = `Own domain for ${current}`;
   const body = `Hello,\n\nPlease move my workspace ${current} to: \n(for example team.yourcompany.com)\n`;
   return (
-    <div className="mt-2 space-y-3 rounded-lg border border-border bg-muted p-4 text-small">
+    <div className="mt-2 space-y-3 rounded-xl bg-muted ring-1 ring-inset ring-border p-4 text-small">
       <p>
         Moving to your own domain is set up with our help for now. Tell us the address you want, for example{" "}
         <span className="font-mono">team.yourcompany.com</span>, and we do it with you.

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { hueFor } from "@/lib/campHue";
 import { FREE_SEATS } from "@/lib/freePlan";
 import {
   byWeek,
@@ -27,11 +29,28 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
   const weeks = byWeek(t);
   const others = templates.filter((o) => o.id !== t.id);
   const length = weeksLong(t);
+  const hue = hueFor(t.id);
   return (
     <>
       {/* The two ways in sit under the words they answer, 32 px down and
           full width on a phone, as on every other page. */}
-      <PageHeader eyebrow="Project template" title={t.name} subtitle={t.description} align="left">
+      <PageHeader
+        eyebrow="Project template"
+        size="read"
+        title={
+          <span className="flex items-center gap-4">
+            {/* The project tile (site.md T2): the hue's avatar gradient under a white mark. */}
+            <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-xl text-white" style={{ backgroundImage: `linear-gradient(140deg, rgb(var(--camp-${hue}-a1)), rgb(var(--camp-${hue}-a2)))` }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 6h16M4 12h10M4 18h6" />
+              </svg>
+            </span>
+            {t.name}
+          </span>
+        }
+        subtitle={t.description}
+        align="left"
+      >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href={demoTemplateUrl(t.id)} external variant="brand" size="lg">
             Use it in the live demo
@@ -43,10 +62,13 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
       <section className="pb-20 sm:pb-28">
         <div className="container-x">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
-            <ol className="grid gap-10" aria-label="The plan, week by week">
+            {/* A week timeline (site.md T2): a spine down the left, a node in
+                the template's hue at each week, the week's tasks as cards. */}
+            <ol className={`${HUE_CLASS[hue]} relative grid gap-10 pl-8 before:absolute before:bottom-2 before:left-[5px] before:top-2 before:w-0.5 before:rounded-full before:bg-line-2 before:content-['']`} aria-label="The plan, week by week">
               {weeks.map((w, i) => (
-                <li key={i}>
-                  <h2 className="font-sans text-small font-medium tracking-normal text-muted-foreground">Week {w.week}</h2>
+                <li key={i} className="reveal relative">
+                  <span aria-hidden="true" className="absolute -left-8 top-1 size-3 rounded-full bg-hue ring-4 ring-background" />
+                  <h2 className="font-sans text-small font-[590] tracking-normal text-foreground">Week {w.week}</h2>
                   <ul className="mt-3 grid gap-3">
                     {w.tasks.map((task) => (
                       <TaskCard key={task.name} task={task} />
@@ -57,7 +79,9 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
             </ol>
 
             <aside className="grid content-start gap-6 lg:sticky lg:top-24">
-              <section aria-labelledby="glance" className="rounded-lg border border-border p-5">
+              {/* One card holds what to know and how to start (T2). */}
+              <div className="rounded-2xl bg-card p-5 shadow-e1">
+              <section aria-labelledby="glance">
                 <h2 id="glance" className="text-small font-semibold text-foreground">At a glance</h2>
                 <dl className="mt-3 grid grid-cols-2 gap-3 text-small">
                   <div>
@@ -77,7 +101,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                 )}
               </section>
 
-              <section aria-labelledby="how" className="rounded-lg border border-border p-5">
+              <section aria-labelledby="how" className="mt-5 border-t border-border pt-5">
                 <h2 id="how" className="text-small font-semibold text-foreground">Start from it in OneCamp</h2>
                 <ol className="mt-3 grid list-decimal gap-2 pl-5 text-small text-muted-foreground">
                   <li>Open <span className="text-foreground">New project</span> and pick <span className="text-foreground">{t.name}</span> under Start from.</li>
@@ -90,8 +114,9 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                   and add it with <span className="text-foreground">Add a template file</span>.
                 </p>
               </section>
+              </div>
 
-              <nav aria-labelledby="more" className="rounded-lg border border-border p-5">
+              <nav aria-labelledby="more" className="px-1">
                 <h2 id="more" className="text-small font-semibold text-foreground">More templates</h2>
                 {/* A stacked list: each row is 44 px on a phone, as the
                     footer's are, so neighbouring targets never overlap. */}
@@ -126,9 +151,9 @@ function TaskCard({ task }: { task: TemplateTask }) {
         ? `${dayLabel(task.start_day)} to ${dayLabel(task.due_day)}`
         : dayLabel(task.due_day);
   return (
-    <li className="rounded-lg border border-border p-4">
+    <li className="rounded-xl bg-card p-4 shadow-e1">
       <div className="flex flex-col gap-y-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-x-4">
-        <h3 className="text-small font-semibold text-foreground">{task.name}</h3>
+        <h3 className="text-small font-[510] text-foreground">{task.name}</h3>
         <p className="text-caption tabular-nums text-muted-foreground">
           {when}
           {when && task.priority && " · "}

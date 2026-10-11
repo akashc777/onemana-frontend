@@ -90,7 +90,7 @@ describe("a template page's first screen", () => {
 
     it("stacks a task's day and priority under its name on a phone", () => {
         const html = renderToString(<TemplateView t={templates[0]} />)
-        const heads = html.match(/<li class="rounded-lg border border-border p-4"><div class="([^"]*)"/g) ?? []
+        const heads = html.match(/<li class="rounded-xl bg-card p-4 shadow-e1"><div class="([^"]*)"/g) ?? []
         expect(heads.length).toBeGreaterThan(3)
         for (const h of heads) expect(h).toContain("flex flex-col gap-y-1 sm:flex-row")
     })

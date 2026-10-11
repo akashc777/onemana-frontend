@@ -616,14 +616,16 @@ body {
 
   /* A code block and its copy button: the button sits beside the code, never
      over it, so a long line scrolls under nothing. */
+  /* The light terminal (site.md D2): the sunken surface at e1 and r12, so
+     a long guide's code reads calm. */
   .reading .code-block {
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
     margin: 1.4em 0;
-    border: 1px solid var(--line-c);
-    border-radius: 10px;
+    border-radius: 12px;
     background-color: rgb(var(--muted));
+    box-shadow: var(--e-e1);
   }
   .reading .code-block pre {
     flex: 1 1 auto;
@@ -631,7 +633,7 @@ body {
     margin: 0;
     padding: 0.85rem 0 0.85rem 1rem;
     border: 0;
-    border-radius: 10px;
+    border-radius: 12px;
     background: transparent;
     color: rgb(var(--foreground));
     font-size: 0.8125rem;

@@ -89,7 +89,7 @@ export function SummaryTile({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col rounded-lg border border-border bg-card p-4">
+    <div className="flex flex-col rounded-2xl bg-card shadow-e1 p-4">
       <div className="flex items-center gap-3">
         <Tile hue={hue} size="md">
           {icon}

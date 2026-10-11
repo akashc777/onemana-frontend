@@ -88,7 +88,7 @@ it("keeps the invoices table's scroll box a containing block, so its hidden head
   // The "Download" column's sr-only label is absolutely positioned; without a
   // positioned ancestor inside the scroll box it escaped it and made the page
   // 429 px wide on a 390 px phone.
-  expect(source("components/account/AccountDashboard.tsx")).toContain('className="relative hidden overflow-x-auto rounded-lg border border-border bg-card sm:block"');
+  expect(source("components/account/AccountDashboard.tsx")).toContain('className="relative hidden overflow-x-auto rounded-2xl bg-card shadow-e1 sm:block"');
 });
 
 it("lists invoices on a phone with each one's download in reach, and keeps the table for wider screens", () => {
