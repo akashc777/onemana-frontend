@@ -296,6 +296,10 @@ export function motionCss(): Record<string, unknown> {
     "@keyframes v3-bob": { "0%, 60%, 100%": { transform: "none" }, "30%": { transform: "translateY(-3px)" } },
     "@keyframes v3-shake": { "0%, 100%": { transform: "none" }, "25%": { transform: "translateX(-4px)" }, "50%": { transform: "translateX(4px)" }, "75%": { transform: "translateX(-2px)" } },
     "@keyframes v3-stamp": { from: { opacity: "0", transform: "scale(1.25) rotate(-6deg)" }, to: { opacity: "1", transform: "rotate(-6deg)" } },
+    // A field a failed check points at shakes once (S10); for reduced motion
+    // its ring flashes instead.
+    "@keyframes v3-flash": { "0%, 100%": { backgroundColor: "rgb(var(--card))" }, "40%": { backgroundColor: "rgb(var(--danger) / 0.12)" } },
+    ".ui-field[aria-invalid='true']": { animation: anim("v3-shake", t.shake, MS.easeInOut, "2") },
     "@keyframes v3-fade": { from: { opacity: "0" }, to: { opacity: "1" } },
     "@keyframes v3-slide": { from: { opacity: "0", transform: "translateY(10px)" }, to: { opacity: "1", transform: "none" } },
     "@keyframes v3-spring": { "0%": { transform: "scale(0.6)" }, "60%": { transform: "scale(1.1)" }, "100%": { transform: "none" } },
@@ -340,6 +344,7 @@ export function motionCss(): Record<string, unknown> {
     },
     "@media (prefers-reduced-motion: reduce)": {
       ".in-lift, .in-rise, .in-chip, .in-pop, .in-draw, .in-ping, .reveal, .spin-40, .spin-60, .spin-90r, .bob, .fx-shake, .fx-stamp, .fx-fade, .fx-slide, .fx-spring": { animation: "none !important" },
+      ".ui-field[aria-invalid='true']": { animation: `v3-flash ${ms(MS.durations.page)} ${MS.ease} 1 !important` },
       ".read-progress": { display: "none !important" },
       ".in-ping": { opacity: "0" },
       ".lift:hover, .lift-move:hover, .lift-2:hover": { translate: "none !important" },

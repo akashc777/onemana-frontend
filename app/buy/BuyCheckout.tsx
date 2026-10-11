@@ -80,6 +80,9 @@ export function BuyCheckout({
   }, []);
 
   const [email, setEmail] = useState("");
+  // The field a failed check points at (site.md S10): it takes the danger
+  // ring and shakes once, or flashes for reduced motion. Display only.
+  const [invalid, setInvalid] = useState<"" | "email">("");
   const [name, setName] = useState("");
   // Cloud: the workspace's address and whether it has AI, chosen before paying
   // so building starts from the payment itself. See lib/workspaceAddress.
@@ -133,8 +136,10 @@ export function BuyCheckout({
     e.preventDefault();
     if (!email.trim()) {
       setError("Please enter your email: your licence key is sent there.");
+      setInvalid("email");
       return;
     }
+    setInvalid("");
     // A name the check refused is said here, before the payment window opens.
     // One still being checked goes ahead: the backend checks it again before
     // the window opens, and once more when the payment arrives.
@@ -366,7 +371,7 @@ export function BuyCheckout({
               required
               hint={isCloud ? "You sign in to your workspace with it, and your invoices are sent here." : "Your licence key and invoice are sent here."}
             >
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@company.com" autoComplete="email" />
+              <input type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setInvalid(""); }} aria-invalid={invalid === "email" || undefined} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>
             <Field label="Name">
               <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Your name or company…" autoComplete="name" />
@@ -448,6 +453,10 @@ export function BuyCheckout({
               </p>
             )}
 
+            {/* On a phone the button stays in reach while the form is in view
+                (site.md B4): sticky at the foot, on the page at 90% with an e3
+                edge. Its width never changes, busy or not. */}
+            <div className="sticky bottom-3 z-20 -mx-2 rounded-ctl bg-background/95 p-2 shadow-e3 md:static md:mx-0 md:bg-transparent md:p-0 md:shadow-none">
             <Button type="submit" disabled={busy} variant="brand" size="xl" className="w-full">
               <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <rect x="5" y="11" width="14" height="9" rx="2" />
@@ -463,6 +472,7 @@ export function BuyCheckout({
                     ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
                     : `Pay ${withEstimate(fmtINR(pricing.lifetime_inr), localEstimate(pricing, pricing.lifetime_inr, region))} and get your key`}
             </Button>
+            </div>
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
             {/* Under the button, where they reassure at the moment of paying (B4). */}

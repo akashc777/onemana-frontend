@@ -118,11 +118,13 @@ const HIGH_PRIORITY = { fetchpriority: "high" } as Record<string, string>;
  * (.hero-alt), shown by CSS only then.
  */
 function HeroPicture({ file, width, height, alt, hideAt, className, density = false }: { file: string; width: number; height: number; alt: string; hideAt: string; className: string; density?: boolean }) {
-  // density: a 1x and a 2x file for an image drawn at a fixed width (the
-  // phone hero, about 360px), never a desktop width.
+  // density: the phone hero's own files, encoded once at 360 and 720 pixels
+  // wide (public/product/*-360.webp, *-720.webp, about 16 and 34 kB), as a
+  // 1x and a 2x: a phone never fetches a desktop width, and the LCP image
+  // costs no optimiser round trip.
   const pick = (theme: string) =>
     density
-      ? getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, alt, quality: 60 }).props
+      ? { src: `/product/${file}-${theme}-360.webp`, srcSet: `/product/${file}-${theme}-360.webp 1x, /product/${file}-${theme}-720.webp 2x`, width, height, alt, sizes: undefined as string | undefined }
       : capSrcSet(getImageProps({ src: `/product/${file}-${theme}.webp`, width, height, sizes: `${width}px`, alt, quality: 60 }).props, width);
   const light = pick("light");
   const dark = pick("dark");
@@ -151,8 +153,8 @@ function HeroPicture({ file, width, height, alt, hideAt, className, density = fa
  *
  * On a phone the canvas holds the app's own phone capture at its native
  * framing, the whole screen from the channel's header to the composer,
- * drawn at the window's width from a 1x and a 2x file (about 30 kB), with
- * one chip.
+ * drawn at the window's width from its own 1x and 2x files (16 and 34 kB),
+ * with one chip.
  */
 export function HeroShot({ alt, phoneAlt }: { alt: string; phoneAlt: string }) {
   return (
