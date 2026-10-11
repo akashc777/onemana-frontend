@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs"
 import { join, resolve } from "node:path"
 import { describe, expect, it } from "vitest"
+import { marketingUtilities } from "@/lib/tailwindAppSystem"
 
 /**
  * Headings on one scale. Every heading, and any text set in the display
@@ -25,12 +26,23 @@ function tsx(dir: string, out: string[] = []): string[] {
 }
 
 describe("the type scale", () => {
+  // The marketing scale (site.md G2): each step its phone, tablet and
+  // desktop sizes, from the one table, with the spec's tracking.
   it("names a step for every size a heading needs, the smaller screens' included", () => {
-    const config = readFileSync(join(ROOT, "tailwind.config.ts"), "utf8")
-    for (const step of ["display", '"display-md"', '"display-sm"', "h1", "title", '"title-sm"', "h2"]) {
-      expect(config).toMatch(new RegExp(`(^|\\s)${step}: \\["[\\d.]+rem", \\{ lineHeight`, "m"))
+    const u = marketingUtilities()
+    const want: Record<string, [number, number, number]> = { hero: [42, 56, 68], page: [34, 44, 52], h2: [32, 38, 44], close: [36, 48, 56], "title-read": [30, 36, 40], lead: [18, 19, 20], price: [36, 44, 44] }
+    for (const [step, [phone, tablet, desktop]] of Object.entries(want)) {
+      const r = u[`.text-${step}`] as Record<string, Record<string, string> | string>
+      expect(r, step).toBeTruthy()
+      const px = (v: unknown) => Number(String(v).replace("rem", "")) * 16
+      expect(px(r.fontSize), `${step} phone`).toBe(phone)
+      expect(px((r["@media (min-width: 640px)"] as Record<string, string>).fontSize), `${step} tablet`).toBe(tablet)
+      expect(px((r["@media (min-width: 1024px)"] as Record<string, string>).fontSize), `${step} desktop`).toBe(desktop)
     }
+    expect((u[".text-hero"] as Record<string, string>).letterSpacing).toBe("-0.024em")
+    expect((u[".text-hero"] as Record<string, string>).fontWeight).toBe("600")
     // h3 is the app's text-xl, from the one table (lib/appSystem.ts).
+    const config = readFileSync(join(ROOT, "tailwind.config.ts"), "utf8")
     expect(config).toContain("h3: appTheme.fontSize.h3")
   })
 

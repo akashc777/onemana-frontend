@@ -144,10 +144,11 @@ describe("the components are the app's shapes", () => {
     expect(sec["&:hover"]).toEqual({ boxShadow: "var(--e-e2)" })
   })
 
-  it("ui-field: the app's Input, raised at e1 with a halo on focus", () => {
+  // The storefront's forms are 40px from md and 44 on a phone (site.md S10).
+  it("ui-field: the app's Input, raised at e1 with a halo on focus, 40px for the site's forms", () => {
     const f = comps[".ui-field"] as Record<string, unknown>
     expect(rem(f.height)).toBe(APP.field.phoneHeight)
-    expect(rem((f[MD] as Record<string, unknown>).height)).toBe(32)
+    expect(rem((f[MD] as Record<string, unknown>).height)).toBe(40)
     expect(rem(f.fontSize)).toBe(APP.type[APP.field.phoneText][0])
     expect(rem((f[MD] as Record<string, unknown>).fontSize)).toBe(APP.type[APP.field.text][0])
     expect(rem(f.paddingLeft)).toBe(10)
@@ -254,20 +255,26 @@ describe("the logo is the app's mark", () => {
   })
 })
 
-describe("the frame is the app's", () => {
-  it("the nav is the app's top bar: its height, on the canvas", () => {
+// Design v3 for the storefront (site.md S1, G4): the page is the sheet,
+// edge to edge, and the nav is transparent at the top of it, 64px, taking
+// the page under a blur only once the page has scrolled.
+describe("the frame is the storefront's", () => {
+  it("the nav: 56px on a phone and 64 from lg, a class toggle for the blur, never a border", () => {
     const nav = read("components/site/Nav.tsx")
-    expect(nav).toMatch(/<header className="[^"]*\bbg-canvas\b/)
-    expect(nav).toContain(`h-${APP.topBar.height / 4} `)
-    expect(nav).not.toMatch(/<header className="[^"]*\bborder-b\b/)
+    expect(nav).toContain("h-14 ")
+    expect(nav).toContain("lg:h-16")
+    const parts = read("components/site/NavParts.tsx")
+    expect(parts).toMatch(/<header data-scrolled=\{scrolled \? "" : undefined\} className="nav-bar sticky top-0 z-50">/)
+    expect(parts).toContain("window.scrollY > 40")
+    const css = read("app/globals.css")
+    expect(css).toMatch(/\.nav-bar\[data-scrolled\] \{[^}]*backdrop-filter: blur\(12px\)/)
+    expect(css).not.toMatch(/\.nav-bar \{[^}]*backdrop-filter/)
   })
 
-  it("the page is a sheet on the canvas, at e-sheet", () => {
-    expect(read("app/layout.tsx")).toMatch(/className="site-sheet[\s"]/)
-    expect(read("app/layout.tsx")).toMatch(/<body className="[^"]*\bbg-canvas\b/)
+  it("the page is the sheet: white or #0B0C0E, edge to edge, no cream frame", () => {
+    expect(read("app/layout.tsx")).toMatch(/<body className="[^"]*\bbg-background\b/)
     const css = read("app/globals.css")
-    const at = css.indexOf("@media (min-width: 768px) {\n    .site-sheet")
-    expect(at, "the sheet's md rule").toBeGreaterThan(-1)
-    expect(css.slice(at, css.indexOf("}", at))).toMatch(/rounded-lg shadow-sheet/)
+    expect(css).not.toMatch(/\.site-sheet \{[^}]*shadow-sheet/)
+    expect(css).not.toContain("rgb(var(--canvas))")
   })
 })

@@ -15,21 +15,28 @@ interface SectionProps {
    */
   tone?: "page" | "muted";
   /**
-   * A full-width band in a camp hue's tint (the playful layer): at most every
-   * other section, and one band colour on a screen. The hue says what the
-   * section is about, the same hue it has everywhere on the site (dusk for
-   * agents and the record, for one). Text on it keeps its tokens, which hold
-   * AA on every tint (app/bandContrast.test.ts). Wins over tone.
+   * The page's one band (site.md S6): the hue's tint, fading to 70% at the
+   * foot, under a 1px rule in the hue. The hue says what the section is
+   * about, the same hue it has everywhere on the site. Text on it keeps its
+   * tokens, which hold AA on every tint (app/bandContrast.test.ts). Wins over
+   * tone.
    */
   band?: CampHue;
+  /**
+   * The page's one night section (S6): the dark page with inverted ink, in
+   * both themes. Only home uses it, for Safe AI.
+   */
+  night?: boolean;
   /** The id of the heading that names this section, for aria-labelledby. */
   labelledBy?: string;
 }
 
 // 96 on a wide screen and 64 on a phone (DESIGN.md, Space), with a little more
 // below than above: equal padding reads as a gap that is too big at the top.
-// No reveal on scroll: every section is visible to a crawler, a link preview,
-// a full-page capture and a fast reader alike.
+// Nothing is hidden on scroll: every section is visible to a crawler, a link
+// preview, a full-page capture and a fast reader alike. A heading's entrance
+// (.reveal) only moves it 8px, and only where the browser has a scroll
+// timeline (site.md G5).
 // Every page's sections keep this one rhythm (sectionRhythm.test.ts): 144 px
 // between two sections' content on a phone and 208 on a wide screen, and a
 // band's edge 64 and 96 above its content, 80 and 112 below.
@@ -44,17 +51,18 @@ const SPACING = SECTION_SPACING;
 /**
  * Semantic <section> with the site's width and vertical rhythm. No scroll
  * margin of its own: html's scroll-padding-top (globals.css) already stops an
- * anchor below the sticky nav, and a margin here added to it, so a link
- * landed 80 px lower on the screen than it meant to.
+ * anchor below the sticky nav.
  */
-export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page", band, labelledBy }: SectionProps) {
-  const ground = band
-    ? `${HUE_CLASS[band]} border-y border-hue/15 bg-hue-tint`
-    : tone === "muted"
-      ? "border-y border-border bg-muted/70"
-      : "";
+export function Section({ id, children, className = "", divider = false, spacing = "default", tone = "page", band, night = false, labelledBy }: SectionProps) {
+  const ground = night
+    ? "night"
+    : band
+      ? `${HUE_CLASS[band]} band`
+      : tone === "muted"
+        ? "border-y border-border bg-muted/70"
+        : "";
   return (
-    <section id={id} aria-labelledby={labelledBy} data-band={band} className={`relative ${ground} ${className}`}>
+    <section id={id} aria-labelledby={labelledBy} data-band={band} data-night={night ? "" : undefined} className={`relative ${ground} ${className}`}>
       <div className="container-x">
         {divider && tone === "page" && !band && <div className="section-divider" role="separator" aria-hidden />}
         <div className={SPACING[spacing]}>{children}</div>
@@ -64,26 +72,53 @@ export function Section({ id, children, className = "", divider = false, spacing
 }
 
 interface HeadingProps {
-  /** Grey, sentence case, and rare: at most one on a page. */
+  /** 13/510 after a brand dot (site.md S5), on at most every other section. */
   eyebrow?: string;
+  /** The eyebrow dot's colour, when the section has a hue of its own (agents' indigo, say). */
+  eyebrowDot?: "agent" | "berry";
   title: ReactNode;
   subtitle?: ReactNode;
+  /**
+   * S5's two layouts, alternating down a page: "stack" (the heading, then a
+   * 20/30 lead under it) and "split" (the heading on the left, a 17/27 lead
+   * on the right, aligned to its foot).
+   */
+  layout?: "stack" | "split";
   /** Centred only for a page's final call to action. */
   align?: "left" | "center";
   className?: string;
   /** The heading's level: h2 by default. */
   as?: "h1" | "h2";
+  id?: string;
 }
 
-/** A section's heading: left-aligned, one weight, no decoration. */
-export function SectionHeading({ eyebrow, title, subtitle, align = "left", className = "", as = "h2" }: HeadingProps) {
+const DOT = { agent: "[--eyebrow-dot:rgb(var(--agent))]", berry: "[--eyebrow-dot:rgb(var(--camp-berry))]" } as const;
+
+/** A section's heading (S5): H2 at 44/50, an optional eyebrow and lead; it rises 8px once as it enters. */
+export function SectionHeading({ eyebrow, eyebrowDot, title, subtitle, layout = "stack", align = "left", className = "", as = "h2", id }: HeadingProps) {
   const H = as;
   const centred = align === "center";
+  const eb = eyebrow && <p className={`eyebrow ${eyebrowDot ? DOT[eyebrowDot] : ""}`}>{eyebrow}</p>;
+  if (layout === "split") {
+    return (
+      <div className={`reveal grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-x-8 ${className}`}>
+        <div className="lg:col-span-7">
+          {eb}
+          <H id={id} className="text-balance text-h2 text-foreground">
+            {title}
+          </H>
+        </div>
+        {subtitle && <p className="max-w-[420px] text-body text-muted-foreground sm:text-[17px] sm:leading-[27px] lg:col-span-4 lg:col-start-9 lg:pb-1">{subtitle}</p>}
+      </div>
+    );
+  }
   return (
-    <div className={`${centred ? "mx-auto max-w-2xl text-center" : "max-w-2xl"} ${className}`}>
-      {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <H className="text-balance text-h2 text-foreground">{title}</H>
-      {subtitle && <p className="mt-3 text-body text-muted-foreground sm:text-body-lg">{subtitle}</p>}
+    <div className={`reveal ${centred ? "mx-auto max-w-2xl text-center" : "max-w-3xl"} ${className}`}>
+      {eb}
+      <H id={id} className="text-balance text-h2 text-foreground">
+        {title}
+      </H>
+      {subtitle && <p className="mt-4 max-w-[640px] text-lead text-muted-foreground">{subtitle}</p>}
     </div>
   );
 }
@@ -104,18 +139,15 @@ export function Margin({ aside, children, className = "" }: { aside: ReactNode; 
   );
 }
 
-/**
- * A heading for the margin: a section heading, at the section heading's size
- * (h2, 32 px). It was 28 px, a step of its own, so "What you are signing up
- * to run" sat beside "About paying" on /pricing a size apart.
- */
-export function MarginHeading({ title, subtitle, id }: { title: ReactNode; subtitle?: ReactNode; id?: string }) {
+/** A heading for the margin: the section heading's size, sticky beside its content on a wide screen. */
+export function MarginHeading({ title, subtitle, id, eyebrow }: { title: ReactNode; subtitle?: ReactNode; id?: string; eyebrow?: string }) {
   return (
-    <div className="lg:sticky lg:top-24">
+    <div className="reveal lg:sticky lg:top-24">
+      {eyebrow && <p className="eyebrow">{eyebrow}</p>}
       <h2 id={id} className="text-balance text-h2 text-foreground">
         {title}
       </h2>
-      {subtitle && <p className="mt-3 text-body text-muted-foreground">{subtitle}</p>}
+      {subtitle && <p className="mt-4 text-body text-muted-foreground">{subtitle}</p>}
     </div>
   );
 }

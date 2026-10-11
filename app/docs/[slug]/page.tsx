@@ -79,7 +79,7 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
               </>
             )}
           </nav>
-          <h1 className="mt-3 text-title-sm text-foreground sm:text-title">
+          <h1 className="mt-3 text-title-read text-foreground">
             {doc.title}
           </h1>
           {updated && (

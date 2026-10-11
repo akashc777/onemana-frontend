@@ -77,7 +77,7 @@ export function AccountLogin({
   return (
     <div className="container-x grid min-h-[calc(100dvh-3.5rem)] content-start gap-10 pb-24 pt-10 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_auto]">
       <div className="max-w-sm">
-        <h1 className="text-title-sm text-foreground sm:text-title">
+        <h1 className="text-title-read text-foreground">
           Your OneCamp account
         </h1>
         <p className="mt-3 text-body text-muted-foreground">

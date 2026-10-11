@@ -1,7 +1,7 @@
 import plugin from "tailwindcss/plugin"
 import type { CSSRuleObject } from "tailwindcss/types/config"
 
-import { ALPHA, APP, AVATAR, CAMP, ELEVATION, GLOW, SHARED, hexToTriple, tracking, type TypeStep } from "./appSystem"
+import { ALPHA, APP, AVATAR, CAMP, ELEVATION, GLOW, NIGHT, SHARED, hexToTriple, tracking, type TypeStep } from "./appSystem"
 
 /**
  * Builds the site from the one table (lib/appSystem.ts): the colour custom
@@ -58,6 +58,17 @@ export function colourTokens(theme: "light" | "dark"): Record<string, string> {
   return out
 }
 
+/** The night section's tokens (NIGHT): the dark page's ink and surfaces, and the dark camp cuts, in either theme. */
+export function nightTokens(theme: "light" | "dark"): Record<string, string> {
+  const out: Record<string, string> = { "--background": NIGHT.ground[theme].join(" ") }
+  for (const [name, rgb] of Object.entries(NIGHT.tokens)) out[`--${name}`] = rgb.join(" ")
+  for (const [name, hex] of Object.entries(CAMP.dark)) out[`--${name}`] = hexToTriple(hex).join(" ")
+  out["--line"] = "255 255 255"
+  out["--line-a"] = String(NIGHT.line)
+  out["--line-c"] = `rgb(255 255 255 / ${NIGHT.line})`
+  return out
+}
+
 /** A Tailwind colour for an alpha token, multiplying a class's opacity into the token's own. */
 export const alphaColour = (name: string, scale = 1) =>
   `rgb(var(--${name}) / calc(var(--${name}-a) * ${scale === 1 ? "<alpha-value>" : `${scale} * <alpha-value>`}))`
@@ -66,6 +77,8 @@ export const alphaColour = (name: string, scale = 1) =>
 export const appTheme = {
   borderRadius: {
     xs: px(APP.radius.xs),
+    ctl: px(APP.radius.ctl),
+    "4xl": px(APP.radius["4xl"]),
     sm: px(APP.radius.sm),
     DEFAULT: px(APP.radius.md),
     md: px(APP.radius.md),
@@ -202,7 +215,136 @@ export function appComponents(): Record<string, Record<string, unknown>> {
   return out
 }
 
-export default plugin(({ addBase, addComponents }) => {
+const SM = "@media (min-width: 640px)"
+const LG = "@media (min-width: 1024px)"
+
+/**
+ * The marketing scale as responsive utilities (site.md G2): text-hero,
+ * text-page, text-h2, text-close, text-title-read, text-lead and
+ * text-price, each its phone step, its tablet step from 640px and its
+ * desktop step from 1024px.
+ */
+export function marketingUtilities(): Record<string, Record<string, unknown>> {
+  const out: Record<string, Record<string, unknown>> = {}
+  for (const name of ["hero", "page", "h2", "close", "title-read", "lead", "price"] as const) {
+    const s = APP.marketing[name]
+    const step = (at: "desktop" | "tablet" | "phone") => ({ fontSize: px(s[at][0]), lineHeight: px(s[at][1]) })
+    out[`.text-${name}`] = {
+      ...step("phone"),
+      letterSpacing: em(s.tracking),
+      ...(s.weight !== 400 ? { fontWeight: String(s.weight) } : {}),
+      [SM]: step("tablet"),
+      [LG]: step("desktop"),
+    }
+  }
+  return out
+}
+
+/**
+ * MOTION (site.md G5), in four kinds and nothing else, every duration and
+ * curve from the table. The timing is published as custom properties for
+ * globals.css (--d-hover, --ease-out...), and the motion classes are built
+ * here so no other file writes a millisecond:
+ *
+ * - load choreography, hero only: in-lift (copy, 8px, transform only, since
+ *   the H1, the lead and the image are LCP candidates and an element at
+ *   opacity 0 is not painted), in-rise (the window, 24px), in-chip (a
+ *   floating chip springs in; decoration, so it may fade), in-pop (a tile),
+ *   in-draw (the sun stroke), in-ping (a dot's one ring); at-N delays them;
+ * - scroll entrance: reveal, 8px on a view() timeline where the browser has
+ *   one, never opacity, so nothing is ever hidden;
+ * - ambient: spin-40, spin-60, spin-90r and bob, paused by [data-paused];
+ * - response: fx-shake, fx-stamp, fx-fade, fx-slide, fx-spring and lift
+ *   (a card's hover, e1 to e2 and a pixel up, on pointers that hover).
+ *
+ * Under prefers-reduced-motion every one of them is off and the finished
+ * state shows, because every keyframe ends at the element's own state.
+ */
+const MS = APP.motion
+const ms = (n: number) => `${n}ms`
+/** The stagger steps a class can wait for: 60ms apart, plus the hero's own beats. */
+export const MOTION_DELAYS = [60, 120, 180, 240, 300, 340, 380, 420, 480, 540, 600, 700, 900, 1100, 1400, 2200] as const
+export const MOTION_TIMES = { lift: 520, rise: 700, chip: 420, pop: 220, draw: 700, ping: 1400, stamp: 360, shake: 180, fade: 160, bob: 1200, ambientFast: 40000, ambient: 60000, ambientSlow: 90000, moment: 280 } as const
+
+export function motionCss(): Record<string, unknown> {
+  const t = MOTION_TIMES
+  const anim = (name: string, dur: number, ease: string, extra = "both") => `${name} ${ms(dur)} ${ease} ${extra}`
+  const classes: Record<string, unknown> = {
+    ":root": {
+      "--d-press": ms(MS.durations.press),
+      "--d-hover": ms(MS.durations.hover),
+      "--d-pop": ms(MS.durations.pop),
+      "--d-panel": ms(MS.durations.panel),
+      "--d-spring": ms(MS.durations.spring),
+      "--d-page": ms(MS.durations.page),
+      "--d-fade": ms(t.fade),
+      "--ease-out": MS.ease,
+      "--ease-io": MS.easeInOut,
+      "--ease-spring": MS.spring,
+      "--lift-y": "6px",
+      [SM]: { "--lift-y": "8px" },
+    },
+    "@keyframes v3-lift": { from: { transform: "translateY(var(--lift-y))" }, to: { transform: "none" } },
+    "@keyframes v3-rise": { from: { transform: "translateY(24px)" }, to: { transform: "none" } },
+    "@keyframes v3-chip": { from: { opacity: "0", transform: "translateY(6px) scale(0.96)" }, to: { opacity: "1", transform: "none" } },
+    "@keyframes v3-pop": { from: { transform: "scale(0.9)" }, to: { transform: "none" } },
+    "@keyframes v3-draw": { from: { strokeDashoffset: "240" }, to: { strokeDashoffset: "0" } },
+    "@keyframes v3-ping": { "0%": { opacity: "0.9", transform: "scale(0.6)" }, "100%": { opacity: "0", transform: "scale(1.6)" } },
+    "@keyframes v3-reveal": { from: { transform: "translateY(var(--lift-y))" }, to: { transform: "none" } },
+    "@keyframes v3-spin": { to: { transform: "rotate(360deg)" } },
+    "@keyframes v3-spin-r": { to: { transform: "rotate(-360deg)" } },
+    "@keyframes v3-bob": { "0%, 60%, 100%": { transform: "none" }, "30%": { transform: "translateY(-3px)" } },
+    "@keyframes v3-shake": { "0%, 100%": { transform: "none" }, "25%": { transform: "translateX(-4px)" }, "50%": { transform: "translateX(4px)" }, "75%": { transform: "translateX(-2px)" } },
+    "@keyframes v3-stamp": { from: { opacity: "0", transform: "scale(1.25) rotate(-6deg)" }, to: { opacity: "1", transform: "rotate(-6deg)" } },
+    "@keyframes v3-fade": { from: { opacity: "0" }, to: { opacity: "1" } },
+    "@keyframes v3-slide": { from: { opacity: "0", transform: "translateY(10px)" }, to: { opacity: "1", transform: "none" } },
+    "@keyframes v3-spring": { "0%": { transform: "scale(0.6)" }, "60%": { transform: "scale(1.1)" }, "100%": { transform: "none" } },
+    ".in-lift": { animation: anim("v3-lift", t.lift, MS.ease) },
+    ".in-rise": { animation: anim("v3-rise", t.rise, MS.ease) },
+    ".in-chip": { animation: anim("v3-chip", t.chip, MS.spring) },
+    ".in-pop": { animation: anim("v3-pop", t.pop, MS.spring) },
+    ".in-draw": { strokeDasharray: "240", animation: anim("v3-draw", t.draw, MS.ease) },
+    ".in-ping": { animation: anim("v3-ping", t.ping, MS.ease) },
+    ".spin-40": { animation: `v3-spin ${ms(t.ambientFast)} linear infinite` },
+    ".spin-60": { animation: `v3-spin ${ms(t.ambient)} linear infinite` },
+    ".spin-90r": { animation: `v3-spin-r ${ms(t.ambientSlow)} linear infinite` },
+    ".bob": { animation: `v3-bob ${ms(t.bob)} ${MS.easeInOut} 3` },
+    "[data-paused] .spin-40, [data-paused] .spin-60, [data-paused] .spin-90r, [data-paused] .bob": { animationPlayState: "paused" },
+    ".fx-shake": { animation: anim("v3-shake", t.shake, MS.easeInOut, "2") },
+    ".fx-stamp": { animation: anim("v3-stamp", t.stamp, MS.spring) },
+    ".fx-fade": { animation: anim("v3-fade", t.fade, MS.ease) },
+    ".fx-slide": { animation: anim("v3-slide", t.moment, MS.ease) },
+    ".fx-spring": { animation: anim("v3-spring", t.chip, MS.spring) },
+    ".drift": { translate: "calc(var(--px, 0) * 2px) calc(var(--py, 0) * 2px)", transition: `translate ${ms(MS.durations.page)} ${MS.ease}` },
+    ".lift, .lift-move": {
+      // translate, not transform: a card that has revealed keeps its
+      // animation's end state on transform, which would win over a hover.
+      transitionProperty: "translate, box-shadow, background-color",
+      transitionDuration: ms(MS.durations.hover),
+      transitionTimingFunction: MS.ease,
+    },
+    "@media (hover: hover)": {
+      ".lift:hover": { translate: "0 -1px", boxShadow: "var(--e-e2)" },
+      ".lift-move:hover": { translate: "0 -1px" },
+      ".lift-2:hover": { translate: "0 -2px" },
+    },
+    "@supports (animation-timeline: view())": {
+      ".reveal": { animation: "v3-reveal linear both", animationTimeline: "view()", animationRange: "entry 0% entry 40%" },
+    },
+    "@media (prefers-reduced-motion: reduce)": {
+      ".in-lift, .in-rise, .in-chip, .in-pop, .in-draw, .in-ping, .reveal, .spin-40, .spin-60, .spin-90r, .bob, .fx-shake, .fx-stamp, .fx-fade, .fx-slide, .fx-spring": { animation: "none !important" },
+      ".in-ping": { opacity: "0" },
+      ".lift:hover, .lift-move:hover, .lift-2:hover": { translate: "none !important" },
+    },
+  }
+  for (const d of MOTION_DELAYS) classes[`.at-${d}`] = { animationDelay: ms(d) }
+  return classes
+}
+
+export default plugin(({ addBase, addComponents, addUtilities }) => {
   addBase({ ":root": colourTokens("light"), ".dark": colourTokens("dark") })
+  addBase({ ".night": nightTokens("light"), ".dark .night": nightTokens("dark") })
+  addBase(motionCss() as CSSRuleObject)
   addComponents(appComponents() as CSSRuleObject)
+  addUtilities(marketingUtilities() as CSSRuleObject)
 })

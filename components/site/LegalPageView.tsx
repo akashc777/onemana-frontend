@@ -22,7 +22,7 @@ export function LegalPageView({ slug }: { slug: string }) {
     <div className="container-x pb-24 pt-10 sm:pt-16 lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:gap-x-16">
       <article className="min-w-0">
         <header>
-          <h1 className="text-balance text-title-sm text-foreground sm:text-title">
+          <h1 className="text-balance text-title-read text-foreground">
             {page.title}
           </h1>
           {page.subtitle && <p className="mt-3 text-body-lg text-muted-foreground">{page.subtitle}</p>}

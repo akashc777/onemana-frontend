@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { Arrow } from "@/components/ui/v3";
 
 type Variant = "primary" | "brand" | "brandPremium" | "ghost" | "subtle";
 type Size = "sm" | "md" | "lg" | "xl";
@@ -38,6 +39,8 @@ interface CommonProps {
   size?: Size;
   className?: string;
   children: ReactNode;
+  /** The 16px arrow of a primary marketing CTA (site.md S2), moving 2px on hover. */
+  arrow?: boolean;
 }
 
 export function buttonClasses(variant: Variant = "primary", size: Size = "md", className = "") {
@@ -51,8 +54,15 @@ export function ButtonLink({
   size = "md",
   className = "",
   children,
+  arrow = false,
 }: CommonProps & { href: string; external?: boolean }) {
   const cls = buttonClasses(variant, size, className);
+  if (arrow) children = (
+    <>
+      {children}
+      <Arrow />
+    </>
+  );
   if (external || href.startsWith("http")) {
     return (
       <a href={href} target="_blank" rel="noreferrer" className={cls}>
@@ -70,10 +80,11 @@ export function ButtonLink({
 export const Button = forwardRef<
   HTMLButtonElement,
   CommonProps & ButtonHTMLAttributes<HTMLButtonElement>
->(function Button({ variant = "primary", size = "md", className = "", children, ...rest }, ref) {
+>(function Button({ variant = "primary", size = "md", className = "", children, arrow = false, ...rest }, ref) {
   return (
     <button ref={ref} className={buttonClasses(variant, size, className)} {...rest}>
       {children}
+      {arrow && <Arrow />}
     </button>
   );
 });

@@ -104,18 +104,11 @@ const config: Config = {
         display: ["var(--font-rupee)", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
-      // The marketing scale (DESIGN_V3.md §3.6). Size / line height /
-      // tracking. The sizes are the site's own layouts; the tracking is
-      // Inter's for each size, and the hero's display steps take the spec's
-      // -0.024em (Inter Display at 600).
+      // The marketing scale (DESIGN_V3.md §3.6, site.md G2). The responsive
+      // steps (text-hero, text-page, text-h2, text-close, text-title-read,
+      // text-lead, text-price) are built from the one table by
+      // lib/tailwindAppSystem.ts; these are the fixed text steps.
       fontSize: {
-        display: ["4rem", { lineHeight: "4.25rem", letterSpacing: `${APP.marketing.hero.tracking}em` }],
-        "display-md": ["3.5rem", { lineHeight: "3.6875rem", letterSpacing: `${APP.marketing.hero.tracking}em` }],
-        "display-sm": ["2.75rem", { lineHeight: "2.875rem", letterSpacing: `${APP.marketing.hero.tracking}em` }],
-        h1: ["3rem", { lineHeight: "3.25rem", letterSpacing: `${tracking(48)}em` }],
-        title: ["2.25rem", { lineHeight: "2.625rem", letterSpacing: `${tracking(36)}em` }],
-        "title-sm": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: `${tracking(30)}em` }],
-        h2: ["2rem", { lineHeight: "2.375rem", letterSpacing: `${tracking(32)}em` }],
         h3: appTheme.fontSize.h3,
         "body-lg": ["1.125rem", { lineHeight: "1.75rem", letterSpacing: `${tracking(18)}em` }],
         body: ["1rem", { lineHeight: "1.625rem", letterSpacing: `${tracking(16)}em` }],

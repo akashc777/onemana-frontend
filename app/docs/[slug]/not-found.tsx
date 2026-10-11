@@ -12,7 +12,7 @@ export default function DocNotFound() {
     <section className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-16">
       <div className="max-w-xl">
         <SpotError size={88} />
-        <h1 className="mt-6 text-balance text-title-sm text-foreground sm:text-title">
+        <h1 className="mt-6 text-balance text-title-read text-foreground">
           There is no guide at this address
         </h1>
         <p className="mt-3 text-body-lg text-muted-foreground">

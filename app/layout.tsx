@@ -57,8 +57,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FCFCFD" },
-    { media: "(prefers-color-scheme: dark)", color: "#0E0F11" },
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B0C0E" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -104,7 +104,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       {/* font-sans, not Inter's own class: the stack puts the one-glyph rupee
           face first (lib/fonts.ts), which Inter's class would leave out. */}
-      <body className="flex min-h-screen flex-col bg-canvas font-sans antialiased">
+      <body className="flex min-h-screen flex-col bg-background font-sans antialiased">
         <ThemeProvider>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
           <VisitorTracker />

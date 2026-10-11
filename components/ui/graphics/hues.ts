@@ -21,6 +21,17 @@ export const HUE_CLASS: Record<CampHue, string> = {
 }
 
 /**
+ * The agent's indigo as the current hue (G7: agents are indigo, never dusk),
+ * for a part that takes a hue where an agent stands in for a camp hue.
+ */
+export const AGENT_HUE_CLASS = "[--hue:var(--agent)] [--hue-tint:var(--agent-muted)] [--hue-ink:var(--agent-ink)]"
+
+/** The class for a camp hue or the agent's indigo. */
+export function hueOrAgent(hue: CampHue | "agent"): string {
+  return hue === "agent" ? AGENT_HUE_CLASS : HUE_CLASS[hue]
+}
+
+/**
  * A face without a photo: the hue's tint behind its ink initials, inside a
  * hairline of its strong cut. Ink on its tint is 5.9:1 or more in light and
  * 10.4:1 or more in dark (app/paletteContrast.test.ts).

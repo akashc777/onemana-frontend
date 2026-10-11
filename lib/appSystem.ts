@@ -121,6 +121,28 @@ export const ALPHA: Record<"light" | "dark", Record<string, [[number, number, nu
   },
 }
 
+/**
+ * NIGHT (site.md S6): the storefront's one dark section, the same in both
+ * themes, with ink inverted; in dark the ground steps down to #060708 so it
+ * still reads as a step. The camp hues take their dark cuts.
+ */
+export const NIGHT = {
+  ground: { light: [11, 12, 14], dark: [6, 7, 8] } as Record<"light" | "dark", [number, number, number]>,
+  tokens: {
+    foreground: [238, 238, 240],
+    "muted-foreground": [168, 171, 177],
+    faint: [114, 116, 123],
+    card: [20, 21, 24],
+    pop: [27, 28, 31],
+    muted: [15, 16, 18],
+    "brand-ink": [255, 138, 76],
+    agent: [154, 162, 246],
+    "agent-ink": [201, 205, 251],
+    "agent-muted": [30, 32, 64],
+  } as Record<string, [number, number, number]>,
+  line: 0.08,
+}
+
 /** The avatar cut (§3.5): two gradient stops per hue, the same in both modes. */
 export const AVATAR: Record<string, string> = {
   "camp-sun-a1": "#AD7300", "camp-sun-a2": "#855500",
@@ -196,8 +218,13 @@ export function hexToTriple(hex: string): [number, number, number] {
 }
 
 export const APP = {
-  /** onecamp-fe app/globals.css, @theme: --radius is 0.5rem; xs 4, sm 6, md 8, lg and xl 12, 2xl 16, 3xl 20. */
-  radius: { xs: 4, sm: 6, md: 8, lg: 12, xl: 12, "2xl": 16, "3xl": 20 },
+  /**
+   * onecamp-fe app/globals.css, @theme: --radius is 0.5rem; xs 4, sm 6, md 8,
+   * lg and xl 12, 2xl 16, 3xl 20. The storefront adds the spec's two
+   * marketing radii (site.md G3): ctl 10 for an xl button and a segmented
+   * track, and 4xl 24 for the hero's canvas.
+   */
+  radius: { xs: 4, sm: 6, md: 8, ctl: 10, lg: 12, xl: 12, "2xl": 16, "3xl": 20, "4xl": 24 },
 
   /**
    * onecamp-fe app/globals.css, @theme "THE APP SCALE": size and line height
@@ -224,14 +251,20 @@ export const APP = {
    * opsz 32), the owner's choice of 11 Oct 2026.
    */
   marketing: {
-    hero: { desktop: [68, 70], phone: [42, 46], weight: 600, tracking: -0.024 },
-    h2: { desktop: [44, 50], phone: [32, 38], weight: 600, tracking: -0.022 },
-    h3: { desktop: [24, 30], phone: [20, 26], weight: 590, tracking: -0.019 },
-    lead: { desktop: [20, 30], phone: [18, 28], weight: 400, tracking: -0.012 },
-    body: { desktop: [16, 26], phone: [16, 26], weight: 400, tracking: -0.011 },
-    small: { desktop: [14, 20], phone: [14, 20], weight: 400, tracking: -0.006 },
-    eyebrow: { desktop: [13, 16], phone: [13, 16], weight: 510, tracking: 0 },
-    price: { desktop: [44, 48], phone: [36, 40], weight: 600, tracking: -0.022 },
+    hero: { desktop: [68, 70], tablet: [56, 60], phone: [42, 46], weight: 600, tracking: -0.024 },
+    /** An inner page's H1 (site.md G2). */
+    page: { desktop: [52, 56], tablet: [44, 48], phone: [34, 40], weight: 600, tracking: -0.023 },
+    h2: { desktop: [44, 50], tablet: [38, 44], phone: [32, 38], weight: 600, tracking: -0.022 },
+    /** The final call to action's claim. */
+    close: { desktop: [56, 60], tablet: [48, 52], phone: [36, 40], weight: 600, tracking: -0.023 },
+    h3: { desktop: [24, 30], tablet: [22, 28], phone: [20, 26], weight: 590, tracking: -0.019 },
+    /** A doc's, a post's and a policy's H1. */
+    "title-read": { desktop: [40, 46], tablet: [36, 42], phone: [30, 36], weight: 600, tracking: -0.022 },
+    lead: { desktop: [20, 30], tablet: [19, 29], phone: [18, 28], weight: 400, tracking: -0.012 },
+    body: { desktop: [16, 26], tablet: [16, 26], phone: [16, 26], weight: 400, tracking: -0.011 },
+    small: { desktop: [14, 20], tablet: [14, 20], phone: [14, 20], weight: 400, tracking: -0.006 },
+    eyebrow: { desktop: [13, 16], tablet: [13, 16], phone: [13, 16], weight: 510, tracking: 0 },
+    price: { desktop: [44, 48], tablet: [44, 48], phone: [36, 40], weight: 600, tracking: -0.022 },
   },
 
   /**
@@ -284,7 +317,8 @@ export const APP = {
    * e1 with no border, a 1px accent ring at 50% and a 3px halo at 12% on
    * focus.
    */
-  field: { height: 32, phoneHeight: 44, paddingX: 10, text: "sm", phoneText: "base", radius: "md", ringMix: 50, haloMix: 12, disabledOpacity: 0.7 },
+  // The storefront draws its forms (/buy, /account) at 40px from md (site.md S10).
+  field: { height: 40, phoneHeight: 44, paddingX: 10, text: "sm", phoneText: "base", radius: "md", ringMix: 50, haloMix: 12, disabledOpacity: 0.7 },
 
   /** onecamp-fe app/globals.css @utility chip: 22px, r6, 12/510, the hover overlay in a hairline. */
   chip: { height: 22, paddingX: 8, text: "2xs", weight: 510, radius: "sm" },
@@ -309,6 +343,9 @@ export const APP = {
 
   /** onecamp-fe app/globals.css: one rendered 1.25px stroke whatever the size (stroke-width = 30 / size). */
   icon: { renderedStroke: 1.25 },
+
+  /** The storefront's gradient ring (site.md S1 and the mocks): the logo in the campfire, sun-orange to ember. */
+  logoGradient: ["#FF8A00", "#FF3D00"],
 } as const
 
 export type TypeStep = keyof typeof APP.type
