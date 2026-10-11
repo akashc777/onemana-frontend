@@ -80,6 +80,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   return (
     <article>
+      <div aria-hidden="true" className="read-progress fixed inset-x-0 top-0 z-[60] h-0.5 bg-brand" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <div className="container-x max-w-prose pt-10 sm:pt-16">

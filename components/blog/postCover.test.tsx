@@ -16,7 +16,9 @@ describe("a post's cover", () => {
   it("keeps a 16:10 box, filled, on its topic's tint, and loads first", () => {
     const html = renderToString(<PostCover src={media} hue="sun" />);
     expect(html).toContain("hue-sun");
-    expect(html).toContain("bg-hue-tint");
+    // No tinted frame since design v3: the cover sits at e2 on the page.
+    expect(html).toContain("shadow-e2");
+    expect(html).not.toContain("bg-hue-tint");
     expect(html).toContain("aspect-[16/10]");
     expect(html).toContain("object-cover");
     // next/image with priority: eager, fetched early, and resized for the screen.

@@ -328,11 +328,19 @@ export function motionCss(): Record<string, unknown> {
       ".lift-move:hover": { translate: "0 -1px" },
       ".lift-2:hover": { translate: "0 -2px" },
     },
+    // A post's reading progress (site.md BL2): a 2px brand bar scaling with
+    // the page's scroll, decoration only, and absent without scroll timelines.
+    "@keyframes v3-progress": { from: { transform: "scaleX(0)" }, to: { transform: "scaleX(1)" } },
+    ".read-progress": { display: "none" },
+    "@supports (animation-timeline: scroll())": {
+      ".read-progress": { display: "block", transformOrigin: "0 50%", animation: "v3-progress linear both", animationTimeline: "scroll(root)" },
+    },
     "@supports (animation-timeline: view())": {
       ".reveal": { animation: "v3-reveal linear both", animationTimeline: "view()", animationRange: "entry 0% entry 40%" },
     },
     "@media (prefers-reduced-motion: reduce)": {
       ".in-lift, .in-rise, .in-chip, .in-pop, .in-draw, .in-ping, .reveal, .spin-40, .spin-60, .spin-90r, .bob, .fx-shake, .fx-stamp, .fx-fade, .fx-slide, .fx-spring": { animation: "none !important" },
+      ".read-progress": { display: "none !important" },
       ".in-ping": { opacity: "0" },
       ".lift:hover, .lift-move:hover, .lift-2:hover": { translate: "none !important" },
     },

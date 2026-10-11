@@ -4,7 +4,8 @@ import { coverOptimizable } from "@/lib/blog";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 
 /**
- * A post's cover, framed on its topic's tint.
+ * A post's cover (site.md BL2): r16 at e2 with no tinted frame, since the
+ * cover carries its own colour; full bleed on a phone.
  *
  * Covers come in seven shapes (1440 by 900, 1280 by 720, square, and four
  * more), and the page used to reserve 1200 by 630 for all of them, so the
@@ -17,8 +18,8 @@ import { HUE_CLASS } from "@/components/ui/graphics/hues";
  */
 export function PostCover({ src, hue }: { src: string; hue: CampHue }) {
   return (
-    <div className={`${HUE_CLASS[hue]} rounded-2xl bg-hue-tint p-3 sm:p-5`}>
-      <div className="relative aspect-[16/10] overflow-hidden rounded-lg">
+    <div className={`${HUE_CLASS[hue]} -mx-4 sm:mx-0`}>
+      <div className="relative aspect-[16/10] overflow-hidden bg-muted shadow-e2 sm:rounded-2xl">
         <Image
           src={src}
           alt=""
@@ -28,8 +29,6 @@ export function PostCover({ src, hue }: { src: string; hue: CampHue }) {
           className="object-cover"
           unoptimized={!coverOptimizable(src)}
         />
-        {/* The cover's edge, drawn over it so a light cover does not melt into its tint. */}
-        <span aria-hidden className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-hue/20" />
       </div>
     </div>
   );
