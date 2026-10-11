@@ -3,6 +3,31 @@ import type { ReactNode } from "react";
 type QA = { q: ReactNode; a: ReactNode; id?: string };
 
 /**
+ * Questions as accordions (site.md S13), for /pricing and the audience
+ * pages: 56px rows, a 15/590 question, a 20px plus in the group's hue that
+ * turns 45° into a cross, and the answer in 16/26 ink-2, fading in when
+ * opened. `open` names the questions that start open (the trial and refund
+ * question on /pricing). A <details> each, so it works with no script.
+ */
+export function QuestionAccordion({ items, open = [], plus = "text-camp-sun", className = "" }: { items: readonly QA[]; open?: readonly number[]; plus?: string; className?: string }) {
+  return (
+    <div className={`border-t border-border ${className}`}>
+      {items.map((f, i) => (
+        <details key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} open={open.includes(i)} className="group border-b border-border">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 [&::-webkit-details-marker]:hidden">
+            <h3 className="m-0 font-sans text-body font-[590] tracking-normal text-foreground">{f.q}</h3>
+            <span aria-hidden="true" className={`text-[22px] font-normal leading-none transition-transform duration-pop ease-out group-open:rotate-45 ${plus}`}>
+              +
+            </span>
+          </summary>
+          <p className="fx-fade m-0 max-w-prose pb-5 text-body text-muted-foreground">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+/**
  * Open questions in labelled groups (site.md S13, home's "Before you pay"):
  * the group's name after its dot on the left (3 of 12 columns), its
  * questions and answers open on the right. On a phone the group's name sits

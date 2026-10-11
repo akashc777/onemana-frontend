@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { portalApi } from "@/lib/portalApi";
 import { CODE_LENGTH } from "@/lib/oneTimeCode";
 import CodeInput from "./CodeInput";
-import { SpotWelcome } from "@/components/ui/graphics/spots";
+import { CampCanvas, LogoRing } from "@/components/ui/v3";
 
 const inputCls =
   "ui-field";
@@ -71,28 +71,28 @@ export function AccountLogin({
     }
   }
 
-  // On a wide screen the form had the page to itself: a small card in the
-  // top left and the rest empty. The welcome spot (the workspace's ring with
-  // its people round it) sits opposite, as the error spot does on the 404.
+  // THE AUTH CARD (site.md AC1): the one place a centred column is right,
+  // on a soft camp canvas so the page around it is a designed ground rather
+  // than empty. There is no sign-up: only buyers have accounts.
   return (
-    <div className="container-x grid min-h-[calc(100dvh-3.5rem)] content-start gap-10 pb-24 pt-10 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_auto]">
-      <div className="max-w-sm">
-        <h1 className="text-title-read text-foreground">
-          Your OneCamp account
-        </h1>
-        <p className="mt-3 text-body text-muted-foreground">
-          Sign in to download invoices, view your licence, and manage your subscription.
+    <div className="container-x pb-24 pt-6 sm:pt-10">
+      <CampCanvas soft rings={false} className="flex min-h-[560px] items-start justify-center rounded-[20px] px-4 py-10 sm:min-h-[640px] sm:rounded-4xl sm:py-16">
+      <div key={step} className="in-lift w-full max-w-[440px] rounded-2xl bg-card p-6 shadow-e2 sm:p-8">
+        <LogoRing size={40} stroke={4} />
+        <h1 className="mt-5 text-h3 text-foreground">Sign in to your account</h1>
+        <p className="mt-2 text-small text-muted-foreground">
+          Download invoices, see your licence and manage Cloud.
         </p>
 
         {step === "email" ? (
-          <form onSubmit={sendCode} className="mt-8 space-y-4 rounded-lg border border-border bg-card p-5 sm:p-6">
+          <form onSubmit={sendCode} className="mt-6 space-y-4">
             {notice && (
               <p role="status" className="rounded-md bg-info/10 px-3 py-2 text-small text-info-ink">
                 {notice}
               </p>
             )}
             <div>
-              <label htmlFor="acc-email" className="mb-1.5 block text-small font-medium text-foreground">
+              <label htmlFor="acc-email" className="mb-1.5 block text-caption font-[510] text-foreground">
                 Email address
               </label>
               <input
@@ -116,19 +116,19 @@ export function AccountLogin({
                 {error}
               </p>
             )}
-            <button disabled={busy} className="btn-brand h-11 w-full py-0 sm:h-10">
+            <button disabled={busy} className="ui-btn ui-btn-lg ui-btn-primary w-full">
               {busy ? "Sending…" : "Email me a code"}
             </button>
           </form>
         ) : (
-          <form onSubmit={verify} className="mt-8 space-y-4 rounded-lg border border-border bg-card p-5 sm:p-6">
+          <form onSubmit={verify} className="fx-slide mt-6 space-y-4">
             {notice && (
               <p role="status" className="rounded-md bg-info/10 px-3 py-2 text-small text-info-ink">
                 {notice}
               </p>
             )}
             <div>
-              <label htmlFor="acc-code" className="mb-1.5 block text-small font-medium text-foreground">
+              <label htmlFor="acc-code" className="mb-1.5 block text-caption font-[510] text-foreground">
                 6-digit code
               </label>
               <CodeInput
@@ -139,7 +139,7 @@ export function AccountLogin({
                 value={code}
                 onChange={setCode}
                 placeholder="123456"
-                className={`${inputCls} text-center font-mono tracking-[0.5em] sm:text-base`}
+                className={`${inputCls} h-12 text-center font-mono text-[20px] font-semibold tracking-[0.5em] sm:h-12 sm:text-[20px]`}
               />
               <p className="mt-1.5 text-caption text-muted-foreground">Sent to {email}. It expires in 10 minutes.</p>
             </div>
@@ -148,7 +148,7 @@ export function AccountLogin({
                 {error}
               </p>
             )}
-            <button disabled={busy || code.length < CODE_LENGTH} className="btn-brand h-11 w-full py-0 sm:h-10">
+            <button disabled={busy || code.length < CODE_LENGTH} className="ui-btn ui-btn-lg ui-btn-primary w-full">
               {busy ? "Checking…" : "Sign in"}
             </button>
             <button
@@ -165,7 +165,7 @@ export function AccountLogin({
           </form>
         )}
       </div>
-      <SpotWelcome size={192} className="hidden lg:block" />
+      </CampCanvas>
     </div>
   );
 }

@@ -61,6 +61,30 @@ export function CloseOrbit() {
   )
 }
 
+/** /pricing's art (site.md P1): the three plans as dots (moss, sun, sky) orbiting a 96px gradient ring, at 40s. */
+export function PlanOrbit() {
+  const id = `po${useId().replace(/:/g, "")}`
+  const [a, b] = APP.logoGradient
+  return (
+    <svg aria-hidden="true" viewBox="0 0 240 240" width="240" height="240" fill="none">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={a} />
+          <stop offset="1" stopColor={b} />
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="104" className="stroke-line-3" strokeWidth="1.5" strokeDasharray="2 7" />
+      <circle cx="120" cy="120" r="76" className="stroke-line-2" strokeWidth="1.5" />
+      <circle cx="120" cy="120" r="36" stroke={`url(#${id})`} strokeWidth="14" />
+      <g className="spin-40" style={{ transformOrigin: "120px 120px" }}>
+        <circle cx="120" cy="16" r="9" className="hue-moss fill-hue" />
+        <circle cx={120 + 76 * Math.cos(0.5)} cy={120 + 76 * Math.sin(0.5)} r="10" className="hue-sun fill-hue" />
+        <circle cx={120 - 104 * Math.cos(0.9)} cy={120 + 104 * Math.sin(0.9)} r="8" className="hue-sky fill-hue" />
+      </g>
+    </svg>
+  )
+}
+
 /** The footer's corner ring (S16), at 10% ink, cropped by the page's edge. */
 export function FooterRing() {
   return (

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Celebration } from "@/components/site/Celebration";
 import { Button } from "@/components/ui/Button";
 import { site } from "@/lib/site";
 import { trackEvent } from "@/lib/track";
@@ -39,6 +40,20 @@ export function FreeCommand() {
   const [instantBusy, setInstantBusy] = useState(false);
   const [instantError, setInstantError] = useState("");
   const [copied, setCopied] = useState(false);
+  // The key types into its place (site.md S11): 18ms a character, never
+  // more than 600ms, and all at once for a reader who asked for less motion.
+  const [typed, setTyped] = useState(0);
+  useEffect(() => {
+    if (!instant) return;
+    const n = instant.key.length;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTyped(n);
+      return;
+    }
+    const step = Math.max(1, Math.ceil(n / (600 / 18)));
+    const t = window.setInterval(() => setTyped((c) => (c + step >= n ? (window.clearInterval(t), n) : c + step)), 18);
+    return () => window.clearInterval(t);
+  }, [instant]);
 
   // The quickest way in: the install command now, no email. The key it uses
   // is tied to no address, so it always installs the free plan.
@@ -73,11 +88,12 @@ export function FreeCommand() {
   };
 
   return (
-    <div className="mt-8 max-w-3xl">
-      {/* The page's own surface, like every code block on the site: a block
-          hard-coded dark in a light page reads as a different website. */}
-      <div className="overflow-hidden rounded-lg border border-border bg-muted text-foreground">
-        <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2.5">
+    <div className="in-lift at-120 mt-8 max-w-[760px]">
+      {/* The night terminal (site.md S11): the page's anchor, the same in
+          both themes, with the key's place ringed in sun until it is filled
+          in, and in moss once it is. */}
+      <div className="night overflow-hidden rounded-xl shadow-e3">
+        <div className="flex h-9 items-center justify-between gap-3 border-b border-border pl-4 pr-1.5">
           <span className="text-caption text-muted-foreground">Run on your server, as root</span>
           {instant ? (
             <button
@@ -86,33 +102,61 @@ export function FreeCommand() {
               // Drawn 28 px tall in the box's header; its hit area reaches
               // 44 px, inside the header's own padding. The inset counts
               // from inside the 1 px border, hence 9 px for 8 around it.
-              className="relative rounded-sm border border-border-strong bg-card px-2 py-1 text-caption font-medium text-foreground transition-colors after:absolute after:-inset-[9px] after:content-[''] hover:bg-highlight"
+              className="relative inline-flex h-7 items-center gap-1.5 rounded-md bg-white/[0.08] px-2.5 text-caption font-[510] text-foreground transition-colors after:absolute after:-inset-[9px] after:content-[''] hover:bg-white/[0.12]"
             >
-              {copied ? "Copied" : "Copy"}
+              {copied ? (
+                <span key="done" className="fx-spring inline-flex items-center gap-1.5 text-camp-moss">
+                  <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                  Copied
+                </span>
+              ) : (
+                "Copy"
+              )}
             </button>
           ) : null}
         </div>
-        <pre role={instant ? "status" : undefined} className="overflow-x-auto whitespace-pre-wrap break-all p-4 font-mono text-[0.8125rem] leading-6">
+        <span aria-live="polite" className="sr-only">
+          {copied ? "Copied" : ""}
+        </span>
+        <pre role={instant ? "status" : undefined} className="overflow-x-auto whitespace-pre-wrap p-4 font-mono text-[0.875rem] leading-6 text-foreground [overflow-wrap:anywhere]">
           {instant ? (
-            instant.install_command
+            <>
+              /bin/bash -c &quot;$(curl -fsSL {site.backendUrl}/onecamp/download/
+              <span className="rounded-[4px] px-1 text-camp-moss ring-1 ring-camp-moss/70">
+                {instant.key.slice(0, typed)}
+                <span className="sr-only">{instant.key.slice(typed)}</span>
+              </span>
+              )&quot;
+            </>
           ) : (
             <>
               /bin/bash -c &quot;$(curl -fsSL {site.backendUrl}/onecamp/download/
-              <span className="rounded-sm border border-dashed border-border-strong px-1 text-muted-foreground">your-key</span>)&quot;
+              <span className="rounded-[4px] border border-dashed border-camp-sun px-1 text-camp-sun-ink">your-key</span>)&quot;
             </>
           )}
         </pre>
       </div>
 
       {instant ? (
-        <p className="mt-3 text-small text-muted-foreground">
+        <p className="mt-3 flex items-start gap-2 text-small text-muted-foreground">
+          <Celebration>
+            <span className="hue-moss inline-flex size-5 items-center justify-center rounded-full bg-hue text-white">
+              <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+            </span>
+          </Celebration>
+          <span>
           It asks for {installerAsks}, then installs the whole workspace, web app included, for up to {instant.seat_limit} people.
           Your licence key is <code className="rounded-sm bg-muted px-1 py-0.5 font-mono text-caption text-foreground">{instant.key}</code>; keep
           it to install again.
+          </span>
         </p>
       ) : (
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button type="button" variant="brand" size="lg" onClick={getInstant} disabled={instantBusy}>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button type="button" variant="brand" size="lg" onClick={getInstant} disabled={instantBusy} className="w-full sm:w-auto">
             {instantBusy ? "Making your key…" : "Fill in my key"}
           </Button>
           <span className="text-small text-muted-foreground">One click makes a free key. Nothing to fill in.</span>

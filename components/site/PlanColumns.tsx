@@ -142,7 +142,7 @@ export function PlanColumns({
               <CloudChoice options={cloudOptions} title={<CardName H={H} hue={c.hue} name={c.name} />} pricing={pricing} body={c.body} list={<BenefitList items={c.list} />} gets={<Gets>{c.gets}</Gets>} />
             ) : (
               <>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3 self-start">
                   <CardName H={H} hue={c.hue} name={c.name} />
                   {c.pill && <span className="rounded-full bg-camp-moss-tint px-2 text-[12px] font-[510] leading-[22px] text-camp-moss-ink">{c.pill}</span>}
                 </div>

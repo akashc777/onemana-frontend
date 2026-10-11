@@ -111,7 +111,7 @@ describe("a phone's targets", () => {
   it("links that stand alone", () => {
     const tabs = renderToString(<ProductTabs />)
     expectTall(classesOf(tabs, /<a[^>]*class="go[^"]*"[^>]*>(?=Open it in the live demo)/g), "Open it in the live demo")
-    expectTall(classesOf(renderToString(<PlanComparison pricing={defaultPricing} />), /<a[^>]*class="link[^"]*"[^>]*>/g), "plan table links")
+    expectTall(classesOf(renderToString(<PlanComparison pricing={defaultPricing} />), /<a[^>]*class="ui-btn[^"]*"[^>]*>/g), "plan table buttons")
     expectTall(classesOf(renderToString(<AudienceView a={alternatives[0]!} pricing={defaultPricing} />), /<a[^>]*href="\/pricing"[^>]*>(?=See every plan)/g), "See every plan")
     const t = renderToString(<TemplateView t={templates[0]!} />)
     const list = t.slice(t.indexOf('id="more"'))

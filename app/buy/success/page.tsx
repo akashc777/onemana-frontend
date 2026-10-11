@@ -12,6 +12,7 @@ import { fetchPricingClient, setupEstimateFor, taxWords, type SetupEstimate } fr
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { glyphs } from "@/components/account/AccountParts";
+import { CampCanvas } from "@/components/ui/v3";
 import { Celebration } from "@/components/site/Celebration";
 
 export default function SuccessPage() {
@@ -87,8 +88,9 @@ function SuccessInner() {
         : "Your licence is ready";
 
   return (
-    <section className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-10 sm:pt-16">
-      <div className="max-w-2xl">
+    <section className="container-x min-h-[calc(100dvh-3.5rem)] pb-24 pt-6 sm:pt-10">
+      {/* The page's one camp canvas (site.md B6), with the plan's mark and the title on its paper. */}
+      <CampCanvas className="flex h-[220px] flex-col justify-end rounded-[20px] p-6 sm:h-[280px] sm:rounded-4xl sm:p-10">
         {direct ? (
           <Tile hue={mark.hue} size="lg">
             {mark.glyph}
@@ -102,9 +104,11 @@ function SuccessInner() {
             </Tile>
           </Celebration>
         )}
-        <h1 className="mt-5 text-balance text-title-read text-foreground">
+        <h1 className="in-lift mt-5 max-w-2xl text-balance text-page text-foreground">
           {title}
         </h1>
+      </CampCanvas>
+      <div className="mt-10 max-w-2xl">
 
         {isCloud ? (
           /* WHAT HAPPENS NEXT, AND WHERE TO FOLLOW IT. A buyer who named the
@@ -117,7 +121,7 @@ function SuccessInner() {
             <p className="mt-3 text-body-lg text-muted-foreground">
               Thank you for subscribing. We run your workspace for you: set up, backed up and kept up to date.
             </p>
-            <div className="mt-8 rounded-lg border border-border bg-card p-4 sm:p-5">
+            <div className="mt-8 rounded-2xl bg-card p-5 shadow-e1 sm:p-6">
               {address ? (
                 <>
                   <p className="font-medium text-foreground">We are setting up {address}</p>

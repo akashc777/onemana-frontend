@@ -80,7 +80,7 @@ export function planOptions(p: Pricing): PlanOption[] {
     },
     {
       key: "lifetime",
-      name: "Lifetime licence",
+      name: "Licence",
       summary: "The ready-made release for any number of people, under a commercial licence. Pay once.",
       price: `${dual(p.lifetime_usd, p.lifetime_inr)} once`,
       runs: "You, from our official release",

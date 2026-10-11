@@ -32,10 +32,12 @@ describe("questions and answers", () => {
         expect(home).toContain("<QuestionGroups")
         for (const label of ["Paying", "Running it", "AI and data"]) expect(home).toContain(`label: "${label}"`)
         expect(home.indexOf("whyRupees")).toBeLessThan(home.indexOf('label: "Running it"'))
-        for (const rel of ["app/pricing/page.tsx", "components/site/AudienceView.tsx"]) {
-            const src = readFileSync(join(process.cwd(), rel), "utf8")
-            expect(src, rel).toContain("<QuestionList")
-            expect(src, rel).not.toMatch(/FaqItem|<details/)
-        }
+        // /pricing folds its questions into accordions (site.md S13, P4),
+        // each a <details> with its <summary>; the trial question opens first.
+        const pricing = readFileSync(join(process.cwd(), "app/pricing/page.tsx"), "utf8")
+        expect(pricing).toContain("<QuestionAccordion items={questions} open={[0, 2]} />")
+        const audience = readFileSync(join(process.cwd(), "components/site/AudienceView.tsx"), "utf8")
+        expect(audience).toMatch(/<Question(List|Accordion)/)
+        expect(audience).not.toMatch(/FaqItem/)
     })
 })

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/site/PageHeader";
 import { PlanColumns } from "@/components/site/PlanColumns";
 import { PlanComparison } from "@/components/site/PlanComparison";
-import { QuestionList } from "@/components/site/marketing";
+import { QuestionAccordion } from "@/components/site/marketing";
+import { PlanOrbit } from "@/components/ui/graphics/v3marks";
 import { TaxQuestion } from "@/components/site/RegionalMoney";
-import { SECTION_END, Section, SectionHeading } from "@/components/ui/Section";
+import { Margin, MarginHeading, SECTION_END, Section } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { currencyNote, fmtINR, getPricing } from "@/lib/pricing";
@@ -58,8 +59,11 @@ export default async function PricingPage() {
   return (
     <>
       <PageHeader
-        title="Pricing"
+        eyebrow="Pricing"
+        title="Free for small teams. Pay once when you grow."
         subtitle={`Free for up to ${FREE_SEATS} people. Pay once for a licence when you grow, or let us run it for you.`}
+        art={<PlanOrbit />}
+        artOnPhone={false}
       />
 
       <section className={SECTION_END}>
@@ -71,12 +75,10 @@ export default async function PricingPage() {
       <PlanComparison pricing={pricing} />
 
       <Section divider>
-        <div className="grid gap-8 lg:grid-cols-12 lg:gap-x-8">
-          <div className="lg:col-span-4">
-            <SectionHeading title="About paying" />
-          </div>
-          <QuestionList items={questions} className="lg:col-span-8" />
-        </div>
+        <Margin aside={<MarginHeading title="About paying" />}>
+          {/* The trial and refund answer opens first; the rupee answer is a link target (#currency), so it opens too. */}
+          <QuestionAccordion items={questions} open={[0, 2]} />
+        </Margin>
       </Section>
     </>
   );

@@ -28,6 +28,8 @@ import { CloudGlyph, KeyGlyph } from "@/components/site/Glyphs";
 import { PlanBenefit } from "@/components/site/PlanCard";
 import { PLAN_HUE } from "@/components/site/planHues";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { Rings } from "@/components/ui/graphics/motifs";
+import { Dot } from "@/components/ui/v3";
 
 export type Plan = "lifetime" | "cloud";
 
@@ -180,11 +182,13 @@ export function BuyCheckout({
         onLoad={() => setScriptReady(true)}
       />
       <PageHeader
+        compact
         title="Buy OneCamp"
         subtitle={
           isCloud
-            ? // How long, from the backend's one estimate; nothing of its own here.
-              `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.sentence ?? "We email you the moment it is live."}`
+            ? // How long, from the backend's one estimate in its short form
+              // (site.md B1); the whole sentence sits under the pay button.
+              `Managed hosting, set up for you. ${setupEstimateFor(pricing, business)?.short ? `Live ${setupEstimateFor(pricing, business)?.short}.` : "We email you the moment it is live."}`
             : "A licence for your own server. Pay once, for any number of people."
         }
       />
@@ -198,25 +202,27 @@ export function BuyCheckout({
           <aside className="lg:col-start-1 lg:row-start-1">
 
             {/* Plan switch */}
-            <div className="grid grid-cols-2 gap-0.5 rounded-md border border-border bg-muted p-0.5 text-small">
+            <div className="relative grid grid-cols-2 gap-1 rounded-ctl bg-muted p-1 text-small ring-1 ring-inset ring-border">
               <button
                 type="button"
                 onClick={() => setPlan("lifetime")}
                 aria-pressed={!isCloud}
-                className={`min-h-11 rounded-sm px-3 py-2 font-medium transition-colors sm:min-h-0 ${!isCloud ? "bg-card text-foreground ring-1 ring-border" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${!isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
               >
+                <Dot hue={PLAN_HUE.lifetime} />
                 {/* Below 380 px the two labels do not fit side by side, and one
                     wrapped while the other did not: the qualifier is then read
                     but not shown. */}
-                Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span>
+                <span>Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span></span>
               </button>
               <button
                 type="button"
                 onClick={() => setPlan("cloud")}
                 aria-pressed={isCloud}
-                className={`min-h-11 rounded-sm px-3 py-2 font-medium transition-colors sm:min-h-0 ${isCloud ? "bg-card text-foreground ring-1 ring-border" : "text-muted-foreground hover:text-foreground"}`}
+                className={`min-h-11 rounded-sm px-3 py-2 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span>
+                <Dot hue={PLAN_HUE.cloud} />
+                <span>Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span></span>
               </button>
             </div>
 
@@ -227,7 +233,7 @@ export function BuyCheckout({
                 same offer used to sit below the form, four screens down on a
                 phone. The licence card below says what paying adds. */}
             {!isCloud && (
-              <p className="mt-4 border-l-2 border-border-strong pl-4 text-small text-muted-foreground">
+              <p className="mt-4 border-l-2 border-camp-moss/50 pl-4 text-small text-muted-foreground">
                 Up to {FREE_SEATS} people? OneCamp is free for you.{" "}
                 <a href="/free" className="link font-medium">
                   Get the install command
@@ -238,17 +244,22 @@ export function BuyCheckout({
 
             {/* The plan in its hue, the one its card has on /pricing: sun for
                 the licence, sky for Cloud. */}
-            <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} mt-6 border-t border-border pt-6`}>
-              <div className="flex items-baseline justify-between">
-                <span className="flex items-center gap-2 self-center font-medium text-foreground">
+            <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} relative isolate mt-6 overflow-hidden rounded-2xl bg-card shadow-e1`}>
+              {/* The plan's rings behind its price, turning a little when the plan changes (B2). */}
+              <span aria-hidden="true" className={`pointer-events-none absolute -right-12 -top-12 -z-10 opacity-60 transition-transform duration-page ease-out ${isCloud ? "rotate-[8deg]" : ""}`}>
+                <Rings size={180} hue={isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime} count={2} core={false} className="opacity-40" />
+              </span>
+              <div className="p-6">
+              <div className="flex items-baseline justify-between gap-4">
+                <span className="flex items-center gap-2 self-center text-body font-[590] text-foreground">
                   {isCloud ? <CloudGlyph className="size-4 shrink-0 text-hue" /> : <KeyGlyph className="size-4 shrink-0 text-hue" />}
                   {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
                 </span>
                 {/* Rupees are the price: they are what is charged. The licence
                     abroad is the one exception, once the backend charges dollars. */}
-                <span className="font-display text-h3 font-semibold text-foreground">
+                <span key={isCloud ? "c" : "l"} className="fx-fade text-right font-display text-price tabular-nums text-foreground">
                   {!isCloud && pricing.charge_usd && !isIndia ? fmtUSD(pricing.lifetime_usd) : fmtINR(isCloud ? price.inr : pricing.lifetime_inr)}
-                  {isCloud && <span className="font-sans text-small font-normal text-muted-foreground">{" " + price.per}</span>}
+                  {isCloud && <span className="font-sans text-body font-normal text-muted-foreground">{" " + price.per}</span>}
                 </span>
               </div>
               {/* Under the rupee price, the estimate in the buyer's own money
@@ -279,7 +290,7 @@ export function BuyCheckout({
                 <div
                   role="radiogroup"
                   aria-label="Plan"
-                  className={`mt-4 grid gap-0.5 rounded-md border border-border bg-muted p-0.5 text-caption ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
+                  className={`mt-4 grid gap-1 rounded-ctl bg-muted p-1 text-caption ring-1 ring-inset ring-border ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
                 >
                   {/* Each choice is its name over what it adds, the three
                       alike: as one line, "Team yearly · 2 months free"
@@ -293,7 +304,7 @@ export function BuyCheckout({
                         role="radio"
                         aria-checked={choice === b}
                         onClick={() => setBilling(b)}
-                        className={`flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 transition-colors ${choice === b ? "bg-card text-foreground ring-1 ring-border" : "text-muted-foreground hover:text-foreground"}`}
+                        className={`flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 transition-[background-color,box-shadow,color] duration-pop ${choice === b ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
                       >
                         <span className="font-medium">{name}</span>
                         {detail && <span className="font-normal">{detail}</span>}
@@ -302,30 +313,36 @@ export function BuyCheckout({
                   })}
                 </div>
               )}
-              <ul className="mt-5 space-y-2.5 text-small text-foreground">
+              <ul className="mt-5 space-y-2.5 border-t border-border pt-5 text-small text-foreground">
                 {benefits.map((b) => (
                   <PlanBenefit key={b}>{b}</PlanBenefit>
                 ))}
               </ul>
+              </div>
+              {/* THE MONEY RULE, BEFORE THE FORM. No trials and no refunds is a
+                  standing decision; said here, on the card's sunken foot, as the
+                  reason the demo and the free plan exist (B2). */}
+              <div className="flex flex-col gap-3 bg-muted px-6 py-4 shadow-[inset_0_1px_0_var(--line-c)] sm:flex-row sm:items-center sm:justify-between">
+                <p className="m-0 text-small text-foreground">
+                  No trials or refunds: try the{" "}
+                  <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">live demo</a>{" "}
+                  and the <a href="/free" className="link">free plan</a> first.
+                </p>
+                <ButtonLink href={site.demoStartUrl} external variant="ghost" size="sm" className="shrink-0 max-md:min-h-11">
+                  Open the live demo
+                </ButtonLink>
+              </div>
             </div>
-            {/* THE MONEY RULE, BEFORE THE FORM. No trials and no refunds is a
-                standing decision; said here, as the reason the demo and the free
-                plan exist, rather than as small print under the pay button. */}
-            <p className="mt-4 text-small text-foreground">
-              No trials or refunds: try the{" "}
-              <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">live demo</a>{" "}
-              and the <a href="/free" className="link">free plan</a> first.
-            </p>
           </aside>
 
-          <form onSubmit={handleSubmit} className="h-fit space-y-4 rounded-lg border border-border bg-card p-6 lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
+          <form onSubmit={handleSubmit} className="h-fit space-y-5 rounded-2xl bg-card p-6 shadow-e2 sm:p-7 lg:sticky lg:top-[88px] lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
             {isCloud && (
               <>
                 <Field label="Workspace address" required>
                   <WorkspaceAddressField value={slug} onChange={setSlug} onVerdict={setAddressVerdict} inputClassName={inputCls} />
                 </Field>
                 <fieldset>
-                  <legend className="mb-1.5 block text-small font-medium text-foreground">AI features</legend>
+                  <legend className="mb-1.5 block text-caption font-[510] text-foreground">AI features</legend>
                   <div role="radiogroup" aria-label="AI features" className="grid gap-2 sm:grid-cols-2">
                     {EDITION_CHOICES.map((c) => (
                       <button
@@ -334,7 +351,7 @@ export function BuyCheckout({
                         role="radio"
                         aria-checked={edition === c.value}
                         onClick={() => setEdition(c.value)}
-                        className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left transition-colors ${edition === c.value ? "border-brand bg-brand-soft" : "border-border-strong bg-card hover:bg-muted"}`}
+                        className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left transition-colors ${edition === c.value ? "border-brand/60 bg-brand-soft" : "border-border bg-card hover:bg-hover"}`}
                       >
                         <span className="block text-small font-medium text-foreground">{c.label}</span>
                         <span className="mt-0.5 block text-caption text-muted-foreground">{c.hint}</span>
@@ -382,8 +399,11 @@ export function BuyCheckout({
               /* Optional, folded away: most buyers pay as themselves. A
                  company abroad needs its name, address and tax number on the
                  invoice to expense it (owner decision D2). */
-              <details className="rounded-md border border-border px-3.5 py-2.5" open={Boolean(company || address || taxId)}>
-                <summary className="cursor-pointer text-small font-medium text-foreground">Add company details for the invoice</summary>
+              <details className="group rounded-ctl bg-muted px-3.5 py-2.5 ring-1 ring-inset ring-border" open={Boolean(company || address || taxId)}>
+                <summary className="flex min-h-7 cursor-pointer list-none items-center justify-between text-small font-[510] text-foreground [&::-webkit-details-marker]:hidden">
+                  Add company details for the invoice
+                  <span aria-hidden="true" className="text-[18px] font-normal leading-none text-faint transition-transform duration-pop group-open:rotate-45">+</span>
+                </summary>
                 <div className="mt-3 space-y-4">
                   <Field label="Company name">
                     <input value={company} onChange={(e) => setCompany(e.target.value)} className={inputCls} maxLength={120} autoComplete="organization" />
@@ -406,17 +426,33 @@ export function BuyCheckout({
                 payment to an Indian company. Both stop a buyer abroad when
                 they come as a surprise. */}
             {!isIndia && !(pricing.charge_usd && !isCloud) && (
-              <p className="text-small text-foreground">
+              <p key={country} className="fx-fade flex gap-2.5 rounded-ctl bg-muted px-3.5 py-3 text-small text-foreground ring-1 ring-inset ring-border">
+                <svg className="mt-0.5 size-4 shrink-0 text-camp-sky" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 11v5M12 8h.01" />
+                </svg>
+                <span>
                 Razorpay shows the amount in rupees ({fmtINR(isCloud ? price.inr : pricing.lifetime_inr)}). Your bank may ask you to
                 approve a payment to an Indian company; that&apos;s expected.
+                </span>
               </p>
             )}
 
             {error && (
-              <p role="alert" className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-small text-danger-ink">{error}</p>
+              <p role="alert" className="fx-slide flex gap-2.5 rounded-xl border-l-[3px] border-danger bg-card px-4 py-3 text-small text-foreground shadow-e1">
+                <svg className="mt-0.5 size-4 shrink-0 text-danger-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7.5v5.5M12 16.5h.01" />
+                </svg>
+                <span>{error}</span>
+              </p>
             )}
 
-            <Button type="submit" disabled={busy} variant="brand" size="lg" className="w-full">
+            <Button type="submit" disabled={busy} variant="brand" size="xl" className="w-full">
+              <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="5" y="11" width="14" height="9" rx="2" />
+                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+              </svg>
               {busy
                 ? "Processing…"
                 : isCloud
@@ -429,11 +465,32 @@ export function BuyCheckout({
             </Button>
             {/* The one sentence about money that has to be read before it is
                 spent. The policy says it; here is where the buyer is. */}
-            <p className="text-caption text-foreground">
-              {paymentTerms(isCloud ? choice : "lifetime")}
-            </p>
-            <p className="text-caption text-muted-foreground">{currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}</p>
-            <p className="text-caption text-muted-foreground">
+            {/* Under the button, where they reassure at the moment of paying (B4). */}
+            <ul className="m-0 list-none space-y-2 p-0 text-caption">
+              <li className="flex gap-2 text-muted-foreground">
+                <svg className="mt-0.5 size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="5" y="11" width="14" height="9" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                Secure payment via Razorpay. We never see your card details.
+              </li>
+              <li className="flex gap-2 text-foreground">
+                <svg className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 11v5M12 8h.01" />
+                </svg>
+                {paymentTerms(isCloud ? choice : "lifetime")}
+              </li>
+              <li className="flex gap-2 text-muted-foreground">
+                <svg className="mt-0.5 size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+                </svg>
+                {currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}
+              </li>
+              {isCloud && setupEstimateFor(pricing, business) && <li className="pl-[22px] text-muted-foreground">{setupEstimateFor(pricing, business)?.sentence}</li>}
+            </ul>
+            <p className="text-[12px] leading-4 text-faint">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="underline underline-offset-2 hover:text-foreground">Terms</a> and{" "}
               <a href="/refund-policy" className="underline underline-offset-2 hover:text-foreground">Refund policy</a>.
@@ -446,33 +503,13 @@ export function BuyCheckout({
               before you pay" and "Not buying today?" for four screens to find where
               to pay. Now the form follows the price; these follow the form. */}
           <div className="lg:col-start-1 lg:row-start-2">
-            {/* THE ONE THING THIS PAGE DID NOT OFFER. Thirty people reached checkout
-                in sixty days and none of them bought, and nineteen of them opened
-                the refund policy on the way. They are looking for a way to reduce
-                the risk of paying first for software they then have to install on
-                their own server. The demo already exists and is clicked from every
-                other page; it was missing from the only page where the decision is
-                actually made. */}
-            <div className="border-t border-border pt-6">
-              <p className="font-medium text-foreground">Try it before you pay</p>
-              <p className="mt-1 text-small text-muted-foreground">
-                The live demo is the real product with sample data. Nothing to install and no
-                account needed.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <ButtonLink href={site.demoStartUrl} external variant="ghost">
-                  Open the live demo
-                </ButtonLink>
-              </div>
-            </div>
-
-            <p className="mt-4 text-caption text-muted-foreground">Secure payment via Razorpay. We never see your card details.</p>
-
+            {/* The demo, the one thing this page once did not offer, is on the
+                summary card's foot now (B2), beside the money rule. */}
             {/* Only one of the thirty ever came back on another day, so there is no
                 consideration cycle to catch them in later. Either we can reach them
                 or they are gone. */}
-            <div className="mt-8 border-t border-border pt-6">
-              <p className="font-medium text-foreground">Not buying today?</p>
+            <div className="border-t border-border pt-6 lg:mt-2">
+              <p className="font-[590] text-foreground">Not buying today?</p>
               <p className="mt-1 text-small text-muted-foreground">
                 Leave your address and we will tell you when the price or the licence terms
                 change, and when something ships that you asked for.
@@ -503,7 +540,7 @@ const inputCls =
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-small font-medium text-foreground">
+      <span className="mb-1.5 block text-caption font-[510] text-foreground">
         {label} {required && <span className="text-danger-ink">*</span>}
       </span>
       {children}

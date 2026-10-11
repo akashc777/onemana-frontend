@@ -21,7 +21,7 @@ export function LicenseInstall({ licenseKey, isCloud }: { licenseKey: string; is
   if (!installCmd) return null;
 
   return (
-    <div className="mt-8 space-y-6 rounded-lg border border-border bg-card p-4 sm:p-5">
+    <div className="mt-8 space-y-6 rounded-2xl bg-card p-5 shadow-e1 sm:p-6">
       <div>
         <p className="mb-1.5 text-caption text-muted-foreground">{isCloud ? "Your included licence key" : "Your licence key"}</p>
         <CopyField value={licenseKey} label="licence key" />

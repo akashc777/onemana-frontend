@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Ambient } from "@/components/ui/Ambient";
 
 interface PageHeaderProps {
   /** 13/510 after a brand dot; most pages need none. */
@@ -42,9 +43,9 @@ export function PageHeader({ eyebrow, title, subtitle, align = "left", divider =
       <div className={`container-x ${divider ? "" : compact ? "pb-8" : "pb-12"} ${centred ? "text-center" : ""}`}>
         <div className={art ? "lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-8" : ""}>
           {art && (
-            <div aria-hidden="true" className={`${artOnPhone ? "mb-6 flex [&>*]:max-h-24 [&>*]:max-w-24 lg:[&>*]:max-h-none lg:[&>*]:max-w-none" : "hidden lg:flex"} fx-fade justify-start lg:order-2 lg:col-span-4 lg:col-start-9 lg:mb-0 lg:h-60 lg:items-center lg:justify-center`}>
+            <Ambient aria-hidden="true" className={`${artOnPhone ? "mb-6 flex [&>*]:max-h-24 [&>*]:max-w-24 lg:[&>*]:max-h-none lg:[&>*]:max-w-none" : "hidden lg:flex"} fx-fade justify-start lg:order-2 lg:col-span-4 lg:col-start-9 lg:mb-0 lg:h-60 lg:items-center lg:justify-center`}>
               {art}
-            </div>
+            </Ambient>
           )}
           <div className={art ? "lg:col-span-8" : ""}>
             {eyebrow && <p className={`eyebrow in-lift ${centred ? "justify-center" : ""}`}>{eyebrow}</p>}

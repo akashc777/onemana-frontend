@@ -71,10 +71,13 @@ describe("the account page", () => {
   // On a wide screen the form had the page to itself, a small card in the
   // top left and the rest empty; the welcome spot sits opposite, as the error
   // spot does on the 404. On a phone "Use a different email" was a 20 px line.
-  it("pairs the form with the welcome spot on a wide screen, and keeps its links in reach on a phone", () => {
+  // Design v3 (site.md AC1): a centred auth card on a soft camp canvas,
+  // so the page round the form is a designed ground, not empty space.
+  it("sets the form in an auth card on a soft canvas, and keeps its links in reach on a phone", () => {
     const html = renderToString(<AccountLogin onSignedIn={() => {}} />);
-    expect(html).toMatch(/^<div class="container-x grid [^"]*lg:grid-cols-\[minmax\(0,1fr\)_auto\]/);
-    expect(html).toMatch(/<svg[^>]*class="[^"]*hidden lg:block/);
+    expect(html).toMatch(/class="camp-canvas[^"]*"[^>]*data-soft=""/);
+    expect(html).toMatch(/max-w-\[440px\] rounded-2xl bg-card p-6 shadow-e2/);
+    expect(html).not.toMatch(/create account|sign up/i);
     expect(source("components/account/AccountLogin.tsx")).toContain('className="min-h-11 w-full text-center text-small');
     // The nav marks Sign in as the page you are on, there as in the phone menu.
     expect(source("components/site/Nav.tsx")).toContain('<NavLink href="/account">Sign in</NavLink>');
