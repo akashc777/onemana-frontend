@@ -281,24 +281,34 @@ export function PhoneChannel({
 }) {
   return (
     <div className="sc-phone h-full w-full">
+      {/* The shell's phone bar: equal sides (1fr each), so the title sits in
+          the bar's middle whatever each side holds; no hairline, as the page
+          itself doesn't scroll in a conversation. */}
       <div className="sc-phone-bar">
-        {/* A 44px button, its icon 16px (the Button's [&_svg]:size-4 wins over the icon's own size). */}
-        <span className="sc-iconbtn" style={{ width: 44, height: 44 }}>
-          <Ico icon={ArrowLeft} size={16} />
-        </span>
-        <div className="flex min-w-0 flex-1 flex-col items-center">
-          <span className="flex min-w-0 items-center gap-1.5 t-title-3 ink" style={{ lineHeight: "22px" }}>
+        <div className="flex min-w-0 items-center justify-start">
+          {/* A 44px button, its icon 16px (the Button's [&_svg]:size-4 wins over the icon's own size). */}
+          <span className="sc-iconbtn" style={{ width: 44, height: 44 }}>
+            <Ico icon={ArrowLeft} size={16} />
+          </span>
+        </div>
+        <div className="flex min-w-0 max-w-full flex-col items-center px-2">
+          <span className="flex min-w-0 max-w-full items-center gap-1.5 t-title-3 ink" style={{ lineHeight: "22px" }}>
             <span className="ink-3">#</span>
             <span className="truncate">{name}</span>
           </span>
-          <span className="truncate t-meta ink-3">{subtitle}</span>
+          <span className="max-w-full truncate t-meta ink-3">{subtitle}</span>
         </div>
-        <span className="grid size-9 place-items-center rounded-full" data-hue="moss" style={{ background: "var(--hue-tint)", color: "var(--hue-ink)" }}>
-          <Ico icon={Headphones} size={18} />
-        </span>
-        <span className="sc-iconbtn" style={{ width: 44, height: 44 }}>
-          <Ico icon={MoreHorizontal} size={16} />
-        </span>
+        <div className="flex min-w-0 items-center justify-end">
+          {/* The huddle: a 32px moss circle in a 44px target. */}
+          <span className="grid size-11 place-items-center">
+            <span className="grid size-8 place-items-center rounded-full" data-hue="moss" style={{ background: "var(--hue-tint)", color: "var(--hue-ink)" }}>
+              <Ico icon={Headphones} size={16} />
+            </span>
+          </span>
+          <span className="sc-iconbtn" style={{ width: 44, height: 44 }}>
+            <Ico icon={MoreHorizontal} size={16} />
+          </span>
+        </div>
       </div>
       <Conversation items={items} arrivals={arrivals} typing={typing} phone />
       <div className="flex-none px-3 pb-3 pt-1">
