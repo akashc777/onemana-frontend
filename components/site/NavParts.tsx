@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Icon } from "@/components/ui/icons";
 
 /**
  * The two parts of the nav that need the browser: which page is current, and
@@ -110,9 +111,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-hover hover:text-foreground"
         onClick={() => setOpen((v) => !v)}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" aria-hidden>
-          {open ? <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /> : <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />}
-        </svg>
+        <Icon name={open ? "close" : "menu"} size={20} />
       </button>
       {/* A link inside closes it, including one to a section of this page,
           which changes no pathname. */}

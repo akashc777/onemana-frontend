@@ -28,12 +28,16 @@ describe("IdentityMark", () => {
     expect(renderToString(<IdentityMark id="x" chosen="#EC4899" hue="moss" />)).toContain('data-hue="moss"')
   })
 
-  it("draws a person as tint, ink initials and a hairline of the strong cut", () => {
+  it("draws a person as design v3 does: white initials on the hue's avatar gradient, in the mark's rings", () => {
     const html = renderToString(<IdentityMark variant="avatar" id="Maya Chen" label="Maya Chen" />)
+    const hue = hueFor("Maya Chen")
     expect(html).toContain(">MC<")
-    for (const cls of [`hue-${hueFor("Maya Chen")}`, "bg-hue-tint", "text-hue-ink", "ring-hue/40", "rounded-full"]) {
-      expect(html).toContain(cls)
-    }
+    expect(html).toContain(`linear-gradient(140deg, rgb(var(--camp-${hue}-a1)), rgb(var(--camp-${hue}-a2)))`)
+    for (const cls of ["text-white", "shadow-mark", "rounded-full"]) expect(html).toContain(cls)
+    // Never the wave-2 pastel: a tint behind ink initials read as an empty state.
+    expect(html).not.toMatch(/bg-hue-tint|text-hue-ink/)
+    // One initial below 24px.
+    expect(renderToString(<IdentityMark variant="avatar" id="Maya Chen" label="Maya Chen" size={20} />)).toContain(">M<")
   })
 
   it("names itself only when asked to", () => {
@@ -55,8 +59,17 @@ describe("IdentityMark", () => {
 })
 
 describe("Tile", () => {
-  it("sits on the card radius at 32 and 40, and the control radius at 24", () => {
-    expect(renderToString(<Tile hue="moss" />)).toContain("rounded-lg")
-    expect(renderToString(<Tile hue="moss" size="sm" />)).toContain("rounded-md")
+  it("is one shape at the spec's four sizes: 28 r8, 32 r9, 36 r10, 44 r12, each with its own icon size", () => {
+    const at = (size?: "sm" | "md" | "lg" | "xl") => renderToString(<Tile hue="moss" size={size} />)
+    expect(at("sm")).toMatch(/size-7 rounded-md \[&amp;&gt;svg\]:size-4/)
+    expect(at()).toMatch(/size-8 rounded-\[9px\] \[&amp;&gt;svg\]:size-\[18px\]/)
+    expect(at("lg")).toMatch(/size-9 rounded-ctl \[&amp;&gt;svg\]:size-5/)
+    expect(at("xl")).toMatch(/size-11 rounded-xl \[&amp;&gt;svg\]:size-6/)
+  })
+
+  it("takes the agent's indigo for an agent (agents are indigo, never dusk)", () => {
+    const html = renderToString(<Tile hue="agent" />)
+    expect(html).toContain("[--hue:var(--agent)]")
+    expect(html).not.toContain("hue-dusk")
   })
 })

@@ -154,6 +154,19 @@ export const AVATAR: Record<string, string> = {
   "agent-a1": "#6572E4", "agent-a2": "#5050B9",
 }
 
+/**
+ * The rings a filled mark wears (§3.9): a person's gradient avatar, an
+ * agent's square and a project tile, the same in both modes. A white
+ * hairline and a top highlight inside, a whisper of ink outside.
+ */
+export const MARK_RING = "inset 0 0 0 1px rgb(255 255 255 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 1px rgb(16 18 26 / 0.06)"
+
+/**
+ * The camp canvas's paper (DESIGN_V3 §3.15, site.md G1 SURFACE.paper), as
+ * sRGB triples: the warm ground under the hero and the page art.
+ */
+export const PAPER: Record<"light" | "dark", [number, number, number]> = { light: [247, 244, 241], dark: [18, 19, 22] }
+
 /** The house theme's campfire glow (§3.4), as RGB triples. */
 export const GLOW = { glow: [255, 110, 30], glow2: [255, 61, 0] } as const
 
@@ -211,6 +224,11 @@ export const CAMP: Record<"light" | "dark", Record<string, string>> = {
   },
 }
 
+/** An sRGB triple as "#RRGGBB", for the few places that need a literal (a meta tag, an image). */
+export function tripleToHex(t: readonly [number, number, number]): string {
+  return `#${t.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("").toUpperCase()}`
+}
+
 /** "#3B7DDD" as an sRGB triple, [59, 125, 221]. */
 export function hexToTriple(hex: string): [number, number, number] {
   const n = parseInt(hex.replace("#", ""), 16)
@@ -265,6 +283,8 @@ export const APP = {
     small: { desktop: [14, 20], tablet: [14, 20], phone: [14, 20], weight: 400, tracking: -0.006 },
     eyebrow: { desktop: [13, 16], tablet: [13, 16], phone: [13, 16], weight: 510, tracking: 0 },
     price: { desktop: [44, 48], tablet: [44, 48], phone: [36, 40], weight: 600, tracking: -0.022 },
+    /** A mini plan card's price (site.md AU5): 28/32 at every width. */
+    "price-sm": { desktop: [28, 32], tablet: [28, 32], phone: [28, 32], weight: 600, tracking: -0.021 },
   },
 
   /**
@@ -325,6 +345,12 @@ export const APP = {
 
   /** onecamp-fe cards (design v3): r12 at e1, no border. */
   card: { radius: "lg", elevation: "e1" },
+
+  /** DESIGN_V3 §3.10 Kbd: 18px, r4, 11/510, on the sheet with a line-2 ring and a 1px bottom inset. */
+  kbd: { height: 18, paddingX: 5, text: "3xs", weight: 510, radius: "xs" },
+
+  /** DESIGN_V3 §3.10 Checkbox: 16px r5 with an inset 1.5px line-3 ring; moss with a white tick when checked. */
+  check: { size: 16, radius: 5, ring: 1.5 },
 
   /** onecamp-fe app/globals.css @theme MOTION: press 90, hover 140, pop 180, panel 240, spring 220, page 320. */
   motion: {

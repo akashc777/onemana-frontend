@@ -1,56 +1,93 @@
-import { readdirSync, readFileSync } from "node:fs"
+import { existsSync, readdirSync, readFileSync } from "node:fs"
 import { join, resolve } from "node:path"
+import { createElement } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
+import { ICON_NAMES, ICON_STROKE, Icon } from "@/components/ui/icons"
+
 /**
- * One icon stroke: design v3's one rendered 1.25px line (the app's Lucide
- * icons, stroke-width = 30 / size). Icons beside text are 16px (below), so
- * that is 1.875 on the 24 grid, 1.5625 on a 20 grid and 1.25 on a 16 grid:
- * the same weight at the same size whatever grid an icon was drawn on. It was
- * 1.75 on 24 (1.17px) before v3. Measured
- * before, a 16 px icon's line was 1.0 px (Glyphs, the menu, the theme switch),
- * 1.2 or 1.4 (the select's chevron, the plan ticks) or 1.5 (the docs and
- * account glyphs), and a 20 px tile's 1.25 or 1.9: the docs index's group
- * tiles drawn half again as heavy as the audience pages'. The drawn marks
- * (components/ui/graphics: spots, rings, the hero's orbit) and the logo keep
- * their own weights.
+ * ONE ICON SET, ONE STROKE (design v3, DESIGN_V3 §3.12; site.md G9).
  *
- * And one size beside text: 16 px. The plan cards' header glyph and /buy's
- * plan glyph were 20 px beside 14 and 16 px words.
+ * The app's Lucide icons render one 1.25px line at every size (stroke-width
+ * = 30 / size). The site drew forty icons inline, each with its own stroke
+ * on its own grid, and the guard here checked only the stroke on the grid,
+ * not on the screen: measured on onemana.dev on 11 Oct 2026, a 14px arrow
+ * came out at 1.09px, the templates' 18px glyph at 1.41, the menu and the
+ * docs' 20px tiles at 1.56 and a template's 22px tile at 1.72
+ * (design/site-polish/AUDIT.md, I1).
+ *
+ * Now every icon is drawn by components/ui/icons.tsx with a non-scaling
+ * stroke of 1.25px, so its size cannot change its weight, and no other file
+ * draws one. The drawings keep their own weights and live in their own
+ * modules: the spots, rings and marks (components/ui/graphics), the logo
+ * ring, the spark and the agent's square (components/ui/v3.tsx).
  */
 const ROOT = resolve(__dirname, "..")
-const SKIP = ["node_modules", ".next", "admin", "playful-dev", "graphics"]
+
+/** Files that may contain an <svg>: the icon set and the drawings. */
+const DRAWINGS = ["components/ui/icons.tsx", "components/ui/v3.tsx", "components/ui/graphics/"]
+
+/**
+ * Owned by the showcase wave (the home hero, the product sections and the
+ * live replicas of the app, 11 Oct 2026). They draw the app's own UI, and
+ * move to the set when that wave lands; nothing else may join this list.
+ */
+const SHOWCASE = ["app/page.tsx", "components/site/FactsStrip.tsx", "components/site/ProductTabs.tsx", "components/site/ProductShot.tsx", "components/site/showcase/"]
+
+/** Not the public site: the admin console and the playful layer's dev page. */
+const NOT_THE_SITE = ["app/admin/", "components/admin/", "app/playful-dev/"]
 
 function tsx(dir: string, out: string[] = []): string[] {
-  for (const e of readdirSync(dir, { withFileTypes: true })) {
-    const f = join(dir, e.name)
-    if (e.isDirectory()) {
-      if (!SKIP.includes(e.name)) tsx(f, out)
-    } else if (f.endsWith(".tsx") && !f.includes(".test.") && !f.endsWith("BrandMarks.tsx")) out.push(f)
+  for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+    const rel = `${dir}/${e.name}`
+    if (e.isDirectory()) tsx(rel, out)
+    else if (rel.endsWith(".tsx") && !rel.includes(".test.")) out.push(rel)
   }
   return out
 }
 
+const allowed = (rel: string) => [...DRAWINGS, ...SHOWCASE, ...NOT_THE_SITE].some((p) => rel === p || rel.startsWith(p))
+
 describe("icons", () => {
-  it("have one stroke: 1.875 on the 24 grid (1.25px at 16), scaled to the grid they are drawn on", () => {
+  it("come from the one set: no other page or component draws an <svg>", () => {
     const offenders: string[] = []
-    let icons = 0
-    for (const f of [...tsx(join(ROOT, "app")), ...tsx(join(ROOT, "components"))]) {
-      const src = readFileSync(f, "utf8")
-      for (const m of src.matchAll(/<svg\b[\s\S]*?<\/svg>/g)) {
-        const svg = m[0]
-        const grid = Number(/viewBox="0 0 (\d+(?:\.\d+)?) /.exec(svg)?.[1] ?? 24)
-        const widths = [...svg.matchAll(/strokeWidth=\{?"?(\d+(?:\.\d+)?)/g)].map((w) => Number(w[1]))
-        if (!widths.length && !/stroke="currentColor"/.test(svg)) continue
-        icons++
-        for (const w of widths.length ? widths : [Number.NaN]) {
-          const on24 = (w * 24) / grid
-          if (!(Math.abs(on24 - 1.875) <= 0.02)) offenders.push(`${f.slice(ROOT.length + 1)}: ${w} on a ${grid} grid (${on24.toFixed(2)} on 24)`)
-        }
-      }
+    for (const rel of [...tsx("app"), ...tsx("components")]) {
+      if (allowed(rel)) continue
+      const src = readFileSync(join(ROOT, rel), "utf8").replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "")
+      const n = src.match(/<svg\b/g)?.length ?? 0
+      if (n) offenders.push(`${rel}: ${n} inline <svg>; draw it with <Icon> from components/ui/icons`)
     }
-    expect(icons).toBeGreaterThan(15)
     expect(offenders).toEqual([])
+  })
+
+  it("the lists above name files that exist, so a moved file cannot slip through", () => {
+    for (const p of [...DRAWINGS, ...SHOWCASE.filter((s) => !s.endsWith("/"))]) expect(existsSync(join(ROOT, p)), p).toBe(true)
+  })
+
+  it.each(ICON_NAMES)("%s: every line a non-scaling 1.25px stroke, on the 24 grid", (name) => {
+    for (const size of [14, 16, 20, 24]) {
+      const svg = renderToStaticMarkup(createElement(Icon, { name, size }))
+      expect(svg).toMatch(/^<svg viewBox="0 0 24 24"/)
+      expect(svg).toContain(`stroke-width="${ICON_STROKE}"`)
+      expect(svg).toContain(`width="${size}"`)
+      // Every stroked shape keeps its width on screen whatever the size.
+      for (const shape of svg.match(/<(path|circle|rect)\b[^>]*>/g) ?? []) {
+        if (/stroke="none"/.test(shape)) continue
+        expect(shape, `${name} ${shape}`).toContain('vector-effect="non-scaling-stroke"')
+      }
+      expect(svg).toContain('aria-hidden="true"')
+    }
+  })
+
+  it("is 1.25px, the app's one rendered stroke", () => {
+    expect(ICON_STROKE).toBe(1.25)
+  })
+
+  it("a path from a data table takes the same stroke", () => {
+    const svg = renderToStaticMarkup(createElement(Icon, { d: "M4 20V10M10 20V4" }))
+    expect(svg).toContain('vector-effect="non-scaling-stroke"')
+    expect(svg).toContain(`stroke-width="${ICON_STROKE}"`)
   })
 
   it("beside text are 16 px", () => {

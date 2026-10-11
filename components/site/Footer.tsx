@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { footerLinks, site } from "@/lib/site";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { LogoRing } from "@/components/ui/v3";
-import { FooterRing } from "@/components/ui/graphics/v3marks";
+import { Icon } from "@/components/ui/icons";
 
 /** The camp flag's six segments, in chart order (site.md S16). */
 export const FLAG = ["sky", "berry", "sun", "lake", "dusk", "moss"] as const;
@@ -40,14 +40,12 @@ function Group({ title, links, children }: { title: string; links: readonly Foot
       <details className="group border-b border-border sm:hidden">
         <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between text-body font-[590] text-foreground [&::-webkit-details-marker]:hidden">
           {title}
-          <span aria-hidden className="text-[20px] font-normal leading-none text-faint transition-transform duration-pop group-open:rotate-45">
-            +
-          </span>
+          <Icon name="plus" className="text-faint transition-transform duration-pop group-open:rotate-45" />
         </summary>
         {list}
       </details>
       <div className="hidden sm:block">
-        <h2 className="font-sans text-caption font-[590] tracking-normal text-foreground">{title}</h2>
+        <h2 className="font-sans text-caption font-[590] text-foreground">{title}</h2>
         {list}
       </div>
       {children}
@@ -58,8 +56,10 @@ function Group({ title, links, children }: { title: string; links: readonly Foot
 /**
  * The footer (site.md S16): the camp flag across the top, the brand block,
  * four groups of links in ink-2, and the legal line. The flag is the only
- * colour; the close above it hands its hues on. The ring motif sits at 10%
- * ink in the corner, cropped by the page's edge.
+ * colour; the close above it hands its hues on. No ring in the corner: a
+ * thick grey ring at 10% ink, cropped by the page's edge, was the lone grey
+ * ring DESIGN_V3 §3.13 rules out, and read as a loading spinner on every
+ * page (design/site-polish/AUDIT.md, D4).
  */
 export function Footer() {
   return (
@@ -69,7 +69,6 @@ export function Footer() {
           <span key={h} className={`${HUE_CLASS[h]} flex-1 bg-hue`} />
         ))}
       </div>
-      <FooterRing />
       <div className="container-x relative">
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 pb-10 pt-12 sm:grid-cols-4 sm:gap-y-10 sm:pb-14 sm:pt-16 lg:grid-cols-12 lg:gap-x-8">
           <div className="sm:col-span-4 lg:col-span-4 lg:pr-8">

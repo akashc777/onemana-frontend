@@ -30,7 +30,7 @@ describe("the type scale", () => {
   // desktop sizes, from the one table, with the spec's tracking.
   it("names a step for every size a heading needs, the smaller screens' included", () => {
     const u = marketingUtilities()
-    const want: Record<string, [number, number, number]> = { hero: [42, 56, 68], page: [34, 44, 52], h2: [32, 38, 44], close: [36, 48, 56], "title-read": [30, 36, 40], lead: [18, 19, 20], price: [36, 44, 44] }
+    const want: Record<string, [number, number, number]> = { hero: [42, 56, 68], page: [34, 44, 52], h2: [32, 38, 44], close: [36, 48, 56], "title-read": [30, 36, 40], lead: [18, 19, 20], price: [36, 44, 44], "price-sm": [28, 28, 28] }
     for (const [step, [phone, tablet, desktop]] of Object.entries(want)) {
       const r = u[`.text-${step}`] as Record<string, Record<string, string> | string>
       expect(r, step).toBeTruthy()

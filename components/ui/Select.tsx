@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Icon } from "@/components/ui/icons";
 
 export interface SelectOption {
   value: string;
@@ -116,15 +117,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
         className="ui-field items-center justify-between gap-2 text-left"
       >
         <span className={selected ? "text-foreground" : "text-faint"}>{selected ? selected.label : placeholder}</span>
-        <svg
-          className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
-          viewBox="0 0 20 20"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.564"
-        >
-          <path d="M5 8l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <Icon name="chevron-down" className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
@@ -133,7 +126,7 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
           role="listbox"
           aria-labelledby={labelId}
           tabIndex={-1}
-          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-border bg-card p-1 shadow-popover"
+          className="absolute z-50 mt-1 max-h-64 w-full animate-popover-in overflow-auto rounded-xl bg-pop p-1 shadow-e3"
         >
           {options.map((opt, i) => {
             const isSelected = opt.value === value;
@@ -146,15 +139,11 @@ export function Select({ value, onChange, options, placeholder = "Select…", ar
                 onMouseEnter={() => setActive(i)}
                 onClick={() => choose(i)}
                 className={`flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
-                  isActive ? "bg-muted text-foreground" : "text-muted-foreground"
+                  isActive ? "bg-press text-foreground" : "text-muted-foreground"
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
-                {isSelected && (
-                  <svg className="h-4 w-4 flex-shrink-0 text-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.564">
-                    <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
+                {isSelected && <Icon name="check" className="text-foreground" />}
               </li>
             );
           })}

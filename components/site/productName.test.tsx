@@ -20,7 +20,9 @@ describe("names in the comparison table", () => {
     const head = html.slice(html.indexOf("<thead"), html.indexOf("</thead>"))
 
     it("puts OneCamp's logo on its column and a hued square on each rival's", () => {
-        expect(head).toContain('stroke="#c84f00"')
+        // The one logo: the ring in the campfire gradient, as in the nav.
+        expect(head).toMatch(/<linearGradient id="ring[^"]*"/)
+        expect(head).not.toContain('stroke="#c84f00"')
         for (const rival of ["Slack + Notion + Zoom", "Mattermost", "Huly"]) {
             expect(head).toContain(`data-hue="${productHue(rival)}"`)
         }
@@ -29,7 +31,7 @@ describe("names in the comparison table", () => {
     // The nav's and the footer's rings are drawn in the campfire gradient
     // (design v3, site.md S1); each gradient's id comes from useId, so two on
     // one page can never share one.
-    it("draws the app's mark in the table, and gives every gradient on a page its own id", () => {
+    it("draws the one mark in the table, and gives every gradient on a page its own id", () => {
         const page = renderToString(
             <>
                 <Nav />
@@ -40,7 +42,9 @@ describe("names in the comparison table", () => {
         const ids = [...page.matchAll(/<linearGradient id="([^"]+)"/g)].map((m) => m[1])
         expect(ids.length).toBeGreaterThanOrEqual(2)
         expect(new Set(ids).size).toBe(ids.length)
-        expect(page.match(/stroke="#c84f00"/g)?.length).toBeGreaterThanOrEqual(1)
+        // The nav, the table's column and the footer: three gradient rings, no flat one.
+        expect(ids.length).toBeGreaterThanOrEqual(3)
+        expect(page).not.toContain('stroke="#c84f00"')
     })
 })
 

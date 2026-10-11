@@ -35,7 +35,9 @@ describe("HeroOrbit", () => {
 
   it("names up to three real things, a person by initials and an agent as one", () => {
     expect(html).toContain("#engineering")
-    expect(html).toContain(">MC<")
+    // An 18px face carries one initial (DESIGN_V3 §3.9: two from 24px), white on the avatar gradient.
+    expect(html).toContain(">M<")
+    expect(html).toContain("text-white")
     expect(html).toContain("Release Captain")
     expect(html).toContain(">Agent<")
     expect(html).not.toContain("#too-many")

@@ -141,6 +141,15 @@ const config: Config = {
           "40%": { opacity: "1" },
           "100%": { opacity: "1", transform: "translate(0, 0) scale(1)" },
         },
+        // The close's one burst (site.md G11): the sparks leave the spot and
+        // fade as they land, so the orbit is clean again. They used to stay,
+        // fourteen of them frozen round the ring (AUDIT.md D5).
+        "spark-burst": {
+          "0%": { opacity: "0", transform: "translate(var(--spark-x), var(--spark-y)) scale(0.3)" },
+          "25%": { opacity: "1" },
+          "70%": { opacity: "1", transform: "translate(0, 0) scale(1)" },
+          "100%": { opacity: "0", transform: "translate(0, 0) scale(0.6)" },
+        },
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
@@ -167,6 +176,7 @@ const config: Config = {
       animation: {
         "popover-in": "popover-in 180ms cubic-bezier(.22,1,.36,1) both",
         "spark-out": "spark-out 460ms cubic-bezier(0.3,1.35,0.5,1) both",
+        "spark-burst": "spark-burst 760ms cubic-bezier(0.22,1,0.36,1) both",
         "fade-up": "fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both",
         "scene-in": "scene-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
         marquee: "marquee 45s linear infinite",

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { searchDocs, type SearchIndex } from "@/lib/docsSearch";
 import { SpotSearch } from "@/components/ui/graphics/spots";
+import { Icon } from "@/components/ui/icons";
 
 // Shared by every search field on the page, fetched once, and only when a
 // field is reached for (hover, focus or "/"): the page itself never pays for it.
@@ -129,10 +130,7 @@ export function DocsSearch({ className = "" }: { className?: string }) {
       <label htmlFor={inputId} className="sr-only">
         Search the docs
       </label>
-      <svg aria-hidden viewBox="0 0 16 16" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground">
-        <circle cx="7" cy="7" r="4.25" fill="none" stroke="currentColor" strokeWidth="1.254" />
-        <path d="M10.25 10.25L13.5 13.5" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" />
-      </svg>
+      <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
       <input
         ref={field}
         id={inputId}
@@ -156,7 +154,7 @@ export function DocsSearch({ className = "" }: { className?: string }) {
         className="ui-field pl-9 pr-9 [&::-webkit-search-cancel-button]:hidden"
       />
       {!asked && (
-        <kbd aria-hidden className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-sm border border-border bg-muted px-1.5 font-mono text-[0.6875rem] leading-5 text-muted-foreground lg:block">
+        <kbd aria-hidden className="ui-kbd pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 lg:inline-flex">
           /
         </kbd>
       )}
@@ -165,7 +163,7 @@ export function DocsSearch({ className = "" }: { className?: string }) {
       </p>
 
       {showing && (
-        <div className="absolute left-0 top-full z-30 mt-2 w-[min(28rem,calc(100vw-2rem))] animate-popover-in rounded-lg border border-border bg-card p-1.5 shadow-popover">
+        <div className="absolute left-0 top-full z-30 mt-2 w-[min(28rem,calc(100vw-2rem))] animate-popover-in rounded-xl bg-pop p-1.5 shadow-e3">
           {failed ? (
             <p className="px-3 py-2.5 text-small text-muted-foreground">
               Search is not available just now.{" "}

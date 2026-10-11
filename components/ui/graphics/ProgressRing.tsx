@@ -1,5 +1,7 @@
 import { useId, type ReactNode } from "react"
 
+import { APP } from "@/lib/appSystem"
+
 import { cx } from "./hues"
 
 export interface ProgressRingProps {
@@ -42,11 +44,11 @@ export function ProgressRing({ value, size = 32, weight = 3, label, children, cl
       className={cx("relative inline-grid shrink-0 place-items-center", className)}
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" aria-hidden="true" className="absolute inset-0">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" aria-hidden="true" className="pointer-events-none absolute inset-0">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" style={{ stopColor: "var(--progress-from, #FF8A00)" }} />
-            <stop offset="1" style={{ stopColor: "var(--progress-to, #FF3D00)" }} />
+            <stop offset="0" style={{ stopColor: `var(--progress-from, ${APP.logoGradient[0]})` }} />
+            <stop offset="1" style={{ stopColor: `var(--progress-to, ${APP.logoGradient[1]})` }} />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={weight} className="stroke-current" opacity="0.15" />
@@ -61,7 +63,7 @@ export function ProgressRing({ value, size = 32, weight = 3, label, children, cl
             pathLength={100}
             strokeDasharray={`${v} 100`}
             transform={`rotate(-90 ${size / 2} ${size / 2})`}
-            style={{ transition: "stroke-dasharray 200ms cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+            style={{ transition: `stroke-dasharray ${APP.motion.durations.pop}ms ${APP.motion.ease}` }}
           />
         )}
       </svg>

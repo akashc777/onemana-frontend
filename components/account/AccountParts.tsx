@@ -5,6 +5,7 @@ import type { CampHue } from "@/lib/campHue";
 import type { StateTone } from "@/lib/instanceState";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { buttonClasses } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/icons";
 
 /**
  * The dot for each tone, from the meaning tokens (DESIGN.md: colour that
@@ -103,34 +104,11 @@ export function SummaryTile({
   );
 }
 
-/** The glyphs the account page draws with, in the tile's strong cut: the 16 grid at 1.17, the site's one stroke (1.75 on the 24 grid). */
+/** The glyphs the account page draws with, in the tile's strong cut: icons from the one set, at its one stroke. */
 export const glyphs = {
-  key: (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="5.5" cy="10.5" r="2.75" />
-      <path d="M7.5 8.5l5.75-5.75M11.25 4.75l1.5 1.5M9.75 6.25l1.25 1.25" />
-    </svg>
-  ),
-  receipt: (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3.75 2.25h8.5v11.5l-2.125-1.25L8 13.75l-2.125-1.25-2.125 1.25z" />
-      <path d="M6 5.75h4M6 8.25h4" />
-    </svg>
-  ),
-  cloud: (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4.5 12.25h7a2.75 2.75 0 0 0 .4-5.47A4 4 0 0 0 4.2 7.6a2.35 2.35 0 0 0 .3 4.65z" />
-    </svg>
-  ),
-  check: (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3.5 8.5l3 3 6-7" />
-    </svg>
-  ),
-  clock: (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.254" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="8" cy="8" r="5.75" />
-      <path d="M8 5v3.25l2 1.25" />
-    </svg>
-  ),
+  key: <Icon name="key" />,
+  receipt: <Icon name="receipt" />,
+  cloud: <Icon name="cloud" />,
+  check: <Icon name="check" />,
+  clock: <Icon name="clock" />,
 } as const;

@@ -38,14 +38,8 @@ export function Dot({ hue, size = 8, className }: { hue: CampHue | "brand" | "ag
   return <span aria-hidden="true" className={cx("inline-block shrink-0 rounded-full", size === 6 ? "size-1.5" : size === 7 ? "size-[7px]" : "size-2", fill, className)} />
 }
 
-/** The 16px arrow on a primary marketing CTA and a standalone link; it moves 2px on hover (.go-arrow). */
-export function Arrow({ size = 16 }: { size?: 14 | 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="go-arrow shrink-0">
-      <path d="M3.5 8h9M8.5 4l4 4-4 4" />
-    </svg>
-  )
-}
+/** The arrow on a primary marketing CTA and a standalone link is an icon (components/ui/icons); kept here by name. */
+export { Arrow } from "@/components/ui/icons"
 
 /** The brand spark, one per composition. */
 export function SparkMark({ size = 14, className }: { size?: number; className?: string }) {
@@ -62,24 +56,31 @@ export function AgentSquare({ size = 28, dim = false }: { size?: number; dim?: b
     <span
       aria-hidden="true"
       style={{ width: size, height: size, backgroundImage: "linear-gradient(140deg, rgb(var(--agent-a1)), rgb(var(--agent-a2)))" }}
-      className={cx("inline-flex shrink-0 items-center justify-center rounded-[32%] text-white transition-opacity", dim && "opacity-60")}
+      className={cx("inline-flex shrink-0 items-center justify-center rounded-[32%] text-white shadow-mark transition-opacity", dim && "opacity-60")}
     >
-      <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" fill="currentColor">
+      {/* The spark at 55% of the square (§3.9). */}
+      <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="currentColor">
         <path d={SPARK_PATH} />
       </svg>
     </span>
   )
 }
 
-/** A person drawn on the site: initials on their avatar gradient (the a1/a2 cut). */
-export function Face({ initials, hue, size = 28 }: { initials: string; hue: CampHue; size?: number }) {
+/**
+ * A person drawn on the site (DESIGN_V3 §3.9): white initials on their
+ * avatar gradient (the a1/a2 cut at 140°) in the mark's rings; two initials
+ * from 24px, one below. Saturated, so a person never reads as an empty state.
+ */
+export function Face({ initials, hue, size = 28, className, label }: { initials: string; hue: CampHue; size?: number; className?: string; label?: string }) {
+  const text = size < 24 ? initials.slice(0, 1) : initials.slice(0, 2)
   return (
     <span
-      aria-hidden="true"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.38), backgroundImage: `linear-gradient(140deg, rgb(var(--camp-${hue}-a1)), rgb(var(--camp-${hue}-a2)))` }}
-      className="inline-flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
+      {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true as const })}
+      data-hue={hue}
+      style={{ width: size, height: size, fontSize: Math.max(9, Math.round(size * 0.375)), backgroundImage: `linear-gradient(140deg, rgb(var(--camp-${hue}-a1)), rgb(var(--camp-${hue}-a2)))` }}
+      className={cx("inline-flex shrink-0 select-none items-center justify-center rounded-full font-semibold leading-none tracking-[0.01em] text-white shadow-mark", className)}
     >
-      {initials}
+      {text}
     </span>
   )
 }
@@ -136,8 +137,13 @@ export function CampCanvas({
   className?: string
   /** The account page's ground: the glow at 16%, no window. */
   soft?: boolean
-  /** The rings and their hue dots; "plain" keeps the rings without dots, for a canvas whose text runs under them. */
-  rings?: boolean | "plain"
+  /**
+   * The rings and their hue dots. "plain" keeps the rings without dots.
+   * "quiet" is for a canvas that holds a heading: two white rings in the far
+   * corner from lg, no gradient ring and no dots, and none on a narrower
+   * screen, where every ring crossed the heading (design/site-polish/AUDIT.md, D3).
+   */
+  rings?: boolean | "plain" | "quiet"
   /** Let the floating chips lean towards the pointer. */
   drift?: boolean
   as?: "div" | "section"
@@ -145,7 +151,11 @@ export function CampCanvas({
   return (
     <Ambient as={Tag} drift={drift} className={cx("camp-canvas", className)} data-soft={soft ? "" : undefined}>
       <span aria-hidden="true" className="camp-grain" />
-      {rings && (
+      {rings === "quiet" ? (
+        <span className="hidden lg:contents">
+          <CanvasRings still quiet dots={false} />
+        </span>
+      ) : rings && (
         <>
           <span className="hidden sm:contents">
             <CanvasRings dots={rings !== "plain"} />

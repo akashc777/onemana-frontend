@@ -20,7 +20,7 @@ import { HUE_CLASS } from "./hues"
  */
 function Turning({ spin, size, children }: { spin?: "spin-40" | "spin-60" | "spin-90r"; size: number; children: ReactNode }) {
   return (
-    <div aria-hidden="true" className={`absolute inset-0 ${spin ?? ""}`}>
+    <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${spin ?? ""}`}>
       <svg viewBox={`0 0 ${size} ${size}`} className="size-full" fill="none">
         {children}
       </svg>
@@ -28,13 +28,19 @@ function Turning({ spin, size, children }: { spin?: "spin-40" | "spin-60" | "spi
   )
 }
 
-/** The canvas's rings and hue dots (G6): four rings round a point off the top right, the innermost in the logo gradient. */
-export function CanvasRings({ still = false, dots = true }: { still?: boolean; dots?: boolean }) {
+/**
+ * The canvas's rings and hue dots (G6): four rings round a point off the top
+ * right, the innermost in the logo gradient. `quiet`, for a canvas that holds
+ * a heading: two white rings round a point further out, so they stay in the
+ * top right corner and never cross the words.
+ */
+export function CanvasRings({ still = false, dots = true, quiet = false }: { still?: boolean; dots?: boolean; quiet?: boolean }) {
   const id = `cr${useId().replace(/:/g, "")}`
   const [a, b] = APP.logoGradient
   const at = (r: number, t: number) => ({ cx: 600 - r * Math.cos(t), cy: 600 + r * Math.sin(t) })
+  const box = quiet ? "-right-[480px] -top-[760px]" : "-right-[420px] -top-[560px] max-sm:-right-[520px] max-sm:-top-[640px]"
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute -right-[420px] -top-[560px] -z-10 h-[1200px] w-[1200px] max-sm:-right-[520px] max-sm:-top-[640px]">
+    <div aria-hidden="true" className={`pointer-events-none absolute -z-10 h-[1200px] w-[1200px] ${box}`}>
       <svg viewBox="0 0 1200 1200" className="size-full" fill="none">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
@@ -45,9 +51,9 @@ export function CanvasRings({ still = false, dots = true }: { still?: boolean; d
         <g className="stroke-white/75 dark:stroke-white/[0.07]" strokeWidth="1.5">
           <circle cx="600" cy="600" r="310" strokeDasharray="2 8" />
           <circle cx="600" cy="600" r="420" />
-          <circle cx="600" cy="600" r="560" strokeDasharray="2 8" />
+          {!quiet && <circle cx="600" cy="600" r="560" strokeDasharray="2 8" />}
         </g>
-        <circle cx="600" cy="600" r="200" stroke={`url(#${id})`} strokeWidth="3" opacity="0.55" />
+        {!quiet && <circle cx="600" cy="600" r="200" stroke={`url(#${id})`} strokeWidth="3" opacity="0.55" />}
       </svg>
       {dots && (
         <Turning spin={still ? undefined : "spin-60"} size={1200}>
@@ -76,7 +82,7 @@ export function CloseOrbit() {
       <Turning spin="spin-40" size={280}>
         {CAMP_HUES.map((hue, i) => {
           const t = (-100 + i * 60 + (i % 2 ? 9 : -6)) * (Math.PI / 180)
-          return <circle key={hue} cx={140 + 122 * Math.cos(t)} cy={140 + 122 * Math.sin(t)} r={i % 2 ? 3.5 : 4.5} className={`${HUE_CLASS[hue]} fill-hue`} />
+          return <circle key={hue} cx={140 + 122 * Math.cos(t)} cy={140 + 122 * Math.sin(t)} r={i % 2 ? 6 : 7.5} className={`${HUE_CLASS[hue]} fill-hue`} />
         })}
       </Turning>
     </div>
@@ -147,21 +153,10 @@ export function StackedCards() {
   )
 }
 
-/** The footer's corner ring (S16), at 10% ink, cropped by the page's edge. */
-export function FooterRing() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 160 160" className="pointer-events-none absolute -bottom-10 -right-10 hidden h-40 w-40 text-foreground/10 sm:block" fill="none" stroke="currentColor">
-      <circle cx="80" cy="80" r="40" strokeWidth="14" />
-      <circle cx="80" cy="80" r="62" strokeWidth="1.5" />
-      <circle cx="80" cy="80" r="76" strokeWidth="1.5" strokeDasharray="2 6" />
-    </svg>
-  )
-}
-
 /** The hero's hand-drawn sun stroke under "own." (H1): 5px, round caps, drawn once on load. */
 export function SunStroke() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 120 14" preserveAspectRatio="none" className="absolute -bottom-[10px] left-[-2%] h-[12px] w-[104%] overflow-visible" fill="none">
+    <svg aria-hidden="true" viewBox="0 0 120 14" preserveAspectRatio="none" className="pointer-events-none absolute -bottom-[10px] left-[-2%] h-[12px] w-[104%] overflow-visible" fill="none">
       <path d="M3 9.5C30 4.5 72 3.5 117 7.5" pathLength="240" className="in-draw at-380 stroke-camp-sun" strokeWidth="5" strokeLinecap="round" />
     </svg>
   )

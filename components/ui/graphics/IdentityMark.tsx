@@ -2,7 +2,9 @@ import type { ReactNode } from "react"
 
 import { hueFor, type CampHue } from "@/lib/campHue"
 
-import { HUE_CLASS, avatarHueClass, cx } from "./hues"
+import { Face } from "@/components/ui/v3"
+
+import { HUE_CLASS, cx } from "./hues"
 import { Tile } from "./Tile"
 
 export type IdentityMarkVariant = "dot" | "square" | "tile" | "avatar"
@@ -44,7 +46,7 @@ function initials(name: string | undefined): string {
  *   dot     a channel or calendar in a list
  *   square  a project, beside its name
  *   tile    a tint tile holding an icon, or the name's first letter
- *   avatar  a person: tint, ink initials, a hairline of the strong cut
+ *   avatar  a person: white initials on the hue's avatar gradient
  *
  *   <IdentityMark id="#engineering" variant="dot" />
  *   <IdentityMark id="Maya Chen" label="Maya Chen" variant="avatar" />
@@ -67,22 +69,9 @@ export function IdentityMark({
   const px = size ?? DEFAULT_SIZE[variant]
   const a11y = ariaLabel ? { role: "img", "aria-label": ariaLabel } : { "aria-hidden": true as const }
 
-  if (variant === "avatar") {
-    return (
-      <span
-        {...a11y}
-        data-hue={h}
-        style={{ width: px, height: px, fontSize: Math.max(9, Math.round(px * 0.38)) }}
-        className={cx(
-          avatarHueClass(h),
-          "inline-flex shrink-0 select-none items-center justify-center rounded-full font-medium leading-none",
-          className,
-        )}
-      >
-        {initials(label)}
-      </span>
-    )
-  }
+  // A person (DESIGN_V3 §3.9): white initials on the hue's avatar gradient,
+  // not a pastel tint, which gave every person the weight of an empty state.
+  if (variant === "avatar") return <Face initials={initials(label)} hue={h} size={px} className={className} label={ariaLabel} />
 
   if (variant === "tile") {
     const tileSize = px <= 24 ? "sm" : px <= 32 ? "md" : "lg"

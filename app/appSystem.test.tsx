@@ -4,7 +4,7 @@ import { resolve } from "node:path"
 import { renderToString } from "react-dom/server"
 
 import { buttonClasses } from "@/components/ui/Button"
-import { OneCampLogo } from "@/components/site/BrandMarks"
+import { LogoRing } from "@/components/ui/v3"
 import { ALPHA, APP, ELEVATION, tracking } from "@/lib/appSystem"
 import { appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
 
@@ -236,14 +236,16 @@ describe("nothing is written around the table", () => {
 })
 
 describe("the logo is the app's mark", () => {
-  it("a bare ring at the app's proportions, in its colour, with no tile", () => {
-    const svg = renderToString(<OneCampLogo />)
-    expect(svg).toContain(`viewBox="0 0 ${APP.logo.viewBox} ${APP.logo.viewBox}"`)
-    expect(svg).toContain(`r="${APP.logo.r}"`)
-    expect(svg).toContain(`stroke-width="${APP.logo.stroke}"`)
-    expect(svg).toContain(`stroke="${APP.logo.colour}"`)
+  // Design v3 (site.md S1): on the page the mark is the ring in the campfire
+  // gradient, the one LogoRing, everywhere it appears: the nav, the footer,
+  // the comparison tables' OneCamp column, the 404 and the cards. A flat
+  // second ring (BrandMarks' OneCampLogo) drew it in two ways on one page.
+  it("on the page: a bare ring in the logo's gradient, with no tile", () => {
+    const svg = renderToString(<LogoRing size={24} />)
+    expect(svg).toContain(`stop-color="${APP.logoGradient[0]}"`)
+    expect(svg).toContain(`stop-color="${APP.logoGradient[1]}"`)
+    expect(svg.match(/<circle/g)).toHaveLength(1)
     expect(svg).not.toContain("<rect")
-    expect(svg).not.toContain("Gradient")
   })
 
   it("the favicon is the same ring", () => {

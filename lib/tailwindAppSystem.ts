@@ -1,7 +1,7 @@
 import plugin from "tailwindcss/plugin"
 import type { CSSRuleObject } from "tailwindcss/types/config"
 
-import { ALPHA, APP, AVATAR, CAMP, ELEVATION, GLOW, NIGHT, SHARED, hexToTriple, tracking, type TypeStep } from "./appSystem"
+import { ALPHA, APP, AVATAR, CAMP, ELEVATION, GLOW, MARK_RING, NIGHT, PAPER, SHARED, hexToTriple, tracking, type TypeStep } from "./appSystem"
 
 /**
  * Builds the site from the one table (lib/appSystem.ts): the colour custom
@@ -48,7 +48,9 @@ export function colourTokens(theme: "light" | "dark"): Record<string, string> {
     out[`--${name}-c`] = `rgb(${rgb.join(" ")} / ${a})`
   }
   for (const [step, value] of Object.entries(ELEVATION[theme])) out[`--e-${step}`] = value
+  out["--paper"] = PAPER[theme].join(" ")
   if (theme === "light") {
+    out["--e-mark"] = MARK_RING
     for (const [name, hex] of Object.entries(AVATAR)) out[`--${name}`] = hexToTriple(hex).join(" ")
     out["--glow"] = GLOW.glow.join(" ")
     out["--glow2"] = GLOW.glow2.join(" ")
@@ -103,6 +105,8 @@ export const appTheme = {
     popover: "var(--e-e3)",
     dialog: "var(--e-e4)",
     product: "var(--e-e4)",
+    // The rings a filled mark wears (§3.9): an avatar, an agent's square, a project tile.
+    mark: "var(--e-mark)",
   },
   transitionDuration: {
     DEFAULT: `${APP.motion.duration}ms`,
@@ -118,6 +122,10 @@ export const appTheme = {
 }
 
 const sizeOf = (step: TypeStep) => ({ fontSize: px(APP.type[step][0]), lineHeight: px(APP.type[step][1]), letterSpacing: em(tracking(APP.type[step][0])) })
+
+/** The checkbox's white tick, the icon set's check on its 24 grid. */
+const CHECK_TICK =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E\")"
 
 /** The shared components' shapes: the app's Button sizes, Input, Chip and Card. */
 export function appComponents(): Record<string, Record<string, unknown>> {
@@ -199,6 +207,49 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       backgroundColor: "rgb(var(--card))",
       boxShadow: "var(--e-e1)",
     },
+    // A key on the keyboard ("/", "⌘ K"): the sheet in a line-2 ring with a
+    // 1px bottom inset, so it reads as a key and not as a chip.
+    ".ui-kbd": {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: px(APP.kbd.height),
+      height: px(APP.kbd.height),
+      padding: `0 ${px(APP.kbd.paddingX)}`,
+      borderRadius: px(APP.radius[APP.kbd.radius]),
+      backgroundColor: "rgb(var(--background))",
+      boxShadow: "inset 0 0 0 1px var(--line-2-c), inset 0 -1px 0 var(--line-2-c)",
+      color: "rgb(var(--muted-foreground))",
+      fontWeight: String(APP.kbd.weight),
+      ...sizeOf(APP.kbd.text),
+    },
+    // THE CHECKBOX (§3.10): 16px r5 in an inset 1.5px line-3 ring; checked,
+    // it fills moss with a white tick and springs. A native checkbox wears it
+    // (appearance: none), and so does a drawn one (a span) in a list of steps.
+    ".ui-check": {
+      appearance: "none",
+      display: "inline-block",
+      flex: "none",
+      width: px(APP.check.size),
+      height: px(APP.check.size),
+      margin: "0",
+      borderRadius: px(APP.check.radius),
+      backgroundColor: "rgb(var(--card))",
+      boxShadow: `inset 0 0 0 ${APP.check.ring}px var(--line-3-c)`,
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: px(12),
+      transitionProperty: "background-color, box-shadow",
+      transitionDuration: `${APP.motion.duration}ms`,
+      transitionTimingFunction: APP.motion.ease,
+      "&:checked, &[data-checked]": {
+        backgroundColor: "rgb(var(--camp-moss))",
+        boxShadow: "none",
+        backgroundImage: CHECK_TICK,
+        animation: `v3-check ${APP.motion.durations.spring}ms ${APP.motion.spring}`,
+      },
+      "&:focus-visible": { outline: `${b.focus.width}px solid rgb(var(--ring))`, outlineOffset: `${b.focus.offset}px` },
+    },
   }
   // Each size: its height from md, 44px below it where a finger presses.
   for (const [name, s] of Object.entries(b.sizes)) {
@@ -226,7 +277,7 @@ const LG = "@media (min-width: 1024px)"
  */
 export function marketingUtilities(): Record<string, Record<string, unknown>> {
   const out: Record<string, Record<string, unknown>> = {}
-  for (const name of ["hero", "page", "h2", "close", "title-read", "lead", "price"] as const) {
+  for (const name of ["hero", "page", "h2", "close", "title-read", "lead", "price", "price-sm"] as const) {
     const s = APP.marketing[name]
     const step = (at: "desktop" | "tablet" | "phone") => ({ fontSize: px(s[at][0]), lineHeight: px(s[at][1]) })
     out[`.text-${name}`] = {
@@ -303,6 +354,8 @@ export function motionCss(): Record<string, unknown> {
     "@keyframes v3-fade": { from: { opacity: "0" }, to: { opacity: "1" } },
     "@keyframes v3-slide": { from: { opacity: "0", transform: "translateY(10px)" }, to: { opacity: "1", transform: "none" } },
     "@keyframes v3-spring": { "0%": { transform: "scale(0.6)" }, "60%": { transform: "scale(1.1)" }, "100%": { transform: "none" } },
+    // A box being ticked (§3.10): 1, 1.12, 1 on the spring.
+    "@keyframes v3-check": { "0%, 100%": { scale: "1" }, "45%": { scale: "1.12" } },
     ".in-lift": { animation: anim("v3-lift", t.lift, MS.ease) },
     ".in-rise": { animation: anim("v3-rise", t.rise, MS.ease) },
     ".in-chip": { animation: anim("v3-chip", t.chip, MS.spring) },

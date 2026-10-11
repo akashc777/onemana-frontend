@@ -1,18 +1,18 @@
 import Link from "next/link";
 import { MissingPath } from "@/components/site/MissingPath";
-import { DocGlyph, KeyGlyph } from "@/components/site/Glyphs";
-import { OneCampLogo } from "@/components/site/BrandMarks";
+import { Icon } from "@/components/ui/icons";
+import { LogoRing } from "@/components/ui/v3";
 import { SpotError } from "@/components/ui/graphics/spots";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { SECTION_END } from "@/components/ui/Section";
 
 /** The three places people are usually looking for, each with its own colour. */
 const WAYS = [
-  { href: "/", title: "The home page", line: "What OneCamp is, and the live demo", mark: "home" as const },
-  { href: "/pricing", title: "Pricing", line: "Free, a licence once, or Cloud", mark: "pricing" as const },
-  { href: "/docs", title: "The docs", line: "Install it, run it, move to it", mark: "docs" as const },
-  { href: "/docs#search", title: "Search the docs", line: "Every guide, by what it answers", mark: "search" as const },
-];
+  { href: "/", title: "The home page", line: "What OneCamp is, and the live demo", mark: "home", hue: "brand" },
+  { href: "/pricing", title: "Pricing", line: "Free, a licence once, or Cloud", mark: "key", hue: "sun" },
+  { href: "/docs", title: "The docs", line: "Install it, run it, move to it", mark: "doc", hue: "dusk" },
+  { href: "/docs#search", title: "Search the docs", line: "Every guide, by what it answers", mark: "search", hue: "lake" },
+] as const;
 
 /**
  * A missing page, written down the way OneCamp writes everything down: one
@@ -54,22 +54,12 @@ export default function NotFound() {
           {WAYS.map((w) => (
             <li key={w.href}>
               <Link href={w.href} className="lift flex h-full items-start gap-3 rounded-xl bg-card p-5 shadow-e1">
-                {w.mark === "home" ? (
-                  <OneCampLogo className="size-8 shrink-0" />
-                ) : (
-                  <Tile hue={w.mark === "pricing" ? "sun" : w.mark === "search" ? "lake" : "dusk"} size="md">
-                    {w.mark === "pricing" ? (
-                      <KeyGlyph />
-                    ) : w.mark === "search" ? (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round">
-                        <circle cx="11" cy="11" r="6.5" />
-                        <path d="M16 16l4 4" />
-                      </svg>
-                    ) : (
-                      <DocGlyph />
-                    )}
-                  </Tile>
-                )}
+                {/* One tile language for all four: the home page's tile holds
+                    the logo's gradient ring on the brand's soft ground, where
+                    it used to be a bare flat ring among three tiles. */}
+                <Tile hue={w.hue} size="md">
+                  {w.mark === "home" ? <LogoRing size={18} /> : <Icon name={w.mark} />}
+                </Tile>
                 <span className="min-w-0">
                   <span className="block text-body font-[590] text-foreground">{w.title}</span>
                   <span className="mt-0.5 block text-small text-muted-foreground">{w.line}</span>

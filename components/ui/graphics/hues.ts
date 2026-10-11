@@ -26,9 +26,16 @@ export const HUE_CLASS: Record<CampHue, string> = {
  */
 export const AGENT_HUE_CLASS = "[--hue:var(--agent)] [--hue-tint:var(--agent-muted)] [--hue-ink:var(--agent-ink)]"
 
-/** The class for a camp hue or the agent's indigo. */
-export function hueOrAgent(hue: CampHue | "agent"): string {
-  return hue === "agent" ? AGENT_HUE_CLASS : HUE_CLASS[hue]
+/**
+ * OneCamp's own orange as the current hue, for the one tile that stands for
+ * the product itself (the 404's "home page"): the accent's soft ground under
+ * the logo, never a camp hue.
+ */
+export const BRAND_HUE_CLASS = "[--hue:var(--brand)] [--hue-tint:var(--brand-soft)] [--hue-ink:var(--brand-ink)]"
+
+/** The class for a camp hue, the agent's indigo, or the brand. */
+export function hueOrAgent(hue: CampHue | "agent" | "brand"): string {
+  return hue === "agent" ? AGENT_HUE_CLASS : hue === "brand" ? BRAND_HUE_CLASS : HUE_CLASS[hue]
 }
 
 /**

@@ -40,7 +40,7 @@ export function TopicFilter({ target }: { target: string }) {
           type="button"
           aria-pressed={topic === c.key}
           onClick={() => setTopic(c.key)}
-          className={`${c.hue ? HUE_CLASS[c.hue] : ""} flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-md px-3 text-caption font-[510] transition-[background-color,box-shadow,color] duration-hover sm:min-h-8 ${
+          className={`${c.hue ? HUE_CLASS[c.hue] : ""} flex min-h-11 min-w-11 shrink-0 snap-start items-center justify-center gap-2 rounded-md px-3 text-caption font-[510] transition-[background-color,box-shadow,color] duration-hover sm:min-h-8 sm:min-w-0 ${
             topic === c.key ? "bg-card text-foreground shadow-e2" : "text-muted-foreground hover:bg-hover hover:text-foreground"
           }`}
         >
