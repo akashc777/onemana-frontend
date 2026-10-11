@@ -11,6 +11,7 @@ const WAYS = [
   { href: "/", title: "The home page", line: "What OneCamp is, and the live demo", mark: "home" as const },
   { href: "/pricing", title: "Pricing", line: "Free, a licence once, or Cloud", mark: "pricing" as const },
   { href: "/docs", title: "The docs", line: "Install it, run it, move to it", mark: "docs" as const },
+  { href: "/docs#search", title: "Search the docs", line: "Every guide, by what it answers", mark: "search" as const },
 ];
 
 /**
@@ -28,13 +29,16 @@ export default function NotFound() {
     <section className={`container-x pt-16 sm:pt-24 ${SECTION_END}`}>
       <div className="grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16">
         <div>
-          <SpotError size={88} className="mb-6 md:hidden" />
+          <SpotError size={120} className="mb-6 md:hidden" />
           <h1 className="text-page text-foreground">There is no page here</h1>
           <p className="mt-4 max-w-xl text-body-lg text-muted-foreground">The address may be mistyped, or the page may have moved.</p>
 
-          <div className="mt-10 max-w-2xl border-y border-border py-4">
+          {/* Even this is on the record (site.md N1): a night card set as a record row. */}
+          <div className="night mt-10 max-w-2xl rounded-xl border-l-[3px] border-camp-berry px-5 py-4 shadow-e3">
             <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3 font-mono text-caption">
-              <span className="text-danger-ink">page.not_found</span>
+              <span>
+                <span className="text-muted-foreground">#404</span> <span className="text-camp-berry-ink">page.not_found</span>
+              </span>
               <span className="text-muted-foreground">404</span>
             </p>
             <p className="m-0 mt-1.5 font-mono text-small text-foreground">
@@ -42,23 +46,32 @@ export default function NotFound() {
             </p>
           </div>
         </div>
-        <SpotError size={192} className="hidden md:block" />
+        <SpotError size={240} className="fx-spring hidden md:block" />
       </div>
 
       <nav aria-label="Where to go instead" className="mt-12">
-        <ul role="list" className="m-0 grid list-none gap-4 p-0 sm:grid-cols-3">
+        <ul role="list" className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
           {WAYS.map((w) => (
             <li key={w.href}>
-              <Link href={w.href} className="hover-lift flex h-full items-start gap-3 rounded-lg border border-border bg-card p-5">
+              <Link href={w.href} className="lift flex h-full items-start gap-3 rounded-xl bg-card p-5 shadow-e1">
                 {w.mark === "home" ? (
                   <OneCampLogo className="size-8 shrink-0" />
                 ) : (
-                  <Tile hue={w.mark === "pricing" ? "sun" : "dusk"} size="md">
-                    {w.mark === "pricing" ? <KeyGlyph /> : <DocGlyph />}
+                  <Tile hue={w.mark === "pricing" ? "sun" : w.mark === "search" ? "lake" : "dusk"} size="md">
+                    {w.mark === "pricing" ? (
+                      <KeyGlyph />
+                    ) : w.mark === "search" ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round">
+                        <circle cx="11" cy="11" r="6.5" />
+                        <path d="M16 16l4 4" />
+                      </svg>
+                    ) : (
+                      <DocGlyph />
+                    )}
                   </Tile>
                 )}
                 <span className="min-w-0">
-                  <span className="block font-medium text-foreground">{w.title}</span>
+                  <span className="block text-body font-[590] text-foreground">{w.title}</span>
                   <span className="mt-0.5 block text-small text-muted-foreground">{w.line}</span>
                 </span>
               </Link>

@@ -4,6 +4,8 @@ import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { listPublishedDocs, groupDocs } from "@/lib/docs";
 import { site } from "@/lib/site";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SpotDocs } from "@/components/ui/graphics/spots";
+import { Tile } from "@/components/ui/graphics/Tile";
 import { ButtonLink } from "@/components/ui/Button";
 import { DocsSearch } from "@/components/docs/DocsSearch";
 import { DocsGroupTile } from "@/components/docs/DocsGroupMark";
@@ -29,6 +31,13 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+/** Where most readers start (site.md D1): each a card with its tile. */
+const START_HERE = [
+  { slug: "installation", title: "Installation", line: "One command on a 4 GB server, 10 to 20 minutes.", hue: "sun", d: "M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4" },
+  { slug: "scale-self-hosted", title: "Scaling", line: "What one machine runs, and when to grow it.", hue: "lake", d: "M4 20V10M10 20V4M16 20v-7M22 20H2" },
+  { slug: "slack-bridge", title: "Moving from Slack", line: "Run both in one conversation while people move.", hue: "berry", d: "M7 8h10a3 3 0 0 1 0 6H7M10 5 7 8l3 3M14 17l3-3" },
+] as const;
+
 export default async function DocsIndexPage() {
   let docs = [] as Awaited<ReturnType<typeof listPublishedDocs>>;
   try {
@@ -43,9 +52,15 @@ export default async function DocsIndexPage() {
       <PageHeader
         title="Docs"
         subtitle="How to install OneCamp on your server, keep it running, and use what is in it."
+        art={<SpotDocs size={160} />}
+        artOnPhone={false}
         divider
       >
-        {docs.length > 0 && <DocsSearch className="mt-8 max-w-md" />}
+        {docs.length > 0 && (
+          <div id="search">
+            <DocsSearch className="mt-8 max-w-[560px]" />
+          </div>
+        )}
       </PageHeader>
 
       {/* The index IS the navigation, so it has no sidebar repeating it. Each
@@ -66,6 +81,23 @@ export default async function DocsIndexPage() {
           </div>
         ) : (
           <div className="space-y-12">
+            <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-3">
+              {START_HERE.map((c) => (
+                <li key={c.slug}>
+                  <Link href={`/docs/${c.slug}`} className="lift flex h-full flex-col gap-3 rounded-xl bg-card p-5 shadow-e1">
+                    <Tile hue={c.hue} className="size-9 rounded-ctl">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
+                        <path d={c.d} />
+                      </svg>
+                    </Tile>
+                    <span>
+                      <span className="block text-body font-[590] text-foreground">{c.title}</span>
+                      <span className="mt-1 block text-small text-muted-foreground">{c.line}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
             {groups.map((group) => (
               <section key={group.category} className="grid gap-4 lg:grid-cols-12 lg:gap-x-8">
                 {/* The group in the margin: its tile (its colour, which its
@@ -84,10 +116,10 @@ export default async function DocsIndexPage() {
                     <li key={item.slug}>
                       <Link
                         href={`/docs/${item.slug}`}
-                        className="group flex items-baseline justify-between gap-6 py-4"
+                        className="group -mx-3 flex min-h-14 items-baseline justify-between gap-6 rounded-lg px-3 py-4 transition-colors hover:bg-hover"
                       >
                         <span className="min-w-0">
-                          <span className="block font-medium text-foreground transition-colors group-hover:text-brand-ink">
+                          <span className="block text-body font-[590] text-foreground">
                             {item.title}
                           </span>
                           {item.summary && (
@@ -96,7 +128,7 @@ export default async function DocsIndexPage() {
                             </span>
                           )}
                         </span>
-                        <span aria-hidden className="shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5">
+                        <span aria-hidden className="shrink-0 self-center text-faint transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-foreground">
                           →
                         </span>
                       </Link>

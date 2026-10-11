@@ -19,8 +19,9 @@ describe("the 404", () => {
         expect(html).toContain("page.not_found")
     })
 
-    it("offers the three usual destinations as cards that answer the pointer", () => {
-        const cards = html.match(/<a[^>]*class="hover-lift[^"]*"[^>]*>/g) ?? []
-        expect(cards.map((a) => a.match(/href="([^"]+)"/)?.[1])).toEqual(["/", "/pricing", "/docs"])
+    // Design v3 (site.md N1): a fourth card, the docs' search.
+    it("offers the usual destinations as cards that answer the pointer", () => {
+        const cards = html.match(/<a[^>]*class="lift[^"]*"[^>]*>/g) ?? []
+        expect(cards.map((a) => a.match(/href="([^"]+)"/)?.[1])).toEqual(["/", "/pricing", "/docs", "/docs#search"])
     })
 })
