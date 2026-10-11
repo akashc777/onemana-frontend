@@ -85,7 +85,7 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                   <li>Assign the tasks: select several with X, then A.</li>
                 </ol>
                 <p className="mt-3 text-small text-muted-foreground">
-                  Built into OneCamp v2.54 and later. To change it and keep your own,{" "}
+                  Built into OneCamp. To change it and keep your own,{" "}
                   <a href={`/templates/${t.id}/file`} download className="underline underline-offset-4">download the template file</a>{" "}
                   and add it with <span className="text-foreground">Add a template file</span>.
                 </p>

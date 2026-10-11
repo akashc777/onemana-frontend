@@ -252,7 +252,7 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
                 <p className="mb-1.5 mt-4 text-caption text-muted-foreground">Install on your server</p>
                 <CopyField value={l.install_cmd} label="install command" wrap />
                 <p className="mt-3 text-caption text-muted-foreground">
-                  Includes both editions. The installer asks which to set up: v2 with AI teammates, or v1 with no AI at all. Moving from v1 to v2 later uses this same key.
+                  Includes both editions. The installer asks which to set up: the edition with AI teammates, or the one with no AI at all. Moving to the AI edition later uses this same key.
                 </p>
               </li>
             ))}

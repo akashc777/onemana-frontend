@@ -5,7 +5,7 @@ import { Tile } from "@/components/ui/graphics/Tile";
 /**
  * "Also in the box" (site.md H5): the breadth that lived only in the docs,
  * as twelve compact cards, each a hue tile, a name and one line, linking to
- * its doc. Every item shipped by v2.71; each slug is a live doc. Hues cycle
+ * its doc. Every item has shipped; each slug is a live doc. Hues cycle
  * in chart order; the cards stay neutral.
  */
 export const BOX: { name: string; line: string; slug: string; d: string }[] = [

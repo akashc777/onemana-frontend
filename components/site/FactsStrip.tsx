@@ -31,7 +31,7 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
       ),
     },
     release
-      ? { key: `${release.last30} releases in 30 days`, detail: `${release.version} shipped on ${release.date}.` }
+      ? { key: `${release.last30} releases in 30 days`, detail: `The latest shipped on ${release.date}.` }
       : { key: "Released in the open", detail: "Every release is on GitHub." },
     { key: "Runs on 4 GB", detail: "One install command, 10 to 20 minutes." },
     { key: "Your data stays put", detail: "No telemetry. Backups you hold." },

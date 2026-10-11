@@ -51,9 +51,13 @@ const FACTS = [
   { hue: "dusk", bold: "Agents on the record", rest: ", every attempt", at: "at-380", d: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4" },
 ] as const;
 
-/** The release pill (site.md H1): the version and its own headline, read from GitHub; nothing when GitHub is silent. */
+/**
+ * The release pill (site.md H1): the latest release's own headline, read
+ * from GitHub, with no version number (owner rule: no version labels in the
+ * copy); nothing when GitHub is silent or the release has no headline.
+ */
 function ReleasePill({ release }: { release: ReleaseFacts | null }) {
-  if (!release) return null;
+  if (!release?.headline) return null;
   return (
     <a
       href={release.url ?? `${site.serverGithubUrl}/releases`}
@@ -62,10 +66,7 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
       className="in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1 transition-shadow duration-hover hover:shadow-e2"
     >
       <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
-      <span className="truncate">
-        {release.version}
-        {release.headline && <span className="max-sm:hidden"> · {release.headline}</span>}
-      </span>
+      <span className="truncate">{release.headline}</span>
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" aria-hidden="true" className="go-arrow shrink-0">
         <path d="M6 4l4 4-4 4" />
       </svg>
