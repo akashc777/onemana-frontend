@@ -4,6 +4,7 @@ import type { ReleaseFacts } from "@/lib/releases";
 import type { CampHue } from "@/lib/campHue";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { Arrow } from "@/components/ui/v3";
+import { Icon } from "@/components/ui/icons";
 
 /** The strip's four hues, in chart order: the palette introduced as a system (site.md H3). */
 export const FACT_HUES: CampHue[] = ["moss", "sky", "sun", "berry"];
@@ -54,9 +55,7 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
       </dl>
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 sm:justify-end">
         <a href={site.serverGithubUrl} target="_blank" rel="noopener noreferrer" className="ui-btn ui-btn-sm ui-btn-secondary max-md:min-h-11">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinejoin="round" aria-hidden="true">
-            <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z" />
-          </svg>
+          <Icon name="star" size={14} />
           Star on GitHub
         </a>
         <Link href="/pricing" className="go tap-target">

@@ -29,11 +29,15 @@ const ROOT = resolve(__dirname, "..")
 const DRAWINGS = ["components/ui/icons.tsx", "components/ui/v3.tsx", "components/ui/graphics/"]
 
 /**
- * Owned by the showcase wave (the home hero, the product sections and the
- * live replicas of the app, 11 Oct 2026). They draw the app's own UI, and
- * move to the set when that wave lands; nothing else may join this list.
+ * The replicas of the app (components/site/showcase): they draw the APP'S
+ * icons, Lucide, as the app does, and its marks (the workspace ring, the
+ * spark, status glyphs), so the picture is the product's and not the site's
+ * redrawing of it. Lucide is set at the same one rendered 1.25px stroke
+ * (absoluteStrokeWidth), and showcase.test.tsx holds the replicas to the
+ * table. The home page, the facts strip and the tabs draw with the set like
+ * every other page. Nothing else may join this list.
  */
-const SHOWCASE = ["app/page.tsx", "components/site/FactsStrip.tsx", "components/site/ProductTabs.tsx", "components/site/ProductShot.tsx", "components/site/showcase/"]
+const SHOWCASE = ["components/site/showcase/"]
 
 /** Not the public site: the admin console and the playful layer's dev page. */
 const NOT_THE_SITE = ["app/admin/", "components/admin/", "app/playful-dev/"]

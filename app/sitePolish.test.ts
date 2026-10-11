@@ -25,11 +25,12 @@ const ROOT = resolve(__dirname, "..")
 const NOT_THE_SITE = ["app/admin/", "components/admin/", "app/playful-dev/"]
 
 /**
- * Owned by the showcase wave (the home hero, the product sections and the
- * live replicas of the app, 11 Oct 2026); they join these rules when that
- * wave lands. Nothing else may join this list.
+ * The showcase wave (the home hero, the product sections and the live
+ * replicas of the app, 11 Oct 2026) has landed, and its files follow these
+ * rules like every other; components/site/showcase/showcase.test.tsx holds
+ * the replicas to the table besides. Nothing may join this list.
  */
-const SHOWCASE = ["app/page.tsx", "components/site/FactsStrip.tsx", "components/site/ProductTabs.tsx", "components/site/ProductShot.tsx", "components/site/showcase/"]
+const SHOWCASE: string[] = []
 
 function files(dir: string, ext: RegExp, out: string[] = []): string[] {
   for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {

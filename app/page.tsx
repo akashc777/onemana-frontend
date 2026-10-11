@@ -22,6 +22,7 @@ import { AlsoInTheBox } from "@/components/site/AlsoInTheBox";
 import { CloseSpot } from "@/components/site/CloseSpot";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { Arrow } from "@/components/ui/v3";
+import { Icon } from "@/components/ui/icons";
 import { SunStroke } from "@/components/ui/graphics/v3marks";
 import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
 
@@ -67,9 +68,7 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
     >
       <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
       <span className="truncate">{release.headline}</span>
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" aria-hidden="true" className="go-arrow shrink-0">
-        <path d="M6 4l4 4-4 4" />
-      </svg>
+      <Icon name="chevron-right" size={14} className="go-arrow" />
     </a>
   );
 }
@@ -110,7 +109,7 @@ export default async function HomePage() {
               {/* Two tones (G2, H1): the soft half in ink-3, the claim in ink,
                   and one hand-drawn sun stroke under "own." */}
               <h1 className="in-lift at-60 max-w-[900px] text-hero text-foreground">
-                <span className="text-faint dark:text-[#8B8E96]">Your team&apos;s chat, docs and calls,</span>{" "}
+                <span className="text-faint dark:text-muted-foreground/80">Your team&apos;s chat, docs and calls,</span>{" "}
                 <span>
                   on a server you{" "}
                   <span className="relative inline-block whitespace-nowrap">
@@ -131,10 +130,8 @@ export default async function HomePage() {
             <ul className="m-0 hidden list-none border-t border-border p-0 lg:col-span-4 lg:block">
               {FACTS.map((f) => (
                 <li key={f.bold} className="flex h-[52px] items-center gap-3 border-b border-border text-small text-muted-foreground">
-                  <Tile hue={f.hue} className={`in-pop size-7 rounded-lg ${f.at}`}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round">
-                      <path d={f.d} />
-                    </svg>
+                  <Tile hue={f.hue} size="sm" className={`in-pop ${f.at}`}>
+                    <Icon d={f.d} />
                   </Tile>
                   <span>
                     <b className="font-[510] text-foreground">{f.bold}</b>
