@@ -14,8 +14,8 @@ export const contentType = "image/png";
 
 /**
  * The checkout's card, in the site's frame (the orbit on the right): the
- * choice in one line, then the two paid plans, each in its plan's hue (sun
- * for the licence, sky for Cloud, as on the plan cards). No uppercase orange
+ * choice in one line, then the two paid plans as white cards, each with its
+ * plan's dot (sun for the licence, sky for Cloud, as on the plan cards). No uppercase orange
  * eyebrow and no filled orange "button" that cannot be pressed.
  */
 export default async function BuyOpenGraphImage() {
@@ -27,8 +27,8 @@ export default async function BuyOpenGraphImage() {
   // lakh form for a larger figure), the sign only when its glyph is loaded.
   const money = (inr: number) => (rupeeFont ? `₹${inr.toLocaleString("en-US")}` : `INR ${inr.toLocaleString("en-US")}`);
   const plans = [
-    { name: "Licence", hue: OG.camp.sun, price: `${money(pricing.lifetime_inr)} once`, fits: "Any number of people" },
-    { name: "Cloud", hue: OG.camp.sky, price: `${money(pricing.cloud_inr)} a month`, fits: "Run by us" },
+    { name: "Licence", hue: OG.camp.sun, price: money(pricing.lifetime_inr), per: "once" },
+    { name: "Cloud", hue: OG.camp.sky, price: money(pricing.cloud_inr), per: "a month" },
   ];
   const allFonts = rupeeFont ? [...fonts, { name: "Inter Rupee", data: rupeeFont, weight: 600 as const, style: "normal" as const }] : fonts;
   return new ImageResponse(
@@ -40,24 +40,33 @@ export default async function BuyOpenGraphImage() {
           <span style={{ display: "flex" }}>Pay once,</span>
           <span style={{ display: "flex" }}>or let us run it.</span>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 34 }}>
+        {/* Each plan as a white card with its hue as a dot (site.md OG2,
+            G7: identity is a dot, not a tinted chip). */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 30 }}>
           {plans.map((p) => (
-            <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <div
-                style={{
-                  display: "flex",
-                  padding: "6px 14px",
-                  borderRadius: 8,
-                  background: p.hue.tint,
-                  color: p.hue.ink,
-                  fontSize: 22,
-                  fontWeight: 600,
-                }}
-              >
+            <div
+              key={p.name}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 18,
+                width: 560,
+                padding: "14px 20px",
+                borderRadius: 16,
+                background: OG.page,
+                border: `1.5px solid ${OG.line}`,
+                boxShadow: "0 6px 16px -8px rgba(16, 18, 26, 0.14)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, width: 128, fontSize: 22, fontWeight: 600, color: OG.text }}>
+                <div style={{ display: "flex", width: 10, height: 10, borderRadius: 999, background: p.hue.strong }} />
                 {p.name}
               </div>
-              <div style={{ display: "flex", fontSize: 26, fontWeight: 600, color: OG.text, fontFamily: "Inter, Inter Rupee" }}>{p.price}</div>
-              <div style={{ display: "flex", fontSize: 22, color: OG.text2 }}>{p.fits}</div>
+              {/* The price on one line with its "once" or "a month" (site.md OG2). */}
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10, whiteSpace: "nowrap" }}>
+                <span style={{ display: "flex", fontSize: 30, fontWeight: 600, color: OG.text, fontFamily: "Inter, Inter Rupee" }}>{p.price}</span>
+                <span style={{ display: "flex", fontSize: 20, color: OG.text2 }}>{p.per}</span>
+              </div>
             </div>
           ))}
         </div>

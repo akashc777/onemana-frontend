@@ -1,5 +1,6 @@
 import type { CampHue } from "@/lib/campHue";
-import { OG, OgLogo } from "@/lib/og-card";
+import { OG, OgFace, OgLogo } from "@/lib/og-card";
+import { hueFor } from "@/lib/campHue";
 import { site } from "@/lib/site";
 
 // Shared 1200x630 social card for the per-post and per-guide OG images, in the
@@ -58,7 +59,13 @@ function CornerRings({ hue }: { hue: CampHue }) {
   );
 }
 
-export function PostOgCard({ eyebrow, title, meta, hue = "sky" }: { eyebrow: string; title: string; meta?: string; hue?: CampHue }) {
+/** "Akash Hadagali" as "AH": two initials on a 32px face. */
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1]![0] : "")).toUpperCase();
+}
+
+export function PostOgCard({ eyebrow, title, meta, hue = "sky", author }: { eyebrow: string; title: string; meta?: string; hue?: CampHue; author?: string }) {
   const t = clampTitle(title);
   const fs = titleFontSize(t.length);
   const c = OG.camp[hue];
@@ -123,7 +130,8 @@ export function PostOgCard({ eyebrow, title, meta, hue = "sky" }: { eyebrow: str
               fontWeight: 600,
             }}
           >
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: c.strong, display: "flex" }} />
+            {/* A dot, the site's identity mark for a topic (site.md G7). */}
+            <div style={{ width: 10, height: 10, borderRadius: 999, background: c.strong, display: "flex" }} />
             {eyebrow}
           </div>
           <div
@@ -145,6 +153,8 @@ export function PostOgCard({ eyebrow, title, meta, hue = "sky" }: { eyebrow: str
         {/* Footer: the address and the meta. */}
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
           <span style={{ display: "flex", fontSize: 22, fontWeight: 600, color: OG.link }}>onemana.dev</span>
+          {/* The author's face (site.md OG3): the gradient avatar the site draws them with. */}
+          {author ? <OgFace initials={initialsOf(author)} hue={hueFor(author)} size={32} /> : null}
           {meta ? <span style={{ display: "flex", fontSize: 22, color: OG.text2 }}>{meta}</span> : null}
         </div>
       </div>

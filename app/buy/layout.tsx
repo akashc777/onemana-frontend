@@ -19,13 +19,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Pay ${once} once for unlimited users on your server, or choose managed hosting from ${monthly}.`,
       url: `${site.url}/buy`,
       type: "website",
-      images: [{ url: "/buy/opengraph-image?v=6", width: 1200, height: 630, alt, type: "image/png" }],
+      images: [{ url: "/buy/opengraph-image?v=7", width: 1200, height: 630, alt, type: "image/png" }],
     },
     twitter: {
       card: "summary_large_image",
       title: "Get OneCamp · Buy once, or let us host it",
       description: `A licence for ${once} once, or managed cloud from ${monthly}.`,
-      images: ["/buy/opengraph-image?v=6"],
+      images: ["/buy/opengraph-image?v=7"],
     },
   };
 }

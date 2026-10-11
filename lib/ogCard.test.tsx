@@ -27,16 +27,33 @@ describe("the link preview card", () => {
         expect(html).toContain("on a server you own.")
     })
 
-    it("draws the workspace's channel, person and agent in the camp hues", () => {
-        for (const label of ["engineering", "Priya", "Release Captain"]) expect(html).toContain(label)
-        for (const hue of ["sky", "berry", "dusk"] as const) expect(html.toLowerCase()).toContain(OG.camp[hue].strong.toLowerCase())
+    // Design v3 (DESIGN_V3 §3.9, site.md OG1): the page's own mark and
+    // people. A person is white initials on her avatar gradient, the agent is
+    // its spark square with no initials, a channel carries no hue, and the
+    // logo is the gradient ring the nav draws, not the flat one.
+    it("draws the workspace's channel, person and agent as the site does", () => {
+        for (const label of ["engineering", "Priya", "Release Captain", "Agent"]) expect(html).toContain(label)
+        expect(html).toContain(`linear-gradient(140deg, ${OG.camp.berry.a1}, ${OG.camp.berry.a2})`)
+        expect(html).toContain(`linear-gradient(140deg, ${OG.agent.a1}, ${OG.agent.a2})`)
+        expect(html).not.toContain(">RC<")
+        expect(html).toContain('stroke="url(#og-ring)"')
+        expect(html).not.toMatch(/#c84f00/i)
+        for (const hue of ["sky", "moss", "sun", "lake", "berry"] as const) expect(html.toLowerCase()).toContain(OG.camp[hue].strong.toLowerCase())
+    })
+
+    it("takes its palette from the one table: the white sheet and the v3 ink", () => {
+        expect(OG.page).toBe("#FFFFFF")
+        expect(OG.text).toBe("#16171B")
+        expect(OG.text2).toBe("#5B5D65")
+        expect(OG.text3).toBe("#8A8C92")
+        expect(OG.paper).toBe("#F7F4F1")
     })
 
     it("is a new version, so social caches fetch it again", () => {
-        expect(OG_IMAGE_VERSION).toBe("6")
+        expect(OG_IMAGE_VERSION).toBe("7")
         const buy = readFileSync(join(process.cwd(), "app/buy/layout.tsx"), "utf8")
-        expect(buy).toContain("/buy/opengraph-image?v=6")
-        expect(buy).not.toContain("?v=5")
+        expect(buy).toContain("/buy/opengraph-image?v=7")
+        expect(buy).not.toContain("?v=6")
     })
 })
 

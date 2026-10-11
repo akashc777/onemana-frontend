@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { site } from "@/lib/site";
-import { APP } from "@/lib/appSystem";
+import { ALPHA, APP, AVATAR, CAMP, PAPER, SHARED, tripleToHex } from "@/lib/appSystem";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -12,8 +12,11 @@ export const OG_SIZE = { width: 1200, height: 630 };
  * unchanged URL keeps showing the old headline to exactly the audience the rewording was for.
  * 5: the playful layer (10 Oct 2026): the ring from the logo with a workspace's channels, people and
  * agent orbiting it in the camp hues, the home page's own headline at weight 600, no grid or glow.
+ * 6: design v3's two-tone headline and mini camp canvas.
+ * 7: the site's own mark and people (11 Oct 2026): the gradient ring, gradient avatars with white
+ * initials, the agent as its spark square, a neutral channel, and the v3 palette from the one table.
  */
-export const OG_IMAGE_VERSION = "6";
+export const OG_IMAGE_VERSION = "7";
 
 export const OG_TITLE = `${site.name} · Team chat, docs, tasks and calls on your own server`;
 export const OG_DESCRIPTION =
@@ -32,64 +35,144 @@ export const defaultOgImages = [
 
 export const defaultTwitterImages = [`/twitter-image?v=${OG_IMAGE_VERSION}`];
 
-/**
- * The palette, as satori needs it: literal colours, since an image has no
- * CSS variables. These are the light theme's values from globals.css (the
- * graphite neutrals, the link ink, and the camp hues' strong, tint and ink
- * cuts); lib/palette.ts pins the same numbers for the page.
- */
-export const OG = {
-  page: "#FCFCFD",
-  text: "#14161A",
-  text2: "#5F6470",
-  line: "#E4E5E8",
-  lineStrong: "#D3D5DA",
-  link: "#C2410C",
-  camp: {
-    sky: { strong: "#3B7DDD", tint: "#E7EFFC", ink: "#1E4E9A" },
-    moss: { strong: "#2F9E5B", tint: "#E6F6EC", ink: "#1D6A3C" },
-    sun: { strong: "#B98200", tint: "#FFF6D6", ink: "#7A5200" },
-    dusk: { strong: "#7B61D9", tint: "#EFEBFC", ink: "#4B3699" },
-    berry: { strong: "#D9467C", tint: "#FCE8EF", ink: "#962556" },
-    lake: { strong: "#0E97A6", tint: "#E1F5F6", ink: "#0B5C65" },
-  },
-} as const;
+const hex = tripleToHex;
+
+/** An alpha hairline over the white page, as the solid colour satori draws. */
+const over = (rgb: readonly [number, number, number], a: number) => hex([0, 1, 2].map((i) => 255 - (255 - rgb[i]!) * a) as [number, number, number]);
 
 /**
- * The logo: the app's bare ring (lib/appSystem.ts APP.logo, from the app's
- * public/logo.svg), at its proportions: outer edge 204 of 512, stroke 56.
+ * The palette, as satori needs it: literal colours, since an image has no
+ * CSS variables. Read from the one table (lib/appSystem.ts), so a card draws
+ * the page's own v3 colours: the white sheet, the ink tiers, the alpha
+ * hairlines as they land on white, the link ink, the paper and the camp hues'
+ * strong, tint and ink cuts. The card used to type wave 1's (#FCFCFD,
+ * #14161A, #5F6470, #E4E5E8).
+ */
+export const OG = {
+  page: hex(SHARED.light.background!),
+  text: hex(SHARED.light.foreground!),
+  text2: hex(SHARED.light["muted-foreground"]!),
+  text3: hex(SHARED.light.faint!),
+  line: over(ALPHA.light.line![0], ALPHA.light.line![1]),
+  lineStrong: over(ALPHA.light["line-3"]![0], ALPHA.light["line-3"]![1]),
+  link: hex(SHARED.light["brand-ink"]!),
+  paper: hex(PAPER.light),
+  camp: Object.fromEntries(
+    (["sky", "moss", "sun", "dusk", "berry", "lake"] as const).map((h) => [
+      h,
+      { strong: CAMP.light[`camp-${h}`]!, tint: CAMP.light[`camp-${h}-tint`]!, ink: CAMP.light[`camp-${h}-ink`]!, a1: AVATAR[`camp-${h}-a1`]!, a2: AVATAR[`camp-${h}-a2`]! },
+    ]),
+  ) as Record<"sky" | "moss" | "sun" | "dusk" | "berry" | "lake", { strong: string; tint: string; ink: string; a1: string; a2: string }>,
+  agent: { a1: AVATAR["agent-a1"]!, a2: AVATAR["agent-a2"]!, tint: hex(SHARED.light["agent-muted"]!), ink: hex(SHARED.light["agent-ink"]!) },
+} as const;
+
+/** The four-point spark, in a 24 box (components/ui/graphics/motifs SPARK_PATH). */
+const SPARK = "M12 2Q13.6 10.4 22 12Q13.6 13.6 12 22Q10.4 13.6 2 12Q10.4 10.4 12 2Z";
+
+/**
+ * The logo: the ring in the campfire gradient, as the site's nav draws it
+ * (components/ui/v3 LogoRing): r8 and a 4 stroke on the 24 grid. It used to
+ * be the app's flat ring, so the card and the page showed two marks.
  */
 export function OgLogo({ size = 48 }: { size?: number }) {
-  const { viewBox, r, stroke, colour } = APP.logo;
-  const k = size / viewBox;
-  const ring = Math.round((2 * r + stroke) * k);
+  const [a, b] = APP.logoGradient;
   return (
-    <div style={{ width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: ring, height: ring, borderRadius: 999, display: "flex", border: `${Math.round(stroke * k)}px solid ${colour}` }} />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <defs>
+        <linearGradient id="og-ring" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={a} />
+          <stop offset="1" stopColor={b} />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="8" stroke="url(#og-ring)" strokeWidth="4" />
+    </svg>
+  );
+}
+
+/** A person (DESIGN_V3 §3.9): white initials on the hue's avatar gradient. */
+export function OgFace({ initials, hue, size = 28 }: { initials: string; hue: keyof typeof OG.camp; size?: number }) {
+  const c = OG.camp[hue];
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundImage: `linear-gradient(140deg, ${c.a1}, ${c.a2})`,
+        color: "white",
+        fontSize: Math.round(size * 0.375),
+        fontWeight: 600,
+      }}
+    >
+      {initials}
     </div>
   );
 }
 
-/** One thing orbiting the workspace: a hued dot, or a chip that names it. */
-type Orbiter = { x: number; y: number; hue: keyof typeof OG.camp; size?: number; label?: string; initial?: string };
+/** An agent (§3.9): a 32%-radius square in the agent's gradient with the white spark, never initials. */
+function OgAgent({ size = 28 }: { size?: number }) {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: Math.round(size * 0.32),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundImage: `linear-gradient(140deg, ${OG.agent.a1}, ${OG.agent.a2})`,
+      }}
+    >
+      <svg width={Math.round(size * 0.55)} height={Math.round(size * 0.55)} viewBox="0 0 24 24">
+        <path d={SPARK} fill="white" />
+      </svg>
+    </div>
+  );
+}
 
-// Real things a workspace holds, from the live demo: its channels, its people
-// and its agent. Placed on the rings by hand, in pixels from the centre.
-const ORBITERS: Orbiter[] = [
-  { x: -150, y: -128, hue: "sky", initial: "#", label: "engineering" },
-  { x: 112, y: -70, hue: "berry", initial: "P", label: "Priya" },
-  { x: -96, y: 158, hue: "dusk", initial: "RC", label: "Release Captain" },
+/** A floating chip on the canvas (S19): white, a hairline and a soft drop. */
+function Chip({ x, y, children }: { x: number; y: number; children: ReactNode }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "6px 14px 6px 6px",
+        borderRadius: 14,
+        background: OG.page,
+        border: `1.5px solid ${OG.line}`,
+        boxShadow: "0 8px 20px -8px rgba(16, 18, 26, 0.18)",
+        fontSize: 20,
+        fontWeight: 600,
+        color: OG.text,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** The camp hues' dots on the rings, in pixels from the centre. */
+const DOTS: { x: number; y: number; hue: keyof typeof OG.camp; size: number }[] = [
   { x: 76, y: 66, hue: "moss", size: 16 },
   { x: -84, y: -18, hue: "sun", size: 14 },
   { x: 214, y: 156, hue: "lake", size: 18 },
-  { x: 30, y: -222, hue: "moss", size: 12 },
+  { x: 30, y: -222, hue: "sky", size: 12 },
   { x: -226, y: 64, hue: "berry", size: 12 },
 ];
 
 /**
  * The motif: the logo's ring, extended into rings and one dotted orbit, with
- * the workspace's channels, people and agent around it in the camp hues. Flat
- * shapes and hairlines only, as on the site.
+ * the workspace's real things on it (site.md OG1): a channel (a neutral #,
+ * since channels carry no hue), a person (her avatar gradient) and the agent
+ * (its spark square, never initials), and five camp-hue dots.
  */
 export function OgOrbit({ cx, cy }: { cx: number; cy: number }) {
   const ring = (r: number, style: "solid" | "dashed", colour: string) => (
@@ -115,57 +198,25 @@ export function OgOrbit({ cx, cy }: { cx: number; cy: number }) {
       <div style={{ position: "absolute", left: cx - 44, top: cy - 44, display: "flex" }}>
         <OgLogo size={88} />
       </div>
-      {ORBITERS.map((o, i) => {
-        const c = OG.camp[o.hue];
-        if (!o.label) {
-          const s = o.size ?? 14;
-          return (
-            <div
-              key={i}
-              style={{ position: "absolute", left: cx + o.x - s / 2, top: cy + o.y - s / 2, width: s, height: s, borderRadius: 999, background: c.strong, display: "flex" }}
-            />
-          );
-        }
-        return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: cx + o.x - 20,
-              top: cy + o.y - 20,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "6px 14px 6px 6px",
-              borderRadius: 999,
-              background: "#FFFFFF",
-              border: `1.5px solid ${OG.line}`,
-              fontSize: 20,
-              fontWeight: 600,
-              color: OG.text,
-            }}
-          >
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 999,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: c.tint,
-                border: `1.5px solid ${c.strong}`,
-                color: c.ink,
-                fontSize: o.initial && o.initial.length > 1 ? 12 : 15,
-                fontWeight: 600,
-              }}
-            >
-              {o.initial ?? ""}
-            </div>
-            {o.label}
-          </div>
-        );
-      })}
+      {DOTS.map((d, i) => (
+        <div
+          key={i}
+          style={{ position: "absolute", left: cx + d.x - d.size / 2, top: cy + d.y - d.size / 2, width: d.size, height: d.size, borderRadius: 999, background: OG.camp[d.hue].strong, display: "flex" }}
+        />
+      ))}
+      <Chip x={cx - 170} y={cy - 148}>
+        <span style={{ display: "flex", width: 28, justifyContent: "center", color: OG.text3, fontSize: 22 }}>#</span>
+        engineering
+      </Chip>
+      <Chip x={cx + 92} y={cy - 90}>
+        <OgFace initials="PN" hue="berry" />
+        Priya
+      </Chip>
+      <Chip x={cx - 116} y={cy + 138}>
+        <OgAgent />
+        Release Captain
+        <span style={{ display: "flex", padding: "0 7px", borderRadius: 6, background: OG.agent.tint, color: OG.agent.ink, fontSize: 15, fontWeight: 600 }}>Agent</span>
+      </Chip>
     </>
   );
 }
@@ -199,7 +250,7 @@ export function OgFrame({ children, address = "onemana.dev" }: { children: React
           height: 550,
           borderRadius: 32,
           display: "flex",
-          backgroundColor: "#F7F4F1",
+          backgroundColor: OG.paper,
           backgroundImage:
             "radial-gradient(circle at 78% -10%, rgba(255,110,30,0.30), rgba(255,110,30,0) 60%), radial-gradient(circle at 0% 110%, rgba(123,97,217,0.16), rgba(123,97,217,0) 55%), radial-gradient(circle at 100% 110%, rgba(14,151,166,0.13), rgba(14,151,166,0) 55%)",
         }}
@@ -228,7 +279,7 @@ export function OgCard() {
       */}
       <div style={{ display: "flex", flexWrap: "wrap", fontSize: 58, fontWeight: 600, lineHeight: 1.08, letterSpacing: "-0.024em" }}>
         {/* Two tones, as the hero (site.md H1, OG1): the soft half in ink-3, the claim in ink. */}
-        <span style={{ color: "#8A8C92" }}>Your team&apos;s chat, docs and calls,&nbsp;</span>
+        <span style={{ color: OG.text3 }}>Your team&apos;s chat, docs and calls,&nbsp;</span>
         <span style={{ color: OG.text }}>on a server you own.</span>
       </div>
       <div style={{ display: "flex", marginTop: 24, fontSize: 26, lineHeight: 1.4, color: OG.text2 }}>

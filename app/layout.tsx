@@ -9,6 +9,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { VisitorTracker } from "@/components/site/VisitorTracker";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { SHARED, tripleToHex } from "@/lib/appSystem";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -56,9 +57,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // The page's own colour in each mode, from the one table.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0B0C0E" },
+    { media: "(prefers-color-scheme: light)", color: tripleToHex(SHARED.light.background!) },
+    { media: "(prefers-color-scheme: dark)", color: tripleToHex(SHARED.dark.background!) },
   ],
   width: "device-width",
   initialScale: 1,

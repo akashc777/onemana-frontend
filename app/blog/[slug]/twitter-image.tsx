@@ -23,5 +23,5 @@ export default async function Image({ params }: { params: { slug: string } }) {
   const year = (post?.published_at || post?.created_at || "").slice(0, 4);
   const meta = [post?.author?.trim(), year].filter(Boolean).join("  \u00b7  ") || "The OneCamp blog";
 
-  return new ImageResponse(<PostOgCard eyebrow={eyebrow} title={title} meta={meta} hue={topic.hue} />, { ...OG_POST_SIZE, fonts });
+  return new ImageResponse(<PostOgCard eyebrow={eyebrow} title={title} meta={meta} hue={topic.hue} author={post?.author?.trim() || undefined} />, { ...OG_POST_SIZE, fonts });
 }
