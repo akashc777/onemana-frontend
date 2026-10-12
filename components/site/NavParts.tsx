@@ -69,10 +69,12 @@ export function NavLink({ href, look = "bar", children }: { href: string; look?:
 }
 
 /**
- * The phone menu: a button and a panel that floats under the header, so
- * opening it does not push the page down. The panel's contents come from the
- * server as children. It closes on a link, on another page, on Escape (focus
- * goes back to the button) and on a tap outside the header.
+ * The phone menu: a button and a panel that fills the screen under the
+ * header, so opening it does not push the page down, and the page under it
+ * holds still while it is open (it used to float as a card over a page that
+ * still scrolled behind it). The panel's contents come from the server as
+ * children. It closes on a link, on another page, on Escape (focus goes back
+ * to the button) and on a tap outside the header.
  */
 export function MobileMenu({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -92,11 +94,27 @@ export function MobileMenu({ children }: { children: ReactNode }) {
       const header = button.current?.closest("header");
       if (header && !header.contains(e.target as Node)) setOpen(false);
     };
+    // The page holds still under the open menu. Where the browser draws a
+    // scrollbar that takes room, its width is given back as padding, so the
+    // header does not jump sideways as the scrollbar goes.
+    const root = document.documentElement;
+    const was = { overflow: root.style.overflow, paddingRight: root.style.paddingRight };
+    const bar = window.innerWidth - root.clientWidth;
+    root.style.overflow = "hidden";
+    if (bar > 0) root.style.paddingRight = `${bar}px`;
+    // The menu exists only under lg: a tablet turned to landscape, or a window
+    // made wider, closes it, or the page would stay held with no menu shown.
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const onWide = () => wide.matches && setOpen(false);
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onDown);
+    wide.addEventListener("change", onWide);
     return () => {
+      root.style.overflow = was.overflow;
+      root.style.paddingRight = was.paddingRight;
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("pointerdown", onDown);
+      wide.removeEventListener("change", onWide);
     };
   }, [open]);
 
@@ -119,7 +137,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         id="mobile-menu"
         hidden={!open}
         onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
-        className="fx-slide absolute inset-x-0 top-full max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain bg-background shadow-e3 lg:hidden"
+        className="fx-slide absolute inset-x-0 top-full h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain bg-background shadow-[inset_0_1px_0_var(--line-c)] lg:hidden"
       >
         {children}
       </div>

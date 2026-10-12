@@ -183,6 +183,13 @@ body {
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
+  /* With the phone menu open, the header is solid above it, so no page shows
+     through behind the logo while the menu fills the screen. */
+  .nav-bar:has(#mobile-menu:not([hidden])) {
+    background-color: rgb(var(--background));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   @media (prefers-reduced-transparency: reduce) {
     .nav-bar[data-scrolled] {
       background-color: rgb(var(--background));
