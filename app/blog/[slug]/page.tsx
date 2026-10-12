@@ -38,6 +38,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title,
     description,
+    // The post's tags, for search, rather than as a line of words under it.
+    ...(post.tags?.length ? { keywords: post.tags } : {}),
     alternates: { canonical: url },
     openGraph: {
       title,
@@ -115,11 +117,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
         <Prose html={html} kind="post" className="mt-10" />
 
-        {/* Tags at the end, as words: as pills above the title they were the
-            first thing a reader met, ahead of the headline. */}
-        {post.tags?.length > 0 && (
-          <p className="mt-10 text-small text-muted-foreground">Filed under {post.tags.join(", ")}.</p>
-        )}
+        {/* No tag line under the post: the tags are the CMS's search keywords
+            ("Slack Alternative, Self-Hosted, OpenSource"), not words a reader
+            needs, and the topic above the title already files it. They go
+            to the page's keywords instead (generateMetadata). */}
 
         {/* AT THE END OF A POST, not in front of it. Somebody who has read to
             the bottom of a technical write-up is the warmest reader this site
