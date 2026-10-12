@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { articleSections, enhanceArticle, slugify, textOf } from "./article";
+import { articleSections, bindLastWords, enhanceArticle, slugify, textOf } from "./article";
 import { renderMarkdown } from "./markdown";
 
 const article = (md: string) => enhanceArticle(renderMarkdown(md));
@@ -82,16 +82,47 @@ describe("tables, images and callouts", () => {
 
   it("turns GitHub's alert syntax into a note, in both of its shapes", () => {
     const one = article("> [!NOTE]\n> Backups are taken first.").html.trim();
-    expect(one).toBe('<div class="callout" data-callout="note" role="note"><p class="callout-title">Note</p><p>Backups are taken first.</p>\n</div>');
+    expect(one).toBe('<div class="callout" data-callout="note" role="note"><p class="callout-title">Note</p><p>Backups are taken\u00a0first.</p>\n</div>');
     const two = article("> [!WARNING]\n>\n> Back up first.\n>\n> Then update.").html;
     expect(two).toContain('<div class="callout" data-callout="warning" role="note"><p class="callout-title">Warning</p>');
-    expect(two).toContain("<p>Back up first.</p>");
-    expect(two).toContain("<p>Then update.</p>");
+    expect(two).toContain("<p>Back up\u00a0first.</p>");
+    expect(two).toContain("<p>Then\u00a0update.</p>");
     expect(two).not.toContain("blockquote");
   });
 
   it("leaves a quotation a quotation", () => {
     expect(article("> Somebody said this.").html).toContain("<blockquote>");
+  });
+});
+
+describe("no word alone on a paragraph's last line", () => {
+  it("joins a paragraph's or an item's last two words, even across inline code and links", () => {
+    expect(bindLastWords("<p>There is nothing else to deploy.</p>")).toBe("<p>There is nothing else to\u00a0deploy.</p>");
+    expect(bindLastWords("<p>Point <code>onecamp.example.com</code> here.</p>")).toBe("<p>Point <code>onecamp.example.com</code>\u00a0here.</p>");
+    expect(bindLastWords('<li>Read the <a href="/docs/x">install guide</a></li>')).toBe('<li>Read the <a href="/docs/x">install\u00a0guide</a></li>');
+    expect(bindLastWords("<p>Run <code>make verify</code></p>")).toBe("<p>Run <code>make\u00a0verify</code></p>");
+    // The guides' Markdown wraps its lines: the space before the last word may be a newline.
+    expect(bindLastWords("<p>There is nothing else to\ndeploy.</p>")).toBe("<p>There is nothing else to\u00a0deploy.</p>");
+    expect(bindLastWords("<li>Keep it updated.\n</li>")).toBe("<li>Keep it\u00a0updated.\n</li>");
+  });
+
+  it("leaves a one-word block, a long last word and every attribute alone", () => {
+    expect(bindLastWords("<p>Yes.</p>")).toBe("<p>Yes.</p>");
+    const long = "<p>Download it from https://backend.onemana.dev/onecamp/download</p>";
+    expect(bindLastWords(long)).toBe(long);
+    expect(bindLastWords('<p><a href="/a b" title="two words">go</a> now</p>')).toBe('<p><a href="/a b" title="two words">go</a>\u00a0now</p>');
+  });
+
+  it("joins inside the innermost block only, never across a nested list", () => {
+    expect(bindLastWords("<li><p>First point here.</p></li>")).toBe("<li><p>First point\u00a0here.</p></li>");
+    const nested = "<li>Parent item<ul><li>Child one</li></ul></li>";
+    expect(bindLastWords(nested)).toBe("<li>Parent item<ul><li>Child\u00a0one</li></ul></li>");
+  });
+
+  it("is part of every article, and search still reads plain spaces", () => {
+    const { html } = article("The installer prints the address to open.");
+    expect(html).toContain("address to\u00a0open.");
+    expect(articleSections(html)[0]?.text).toBe("The installer prints the address to open.");
   });
 });
 

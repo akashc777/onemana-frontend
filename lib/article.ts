@@ -175,10 +175,54 @@ function callouts(html: string): string {
   return out + html.slice(last);
 }
 
+/** A last word this long or shorter is kept on its line with the word before it. */
+const SHORT_LAST_WORD = 14;
+
+/** A paragraph or item with no block inside it: the text a widow can end. */
+const WRAPPING_BLOCK = /<(p|li)((?:\s[^>]*)?)>((?:(?!<\/?(?:p|li|ul|ol|pre|table|div|blockquote|figure)\b)[\s\S])*?)<\/\1>/g;
+
+/** A run of the whitespace a line may break at (a no-break space is not one). */
+const BREAKING_SPACE = /[ \t\r\n]+/g;
+
+/**
+ * A paragraph or a list item never ends on one word alone. Chrome's
+ * text-wrap: pretty is meant to see to that, and does not on a line that
+ * holds inline code ("There is nothing else to / deploy."), which the guides
+ * are full of. So the last two words are joined by a no-break space here,
+ * when the last is short enough that the pair can't crowd a line. The
+ * space between them may be a newline (the guides' Markdown wraps its
+ * lines). Only text between tags is touched, never an attribute.
+ */
+export function bindLastWords(html: string): string {
+  return html.replace(WRAPPING_BLOCK, (whole, tag: string, attrs: string, inner: string) => {
+    const parts = inner.split(/(<[^>]*>)/);
+    let tail = "";
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const part = parts[i]!;
+      if (part.startsWith("<")) continue;
+      // The last run of whitespace with words still after it, in this text or after its tags.
+      let gap: { at: number; len: number } | null = null;
+      for (const m of part.matchAll(BREAKING_SPACE)) {
+        if (textOf(part.slice(m.index! + m[0].length) + tail)) gap = { at: m.index!, len: m[0].length };
+      }
+      if (!gap) {
+        tail = part + tail;
+        continue;
+      }
+      const last = textOf(part.slice(gap.at + gap.len) + tail);
+      const before = textOf(parts.slice(0, i).filter((p) => !p.startsWith("<")).join("") + part.slice(0, gap.at));
+      if (last.length > SHORT_LAST_WORD || !before) return whole;
+      parts[i] = `${part.slice(0, gap.at)}\u00a0${part.slice(gap.at + gap.len)}`;
+      return `<${tag}${attrs}>${parts.join("")}</${tag}>`;
+    }
+    return whole;
+  });
+}
+
 /** Sanitised HTML (or the site's own legal HTML) made ready to read. */
 export function enhanceArticle(html: string): Article {
   const { html: withHeadings, headings: found } = headings(html ?? "");
-  return { html: callouts(images(tables(codeBlocks(withHeadings)))), headings: found };
+  return { html: bindLastWords(callouts(images(tables(codeBlocks(withHeadings))))), headings: found };
 }
 
 /** The "On this page" list is worth showing from this many sections. */
