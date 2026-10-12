@@ -127,6 +127,10 @@ describe("a phone's targets", () => {
     expect(guide).toContain('<Link href="/docs" className="tap-target')
     const facts = renderToString(<FactsStrip release={null} />)
     expectTall(classesOf(facts, /<a[^>]*>/g), "the facts strip's link")
+    // The hero's release pill stays 30 px to the eye; its hit area is 44 (S1).
+    const pill = /function ReleasePill[\s\S]*?className="([^"]*)"/.exec(readFileSync(join(__dirname, "page.tsx"), "utf8"))?.[1] ?? ""
+    expectTall([pill], "the release pill")
+    expect(pill).toContain("h-[30px]")
   })
 
   it("the docs: every guide in the list, and 'On this page' folded on a phone", () => {

@@ -64,7 +64,7 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
       href={release.url ?? `${site.serverGithubUrl}/releases`}
       target="_blank"
       rel="noreferrer"
-      className="in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1 transition-shadow duration-hover hover:shadow-e2"
+      className="tap-target in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1 transition-shadow duration-hover hover:shadow-e2"
     >
       <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
       <span className="truncate">{release.headline}</span>
