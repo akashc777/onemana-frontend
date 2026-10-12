@@ -81,7 +81,7 @@ export function WorkspaceAddressField({
           aria-describedby="workspace-address-status"
           aria-invalid={verdict?.tone === "bad" || undefined}
         />
-        <span className="shrink-0 text-sm text-muted-foreground">.{WORKSPACE_ZONE}</span>
+        <span className="shrink-0 text-small text-muted-foreground">.{WORKSPACE_ZONE}</span>
       </div>
       <span id="workspace-address-status" role="status" className={`mt-1 block text-caption ${tone}`}>
         {checking

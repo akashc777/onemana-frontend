@@ -596,23 +596,29 @@ body {
     /* Below the 56 px nav (html has scroll-padding-top), with air. */
     scroll-margin-top: 1rem;
   }
+  /* A reading page's headings take Inter's tracking for their size, as the
+     page's own title and every section heading do (24 to 27 px: -0.019em; 19
+     to 21: -0.016; 16 to 18: -0.011). At "normal" they read a step looser
+     than the title above them. The running text stays at 0, as Linear's
+     posts have it: tracking is for display sizes. */
   .reading :where(h2) {
     font-size: 1.5em;
     line-height: 1.25;
-    letter-spacing: normal;
+    letter-spacing: -0.019em;
     margin-top: 2.25em;
     margin-bottom: 0.6em;
   }
   .reading :where(h3) {
     font-size: 1.1875em;
     line-height: 1.35;
-    letter-spacing: 0;
+    letter-spacing: -0.016em;
     margin-top: 1.9em;
     margin-bottom: 0.5em;
   }
   .reading :where(h4) {
     font-size: 1em;
     line-height: 1.5;
+    letter-spacing: -0.011em;
     margin-top: 1.6em;
     margin-bottom: 0.4em;
   }

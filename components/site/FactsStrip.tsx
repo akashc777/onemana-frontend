@@ -66,7 +66,7 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
               </span>
               {f.key}
             </dt>
-            <dd className="m-0 mt-1 pl-4 text-[13.5px] leading-5 text-muted-foreground">{f.detail}</dd>
+            <dd className="m-0 mt-1 pl-4 text-[13.5px] leading-5 tracking-[-0.004em] text-muted-foreground">{f.detail}</dd>
           </div>
         ))}
       </dl>

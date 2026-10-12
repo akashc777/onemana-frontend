@@ -90,7 +90,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         sideways, and it does so inside its own box so the page
                         itself never does. */}
                     <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-                        <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
+                        <table className="w-full min-w-[46rem] border-collapse text-left text-small">
                             <caption className="sr-only">
                                 {`OneCamp compared with ${countWord(rivals.length)} alternatives on billing and agent governance`}
                             </caption>
@@ -221,7 +221,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 />
                 <div className="mt-8">
                     <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
-                        <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
+                        <table className="w-full min-w-[40rem] border-collapse text-left text-small">
                             <caption className="sr-only">How the agents you already pay for connect to OneCamp</caption>
                             <thead>
                                 <tr className="border-b border-border">
@@ -270,7 +270,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 >
                 <div>
                     <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
-                        <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
+                        <table className="w-full min-w-[42rem] border-collapse text-left text-small">
                             <caption className="sr-only">
                                 Record-keeping obligations and what OneCamp produces against each
                             </caption>

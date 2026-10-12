@@ -57,7 +57,7 @@ export const GuaranteeList: React.FC<{ items: readonly Guarantee[]; className?: 
                     </span>
                 )}
                 <h3 className={`min-w-0 text-foreground ${night ? "pt-0.5 text-[20px] font-[590] leading-[26px] tracking-[-0.017em]" : "text-h3"}`}>{g.title}</h3>
-                <p className={`col-start-2 mt-1.5 min-w-0 text-muted-foreground ${night ? "text-[15px] leading-6" : "text-small sm:text-body"}`}>{g.body}</p>
+                <p className={`col-start-2 mt-1.5 min-w-0 text-muted-foreground ${night ? "text-[15px] leading-6 tracking-[-0.009em]" : "text-small sm:text-body"}`}>{g.body}</p>
             </li>
         ))}
     </ol>

@@ -117,7 +117,7 @@ export function VerifyRecord() {
                     }}
                 />
                 <SpotImported size={64} hue="lake" className="mb-1" />
-                <span className="text-sm font-medium">Drop the file here, or choose one</span>
+                <span className="text-small font-medium">Drop the file here, or choose one</span>
                 <span className="text-caption text-muted-foreground">
                     It is read in your browser. Nothing is uploaded.
                 </span>
@@ -136,11 +136,11 @@ export function VerifyRecord() {
             </p>
 
             {state.kind === "working" && (
-                <p className="mt-6 text-sm text-muted-foreground">Recomputing every row.</p>
+                <p className="mt-6 text-small text-muted-foreground">Recomputing every row.</p>
             )}
 
             {state.kind === "error" && (
-                <p className="mt-6 rounded-lg border border-danger/40 bg-danger/5 p-4 text-sm text-danger-ink">
+                <p className="mt-6 rounded-lg border border-danger/40 bg-danger/5 p-4 text-small text-danger-ink">
                     {state.message}
                 </p>
             )}
@@ -165,7 +165,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
                         ? `${report.verified} of ${report.rows.length} rows are exactly as they were written.`
                         : `${report.mismatched} of ${report.rows.length} rows do not match their own hash.`}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-small text-muted-foreground">
                     {filename}
                     {report.subject ? ` · recorded against ${report.subject}` : ""}
                     {report.redacted > 0
@@ -174,12 +174,12 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
                     {report.unhashed > 0 ? ` · ${report.unhashed} written before the chain existed` : ""}
                 </p>
                 {report.truncated && (
-                    <p className="mt-2 text-sm text-muted-foreground">
+                    <p className="mt-2 text-small text-muted-foreground">
                         This file is a recent slice, not the whole record. It says so itself.
                     </p>
                 )}
                 {!clean && (
-                    <p className="mt-2 text-sm">
+                    <p className="mt-2 text-small">
                         A row that does not produce its own hash was changed after it was written, or the file
                         was edited on its way here.
                     </p>
@@ -187,7 +187,7 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
             </div>
 
             <div className="overflow-x-auto rounded-lg border">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-left text-small">
                     <thead className="border-b bg-muted/40 text-caption text-muted-foreground">
                         <tr>
                             <th className="px-3 py-2 font-medium">Seq</th>
@@ -216,8 +216,8 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
                 file does not make. */}
             {report.howToVerify.length > 0 && (
                 <section>
-                    <h2 className="text-sm font-semibold">What this page just did</h2>
-                    <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+                    <h2 className="text-small font-semibold">What this page just did</h2>
+                    <ul className="mt-2 space-y-1.5 text-small text-muted-foreground">
                         {report.howToVerify.map((s, i) => (
                             <li key={i}>{s}</li>
                         ))}
@@ -227,8 +227,8 @@ function Report({ report, filename }: { report: VerifyReport; filename: string }
 
             {report.limits.length > 0 && (
                 <section>
-                    <h2 className="text-sm font-semibold">What it does not prove</h2>
-                    <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+                    <h2 className="text-small font-semibold">What it does not prove</h2>
+                    <ul className="mt-2 space-y-1.5 text-small text-muted-foreground">
                         {report.limits.map((s, i) => (
                             <li key={i}>{s}</li>
                         ))}

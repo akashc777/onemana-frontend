@@ -96,7 +96,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                     <Tile hue={mark.hue} size="lg" className="mt-0.5 transition-transform duration-spring ease-spring group-hover:-rotate-6">
                       <mark.Glyph />
                     </Tile>
-                    <span className="pt-1.5 text-[17px] font-[590] leading-6 text-balance text-foreground">{p.title}</span>
+                    <span className="pt-1.5 text-[17px] font-[590] leading-6 tracking-[-0.013em] text-balance text-foreground">{p.title}</span>
                   </dt>
                   <dd className="m-0 text-body text-muted-foreground md:col-span-7 md:pt-1.5">{p.body}</dd>
                 </div>

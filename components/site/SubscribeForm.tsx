@@ -66,7 +66,7 @@ export function SubscribeForm({
 
   if (state === "done") {
     return (
-      <p role="status" className={`text-sm text-foreground ${compact ? "" : "mt-2"}`}>
+      <p role="status" className={`text-small text-foreground ${compact ? "" : "mt-2"}`}>
         {msg}
       </p>
     );
