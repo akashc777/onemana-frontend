@@ -48,4 +48,16 @@ describe("version labels", () => {
     const facts = readFileSync(join(ROOT, "components/site/FactsStrip.tsx"), "utf8")
     expect(facts).not.toContain("release.version")
   })
+
+  // RELEASES.md: the pill names the newest feature release by its headline
+  // and opens its entry on /changelog, in the site's own design. It went to
+  // the raw GitHub release page, which left the site for a developer's view.
+  // The changelog shows a release's tags only in its foot line, for an admin
+  // matching the admin panel's update check (components/changelog/changelog.test.tsx).
+  it("the release pill opens the changelog on this site, never GitHub", () => {
+    const page = readFileSync(join(ROOT, "app/page.tsx"), "utf8")
+    const pill = /function ReleasePill[\s\S]*?\n}\n/.exec(page)?.[0] ?? ""
+    expect(pill).toContain("href={release.pill.href}")
+    expect(pill).not.toMatch(/github|target="_blank"|html_url|\.url\b/i)
+  })
 })

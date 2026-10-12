@@ -53,23 +53,25 @@ const FACTS = [
 ] as const;
 
 /**
- * The release pill (site.md H1): the latest release's own headline, read
- * from GitHub, with no version number (owner rule: no version labels in the
- * copy); nothing when GitHub is silent or the release has no headline.
+ * The release pill (site.md H1): the newest feature release's own headline,
+ * read from GitHub, with no version number (owner rule: no version labels in
+ * the copy). It opens that release's entry on /changelog, on this site and in
+ * its design, never GitHub; a patch never takes it over (RELEASES.md).
+ * Nothing when GitHub is silent or no release names itself. Not prefetched:
+ * it is on the first screen, and the first load stays the page's own.
  */
 function ReleasePill({ release }: { release: ReleaseFacts | null }) {
-  if (!release?.headline) return null;
+  if (!release?.pill) return null;
   return (
-    <a
-      href={release.url ?? `${site.serverGithubUrl}/releases`}
-      target="_blank"
-      rel="noreferrer"
+    <Link
+      href={release.pill.href}
+      prefetch={false}
       className="tap-target in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1 transition-shadow duration-hover hover:shadow-e2"
     >
       <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
-      <span className="truncate">{release.headline}</span>
+      <span className="truncate">{release.pill.headline}</span>
       <Icon name="chevron-right" size={14} className="go-arrow" />
-    </a>
+    </Link>
   );
 }
 

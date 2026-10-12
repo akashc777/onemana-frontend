@@ -102,6 +102,7 @@ export const footerLinks = {
     { label: "Launch film", href: "/tour" },
     { label: "Project templates", href: "/templates" },
     { label: "Docs", href: "/docs" },
+    { label: "What's new", href: "/changelog" },
     { label: "Blog", href: "/blog" },
     { label: "GitHub", href: site.githubOrgUrl, external: true },
   ],

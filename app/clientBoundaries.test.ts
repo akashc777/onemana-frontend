@@ -26,6 +26,9 @@ const SERVER_PAGES = [
   "app/templates/page.tsx",
   "app/templates/[slug]/page.tsx",
   "app/about/page.tsx",
+  "app/changelog/page.tsx",
+  "app/changelog/[slug]/page.tsx",
+  "components/changelog/Entry.tsx",
   "app/not-found.tsx",
   // The site chrome: the nav is drawn on the server, with two client parts.
   "components/site/Nav.tsx",

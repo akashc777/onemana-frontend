@@ -5,6 +5,7 @@ import { listPublishedDocs } from "@/lib/docs";
 import { audiences } from "@/lib/audiences";
 import { alternatives } from "@/lib/alternatives";
 import { templates } from "@/lib/templates";
+import { getChangelog } from "@/lib/releases";
 
 // Every public page that is not generated from data below. app/sitemap.test.ts
 // checks this against the pages in app/, so a new one cannot be left out the
@@ -19,6 +20,7 @@ const STATIC_ROUTES = [
   "/verify",
   "/docs",
   "/blog",
+  "/changelog",
   "/about",
   "/terms-of-service",
   "/privacy-policy",
@@ -69,5 +71,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Docs API unreachable at build time - ship without doc entries.
   }
 
-  return [...staticEntries, ...blogEntries, ...docEntries];
+  // Each changelog entry has a page of its own; none when GitHub is silent.
+  const changelogEntries: MetadataRoute.Sitemap = ((await getChangelog()) ?? []).map((e) => ({
+    url: `${site.url}/changelog/${e.slug}`,
+    lastModified: new Date(e.publishedAt),
+    changeFrequency: "yearly",
+    priority: 0.5,
+  }));
+
+  return [...staticEntries, ...blogEntries, ...docEntries, ...changelogEntries];
 }
