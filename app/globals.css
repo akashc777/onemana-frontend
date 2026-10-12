@@ -313,6 +313,45 @@ body {
     transform: translateX(2px);
   }
 
+  /* A row of an index ("Also in the box"): under the pointer, or reached by
+     the keyboard, its name takes a link's ink and an arrow arrives beside
+     it; nothing moves the row. The arrow is drawn here, once, as the icon
+     set's arrow at its 1.25px stroke, rather than as an icon in every row. */
+  .box-name {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition: color var(--d-hover) var(--ease-out);
+  }
+  .box-name::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    flex: none;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.14' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.14' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity var(--d-hover) var(--ease-out), transform var(--d-hover) var(--ease-out);
+  }
+  .box-row:focus-visible .box-name {
+    color: rgb(var(--brand-ink));
+  }
+  .box-row:focus-visible .box-name::after {
+    opacity: 1;
+    transform: none;
+  }
+  @media (hover: hover) {
+    .box-row:hover .box-name {
+      color: rgb(var(--brand-ink));
+    }
+    .box-row:hover .box-name::after {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   /* A link or text button that stands on its own line, not inside a
      sentence ("See every plan", "All posts", a founder's links), answers a
      44 px tap on a phone. The hit area is drawn round the words rather than

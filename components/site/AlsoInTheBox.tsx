@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { CAMP_HUES } from "@/lib/campHue";
-import { Tile } from "@/components/ui/graphics/Tile";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { Icon } from "@/components/ui/icons";
 
 /**
  * "Also in the box" (site.md H5): the breadth that lived only in the docs,
- * as twelve compact cards, each a hue tile, a name and one line, linking to
- * its doc. Every item has shipped; each slug is a live doc. Hues cycle
- * in chart order; the cards stay neutral.
+ * each a name and one line, linking to its doc. Every item has shipped; each
+ * slug is a live doc. Hues cycle in chart order.
  */
 export const BOX: { name: string; line: string; slug: string; d: string }[] = [
   { name: "Guests in a channel", line: "Clients join one channel, never your workspace.", slug: "channel-guests", d: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 8v6M14 11h6" },
@@ -24,18 +23,29 @@ export const BOX: { name: string; line: string; slug: string; d: string }[] = [
   { name: "Polls", line: "One-click votes in a channel, with live results.", slug: "polls", d: "M5 20V12M12 20V5M19 20v-5" },
 ];
 
+/**
+ * An index, not a wall of cards: twelve rows in three columns (two on a
+ * tablet, one on a phone), each under its own hairline, with its glyph in
+ * the item's hue, a name and one line, the whole row the link to its doc.
+ * It was twelve identical cards with an icon tile each, the grid DESIGN.md
+ * names as the most recognisable shape of a template site; an enumeration
+ * that answers "does it have X" reads best as a list you scan. Under the
+ * pointer the name takes the ink of a link and the arrow arrives; nothing
+ * moves the row.
+ */
 export function AlsoInTheBox() {
   return (
-    <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:gap-4 lg:grid-cols-4">
+    <ul className="reveal m-0 grid list-none gap-x-8 p-0 sm:grid-cols-2 lg:grid-cols-3">
       {BOX.map((b, i) => (
-        <li key={b.slug} className="reveal">
-          <Link href={`/docs/${b.slug}`} className="group lift flex h-full min-h-24 flex-col rounded-xl bg-card p-4 shadow-e1 focus-visible:outline-offset-2 sm:min-h-28 sm:flex-row sm:gap-3.5 sm:p-5">
-            <Tile hue={CAMP_HUES[i % CAMP_HUES.length]!} className="transition-transform duration-spring ease-spring group-hover:-rotate-6">
-              <Icon d={b.d} />
-            </Tile>
-            <span className="mt-3 block min-w-0 sm:mt-0">
-              <span className="block text-body font-[590] text-foreground">{b.name}</span>
-              <span className="mt-1 block text-small text-muted-foreground max-[359px]:hidden">{b.line}</span>
+        <li key={b.slug} className="border-t border-border">
+          {/* .box-row and .box-name (globals.css): the name's ink and its arrow under the pointer. */}
+          <Link href={`/docs/${b.slug}`} className="box-row flex h-full min-h-11 gap-3.5 py-4 sm:py-5">
+            <span aria-hidden="true" className={`${HUE_CLASS[CAMP_HUES[i % CAMP_HUES.length]!]} mt-[3px] text-hue`}>
+              <Icon d={b.d} size={20} />
+            </span>
+            <span className="block min-w-0 flex-1">
+              <span className="box-name text-body font-[590] text-foreground">{b.name}</span>
+              <span className="mt-1 block text-balance text-small text-muted-foreground">{b.line}</span>
             </span>
           </Link>
         </li>
