@@ -220,7 +220,7 @@ export const GovernedDemo: React.FC = () => {
                                 <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
                                     {AUDIT_ROW.fields.map(([k, v]) => (
                                         <React.Fragment key={k}>
-                                            <dt className="text-faint">{k}</dt>
+                                            <dt className="text-muted-foreground">{k}</dt>
                                             <dd className="m-0 min-w-0 truncate font-sans text-caption text-foreground">{v}</dd>
                                         </React.Fragment>
                                     ))}

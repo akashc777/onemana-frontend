@@ -94,7 +94,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1 border-t border-border py-6 text-[12px] leading-4 text-faint sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-1 border-t border-border py-6 text-[12px] leading-4 text-muted-foreground sm:flex-row sm:justify-between">
           <p>
             © {new Date().getFullYear()} {site.company}
           </p>

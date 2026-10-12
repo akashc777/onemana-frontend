@@ -83,15 +83,15 @@ function WaysIn() {
         <ButtonLink href={site.demoStartUrl} external variant="brand" size="xl" arrow>
           Try the live demo
         </ButtonLink>
-        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-faint sm:block">No sign-up · opens in seconds</span>
+        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-muted-foreground sm:block">No sign-up · opens in seconds</span>
       </div>
       <div className="grid gap-2">
         <ButtonLink href="/free" variant="ghost" size="xl">
           Install free
         </ButtonLink>
-        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-faint sm:block">Up to {FREE_SEATS} people, no card</span>
+        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-muted-foreground sm:block">Up to {FREE_SEATS} people, no card</span>
       </div>
-      <span className="mt-1 text-center text-[12.5px] leading-4 text-faint sm:hidden">No sign-up · free for up to {FREE_SEATS} people</span>
+      <span className="mt-1 text-center text-[12.5px] leading-4 text-muted-foreground sm:hidden">No sign-up · free for up to {FREE_SEATS} people</span>
     </div>
   );
 }

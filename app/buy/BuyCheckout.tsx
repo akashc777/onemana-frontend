@@ -482,7 +482,7 @@ export function BuyCheckout({
               </li>
               {isCloud && setupEstimateFor(pricing, business) && <li className="pl-[22px] text-muted-foreground">{setupEstimateFor(pricing, business)?.sentence}</li>}
             </ul>
-            <p className="text-[12px] leading-4 text-faint">
+            <p className="text-[12px] leading-4 text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="underline underline-offset-2 hover:text-foreground">Terms</a> and{" "}
               <a href="/refund-policy" className="underline underline-offset-2 hover:text-foreground">Refund policy</a>.

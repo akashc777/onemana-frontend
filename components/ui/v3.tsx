@@ -113,7 +113,7 @@ export function FloatChip({
           <span className="font-[590]">{title}</span>
           {tag && <span className="rounded-[5px] bg-agent-muted px-1.5 text-[11px] font-[510] leading-[18px] text-agent-ink">{tag}</span>}
         </span>
-        {line && <span className={cx("block text-[12px] leading-4 text-faint", lineClassName)}>{line}</span>}
+        {line && <span className={cx("block text-[12px] leading-4 text-muted-foreground", lineClassName)}>{line}</span>}
       </span>
     </span>
   )

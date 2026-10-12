@@ -144,7 +144,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
             <dl className="m-0 mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
               {r.cells.slice(1).map((cell, i) => (
                 <div key={i}>
-                  <dt className="text-[12px] leading-4 text-faint">{COLUMNS[i + 1]}</dt>
+                  <dt className="text-[12px] font-[510] leading-4 text-muted-foreground">{COLUMNS[i + 1]}</dt>
                   <dd className="m-0 mt-0.5 text-caption text-muted-foreground">{cell}</dd>
                 </div>
               ))}

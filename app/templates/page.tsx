@@ -75,7 +75,7 @@ export default function TemplatesPage() {
                       <span key={i} className="h-full flex-1 origin-left scale-x-[0.85] rounded-[3px] bg-hue transition-transform duration-page ease-out group-hover:scale-x-100" style={{ opacity: 0.3 + 0.7 * w, transitionDelay: `${i * 30}ms` }} />
                     ))}
                   </div>
-                  <p className="mt-3 text-caption tabular-nums text-faint">
+                  <p className="mt-3 text-caption tabular-nums text-muted-foreground">
                     {taskCount(t)} tasks · {weeksLong(t)} {weeksLong(t) === 1 ? "week" : "weeks"}
                   </p>
                 </Link>

@@ -129,7 +129,7 @@ export function DocsPager({
     <nav aria-label="More guides" className="mt-14 grid gap-3 sm:grid-cols-2">
       {prev ? (
         <Link href={`/docs/${prev.slug}`} rel="prev" className={card}>
-          <span className="text-[12px] font-[510] leading-4 text-faint">Previous</span>
+          <span className="text-[12px] font-[510] leading-4 text-muted-foreground">Previous</span>
           <span className="mt-1 text-body font-[590] text-foreground">{prev.title}</span>
         </Link>
       ) : (
@@ -137,7 +137,7 @@ export function DocsPager({
       )}
       {next ? (
         <Link href={`/docs/${next.slug}`} rel="next" className={`${card} sm:items-end sm:text-right`}>
-          <span className="text-[12px] font-[510] leading-4 text-faint">Next</span>
+          <span className="text-[12px] font-[510] leading-4 text-muted-foreground">Next</span>
           <span className="mt-1 text-body font-[590] text-foreground">{next.title}</span>
         </Link>
       ) : null}
