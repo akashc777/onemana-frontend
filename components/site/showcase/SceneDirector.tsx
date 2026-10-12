@@ -96,14 +96,39 @@ export function SceneDirector({ script, children }: { script: Script; children: 
     const roots: ParentNode[] = [el, ...(script.scope ? Array.from(document.querySelectorAll(`[data-sc-scope="${script.scope}"]`)) : [])]
     const all = (sel: string) => roots.flatMap((r) => Array.from(r.querySelectorAll<HTMLElement>(sel)))
     const items = (keys: string[] = []) => keys.flatMap((k) => all(`[data-sc-item="${k}"]`))
+    let stopped = false
+    const cleanups: (() => void)[] = []
 
-    // The conversations: a scene may draw one twice (a channel before and
-    // after a panel narrows it), and each rises by its own arrivals.
-    const tracks = Array.from(el.querySelectorAll<HTMLElement>("[data-sc-track]")).map((track) => ({
-      track,
-      list: track.closest<HTMLElement>("[data-sc-list]"),
-      shift: 0,
-    }))
+    // The parts of the scene the browser draws once the page is idle
+    // (Later.tsx) are hidden markers until they are drawn: a play waits for
+    // them, so everything it moves is in place.
+    const ready = () =>
+      new Promise<void>((done) => {
+        const waiting = () => roots.some((r) => r.querySelector("[data-sc-later]"))
+        if (!waiting()) return done()
+        const mo = new MutationObserver(() => {
+          if (waiting()) return
+          mo.disconnect()
+          done()
+        })
+        roots.forEach((r) => mo.observe(r as Node, { childList: true, subtree: true }))
+        cleanups.push(() => mo.disconnect())
+      })
+
+    // The conversations (a scene may draw one twice: a channel before and
+    // after a panel narrows it; each rises by its own arrivals), and every
+    // part's state as drawn, for going back to the start between plays: read
+    // once the scene is whole.
+    let tracks: { track: HTMLElement; list: HTMLElement | null; shift: number }[] = []
+    let drawn = new Map<HTMLElement, string | undefined>()
+    const whole = () => {
+      tracks = Array.from(el.querySelectorAll<HTMLElement>("[data-sc-track]")).map((track) => ({
+        track,
+        list: track.closest<HTMLElement>("[data-sc-list]"),
+        shift: 0,
+      }))
+      drawn = new Map(all("[data-sc-item]").map((i) => [i, i.dataset.scState] as const))
+    }
     // A conversation's top edge fades only where a row is left cut through
     // at the top, as a scrolled chat shows it; with every row whole there is
     // no fade. It is read again whenever the track moves (at once: it snaps).
@@ -143,8 +168,8 @@ export function SceneDirector({ script, children }: { script: Script; children: 
       }
       return t
     }
-
-    // What is typing now, and since when (ms into the play).
+    // Every text the script types, and what is typing now and since when (ms into the play).
+    const typed = Array.from(new Set(script.steps.flatMap((s) => s.type ?? [])))
     let typing: { since: number; typers: Typer[] }[] = []
 
     const apply = (s: Step) => {
@@ -164,8 +189,6 @@ export function SceneDirector({ script, children }: { script: Script; children: 
         edge()
       }
     }
-    // Every part's state as drawn, for going back to the start between plays.
-    const drawn = new Map(all("[data-sc-item]").map((i) => [i, i.dataset.scState] as const))
     const restore = (i: HTMLElement) => {
       const s = drawn.get(i)
       if (s === undefined) delete i.dataset.scState
@@ -193,28 +216,33 @@ export function SceneDirector({ script, children }: { script: Script; children: 
         m.render(0)
       })
     }
+    const stop = () => {
+      stopped = true
+      cleanups.forEach((c) => c())
+      typers.forEach((ts) => ts.forEach((t) => t.release()))
+    }
 
     if (reducedMotion()) {
-      // The end at once: the conversations risen, every part in its last
-      // state; the texts are whole as drawn, and their carets go to their
-      // ends once the engine is here.
-      script.steps.forEach((s) => s.rise && apply({ at: s.at, rise: s.rise }))
-      endStates(script.steps).forEach((state, k) => items([k]).forEach((i) => (i.dataset.scState = state)))
-      let gone = false
-      void load().then(() => {
-        if (gone) return
-        Array.from(new Set(script.steps.flatMap((s) => s.type ?? []))).forEach((id) => typerFor(id).forEach((t) => t.release()))
+      // The end at once, once the scene is whole: the conversations risen,
+      // every part in its last state; the texts are whole as drawn, and their
+      // carets go to their ends once the engine is here.
+      void (async () => {
+        await ready()
+        if (stopped) return
+        whole()
+        script.steps.forEach((s) => s.rise && apply({ at: s.at, rise: s.rise }))
+        endStates(script.steps).forEach((state, k) => items([k]).forEach((i) => (i.dataset.scState = state)))
+        await load()
+        if (stopped) return
+        typed.forEach((id) => typerFor(id).forEach((t) => t.release()))
         movers.forEach((m) => m.render(m.end))
-      })
-      return () => {
-        gone = true
-      }
+      })()
+      return stop
     }
 
     // The scene's clock: it runs only while the scene is seen.
     const clock = new SceneClock(() => performance.now())
     const now = () => clock.now()
-    let stopped = false
     let wake: (() => void) | null = null
     const see = (on: boolean) => {
       if (clock.see(on && document.visibilityState === "visible")) wake?.()
@@ -240,13 +268,18 @@ export function SceneDirector({ script, children }: { script: Script; children: 
           }
           timer = window.setTimeout(arm, left)
         }
+        cleanups.push(() => window.clearTimeout(timer))
         arm()
       })
 
-    // One play: its steps, typing and paths, a frame at a time.
+    // One play: its steps and each typed key on timers, and animation frames
+    // only while a path is moving (a pointer, a card in the hand).
     let raf = 0
-    // Every text the script types, cleared before anything else moves.
-    const typed = Array.from(new Set(script.steps.flatMap((s) => s.type ?? [])))
+    let timer = 0
+    cleanups.push(() => {
+      cancelAnimationFrame(raf)
+      window.clearTimeout(timer)
+    })
     const play = () =>
       new Promise<void>((done) => {
         typed.forEach((id) => typerFor(id).forEach((t) => t.show(0)))
@@ -256,23 +289,32 @@ export function SceneDirector({ script, children }: { script: Script; children: 
         typing = []
         const tick = () => {
           raf = 0
+          window.clearTimeout(timer)
           if (stopped) return
           if (!clock.running) {
             wake = () => {
               wake = null
-              raf = requestAnimationFrame(tick)
+              tick()
             }
             return
           }
           const t = now() - start
           while (next < script.steps.length && script.steps[next].at <= t) apply(script.steps[next++])
-          let busy = next < script.steps.length
-          for (const k of typing) for (const ty of k.typers) if (!ty.render(t - k.since)) busy = true
+          let soon = next < script.steps.length ? script.steps[next].at : Infinity
+          for (const k of typing)
+            for (const ty of k.typers) {
+              ty.render(t - k.since)
+              soon = Math.min(soon, k.since + ty.nextAt(t - k.since))
+            }
+          let moving = false
           for (const m of movers) {
             m.render(t)
-            if (t < m.end) busy = true
+            const n = m.next(t)
+            if (n.moving) moving = true
+            else soon = Math.min(soon, n.at)
           }
-          if (busy) raf = requestAnimationFrame(tick)
+          if (moving) raf = requestAnimationFrame(tick)
+          else if (soon < Infinity) timer = window.setTimeout(tick, Math.max(0, soon - t))
           else done()
         }
         tick()
@@ -287,11 +329,17 @@ export function SceneDirector({ script, children }: { script: Script; children: 
       { threshold: 0.35 },
     )
     const onVisibility = () => see(seen)
-    let idle = 0
+    cleanups.push(() => {
+      io.disconnect()
+      document.removeEventListener("visibilitychange", onVisibility)
+    })
     const start = () => {
       io.observe(el)
       document.addEventListener("visibilitychange", onVisibility)
       void (async () => {
+        await ready()
+        if (stopped) return
+        whole()
         await load()
         if (stopped) return
         const plays = Math.max(1, Math.min(script.plays ?? 1, 5))
@@ -309,18 +357,14 @@ export function SceneDirector({ script, children }: { script: Script; children: 
       })()
     }
     // Safari has no requestIdleCallback: a timer stands in.
-    const hasIdle = typeof window.requestIdleCallback === "function"
-    idle = hasIdle ? window.requestIdleCallback(start, { timeout: IDLE_TIMEOUT }) : window.setTimeout(start, IDLE_TIMEOUT)
-
-    return () => {
-      stopped = true
-      cancelAnimationFrame(raf)
-      if (hasIdle) window.cancelIdleCallback(idle)
-      else window.clearTimeout(idle)
-      io.disconnect()
-      document.removeEventListener("visibilitychange", onVisibility)
-      typers.forEach((ts) => ts.forEach((t) => t.release()))
+    if (typeof window.requestIdleCallback === "function") {
+      const idle = window.requestIdleCallback(start, { timeout: IDLE_TIMEOUT })
+      cleanups.push(() => window.cancelIdleCallback(idle))
+    } else {
+      const idle = window.setTimeout(start, IDLE_TIMEOUT)
+      cleanups.push(() => window.clearTimeout(idle))
     }
+    return stop
   }, [script])
 
   return (

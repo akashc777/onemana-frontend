@@ -1114,3 +1114,299 @@
     animation: none;
   }
 }
+
+/*
+ * A THREAD (ThreadPanel.tsx): the reply row under a message, the panel
+ * beside the channel and the phone's thread page. Each rule mirrors the
+ * onecamp-fe rule named beside it (components/message/messageReplyCount,
+ * threadParticipants, components/rightPanel/channelComments, rightPanelHeader,
+ * messageContent, replyDivider, components/mobilePost). Colours are the
+ * scene's tokens (showcase.css .sc).
+ */
+
+/* ------------------------------------------------------- the reply row */
+/* Its own row under the message (C35), in the message's text column: the
+   message's 6px foot is the row's top, the pill 8px under the words. */
+.sc-reply {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  column-gap: 12px;
+  margin-top: -6px;
+  padding: 8px 24px 6px 20px;
+}
+.sc-reply[data-phone] {
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 10px;
+  padding: 8px 16px 8px;
+  margin-top: -8px;
+}
+/* -ml-1 h-7 w-max gap-2 rounded-lg pl-1 pr-2, text-ui-sm. */
+.sc-reply-pill {
+  position: relative;
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  height: 28px;
+  align-items: center;
+  gap: 8px;
+  margin-left: -4px;
+  border-radius: 12px;
+  padding: 0 8px 0 4px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+}
+.sc-reply[data-phone] .sc-reply-pill {
+  height: 32px;
+}
+/* Under the pointer it lifts into a pill on the sheet at e1 (140ms); the
+   thread that is open in the panel keeps the pressed ground. */
+.sc-reply-hover,
+.sc-reply-open {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+}
+.sc-reply-hover {
+  background: var(--sc-sheet);
+  box-shadow: var(--e-e1);
+}
+.sc-reply-open {
+  background: var(--sc-press);
+}
+.sc .sc-reply-hover[data-sc-item],
+.sc .sc-reply-open[data-sc-item],
+.sc .sc-reply-view[data-sc-item] {
+  transition: opacity 140ms var(--ease-out);
+}
+.sc .sc-reply-hover[data-sc-item][data-sc-state="off"],
+.sc .sc-reply-open[data-sc-item][data-sc-state="off"],
+.sc .sc-reply-view[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+/* The row itself just appears: the app draws it once the first reply is in,
+   with no entrance (the count rolls only after). */
+.sc .sc-reply[data-sc-item] {
+  transition: none;
+}
+.sc .sc-reply[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc-reply-pill > :not(.sc-reply-hover, .sc-reply-open) {
+  position: relative;
+}
+/* Who replied: 20px faces 6px over each other, each on a ring of the sheet
+   (the ring round, behind an agent's square too). */
+.sc-reply-faces {
+  display: flex;
+  flex: none;
+}
+.sc-reply-faces > span {
+  display: inline-flex;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px var(--sc-sheet);
+}
+.sc-reply-faces > span + span {
+  margin-left: -6px;
+}
+.sc-reply-pill > b {
+  flex: none;
+  font-weight: 590;
+  color: var(--sc-brand-text);
+}
+.sc-reply-last {
+  flex: none;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+}
+.sc-reply-view {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: var(--sc-ink-3);
+}
+
+/* ---------------------------------------------------------- the panel */
+/* The right panel's sheet (LayoutContent .shell-panel-sheet): its own floating
+   sheet, 8px off the window's edge with the frame between it and the
+   channel; --panel, white in light and a step above the sheet in dark; r12
+   at e-sheet. It slides 16px in from the right as it fades in, 240ms on the
+   in-out curve (shell-panel-in), and the thread inside it slides in with it
+   (panel-in): nested, so its first reply travels the farthest. */
+.sc-tpanel {
+  --sc-panel: color-mix(in oklab, var(--sc-sheet) 62%, var(--sc-raised));
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex: none;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--sc-panel);
+  box-shadow: var(--e-sheet);
+}
+.sc .sc-tpanel[data-sc-item],
+.sc .sc-tbody[data-sc-item],
+.sc .sc-tmsg[data-sc-item] {
+  transition: opacity 240ms var(--ease-io), transform 240ms var(--ease-io);
+}
+.sc .sc-tpanel[data-sc-item][data-sc-state="off"],
+.sc .sc-tbody[data-sc-item][data-sc-state="off"],
+.sc .sc-tmsg[data-sc-item][data-sc-state="off"] {
+  transform: translateX(16px);
+}
+/* The header (rightPanelHeader): 52px over a hairline, 20px in and 12px from
+   the right; the glyph, "Thread", "in #channel" and the close. */
+.sc-thead {
+  display: flex;
+  height: 52px;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--sc-line);
+  padding: 0 12px 0 20px;
+}
+.sc-tbody {
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+  padding-top: 12px;
+}
+/* A message in a thread (MessageContent): 36px face, 12px to the words,
+   16px in, 6px above and below; the one the thread hangs from on the sunken
+   card, 12px in, r12, 12px all round. */
+.sc-tmsg {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  column-gap: 12px;
+  padding: 6px 16px;
+}
+.sc-tmsg[data-root] {
+  margin: 0 12px;
+  border-radius: 12px;
+  background: var(--sc-sunken);
+  padding: 12px;
+}
+.sc-tmsg-body {
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: -0.009em;
+  font-feature-settings: "liga" 0, "cv11", "ss01", "ss03";
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+/* "1 reply" and its hairline (replyDivider): 12/16 at 510 in ink-3, 16px in,
+   12px above and 4px below. */
+.sc-tdiv {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 16px 4px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  font-weight: 510;
+  color: var(--sc-ink-3);
+}
+.sc-tdiv > i {
+  height: 1px;
+  flex: 1 1 0%;
+  background: var(--sc-line);
+}
+/* The compact composer (chatComposerShell compact): a card at e2, r12, the
+   words at 15/23, then +, Aa, the emoji and Send; "Also send to #channel"
+   under it. */
+.sc-tfoot {
+  flex: none;
+  padding: 4px 12px 12px;
+}
+.sc-tcomposer {
+  border-radius: 12px;
+  background: var(--sc-raised);
+  padding: 10px 12px 6px;
+  box-shadow: var(--e-e2);
+}
+.sc-tcomposer-text {
+  min-height: 24px;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: -0.009em;
+  color: var(--sc-ink-2);
+}
+.sc-tcomposer-row {
+  margin-top: 6px;
+  display: flex;
+  height: 32px;
+  align-items: center;
+  gap: 2px;
+}
+.sc-talso {
+  margin-top: 8px;
+  display: flex;
+  height: 20px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-2);
+}
+.sc-tcheck {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1.5px var(--sc-ink-3);
+}
+
+/* ------------------------------------------------------------ a phone */
+/* The thread's page (mobilePost): the message and its replies as a phone's
+   rows, 32px faces 10px from the words, 16px in, 8px above and below, the
+   words at 16/24. The page comes in 24px from the right as it rises from
+   .4 (240ms on the out-curve), the bar's title 16px from nothing (240ms on
+   the push curve: PhoneTransition). */
+.sc-tphone-page {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+  padding-top: 4px;
+}
+.sc-tmsg[data-phone] {
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 10px;
+  padding: 8px 16px;
+}
+.sc-tmsg[data-phone] .sc-tmsg-body {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.011em;
+}
+.sc-tphone-title {
+  line-height: 22px;
+}
+.sc .sc-tphone-page[data-sc-item] {
+  transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
+}
+.sc .sc-tphone-page[data-sc-item][data-sc-state="off"] {
+  opacity: 0.4;
+  transform: translateX(24px);
+}
+.sc .sc-tphone-page[data-sc-item][data-sc-state="fade"] {
+  opacity: 0;
+}
+/* The bar's title follows the page in, from 16px right and nothing, on the
+   push curve (the iOS sheet's, critically damped). */
+.sc .sc-tphone-titlebox[data-sc-item] {
+  transition: opacity 240ms cubic-bezier(0.32, 0.72, 0, 1), transform 240ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sc .sc-tphone-titlebox[data-sc-item][data-sc-state="off"] {
+  transform: translateX(16px);
+}

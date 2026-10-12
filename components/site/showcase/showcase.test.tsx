@@ -18,6 +18,7 @@ import { boardDesktop, boardPhone } from "@/components/site/showcase/scenes/boar
 import { calendarDesktop, calendarPhone } from "@/components/site/showcase/scenes/calendar"
 import { paletteDesktop, palettePhone } from "@/components/site/showcase/scenes/palette"
 import type { SceneSpec } from "@/components/site/showcase/scenes/types"
+import { HeroAgentTyping, HeroPhoneRow, HeroPhoneThread, HeroPointer, HeroRow, HeroSplit } from "@/components/site/showcase/scenes/heroLater"
 
 /**
  * THE SHOWCASE'S GUARDS (owner direction of 11 Oct 2026: the site shows the
@@ -239,12 +240,25 @@ describe("the hero", () => {
 })
 
 describe("every scene", () => {
+  // The hero's story parts the browser draws once the page is idle (Later).
+  const later = renderToString(
+    <>
+      <HeroSplit />
+      <HeroPointer />
+      <HeroPhoneThread />
+      <HeroRow />
+      <HeroPhoneRow />
+      <HeroAgentTyping />
+    </>,
+  )
   for (const [name, spec] of SPECS) {
-    const html = draw(spec)
-    const body = html.slice(html.indexOf(">") + 1)
+    const page = draw(spec)
+    const body = page.slice(page.indexOf(">") + 1)
+    // What the scene draws in the end: the page's picture, and for the hero the parts drawn later.
+    const html = name.startsWith("hero") ? page + later : page
 
     it(`${name}: is one picture with words, and nothing in it takes focus`, () => {
-      expect(html).toMatch(/^<div role="img" aria-label="[^"]{40,}" data-scene=""/)
+      expect(page).toMatch(/^<div role="img" aria-label="[^"]{40,}" data-scene=""/)
       expect(body).not.toMatch(/<(button|a|input|select|textarea)\b|tabindex=/)
     })
 

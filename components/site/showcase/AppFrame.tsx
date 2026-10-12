@@ -10,24 +10,24 @@ import { Ico } from "./parts"
  * sidebar's (the seam is the sidebar's last 8px). Without a sidebar the sheet
  * sits 8px in all round, as a split pane does.
  *
- * `split` is the same page with a panel open beside it (a thread), laid out
- * whole over it and out of sight until a scene turns it on (`item`) and the
- * single page off (`sheetItem`): the app snaps the page narrower when a panel
- * opens, so the scene swaps the two at once rather than re-laying anything
- * out.
+ * `over` is drawn in the main area over the page: a scene's same page with a
+ * panel open beside it (a thread, scenes/heroLater HeroSplit), out of sight
+ * until the scene turns it on and the single page off (`sheetItem`): the app
+ * snaps the page narrower when a panel opens, so the scene swaps the two at
+ * once rather than re-laying anything out.
  */
 export function AppFrame({
   sidebar,
   children,
   className,
   sheetItem,
-  split,
+  over,
 }: {
   sidebar?: ReactNode
   children: ReactNode
   className?: string
   sheetItem?: string
-  split?: { page: ReactNode; panel: ReactNode; item: string }
+  over?: ReactNode
 }) {
   // The glow lives behind the workspace mark at the frame's top left. A sheet
   // shown on its own is the app's right-hand part, where the frame is plain
@@ -40,12 +40,7 @@ export function AppFrame({
         <div className="sc-sheet flex h-full min-h-0 flex-col" data-sc-item={sheetItem} data-sc-swap={sheetItem ? "" : undefined}>
           {children}
         </div>
-        {split && (
-          <div className="sc-split" data-sc-item={split.item} data-sc-state="off" data-sc-swap="">
-            <div className="sc-sheet flex h-full min-w-0 flex-1 flex-col">{split.page}</div>
-            {split.panel}
-          </div>
-        )}
+        {over}
       </div>
     </div>
   )

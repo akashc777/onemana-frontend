@@ -7,7 +7,9 @@ import { pathAt, type PathKey } from "@/components/site/showcase/motion/engine"
 import { DECISION, DocScene, docDesktop } from "@/components/site/showcase/scenes/doc"
 import { PaletteTour, paletteDesktop } from "@/components/site/showcase/scenes/palette"
 import { CalendarTour, calendarDesktop } from "@/components/site/showcase/scenes/calendar"
-import { heroDesktop } from "@/components/site/showcase/scenes/hero"
+import { heroDesktop, heroPhone } from "@/components/site/showcase/scenes/hero"
+import { HeroAgentTyping, HeroPhoneRow, HeroPhoneThread, HeroPointer, HeroRow, HeroSplit } from "@/components/site/showcase/scenes/heroLater"
+import { Mover } from "@/components/site/showcase/motion/engine"
 import { ANSWER_TEXT, QUESTION } from "@/components/site/showcase/Palette"
 
 /**
@@ -100,6 +102,23 @@ describe("a hand's path", () => {
     expect(100 - late).toBeCloseTo(early, 5)
   })
 
+  it("asks for frames only while it moves: not before it starts, not while it holds a place", () => {
+    const held: PathKey[] = [
+      { at: 100, x: 0, y: 0 },
+      { at: 400, x: 50, y: 0, ease: "move" },
+      { at: 900, x: 50, y: 0 },
+      { at: 1000, x: 80, y: 10, ease: "jump" },
+      { at: 1300, x: 0, y: 0, ease: "move" },
+    ]
+    const m = new Mover([], held, { querySelector: () => null } as unknown as ParentNode)
+    expect(m.next(0)).toEqual({ moving: false, at: 100 })
+    expect(m.next(200)).toEqual({ moving: true, at: 400 })
+    expect(m.next(600)).toEqual({ moving: false, at: 900 })
+    expect(m.next(950)).toEqual({ moving: false, at: 1000 })
+    expect(m.next(1100)).toEqual({ moving: true, at: 1300 })
+    expect(m.next(1300)).toEqual({ moving: false, at: Infinity })
+  })
+
   it("drops on dnd-kit's curve: quick, then into place, never past it", () => {
     let last = -1
     for (let t = 1000; t <= 1200; t += 10) {
@@ -167,10 +186,26 @@ describe("the stills: each scene's end, drawn without its motion", () => {
     expect(html).not.toMatch(/sc-ptr/)
   })
 
-  it("the hero's channel beside the thread draws only what is in view (its first two messages are above its top)", () => {
+  it("the hero sends only the channel; its story's parts are drawn by the browser later, out of sight, so the first frame doesn't change", () => {
     const html = renderToString(<>{heroDesktop.render()}</>)
-    expect(html.match(/Release candidate for the Q4/g) ?? []).toHaveLength(1)
-    expect(html).toMatch(/data-sc-item="hero-split" data-sc-state="off"/)
+    expect(html).not.toMatch(/data-sc-item="hero-split"|sc-tpanel|sc-ptr/)
+    expect(html).toMatch(/data-sc-later="hero-split"/)
+    expect(html).toMatch(/data-sc-later="hero-pointer"/)
+    expect(renderToString(<>{heroPhone.render()}</>)).toMatch(/data-sc-later="hero-phone-thread"/)
+    // Each later part arrives at "off": nothing in sight changes when it is drawn.
+    expect(renderToString(<HeroSplit />)).toMatch(/^<div class="sc-split" data-sc-item="hero-split" data-sc-state="off"/)
+    expect(renderToString(<HeroPointer />)).toMatch(/class="sc-ptr" data-sc-path="hero-ptr" data-sc-item="hero-ptr" data-sc-state="off"/)
+    expect(renderToString(<HeroPhoneThread />)).toMatch(/data-sc-item="phone-thread" data-sc-state="off"/)
+    for (const part of [<HeroRow key="r" />, <HeroPhoneRow key="p" />]) expect(renderToString(part)).toMatch(/^<div class="sc-reply"[^>]* data-sc-item="row" data-sc-state="off"/)
+    expect(renderToString(<HeroAgentTyping />)).toMatch(/data-sc-item="typing-agent" data-sc-state="off"/)
+    expect(html).toMatch(/data-sc-later="hero-row"/)
+    expect(html).toMatch(/data-sc-later="hero-agent-typing"/)
+  })
+
+  it("the hero's channel beside the thread draws only what is in view (its first two messages are above its top)", () => {
+    const html = renderToString(<HeroSplit />)
+    expect(html.match(/Release candidate for the Q4/g) ?? []).toHaveLength(0)
+    expect(html).toContain("Added them under Decisions")
   })
 
   it("the scenes that start out of sight draw their story's start, so a reader without JavaScript sees a whole picture", () => {

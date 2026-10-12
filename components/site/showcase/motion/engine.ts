@@ -115,6 +115,12 @@ export class Typer {
     return this.steps.length ? this.steps[this.steps.length - 1].at : 0
   }
 
+  /** When, after `t` ms from its start, the next character lands (Infinity once it is whole). */
+  nextAt(t: number): number {
+    for (const s of this.steps) if (s.at > t) return s.at
+    return Infinity
+  }
+
   /** How many characters are in at `t` ms after its start. */
   countAt(t: number): number {
     let n = 0
@@ -344,6 +350,25 @@ export class Mover {
 
   get end(): number {
     return this.keys.length ? this.keys[this.keys.length - 1].at : 0
+  }
+
+  /**
+   * Whether it is moving at `t` (between two different places), and when it
+   * next changes: a held place, or a path not yet begun, needs no frames
+   * until then.
+   */
+  next(t: number): { moving: boolean; at: number } {
+    const k = this.placed
+    if (!k.length || t >= this.end) return { moving: false, at: Infinity }
+    if (t < k[0].at) return { moving: false, at: k[0].at }
+    for (let i = 1; i < k.length; i++) {
+      if (t >= k[i].at) continue
+      const a = k[i - 1]
+      const b = k[i]
+      const still = b.ease === "jump" || (!b.to && !a.to && a.x === b.x && a.y === b.y && !b.arc)
+      return { moving: !still, at: b.at }
+    }
+    return { moving: false, at: Infinity }
   }
 
   /** Forgets where its targets were (a new play measures them again). */

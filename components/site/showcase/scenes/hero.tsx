@@ -1,11 +1,10 @@
 import { AppFrame, PhoneFrame } from "../AppFrame"
-import { ChannelView, Message, PhoneChannel, TypingLine, TypingStack } from "../ChannelView"
-import { PhoneThread, ReplyRow, ThreadPanel, type ThreadReply } from "../ThreadPanel"
-import { Mention } from "../parts"
+import { ChannelView, PhoneChannel } from "../ChannelView"
+import { Later } from "../Later"
 import { Sidebar } from "../Sidebar"
-import { CAPTAIN, ENGINEERING, JONAS, SAM, STORY } from "../data"
-import { PointerLayer } from "../motion/Pointer"
+import { ENGINEERING, STORY } from "../data"
 import type { Script, Step } from "../SceneDirector"
+import { arrivals, history, typing } from "./heroParts"
 import { SIZES, type SceneSpec } from "./types"
 
 /**
@@ -20,95 +19,12 @@ import { SIZES, type SceneSpec } from "./types"
  *
  * The conversation is complete before anything plays; the story's messages
  * wait under it, laid out, and the list snaps up as each lands
- * (SceneDirector). The channel with the thread open beside it is drawn whole
- * over the channel alone and swapped in at the press, as the app snaps the
- * page narrower when the panel opens.
+ * (SceneDirector). The channel with the thread open beside it, the pointer
+ * and the phone's thread page are the story's alone, so the browser draws
+ * them once the page is idle (Later, scenes/heroLater.tsx), out of sight,
+ * and the scene swaps the channel for them at the press, as the app snaps
+ * the page narrower when the panel opens.
  */
-
-const P = ENGINEERING.posts
-
-/** The thread panel's width: the app's narrowest (360 of 360 to 560). */
-const PANEL = 360
-
-/**
- * The conversation before the story. Sized with the window so that both of
- * its states are whole: before, every row sits under the header; after the
- * story's message and its reply row rise, the agent's checklist is the
- * first row in view.
- */
-function history(phone: boolean, narrow = false) {
-  return (
-    <>
-      {/* Beside the thread the channel's lines are longer, and these two are
-          above its top: the narrow copy leaves them out. */}
-      {!phone && !narrow && (
-        <>
-          <Message by={P.rc.by} at={P.rc.at}>
-            {P.rc.text}
-          </Message>
-          <Message by={P.loadTest.by} at={P.loadTest.at}>
-            {P.loadTest.text}
-          </Message>
-        </>
-      )}
-      <Message by={P.checklist.by} at={P.checklist.at} provenance phone={phone}>
-        {P.checklist.text}
-      </Message>
-      <Message by={P.rollback.by} at={P.rollback.at} forMe phone={phone}>
-        <Mention kind="me">{SAM.name}</Mention> {P.rollback.text}
-      </Message>
-      <Message by={P.decisions.by} at={P.decisions.at} phone={phone}>
-        {P.decisions.text}
-      </Message>
-      <Message by={P.announcement.by} at={P.announcement.at} phone={phone}>
-        {P.announcement.text}
-      </Message>
-    </>
-  )
-}
-
-const askText = (phone: boolean) => (
-  <>
-    <Mention kind="agent">{CAPTAIN.name}</Mention> {phone ? STORY.ask.phoneText : STORY.ask.text}
-  </>
-)
-
-/**
- * The ask, and under it the row its thread's first reply makes. `row` is that
- * row's part in the story: pressed by the pointer in the channel alone
- * ("hover"), kept pressed in the channel the thread opens beside ("open").
- */
-function arrivals(phone: boolean, row?: "hover" | "open") {
-  return (
-    <>
-      <Message id="ask" state="off" by={STORY.ask.by} at={STORY.ask.at} phone={phone}>
-        {askText(phone)}
-      </Message>
-      <ReplyRow
-        faces={[CAPTAIN]}
-        count={1}
-        last={STORY.reply.at}
-        phone={phone}
-        item={{ id: "row", state: "off" }}
-        hover={row === "hover" ? { id: "row-hover", state: "off" } : undefined}
-        open={row === "open" ? { id: "row-open", state: "off" } : undefined}
-        target={row === "hover" ? "hero-row" : undefined}
-      />
-    </>
-  )
-}
-
-/** Jonas typing, then the agent at work, in the one typing line. */
-function typing() {
-  return (
-    <TypingStack>
-      <TypingLine id="typing-jonas" state="off" who={JONAS.name} />
-      <TypingLine id="typing-agent" state="off" who={CAPTAIN.name} agent />
-    </TypingStack>
-  )
-}
-
-const REPLIES: ThreadReply[] = [{ by: CAPTAIN, at: STORY.reply.at, text: STORY.reply.text, item: { id: "thread-reply", state: "off" }, target: "hero-reply" }]
 
 /* The story's beats, in ms from the start of a play. */
 /** Jonas has been typing; his message lands. */
@@ -180,46 +96,18 @@ export const heroDesktop: SceneSpec = {
   script: heroScript,
   render: () => (
     <>
-      <AppFrame
-        sidebar={<Sidebar place="channel:engineering" compact />}
-        sheetItem="hero-wide"
-        split={{
-          item: "hero-split",
-          page: (
-            <ChannelView
-              name="engineering"
-              people={ENGINEERING.members}
-              count={ENGINEERING.memberCount}
-              items={history(false, true)}
-              arrivals={arrivals(false, "open")}
-              typing={typing()}
-              placeholder="Message #engineering, or ask @Release Captain"
-              narrow
-            />
-          ),
-          panel: (
-            <ThreadPanel
-              channel="engineering"
-              width={PANEL}
-              parent={{ by: STORY.ask.by, at: STORY.ask.at, text: askText(false) }}
-              replies={REPLIES}
-              sheet={{ id: "thread-sheet", state: "off" }}
-              body={{ id: "thread-body", state: "off" }}
-            />
-          ),
-        }}
-      >
+      <AppFrame sidebar={<Sidebar place="channel:engineering" compact />} sheetItem="hero-wide" over={<Later part="hero-split" />}>
         <ChannelView
           name="engineering"
           people={ENGINEERING.members}
           count={ENGINEERING.memberCount}
           items={history(false)}
-          arrivals={arrivals(false, "hover")}
-          typing={typing()}
+          arrivals={arrivals(false, "hover", <Later part="hero-row" />)}
+          typing={typing(<Later part="hero-agent-typing" />)}
           placeholder="Message #engineering, or ask @Release Captain"
         />
       </AppFrame>
-      <PointerLayer id="hero-ptr" shapes={["arrow", "hand"]} />
+      <Later part="hero-pointer" />
     </>
   ),
 }
@@ -236,19 +124,12 @@ export const heroPhone: SceneSpec = {
             name="engineering"
             subtitle="4 members · 1 agent"
             items={history(true)}
-            arrivals={arrivals(true)}
-            typing={typing()}
+            arrivals={arrivals(true, undefined, <Later part="hero-phone-row" />)}
+            typing={typing(<Later part="hero-agent-typing" />)}
             placeholder="Message or ask @Release"
           />
         </div>
-        <div className="sc absolute inset-0" data-sc-item="phone-thread" data-sc-state="off" data-sc-swap="">
-          <PhoneThread
-            parent={{ by: STORY.ask.by, at: STORY.ask.at, text: askText(true) }}
-            replies={REPLIES.map((r) => ({ ...r, item: undefined }))}
-            page={{ id: "thread-page", state: "off" }}
-            title={{ id: "thread-title", state: "off" }}
-          />
-        </div>
+        <Later part="hero-phone-thread" />
       </div>
     </PhoneFrame>
   ),

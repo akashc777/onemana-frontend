@@ -1,4 +1,4 @@
-import "./thread.css"
+import "./showcase.css"
 
 import type { ReactNode } from "react"
 import { ArrowLeft, ArrowUp, ChevronRight, MessageSquare, Mic, Plus, ShieldCheck, Smile, Type, X } from "lucide-react"
