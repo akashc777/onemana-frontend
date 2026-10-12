@@ -1,11 +1,20 @@
 "use client";
 
-import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Arrow } from "@/components/ui/v3";
 import { hueOrAgent } from "@/components/ui/graphics/hues";
 import type { CampHue } from "@/lib/campHue";
 import { site } from "@/lib/site";
-import type { TourId } from "@/components/site/showcase/tour";
+import type { LaterTourId, TourId } from "@/components/site/showcase/tour";
+import { TourScene } from "@/components/site/showcase/TourScene";
+import { LATER_SCENES, whenIdle, type ScenePair } from "@/components/site/showcase/tourLater";
+// The later surfaces' own styles still come with the page, as they did when
+// the surfaces did: only their markup and code wait (tourLater.ts). Left to
+// the surfaces' chunks, each stylesheet would be added to the page when its
+// surface arrives, after the others, which changes the cascade's order.
+import "@/components/site/showcase/board.css";
+import "@/components/site/showcase/calendar.css";
+import "@/components/site/showcase/palette.css";
 
 /**
  * The product, one surface at a time (site.md H4): a row of hued chips, the
@@ -25,6 +34,12 @@ import type { TourId } from "@/components/site/showcase/tour";
  * the HTML. Choosing a tab cross-fades the stage to the new surface, whose
  * parts arrive in a short stagger (SceneDirector); under reduced motion it
  * simply shows.
+ *
+ * Only the first surface comes with the page, drawn on the server (`first`).
+ * The others are fetched once the tour is near the screen and the browser is
+ * idle, or as soon as a reader points at or focuses a chip (tourLater.ts).
+ * A surface chosen before it has arrived takes the stage when it does; until
+ * then the stage keeps the scene it has, so nothing on the page moves.
  */
 type Tab = {
   id: TourId;
@@ -89,6 +104,19 @@ const TABS: Tab[] = [
 
 const hueClass = hueOrAgent;
 
+// One fetch per surface for the page's life; a failed one (offline) is
+// forgotten, so reaching for the tab again tries again.
+const arriving = new Map<LaterTourId, Promise<ScenePair>>();
+function fetchScene(id: LaterTourId): Promise<ScenePair> {
+  let scene = arriving.get(id);
+  if (!scene) {
+    scene = LATER_SCENES[id]();
+    arriving.set(id, scene);
+    scene.catch(() => arriving.delete(id));
+  }
+  return scene;
+}
+
 /** The tour's ground: the hue's tint with a 22% radial of its strong cut from the top right. Its tint changes over 240ms. */
 function Stage({ children, hue }: { children: ReactNode; hue: CampHue | "agent" }) {
   return (
@@ -101,14 +129,61 @@ function Stage({ children, hue }: { children: ReactNode; hue: CampHue | "agent" 
   );
 }
 
-export function ProductTabs({ scenes }: { scenes: Record<TourId, ReactNode> }) {
+export function ProductTabs({ first }: { first: ReactNode }) {
   const [active, setActive] = useState(0);
   // Whether the reader has chosen a surface: from then on a new surface's
   // parts arrive in a stagger. The page's first surface is drawn as it is.
   const [chosen, setChosen] = useState(false);
+  // The surfaces after the first, as they arrive.
+  const [later, setLater] = useState<Partial<Record<LaterTourId, ScenePair>>>({});
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  const root = useRef<HTMLDivElement>(null);
+
+  const want = useCallback((id: TourId) => {
+    if (id === "docs") return;
+    fetchScene(id).then(
+      (scene) => setLater((had) => (had[id] ? had : { ...had, [id]: scene })),
+      () => {},
+    );
+  }, []);
+
+  // Near the screen (or at once, without IntersectionObserver), the rest are
+  // fetched when the browser is next idle.
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    let cancel = () => {};
+    const fetchAll = () => TABS.forEach((t) => want(t.id));
+    const io =
+      typeof IntersectionObserver === "undefined"
+        ? null
+        : new IntersectionObserver(
+            ([e]) => {
+              if (!e?.isIntersecting) return;
+              io?.disconnect();
+              cancel = whenIdle(fetchAll);
+            },
+            { rootMargin: "400px 0px" },
+          );
+    if (io) io.observe(el);
+    else cancel = whenIdle(fetchAll);
+    return () => {
+      io?.disconnect();
+      cancel();
+    };
+  }, [want]);
+
+  // The surface on the stage: the chosen one once it is here, until then the
+  // one before it.
+  const ready = (i: number) => {
+    const id = TABS[i].id;
+    return id === "docs" || later[id] !== undefined;
+  };
+  const [shown, setShown] = useState(0);
+  if (shown !== active && ready(active)) setShown(active);
 
   const choose = (i: number) => {
+    want(TABS[i].id);
     setActive(i);
     setChosen(true);
   };
@@ -129,9 +204,11 @@ export function ProductTabs({ scenes }: { scenes: Record<TourId, ReactNode> }) {
   };
 
   const tab = TABS[active];
+  const onStage = TABS[shown];
+  const scene = onStage.id === "docs" ? undefined : later[onStage.id];
 
   return (
-    <div>
+    <div ref={root}>
       <div
         role="tablist"
         aria-label="Parts of OneCamp"
@@ -151,6 +228,8 @@ export function ProductTabs({ scenes }: { scenes: Record<TourId, ReactNode> }) {
             aria-controls={`panel-${t.id}`}
             tabIndex={i === active ? 0 : -1}
             onClick={() => choose(i)}
+            onPointerEnter={() => want(t.id)}
+            onFocus={() => want(t.id)}
             className={`${hueClass(t.hue)} flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-md px-3 text-caption font-[510] transition-[background-color,box-shadow,color] duration-hover sm:min-h-8 ${
               i === active ? "bg-card text-foreground shadow-e2" : "text-muted-foreground hover:bg-hover hover:text-foreground"
             }`}
@@ -162,7 +241,13 @@ export function ProductTabs({ scenes }: { scenes: Record<TourId, ReactNode> }) {
       </div>
 
       {/* Only the chosen panel renders, the one at TABS[active]. */}
-      <div id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} className="mt-7 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
+      <div
+        id={`panel-${tab.id}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${tab.id}`}
+        aria-busy={shown !== active ? true : undefined}
+        className="mt-7 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10"
+      >
         <div key={tab.id} className="fx-fade lg:pt-2">
           <h3 className="text-h3 text-foreground">{tab.title}</h3>
           <p className="mt-3 text-body text-muted-foreground">{tab.text}</p>
@@ -175,10 +260,10 @@ export function ProductTabs({ scenes }: { scenes: Record<TourId, ReactNode> }) {
           </p>
         </div>
 
-        <Stage hue={tab.hue}>
+        <Stage hue={onStage.hue}>
           {/* Keyed by the surface: a new tab's scene cross-fades in, its parts in a stagger. */}
-          <div key={tab.id} className="sc-swap" data-sc-entering={chosen ? "" : undefined}>
-            {scenes[tab.id]}
+          <div key={onStage.id} className="sc-swap" data-sc-entering={chosen ? "" : undefined}>
+            {scene ? <TourScene desktop={scene.desktop} phone={scene.phone} /> : first}
           </div>
         </Stage>
       </div>

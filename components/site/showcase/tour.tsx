@@ -2,27 +2,19 @@ import type { ReactNode } from "react"
 
 // landing-diet: product-mock
 import { TourScene } from "./TourScene"
-import { agentsDesktop, agentsPhone } from "./scenes/agents"
-import { boardDesktop, boardPhone } from "./scenes/board"
-import { calendarDesktop, calendarPhone } from "./scenes/calendar"
-import { chatDesktop, chatPhone } from "./scenes/chat"
 import { docDesktop, docPhone } from "./scenes/doc"
-import { paletteDesktop, palettePhone } from "./scenes/palette"
 
 /** The product tabs' surfaces, in the tour's order (ProductTabs TABS). */
 export type TourId = "docs" | "tasks" | "calendar" | "agents" | "ask" | "chat"
 
+/** The surfaces after the first, which the browser fetches (tourLater.ts). */
+export type LaterTourId = Exclude<TourId, "docs">
+
 /**
- * Every surface's scene, drawn on the server for ProductTabs (a client
- * component), which places only the chosen one in the page.
+ * The tour's first surface, drawn on the server for ProductTabs (a client
+ * component): the page's first frame, and the only scene in its payload. The
+ * others arrive as the reader nears the tour (tourLater.ts).
  */
-export function tourScenes(): Record<TourId, ReactNode> {
-  return {
-    docs: <TourScene desktop={docDesktop} phone={docPhone} />,
-    tasks: <TourScene desktop={boardDesktop} phone={boardPhone} />,
-    calendar: <TourScene desktop={calendarDesktop} phone={calendarPhone} />,
-    agents: <TourScene desktop={agentsDesktop} phone={agentsPhone} />,
-    ask: <TourScene desktop={paletteDesktop} phone={palettePhone} />,
-    chat: <TourScene desktop={chatDesktop} phone={chatPhone} />,
-  }
+export function firstTourScene(): ReactNode {
+  return <TourScene desktop={docDesktop} phone={docPhone} />
 }

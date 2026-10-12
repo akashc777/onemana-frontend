@@ -11,7 +11,7 @@ import { GuaranteeList } from "@/components/site/GuaranteeList";
 import { GovernedDemo } from "@/components/site/GovernedDemo";
 import { HeroScene } from "@/components/site/showcase/HeroScene";
 import { ProductTabs } from "@/components/site/ProductTabs";
-import { tourScenes } from "@/components/site/showcase/tour";
+import { firstTourScene } from "@/components/site/showcase/tour";
 import { FactsStrip } from "@/components/site/FactsStrip";
 import { RunSpec } from "@/components/site/RunSpec";
 import { HomeComparison } from "@/components/site/HomeComparison";
@@ -163,7 +163,7 @@ export default async function HomePage() {
           subtitle="Every screen here shows the live demo's own data. Open any of them without an account."
           className="mb-8 lg:mb-10"
         />
-        <ProductTabs scenes={tourScenes()} />
+        <ProductTabs first={firstTourScene()} />
       </Section>
 
       {/* 3. The breadth (H5). */}

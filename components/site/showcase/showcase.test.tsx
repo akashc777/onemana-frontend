@@ -7,7 +7,9 @@ import { APP, ELEVATION } from "@/lib/appSystem"
 import { HeroScene } from "@/components/site/showcase/HeroScene"
 import { Scene } from "@/components/site/showcase/Scene"
 import { AUDIENCE_SCENES } from "@/components/site/showcase/audience"
-import { tourScenes } from "@/components/site/showcase/tour"
+import { firstTourScene } from "@/components/site/showcase/tour"
+import { LATER_SCENES } from "@/components/site/showcase/tourLater"
+import { TourScene } from "@/components/site/showcase/TourScene"
 import { heroDesktop, heroPhone } from "@/components/site/showcase/scenes/hero"
 import { agentsDesktop, agentsPhone } from "@/components/site/showcase/scenes/agents"
 import { chatDesktop, chatPhone } from "@/components/site/showcase/scenes/chat"
@@ -77,9 +79,13 @@ const draw = (s: SceneSpec) =>
   )
 
 describe("the home page shows the product drawn, not photographed", () => {
-  it("renders no product image in the hero or the product tabs", () => {
+  it("renders no product image in the hero or the product tabs", async () => {
     expect(renderToString(<HeroScene />)).not.toMatch(/<img\b/)
-    for (const scene of Object.values(tourScenes())) expect(renderToString(<>{scene}</>)).not.toMatch(/<img\b/)
+    expect(renderToString(<>{firstTourScene()}</>)).not.toMatch(/<img\b/)
+    for (const load of Object.values(LATER_SCENES)) {
+      const { desktop, phone } = await load()
+      expect(renderToString(<TourScene desktop={desktop} phone={phone} />)).not.toMatch(/<img\b/)
+    }
   })
 
   it("imports no screenshot component and no product file", () => {
