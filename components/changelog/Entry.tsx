@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { digestLine, plainText, shorten, storyHref, withLead, type ChangelogEntry, type FixGroup, type Highlights, type Notice } from "@/lib/changelog";
+import { digestLine, firstSentence, plainText, storyHref, withLead, type ChangelogEntry, type FixGroup, type Highlights, type Notice } from "@/lib/changelog";
 import { entryHref } from "@/lib/releases";
 import { renderMarkdown } from "@/lib/markdown";
 import { formatDay } from "@/lib/format";
@@ -97,7 +97,7 @@ function NoticeLine({ notice, full }: { notice: Notice; full: boolean }) {
         <Icon name={issue ? "alert" : "info"} size={16} className={`mt-0.5 ${issue ? "hue-sun text-hue-ink" : ""}`} />
         <span>
           <b className="font-[590] text-foreground">{`${notice.title}:`}</b>
-          {` ${shorten(plainText(notice.text), NOTICE_CHARS)}`}
+          {` ${firstSentence(plainText(notice.text), NOTICE_CHARS)}`}
         </span>
       </p>
     );

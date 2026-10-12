@@ -467,7 +467,58 @@ export function digestLine(md: string, max = 120): { lead?: string; rest: string
     lead += stop[1];
     rest = rest.slice(stop[0].length);
   }
-  return lead ? { lead, rest: shorten(rest, max - lead.length - 1) } : { rest: shorten(rest, max) };
+  const room = lead ? max - lead.length - 1 : max;
+  return lead ? { lead, rest: firstSentence(rest, room) } : { rest: firstSentence(rest, room) };
+}
+
+/**
+ * Where a sentence ends: its stop, then a space and a capital, a digit or an
+ * opening mark, or the end of the text ("v2.1" and ".m4a" are not ends).
+ */
+const SENTENCE_END = /^([\s\S]+?[.!?])(?=\s+[A-Z0-9"“‘(]|\s*$)/;
+
+/** How much longer than its room a first sentence may run and still be shown whole: about a line of the digest. */
+const ONE_MORE_LINE = 80;
+
+/**
+ * A highlight's text as the digest shows it: whole when it fits, else its
+ * first sentence whole when that takes at most about a line more than the
+ * room. A first sentence longer than that stops at the last clause that
+ * fits (", " or ": "), and only one with no such place is cut at a word.
+ * Either way an ellipsis says there is more on the entry's page. Every line
+ * on /changelog used to stop mid-clause ("the current selection and…"),
+ * which read as a feed cut by a machine rather than notes someone wrote.
+ */
+export function firstSentence(text: string, room: number): string {
+  if (text.length <= room) return text;
+  const first = SENTENCE_END.exec(text)?.[1] ?? text;
+  const most = room + ONE_MORE_LINE;
+  if (first.length <= most) return first;
+  const clause = /^([\s\S]*[,;:])\s/.exec(first.slice(0, most + 1))?.[1];
+  return clause && clause.length >= room * 0.6 ? `${clause.slice(0, -1)}…` : shorten(first, room);
+}
+
+/** Every place a sentence ends, by the same rule as SENTENCE_END, or at the very end. */
+const SENTENCE_ENDS = /[.!?](?=\s+[A-Z0-9"“‘(]|\s*$)/g;
+
+/**
+ * As many whole sentences as fit in `max` characters, for a summary under a
+ * title (the blog index's newest posts). A first sentence a little longer
+ * than that is shown whole too; only one far longer is cut at a word, with
+ * an ellipsis. Two clamped lines used to end every excerpt mid-clause
+ * ("…reaches only what both th…").
+ */
+export function wholeSentences(text: string, max: number): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  let end = 0;
+  for (const m of t.matchAll(SENTENCE_ENDS)) {
+    if (m.index! + 1 > max) break;
+    end = m.index! + 1;
+  }
+  if (end > 0) return t.slice(0, end);
+  const first = SENTENCE_END.exec(t)?.[1];
+  return first && first.length <= Math.round(max * 1.4) ? first : shorten(t, max);
 }
 
 /** Plain text cut at a word to `max` characters, with an ellipsis when cut. */

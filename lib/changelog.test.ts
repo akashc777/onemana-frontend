@@ -6,10 +6,12 @@ import {
   entryDescription,
   entrySlug,
   entryTitle,
+  firstSentence,
   parseNotes,
   pillEntry,
   sameDayEntry,
   storyHref,
+  wholeSentences,
   withLead,
   type GithubRelease,
 } from "./changelog"
@@ -235,18 +237,50 @@ describe("what an entry says about itself", () => {
     expect(entryDescription({ publishedAt: "2026-10-10T00:00:00Z", sections: [] })).toBe("What shipped in OneCamp on 10 October 2026.")
   })
 
-  it("shows a highlight on /changelog by its lead, with the rest shortened at a word", () => {
+  it("shows a highlight on /changelog by its lead and its first sentence, cut mid-way only when that sentence is too long", () => {
     expect(digestLine("**Focus time.** Mark an event as focus time and notifications pause.")).toEqual({ lead: "Focus time.", rest: "Mark an event as focus time and notifications pause." })
-    expect(digestLine("One accent. Orange marks only what you can act on: the main button, a focused field, the current selection and links. Everything else is graphite.")).toEqual({
+    // A long highlight shows its first sentence whole, never a clause cut mid-way.
+    expect(digestLine("One accent. Orange marks only what you can act on: the main button, a focused field, the current selection and links. Everything else is graphite, and a theme changes the rest.")).toEqual({
       lead: "One accent.",
-      rest: "Orange marks only what you can act on: the main button, a focused field, the current selection and links…",
+      rest: "Orange marks only what you can act on: the main button, a focused field, the current selection and links.",
     })
     expect(digestLine("**monday.com**: columns that aren't the item's status become custom fields.")).toEqual({ lead: "monday.com:", rest: "columns that aren't the item's status become custom fields." })
-    // No short first sentence: no lead, and the whole line shortened.
+    // No short first sentence: no lead, and the first sentence whole.
     const long = digestLine("The sidebar lists each place once, and the lists share one left edge, in every panel there is. " + "More words. ".repeat(10))
     expect(long.lead).toBeUndefined()
-    expect(long.rest.length).toBeLessThanOrEqual(120)
-    expect(long.rest.endsWith("…")).toBe(true)
+    expect(long.rest).toBe("The sidebar lists each place once, and the lists share one left edge, in every panel there is.")
+    // Only a sentence too long to show whole is cut at a word, with an ellipsis.
+    const endless = digestLine("This one runs " + "and on ".repeat(40) + "until it stops. Then more.")
+    expect(endless.rest.length).toBeLessThanOrEqual(120)
+    expect(endless.rest.endsWith("…")).toBe(true)
+    // A sentence that ends the highlight is whole too, a line past its room.
+    expect(digestLine("Private docs stay private in search. Search and AI search find a doc only for the people who may read it now, comments included.")).toEqual({
+      lead: "Private docs stay private in search.",
+      rest: "Search and AI search find a doc only for the people who may read it now, comments included.",
+    })
+    // Longer than that, it stops at the last clause that fits, never inside one.
+    expect(
+      digestLine(
+        "Docs keep one copy of what you type. A doc no longer gains a copy of itself when someone reconnects, docs with tables, embeds, polls, charts or captioned images save again, and a save that fails no longer stops live editing for everyone else.",
+      ).rest,
+    ).toBe("A doc no longer gains a copy of itself when someone reconnects, docs with tables, embeds, polls, charts or captioned images save again…")
+    // "v2.1" and ".m4a" are not where a sentence ends.
+    expect(firstSentence("Clips play as audio (.weba, .m4a or .ogg, by browser) and as video when you record the screen with your voice over it, from any message box. More.", 120)).toBe(
+      "Clips play as audio (.weba, .m4a or .ogg, by browser) and as video when you record the screen with your voice over it, from any message box.",
+    )
+  })
+
+  it("sums a post up in whole sentences, never a clause cut mid-way", () => {
+    const colour = "A colour for every person, project and channel. Themes that recolour the whole frame. Illustrations where a screen is empty. Then the speed work: a sent message shows in 16 ms instead of 489, and typing in a long doc does a seventh of the work."
+    expect(wholeSentences(colour, 170)).toBe("A colour for every person, project and channel. Themes that recolour the whole frame. Illustrations where a screen is empty.")
+    // A first sentence a little over the room is still shown whole.
+    const team = "A new teammate in OneCamp now lands in #general with the message box ready, however they get in: an invitation, Google, GitHub, single sign-on or the directory, and in one step. Invitations say where they stand."
+    expect(wholeSentences(team, 170)).toBe("A new teammate in OneCamp now lands in #general with the message box ready, however they get in: an invitation, Google, GitHub, single sign-on or the directory, and in one step.")
+    // Short text is left as it is, and only an endless sentence is cut, at a word.
+    expect(wholeSentences("What shipped.", 170)).toBe("What shipped.")
+    const endless = wholeSentences("This one runs " + "and on ".repeat(60) + "until it stops.", 170)
+    expect(endless.endsWith("…")).toBe(true)
+    expect(endless.length).toBeLessThanOrEqual(170)
   })
 
   it("bolds a highlight's short first sentence on the entry's page, unless it has a lead or Markdown already", () => {
