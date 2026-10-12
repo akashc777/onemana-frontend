@@ -144,7 +144,7 @@ export default async function HomePage() {
             </ul>
           </div>
 
-          <div className="mt-10 sm:mt-14 md:pb-[104px]">
+          <div className="mt-10 sm:mt-14 lg:pb-[104px]">
             <HeroScene />
           </div>
 
