@@ -19,6 +19,7 @@ describe("a post's cover", () => {
     expect(html).toContain("shadow-e2");
     expect(html).not.toContain("bg-hue-tint");
     expect(html).toContain("aspect-[16/10]");
+    expect(html).toContain("post-cover");
     expect(html).toContain("object-cover");
     // next/image with priority: eager and fetched early, but never through the
     // optimiser, whose every resize counts against Vercel's free plan.
@@ -34,6 +35,14 @@ describe("a post's cover", () => {
     const config = readFileSync("next.config.mjs", "utf8");
     expect(config).toContain("images: { unoptimized: true }");
     expect(config).not.toContain("remotePatterns");
+  });
+
+  // Many covers are pale screenshots; on the dark page a white one was the
+  // brightest thing in view (N3). One rule dims and frames every cover there.
+  it("is dimmed and framed by a hairline in the dark theme, one rule for every cover", () => {
+    const css = readFileSync("app/globals.css", "utf8");
+    expect(css).toMatch(/\.dark \.post-cover > img\s*\{\s*filter: brightness\(0\.\d+\);\s*\}/);
+    expect(css).toMatch(/\.dark \.post-cover::after\s*\{[^}]*box-shadow: inset 0 0 0 1px var\(--line-2-c\);[^}]*pointer-events: none;/);
   });
 
   it("is no longer an <img> the page sizes by hand", () => {

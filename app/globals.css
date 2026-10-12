@@ -354,6 +354,23 @@ body {
     filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.5));
   }
 
+  /* Blog covers in the dark theme (N3). Covers are the author's pictures and
+     many are pale screenshots of the app; on the dark page a white one was
+     the brightest thing in view. One rule for every cover, so nothing is
+     decided per image and no picture is edited: a slight dim, and the
+     frames' hairline drawn over the picture's edge. */
+  .dark .post-cover > img {
+    filter: brightness(0.86);
+  }
+  .dark .post-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px var(--line-2-c);
+    pointer-events: none;
+  }
+
   /* /compare's team-size slider (site.md C7): a sunken track filled in the
      brand to the value, and the thumb a raised 20px disc. */
   .team-range {
