@@ -92,7 +92,7 @@ export default async function DocsIndexPage() {
                     </Tile>
                     <span>
                       <span className="block text-body font-[590] text-foreground">{c.title}</span>
-                      <span className="mt-1 block text-small text-muted-foreground">{c.line}</span>
+                      <span className="mt-1 block text-balance text-small text-muted-foreground">{c.line}</span>
                     </span>
                   </Link>
                 </li>
@@ -123,7 +123,7 @@ export default async function DocsIndexPage() {
                             {item.title}
                           </span>
                           {item.summary && (
-                            <span className="mt-1 block max-w-2xl text-small text-muted-foreground">
+                            <span className="mt-1 block max-w-2xl text-balance text-small text-muted-foreground">
                               {item.summary}
                             </span>
                           )}

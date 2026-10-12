@@ -38,7 +38,7 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
                   <Link
                     href={`/docs/${item.slug}`}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-11 items-center rounded-md px-2.5 py-1 leading-5 lg:min-h-8 transition-colors ${
+                    className={`flex min-h-11 items-center text-balance rounded-md px-2.5 py-1 leading-5 lg:min-h-8 transition-colors ${
                       active ? "nav-active font-medium" : "nav-idle"
                     }`}
                   >

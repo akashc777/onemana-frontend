@@ -255,7 +255,7 @@ export function EntryRows({ entries }: { entries: ChangelogEntry[] }) {
       {entries.map((e) => (
         <li key={e.slug} className="border-b border-border">
           <Link href={entryHref(e)} className="group flex min-h-11 flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-            <span className="min-w-0 text-body text-foreground transition-colors group-hover:text-brand-ink">{e.title}</span>
+            <span className="min-w-0 text-balance text-body text-foreground transition-colors group-hover:text-brand-ink">{e.title}</span>
             <time dateTime={e.publishedAt} className="shrink-0 text-caption tabular-nums text-muted-foreground">
               {formatDay(e.publishedAt)}
             </time>

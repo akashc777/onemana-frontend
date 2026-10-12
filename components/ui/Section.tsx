@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import type { CampHue } from "@/lib/campHue";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 
@@ -71,6 +71,30 @@ export function Section({ id, children, className = "", divider = false, spacing
   );
 }
 
+/**
+ * A heading of two sentences breaks between them first ("Free for small
+ * teams. / Pay once when you grow."), never after the first word of the
+ * second ("… teams. Pay / once …"). Each sentence is one inline box, so a
+ * line can only end at a sentence's end, and a sentence wider than the line
+ * wraps inside itself, balanced. A heading that is not a plain string, or is
+ * one sentence, is drawn as it is.
+ */
+export function Sentences({ children }: { children: ReactNode }) {
+  if (typeof children !== "string") return <>{children}</>;
+  const parts = children.split(/(?<=[.?!])\s+(?=\S)/);
+  if (parts.length < 2) return <>{children}</>;
+  return (
+    <>
+      {parts.map((s, i) => (
+        <Fragment key={i}>
+          {i > 0 ? " " : null}
+          <span className="inline-block">{s}</span>
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
 interface HeadingProps {
   /** 13/510 after a brand dot (site.md S5), on at most every other section. */
   eyebrow?: string;
@@ -105,10 +129,10 @@ export function SectionHeading({ eyebrow, eyebrowDot, title, subtitle, layout = 
         <div className="lg:col-span-7">
           {eb}
           <H id={id} className="text-balance text-h2 text-foreground">
-            {title}
+            <Sentences>{title}</Sentences>
           </H>
         </div>
-        {subtitle && <p className="max-w-[420px] text-body text-muted-foreground sm:text-[17px] sm:leading-[27px] lg:col-span-4 lg:col-start-9 lg:pb-1">{subtitle}</p>}
+        {subtitle && <p className="max-w-[420px] text-balance text-body text-muted-foreground sm:text-[17px] sm:leading-[27px] lg:col-span-4 lg:col-start-9 lg:pb-1">{subtitle}</p>}
       </div>
     );
   }
@@ -116,7 +140,7 @@ export function SectionHeading({ eyebrow, eyebrowDot, title, subtitle, layout = 
     <div className={`reveal ${centred ? "mx-auto max-w-2xl text-center" : "max-w-3xl"} ${className}`}>
       {eb}
       <H id={id} className="text-balance text-h2 text-foreground">
-        {title}
+        <Sentences>{title}</Sentences>
       </H>
       {subtitle && <p className="mt-4 max-w-[640px] text-lead text-muted-foreground">{subtitle}</p>}
     </div>
@@ -145,7 +169,7 @@ export function MarginHeading({ title, subtitle, id, eyebrow }: { title: ReactNo
     <div className="reveal lg:sticky lg:top-24">
       {eyebrow && <p className="eyebrow">{eyebrow}</p>}
       <h2 id={id} className="text-balance text-h2 text-foreground">
-        {title}
+        <Sentences>{title}</Sentences>
       </h2>
       {subtitle && <p className="mt-4 text-body text-muted-foreground">{subtitle}</p>}
     </div>

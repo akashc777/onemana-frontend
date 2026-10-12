@@ -67,7 +67,7 @@ export default function TemplatesPage() {
                   <h2 className="mt-4 font-sans text-body font-[590] text-foreground">
                     {t.name}
                   </h2>
-                  <p className="mt-1.5 flex-1 text-small text-muted-foreground">{t.description}</p>
+                  <p className="mt-1.5 flex-1 text-balance text-small text-muted-foreground">{t.description}</p>
                   {/* A mini timeline: one bar a week, its length the share of the
                       plan's tasks due that week; the bars fill out on hover. */}
                   <div aria-hidden="true" className="mt-5 flex h-1.5 gap-1">

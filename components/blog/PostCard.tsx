@@ -34,7 +34,7 @@ export function PostCard({ post, compact = false }: { post: BlogPost; compact?: 
     return (
       <li data-topic={topic.key} className="border-b border-border last:border-b-0">
         <Link href={`/blog/${post.slug}`} className="group flex min-h-16 flex-col justify-center gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-          <span className="min-w-0 text-body text-foreground transition-colors group-hover:text-brand-ink">{post.title}</span>
+          <span className="min-w-0 text-balance text-body text-foreground transition-colors group-hover:text-brand-ink">{post.title}</span>
           <span className="flex shrink-0 items-center gap-3">
             <TopicLabel topic={topic} />
             {date}

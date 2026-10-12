@@ -139,7 +139,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
             </p>
             <p className="m-0 mt-3 flex gap-2 rounded-lg bg-muted px-3 py-2 text-small font-[510] text-foreground ring-1 ring-inset ring-border">
               <LogoRing size={16} className="mt-0.5 shrink-0" />
-              <span>{r.cells[0]}</span>
+              <span className="text-balance">{r.cells[0]}</span>
             </p>
             <dl className="m-0 mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
               {r.cells.slice(1).map((cell, i) => (

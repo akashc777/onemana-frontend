@@ -89,9 +89,23 @@ h1, h2, h3 {
   font-weight: 590;
 }
 
-/* Paragraphs avoid a lone last word (Web Interface Guidelines, typography). */
-p, li, dd {
+/* Paragraphs avoid a lone last word (Web Interface Guidelines, typography),
+   and so does everything else that wraps: terms, captions, quotes, cells,
+   a question in an accordion, a label. */
+p, li, dd, dt, figcaption, blockquote, td, th, summary, label {
   text-wrap: pretty;
+}
+
+/* Short blocks are balanced, so they never end on a word or two alone. A
+   lead (20/30 under a heading, "…use what is / in it.") and a note or a
+   caption under a figure, a plan or a table ("…the hash of the one before /
+   it.") are one to four lines; a term ("35 releases in 30 / days") is a few
+   words. Longer text stays pretty: balance is for blocks this short. */
+p.text-lead,
+p.text-caption,
+figcaption,
+dt {
+  text-wrap: balance;
 }
 
 /* No double-tap zoom delay on anything a finger presses. */

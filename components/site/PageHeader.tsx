@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Ambient } from "@/components/ui/Ambient";
+import { Sentences } from "@/components/ui/Section";
 
 interface PageHeaderProps {
   /** 13/510 after a brand dot; most pages need none. */
@@ -49,7 +50,9 @@ export function PageHeader({ eyebrow, title, subtitle, align = "left", divider =
           )}
           <div className={art ? "lg:col-span-8" : ""}>
             {eyebrow && <p className={`eyebrow in-lift ${centred ? "justify-center" : ""}`}>{eyebrow}</p>}
-            <h1 className={`in-lift text-balance text-foreground ${size === "read" ? "text-title-read" : "text-page"} ${centred ? "mx-auto max-w-3xl" : "max-w-[20ch]"}`}>{title}</h1>
+            <h1 className={`in-lift text-balance text-foreground ${size === "read" ? "text-title-read" : "text-page"} ${centred ? "mx-auto max-w-3xl" : "max-w-[20ch]"}`}>
+              <Sentences>{title}</Sentences>
+            </h1>
             {subtitle && <p className={`in-lift at-60 mt-5 max-w-[640px] text-lead text-muted-foreground ${centred ? "mx-auto" : ""}`}>{subtitle}</p>}
             {children}
           </div>
