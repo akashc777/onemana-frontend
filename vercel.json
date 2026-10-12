@@ -1,0 +1,3 @@
+{
+  "ignoreCommand": "git diff --quiet ${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- . \":(exclude)*.test.ts\" \":(exclude)*.test.tsx\" \":(exclude)e2e\" \":(exclude)design\" \":(exclude)scripts\" \":(exclude)*.md\""
+}
