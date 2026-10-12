@@ -26,6 +26,31 @@
   line-gap-override: 0%;
 }
 
+/* JetBrains Mono's stand-ins, the same way. next/font's own is Arial scaled
+   to 134.59%: a proportional face that breaks the columns of hashes and times,
+   and is missing on Android and Linux anyway. Every monospace face is 0.6em
+   wide, so these mostly hold the line box: JetBrains Mono is tall (ascent
+   1.02em). Courier New, Liberation Mono, Cousine, Droid Sans Mono and Noto
+   Sans Mono share one width (Courier New's metrics); DejaVu Sans Mono is a
+   little wider (1233/2048, read from its font file). */
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  src: local("Courier New"), local("CourierNewPSMT"), local("Liberation Mono"), local("LiberationMono"),
+    local("Cousine"), local("Droid Sans Mono"), local("DroidSansMono"), local("Noto Sans Mono"), local("NotoSansMono-Regular");
+  size-adjust: 99.98%;
+  ascent-override: 102.02%;
+  descent-override: 30.00%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback DejaVu";
+  src: local("DejaVu Sans Mono"), local("DejaVuSansMono");
+  size-adjust: 99.66%;
+  ascent-override: 102.35%;
+  descent-override: 30.10%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* THE PALETTE is not written here. Every colour token (--background,
      --brand, the camp hues and the rest, light and dark) comes from the one

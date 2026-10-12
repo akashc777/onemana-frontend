@@ -32,6 +32,10 @@ export const fontMono = JetBrains_Mono({
   // fold, and its 31 kB preload competed with the hero image, the phone's
   // LCP (site.md §19).
   preload: false,
+  // Its stand-ins are monospace faces sized to it (@font-face in
+  // app/globals.css), not next/font's Arial scaled up, which breaks columns.
+  adjustFontFallback: false,
+  fallback: ["JetBrains Mono Fallback", "JetBrains Mono Fallback DejaVu", "ui-monospace", "monospace"],
 });
 
 /**

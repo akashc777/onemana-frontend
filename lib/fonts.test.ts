@@ -47,6 +47,26 @@ describe("fonts", () => {
     }
   });
 
+  // JetBrains Mono's stand-ins: monospace faces sized the same way. DejaVu Sans
+  // Mono is not in Next's table; its advance (1233 of 2048) was read from the
+  // font file.
+  it("gives JetBrains Mono sized monospace stand-ins instead of a scaled Arial", () => {
+    expect(loader("fontMono")).toContain("adjustFontFallback: false");
+    expect(loader("fontMono")).toMatch(/fallback: \["JetBrains Mono Fallback", "JetBrains Mono Fallback DejaVu", "ui-monospace", "monospace"\]/);
+    const css = readFileSync(join(__dirname, "../app/globals.css"), "utf8");
+    const m = JSON.parse(readFileSync(join(__dirname, "../node_modules/next/dist/server/capsize-font-metrics.json"), "utf8"));
+    const jb = m.jetBrainsMono;
+    const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
+    for (const [family, width] of [["JetBrains Mono Fallback", m.courierNew.xWidthAvg / m.courierNew.unitsPerEm], ["JetBrains Mono Fallback DejaVu", 1233 / 2048]] as const) {
+      const face = new RegExp(`@font-face \\{\\s*font-family: "${family}";([^}]*)\\}`).exec(css)?.[1] ?? "";
+      expect(face, family).toContain("src: local(");
+      const s = jb.xWidthAvg / jb.unitsPerEm / width;
+      expect(face, family).toContain(`size-adjust: ${pct(s)};`);
+      expect(face, family).toContain(`ascent-override: ${pct(jb.ascent / (jb.unitsPerEm * s))};`);
+      expect(face, family).toContain(`descent-override: ${pct(Math.abs(jb.descent) / (jb.unitsPerEm * s))};`);
+    }
+  });
+
   it("gives every font whose class is used on an element a generic fallback", () => {
     const root = join(__dirname, "..");
     const used = new Set<string>();
