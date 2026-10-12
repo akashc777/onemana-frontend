@@ -2,12 +2,11 @@ import { readFileSync } from "node:fs";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { PostCover } from "@/components/blog/PostCover";
-import { coverOptimizable } from "@/lib/blog";
 import { site } from "@/lib/site";
 
 /**
  * A post's cover: a box of a fixed shape that the cover fills, so the text
- * under it cannot jump when it loads, resized for the screen by next/image.
+ * under it cannot jump when it loads, shown as published (never resized).
  * It used to reserve 1200 by 630 for covers that are mostly 1440 by 900.
  */
 describe("a post's cover", () => {
@@ -21,23 +20,20 @@ describe("a post's cover", () => {
     expect(html).not.toContain("bg-hue-tint");
     expect(html).toContain("aspect-[16/10]");
     expect(html).toContain("object-cover");
-    // next/image with priority: eager, fetched early, and resized for the screen.
+    // next/image with priority: eager and fetched early, but never through the
+    // optimiser, whose every resize counts against Vercel's free plan.
     expect(html).toContain('fetchpriority="high"');
     expect(html).not.toContain('loading="lazy"');
-    expect(html).toContain("/_next/image?url=");
+    expect(html).not.toContain("/_next/image");
+    expect(html).toContain(`src="${media}"`);
   });
 
-  it("is resized only from the places next.config.mjs allows, and shown as it is from anywhere else", () => {
-    expect(coverOptimizable(media)).toBe(true);
-    expect(coverOptimizable("https://raw.githubusercontent.com/akashc777/akashc777.github.io/master/assets/x.png")).toBe(true);
-    expect(coverOptimizable("https://example.com/cover.png")).toBe(false);
-    expect(coverOptimizable("data:image/png;base64,AAAA")).toBe(false);
+  it("no image is resized by the optimiser, a cover from anywhere is shown as it is", () => {
     const html = renderToString(<PostCover src="https://example.com/cover.png" hue="sky" />);
     expect(html).toContain('src="https://example.com/cover.png"');
-
     const config = readFileSync("next.config.mjs", "utf8");
-    expect(config).toContain('pathname: "/onecamp/blog/media/**"');
-    expect(config).toContain('hostname: "raw.githubusercontent.com", port: "", pathname: "/akashc777/akashc777.github.io/**"');
+    expect(config).toContain("images: { unoptimized: true }");
+    expect(config).not.toContain("remotePatterns");
   });
 
   it("is no longer an <img> the page sizes by hand", () => {

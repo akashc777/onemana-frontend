@@ -46,16 +46,6 @@ export async function listPublishedPosts(opts: { cached?: boolean } = {}): Promi
   return (await getJSON<BlogPost[] | null>("/onecamp/blog", opts.cached ? { revalidate: 120 } : { noStore: true })) ?? [];
 }
 
-/**
- * Whether a cover can go through next/image, which resizes it for the screen
- * (a phone gets a few dozen kilobytes instead of the 180 KB original). Only
- * the hosts next.config.mjs allows: the backend's media and the Jekyll repo
- * older posts were imported from. Anything else is shown as it is.
- */
-export function coverOptimizable(src: string): boolean {
-  return src.startsWith(`${site.backendUrl}/onecamp/blog/media/`) || src.startsWith("https://raw.githubusercontent.com/akashc777/akashc777.github.io/");
-}
-
 /** A single published post by slug. Returns null on 404. */
 export async function getPost(slug: string): Promise<BlogPost | null> {
   try {

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import type { CampHue } from "@/lib/campHue";
-import { coverOptimizable } from "@/lib/blog";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 
 /**
@@ -14,7 +13,9 @@ import { HUE_CLASS } from "@/components/ui/graphics/hues";
  * fills it, so the box is the same before and after it loads.
  *
  * It is the page's largest image and usually what LCP measures, so it is
- * fetched first (priority) and resized for the screen by next/image.
+ * fetched first (priority). It is shown as published, never resized by the
+ * image optimiser (next.config.mjs has images.unoptimized: Vercel's free plan
+ * counts every resize).
  */
 export function PostCover({ src, hue }: { src: string; hue: CampHue }) {
   return (
@@ -25,9 +26,8 @@ export function PostCover({ src, hue }: { src: string; hue: CampHue }) {
           alt=""
           fill
           priority
-          sizes="(min-width: 768px) 680px, 100vw"
+          unoptimized
           className="object-cover"
-          unoptimized={!coverOptimizable(src)}
         />
       </div>
     </div>
