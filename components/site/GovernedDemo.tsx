@@ -15,7 +15,9 @@
  * is the evidence at rest: it opens on the finished state (the refusal, its
  * audit row, the record's line with Prove it) and never moves by itself.
  * "Replay" plays the four steps once, 1.1s each; under reduced motion it
- * steps through them without movement.
+ * steps through them without movement. The refusal arrives as the product
+ * marks one, its tag popping in where the call is, not stamped or shaken:
+ * the call card stays put and only its state changes.
  *
  * THE ROW IS THE PRODUCT'S OWN. `mcp.tool_call.refused` is the action the MCP
  * layer actually writes, one row per decision, carrying the tool, the named
@@ -172,11 +174,11 @@ export const GovernedDemo: React.FC = () => {
                     </ol>
 
                     {call && (
-                        <div key={call} className={`relative mt-5 rounded-xl bg-white/[0.04] px-3.5 py-3 ring-1 ring-white/[0.08] ${call === "refused" && step === 2 ? fx("fx-shake") : fx("fx-slide")}`}>
+                        <div className={`relative mt-5 rounded-xl bg-white/[0.04] px-3.5 py-3 ring-1 ring-white/[0.08] ${fx("fx-slide")}`}>
                             <span className="flex flex-wrap items-center gap-x-2">
                                 <span className="font-mono text-caption text-foreground">channel.post</span>
                                 {call === "refused" ? (
-                                    <span className={`${fx("fx-stamp")} inline-block rounded-[5px] px-1.5 text-[11px] font-[590] uppercase leading-[18px] tracking-[0.04em] text-camp-berry-ink ring-1 ring-camp-berry/70 bg-camp-berry-tint`}>
+                                    <span className={`${fx("in-pop")} inline-block rounded-[5px] px-1.5 text-[11px] font-[590] uppercase leading-[18px] tracking-[0.04em] text-camp-berry-ink ring-1 ring-camp-berry/70 bg-camp-berry-tint`}>
                                         Refused
                                     </span>
                                 ) : (
