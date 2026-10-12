@@ -89,7 +89,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     {/* The table is the only element on the site allowed to scroll
                         sideways, and it does so inside its own box so the page
                         itself never does. */}
-                    <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+                    <div className="fade-x -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 sm:[mask-image:none]">
                         <table className="w-full min-w-[46rem] border-collapse text-left text-small">
                             <caption className="sr-only">
                                 {`OneCamp compared with ${countWord(rivals.length)} alternatives on billing and agent governance`}
@@ -220,7 +220,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     subtitle="Hosted or your own, each arrives as a named agent acting for a person. It reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
                 />
                 <div className="mt-8">
-                    <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
+                    <div className="fade-x -mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0 sm:[mask-image:none]">
                         <table className="w-full min-w-[40rem] border-collapse text-left text-small">
                             <caption className="sr-only">How the agents you already pay for connect to OneCamp</caption>
                             <thead>
@@ -269,7 +269,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     }
                 >
                 <div>
-                    <div className="-mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0">
+                    <div className="fade-x -mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0 sm:[mask-image:none]">
                         <table className="w-full min-w-[42rem] border-collapse text-left text-small">
                             <caption className="sr-only">
                                 Record-keeping obligations and what OneCamp produces against each
