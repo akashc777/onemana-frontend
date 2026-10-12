@@ -155,6 +155,62 @@
   border-radius: 12px;
   box-shadow: var(--e-sheet);
 }
+/* The page with a panel beside it (AppFrame split), laid over the page alone
+   with the main area's own padding and the frame's 8px between the sheets.
+   The two swap at once, as the app snaps the page narrower when a panel
+   opens; between plays the panel's side fades back to the page alone. */
+.sc-split {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  padding: inherit;
+}
+.sc [data-sc-swap][data-sc-item] {
+  transition: none;
+}
+.sc [data-sc-swap][data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc [data-sc-swap][data-sc-item][data-sc-state="fade"] {
+  transition: opacity 360ms var(--ease-out);
+}
+
+/* A pointer (motion/Pointer): over everything in the scene, its point at its
+   path's place (set by transform, so never eased by a transition), its shape
+   swapped at once, with the system's soft shadow. */
+.sc-ptr {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3));
+}
+.sc-ptr > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+}
+.sc-ptr svg {
+  display: block;
+}
+.sc [data-sc-path],
+.sc [data-sc-path][data-sc-item],
+.sc .sc-ptr > span[data-sc-item] {
+  transition: none;
+}
+.sc .sc-ptr > span[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+/* For a reader who asked for less motion a scene is its last picture, and a
+   pointer resting in a picture says nothing: it isn't drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .sc .sc-ptr {
+    visibility: hidden;
+  }
+}
 
 /* -------------------------------------------------------------- the sidebar */
 /* .shell-side and its parts (design v3 shell S2 to S12). */
@@ -720,6 +776,12 @@
   letter-spacing: 0;
   color: var(--sc-ink-3);
 }
+.sc-typing-stack {
+  display: grid;
+}
+.sc-typing-stack > * {
+  grid-area: 1 / 1;
+}
 .sc-typing > span:first-child {
   display: flex;
   gap: 3px;
@@ -846,9 +908,11 @@
 
 /* The conversation (channelMessageList): bottom-anchored, 8px above the
    typing line. A scene's arrivals wait under it, out of sight, and the track
-   rises by their height to bring each one up (SceneDirector). While it
-   moves, rows leaving at the top fade under a 24px edge, as the sidebar's
-   scroll does; at rest every row in view is whole. */
+   rises by their height to bring each one up (SceneDirector), at once, as
+   the app keeps a reader at the end (MessaageListVirtua snaps, it doesn't
+   scroll); only the new row moves, in msg-in (below). Rows cut at the top
+   fade under a 24px edge, as the sidebar's scroll does; at rest every row in
+   view is whole. */
 .sc-list {
   position: relative;
   flex: 1 1 0%;
@@ -866,7 +930,7 @@
   opacity: 0;
   transition: opacity 240ms var(--ease-out);
 }
-.sc-list[data-moving]::before {
+.sc-list[data-cut]::before {
   opacity: 1;
 }
 .sc-track {
@@ -875,7 +939,6 @@
   right: 0;
   bottom: 8px;
   transform: translateY(var(--sc-shift, 0px));
-  transition: transform 560ms var(--ease-out);
 }
 .sc-arrivals {
   position: absolute;
@@ -904,13 +967,37 @@
   transition: opacity 240ms var(--ease-out), transform 360ms var(--ease-spring);
 }
 
-/* The typing dots bob while the line is shown, three times at most. */
+/* A message arriving (the app's msg-in, arrival.ts): from 6px down and
+   transparent, 200ms on the out-curve. */
+.sc .sc-msg[data-sc-item] {
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.sc .sc-msg[data-sc-item][data-sc-state="off"] {
+  transform: translateY(6px);
+}
+
+/* Who is typing (typyingIndicaator, C59): the line fades in and out over
+   140ms where it always is, and goes the moment their message lands. */
+.sc .sc-typing[data-sc-item] {
+  transition: opacity 140ms var(--ease-out);
+}
+.sc .sc-typing[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+
+/* What a typed text has not shown yet (motion/engine Typer): painted
+   transparent where it will be, so nothing moves while it arrives. */
+::highlight(sc-unshown) {
+  color: transparent;
+}
+
+/* The typing dots bob while the line is shown, four times at most. */
 @keyframes sc-bob {
   0%, 60%, 100% { transform: none; }
   30% { transform: translateY(-3px); }
 }
 .sc [data-sc-state="on"] .sc-bob {
-  animation: sc-bob 1.2s var(--ease-io) 3;
+  animation: sc-bob 1.2s var(--ease-io) 4;
 }
 @media (prefers-reduced-motion: reduce) {
   .sc [data-sc-state="on"] .sc-bob {

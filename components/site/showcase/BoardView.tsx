@@ -173,10 +173,11 @@ type DataAttrs = Record<`data-${string}`, string | undefined>
  * two lines at most, the fields shown on cards, then the 22px meta row: the
  * priority, the due date, a lock while it waits, and the assignee.
  */
-export function TaskCard({ card, check, style, ...rest }: { card: Card; check?: ReactNode; style?: CSSProperties } & DataAttrs) {
+export function TaskCard({ card, check, style, under, ...rest }: { card: Card; check?: ReactNode; style?: CSSProperties; under?: ReactNode } & DataAttrs) {
   const today = card.due === "Today" && !card.done
   return (
-    <div className="bd-card" data-done={card.done ? "" : undefined} style={style} {...rest}>
+    <div className="bd-card" data-done={card.done ? "" : undefined} data-under={under ? "" : undefined} style={style} {...rest}>
+      {under}
       <div className="bd-card-title">{card.title}</div>
       {card.field && (
         <div className="bd-card-fields">

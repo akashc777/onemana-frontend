@@ -13,13 +13,13 @@ import type { Agent, Person } from "./data"
  * SceneDirector, so nothing is ever laid out twice).
  */
 
-export function ChannelHeader({ name, people, agents = 1, count }: { name: string; people: Person[]; agents?: number; count: number }) {
+export function ChannelHeader({ name, people, agents = 1, count, topic = true }: { name: string; people: Person[]; agents?: number; count: number; topic?: boolean }) {
   return (
     <div className="sc-head">
       <div className="-ml-1.5 flex min-w-0 items-center gap-2 px-1.5 py-1">
         <Ico icon={Hash} size={18} className="ink-3" />
         <span className="truncate t-heading ink">{name}</span>
-        <span className="sc-head-topic">Add a topic</span>
+        {topic && <span className="sc-head-topic">Add a topic</span>}
       </div>
       <div className="min-w-0 flex-1" />
       <div className="flex flex-none items-center gap-1">
@@ -153,6 +153,11 @@ export function CheckinMessage({ question, answered, at, faces }: { question: st
   )
 }
 
+/** Two typing lines in the one place, one shown at a time (a person typing, then an agent at work). */
+export function TypingStack({ children }: { children: ReactNode }) {
+  return <div className="sc-typing-stack">{children}</div>
+}
+
 /** Who is typing (C59): a 22px line that is always there; an agent at work in its own ink. */
 export function TypingLine({ who, agent, id, state }: { who: string; agent?: boolean; id?: string; state?: "off" }) {
   return (
@@ -234,6 +239,7 @@ export function ChannelView({
   typing,
   placeholder,
   hint = true,
+  narrow = false,
 }: {
   name: string
   people: Person[]
@@ -245,14 +251,16 @@ export function ChannelView({
   typing?: ReactNode
   placeholder: string
   hint?: boolean
+  /** Beside an open panel: the header keeps the channel's name, not "Add a topic", and the composer drops its hint. */
+  narrow?: boolean
 }) {
   return (
     <div className="flex h-full w-full min-w-0 flex-col">
-      <ChannelHeader name={name} people={people} agents={agents} count={count} />
+      <ChannelHeader name={name} people={people} agents={agents} count={count} topic={!narrow} />
       <Conversation items={items} arrivals={arrivals} typing={typing} />
       <div className="flex-none bg-sheet px-5 pb-[18px]">
         <div className="w-full max-w-[800px]">
-          <Composer placeholder={placeholder} hint={hint} />
+          <Composer placeholder={placeholder} hint={hint && !narrow} />
         </div>
       </div>
     </div>

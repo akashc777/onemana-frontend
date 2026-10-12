@@ -7,8 +7,11 @@ import { SIZES, type SceneSpec } from "./types"
 
 /**
  * The Chat tab: #design on the demo's day. The moment is the conversation
- * going on while you watch: Maya Chen starts typing, and her answer rises
- * into place under Sam's.
+ * going on while you watch, as the app shows it: "Maya Chen is typing" on the
+ * line over the composer (sent from her first key, kept up while she types),
+ * then her answer lands: the line goes at once, the list keeps to the end (it
+ * snaps, it doesn't scroll) and her message comes up 6px as it appears
+ * (msg-in, 200ms).
  */
 const P = DESIGN.posts
 
@@ -47,7 +50,7 @@ export const chatScript: Script = {
   stagger: 45,
   steps: [
     { at: 0, on: ["typing"] },
-    { at: 1700, off: ["typing"], on: ["reply"], rise: ["reply"] },
+    { at: 2600, off: ["typing"], on: ["reply"], rise: ["reply"] },
   ],
 }
 

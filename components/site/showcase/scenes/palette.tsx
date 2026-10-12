@@ -1,32 +1,76 @@
 import { AppFrame, PhoneFrame } from "../AppFrame"
 import { ChannelView, Message } from "../ChannelView"
-import { ANSWER_PARTS, PaletteOver, QuestionPalette, listCap, type At } from "../Palette"
+import { ANSWER_STREAM, ANSWER_TEXT, PaletteOver, PlayPalette, QUESTION, QUESTION_TYPING, listCap, type At } from "../Palette"
 import type { Step } from "../SceneDirector"
 import { ENGINEERING } from "../data"
+import { keyTimes, lastTime, streamTimes } from "../motion/cadence"
 import { SIZES, type SceneSpec } from "./types"
 
 /**
- * ⌘K, asked (Palette.tsx). Sam has typed a question into the palette over
- * #engineering. The moment: ⏎ on "Ask OneCamp AI" (a tap on a phone), the
- * palette turns to Ask, reads what Sam can open, and answers in place, with
- * its sources and the line that says it answered only from what Sam can
- * open, on the record. Before it plays, and for a reader without
- * JavaScript, the picture is the search, complete; for a reader who asked
+ * ⌘K, asked (Palette.tsx), as the app answers it. Sam has opened the palette
+ * over #engineering: it offers what he was just in. He types "What’s left
+ * before launch?": at the first key the empty palette's lists go and Jonas
+ * Weber matches by name; from the second the workspace's search is on its
+ * way, the last two rows following every key ("Search everything for “…”",
+ * "Ask OneCamp AI: “…”"); when his typing pauses it answers, and an older
+ * answer dims while the next loads. Then ↑ to Ask and ⏎ (a tap on a phone):
+ * the palette turns to Ask, reads what Sam can open, and the answer streams
+ * in, token by token, with the line that says it answered only from what he
+ * can open, then its sources. Before it plays, and for a reader without
+ * JavaScript, the picture is the palette just opened; for a reader who asked
  * for less motion it is the answer.
  */
 
 const P = ENGINEERING.posts
 
-/** The answer streaming in: each part with its caret, then the sources, then the shield line last. */
-function stream(from: number): Step[] {
-  const gap = 170
-  const steps: Step[] = []
-  for (let i = 1; i <= ANSWER_PARTS; i++) {
-    steps.push({ at: from + (i - 1) * gap, on: [`pal-a${i}`, `pal-c${i}`], off: [i === 1 ? "pal-think" : `pal-c${i - 1}`] })
+/** When each key of the question lands, from the first. */
+const KEYS = keyTimes(QUESTION, QUESTION_TYPING.seed, { pace: QUESTION_TYPING.pace })
+/** The workspace's search: 150ms after the keys pause (useSearch's debounce), answered about 130ms later. */
+const DEBOUNCE = 150
+const ANSWERED = 130
+
+/** The first pause in the typing long enough for the search to go, once "left" is typed (index of the key before it). */
+function firstPause(from: number): number {
+  for (let i = from; i < KEYS.length - 1; i++) if (KEYS[i + 1] - KEYS[i] >= DEBOUNCE) return i
+  return KEYS.length - 1
+}
+const LEFT = QUESTION.indexOf("left") + 3
+
+/** The answer's tokens. */
+const STREAM = streamTimes(ANSWER_TEXT, ANSWER_STREAM.seed, { tokenMs: ANSWER_STREAM.pace })
+
+/** The moment, from the palette just opened; `tap` is how Ask is chosen (a key on a computer, a tap on a phone). */
+function moment(tap: boolean): Step[] {
+  const type = 500
+  const key = (i: number) => type + KEYS[i]
+  const pause = firstPause(LEFT)
+  const last = KEYS.length - 1
+  const found = pause < last ? key(pause) + DEBOUNCE + ANSWERED : -1
+  const final = key(last) + DEBOUNCE + ANSWERED
+  const steps: Step[] = [
+    { at: type, type: ["pal-q"], off: ["pal-ph", "pal-l0"], on: ["pal-qtext", "pal-l1"] },
+    { at: key(1), off: ["pal-l1"], on: ["pal-l2"] },
+  ]
+  if (found > 0) {
+    steps.push({ at: found, off: ["pal-l2"], on: ["pal-l3"] })
+    // The last search goes out while the older answer is still up: it dims.
+    steps.push({ at: key(last) + DEBOUNCE, on: ["pal-dim"] })
+    steps.push({ at: final, off: ["pal-l3"], on: ["pal-l4"] })
+  } else {
+    steps.push({ at: final, off: ["pal-l2"], on: ["pal-l4"] })
   }
-  const done = from + (ANSWER_PARTS - 1) * gap + 280
-  steps.push({ at: done, on: ["pal-src"], off: [`pal-c${ANSWER_PARTS}`] })
-  steps.push({ at: done + 420, on: ["pal-prov"] })
+  // A beat to read, then the selection goes to Ask (↑, or a tap) and it is asked.
+  const choose = final + 650
+  const ask = choose + (tap ? 220 : 380 + 160)
+  // On a computer the selected row carries ⏎, and it moves with the selection.
+  const keys = (id: string) => (tap ? [id] : [id, `${id}-key`])
+  steps.push({ at: choose, off: keys("pal-sel-first"), on: keys("pal-sel-ask") })
+  if (!tap) steps.push({ at: choose + 380, on: ["pal-lit"] })
+  steps.push({ at: ask, off: ["pal-l4"], on: ["pal-ask", "pal-la", "pal-think"] })
+  // It reads, then the answer streams; the shield line comes with its first word, the sources once it is whole.
+  const stream = ask + 820
+  steps.push({ at: stream, type: ["pal-answer"], off: ["pal-think"], on: ["pal-caret", "pal-prov"] })
+  steps.push({ at: stream + lastTime(STREAM) + 120, off: ["pal-caret", "pal-prov"], on: ["pal-src", "pal-prov-end"] })
   return steps
 }
 
@@ -75,7 +119,7 @@ export function PaletteTour({ at = "start" }: { at?: At }) {
         <Engineering />
       </AppFrame>
       <PaletteOver w={w} h={h}>
-        <QuestionPalette at={at} cap={listCap(h)} />
+        <PlayPalette at={at} cap={listCap(h)} />
       </PaletteOver>
     </div>
   )
@@ -85,7 +129,7 @@ export function PaletteTour({ at = "start" }: { at?: At }) {
 export function PalettePhone({ at = "start" }: { at?: At }) {
   return (
     <PhoneFrame>
-      <QuestionPalette at={at} phone />
+      <PlayPalette at={at} phone />
     </PhoneFrame>
   )
 }
@@ -93,34 +137,15 @@ export function PalettePhone({ at = "start" }: { at?: At }) {
 export const paletteDesktop: SceneSpec = {
   ...SIZES.tour,
   label:
-    "OneCamp’s ⌘K palette over #engineering: the search “What’s left before launch?” is asked of OneCamp AI, which answers that the load test and the launch announcement are left, cites #engineering, the task and the Launch sync notes, and says it answered only from what you can open, on the record.",
-  script: {
-    plays: 1,
-    delay: 900,
-    steps: [
-      // ⏎ on the selected "Ask OneCamp AI" row.
-      { at: 0, on: ["pal-lit"] },
-      // Ask: the knob slides, the field takes the agent's wash, and it reads.
-      { at: 260, on: ["pal-ask", "pal-think"], off: ["pal-lit"] },
-      ...stream(1100),
-    ],
-  },
+    "OneCamp’s ⌘K palette over #engineering: “What’s left before launch?” is typed, the results narrowing as it is, and asked of OneCamp AI, which answers that the load test and the launch announcement are left, says it answered only from what you can open, on the record, and cites #engineering, the task and the Launch sync notes.",
+  script: { plays: 1, delay: 900, steps: moment(false) },
   render: () => <PaletteTour />,
 }
 
 export const palettePhone: SceneSpec = {
   ...SIZES.phone,
   label:
-    "OneCamp’s search on a phone: “What’s left before launch?” is asked of OneCamp AI, which answers that the load test and the launch announcement are left, cites #engineering, the task and the Launch sync notes, and says it answered only from what you can open, on the record.",
-  script: {
-    plays: 1,
-    delay: 900,
-    steps: [
-      // A tap on "Ask OneCamp AI" selects it.
-      { at: 0, on: ["pal-sel-ask"], off: ["pal-sel-first"] },
-      { at: 220, on: ["pal-ask", "pal-think"] },
-      ...stream(1060),
-    ],
-  },
+    "OneCamp’s search on a phone: “What’s left before launch?” is typed and asked of OneCamp AI, which answers that the load test and the launch announcement are left, says it answered only from what you can open, on the record, and cites #engineering, the task and the Launch sync notes.",
+  script: { plays: 1, delay: 900, steps: moment(true) },
   render: () => <PalettePhone />,
 }

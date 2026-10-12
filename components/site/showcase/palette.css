@@ -466,23 +466,31 @@
 .sc-pal-answer b {
   font-weight: 590;
 }
-/* The caret rides at the end of what has arrived: a zero-width anchor after
-   each part, so the words never move for it. */
-.sc-pal-caret-at {
+/* The caret rides at the end of what has arrived (.palette-caret): a 7x16
+   block in the agent's colour, 2px after the last letter and 2px under its
+   baseline, blinking every second while it streams. The words are laid out
+   whole, so it is placed over them by transform (motion/engine), never in
+   them. */
+.sc-pal-answer p {
   position: relative;
-  display: inline-block;
-  width: 0;
-  height: 16px;
-  vertical-align: -2px;
 }
 .sc-pal-caret {
   position: absolute;
-  left: 2px;
+  left: 0;
   top: 0;
   width: 7px;
   height: 16px;
+  margin: 1px 0 0 2px;
   border-radius: 2px;
   background: var(--sc-agent);
+}
+@keyframes sc-pal-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.sc .sc-pal .sc-pal-caret[data-sc-state="on"] {
+  animation: sc-pal-blink 1s steps(1, end) 5;
 }
 /* Before the first word: three 4px agent dots and what it is doing, in the
    first line's place (.palette-dots). */
@@ -593,7 +601,198 @@
    its last picture at once (SceneDirector). */
 @media (prefers-reduced-motion: reduce) {
   .sc .sc-pal .sc-pal-lit[data-sc-state="on"],
-  .sc .sc-pal-think[data-sc-state="on"] .sc-pal-dots > i {
+  .sc .sc-pal-think[data-sc-state="on"] .sc-pal-dots > i,
+  .sc .sc-pal .sc-pal-caret[data-sc-state="on"] {
     animation: none;
   }
+}
+
+/* ------------------------------------------------------ a scene's palette */
+/* PlayPalette: every list the palette shows on the way, each a whole panel
+   laid out once where the palette hangs (a layer), one shown at a time, so
+   the panel's height jumps with its list as the app's does (content-sized,
+   no transition) and nothing is re-laid out; the field drawn once over them,
+   in the panel's top. */
+.sc-pal-play {
+  position: relative;
+}
+.sc-pal-play[data-phone] {
+  position: absolute;
+  inset: 0;
+}
+.sc-pal.sc-pal-layer:not([data-phone]) {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.sc .sc-pal.sc-pal-layer[data-sc-item] {
+  transition: none;
+}
+.sc .sc-pal.sc-pal-layer[data-sc-item][data-sc-state="off"],
+.sc .sc-pal.sc-pal-layer[data-sc-item][data-sc-state="fade"] {
+  opacity: 0;
+}
+.sc .sc-pal.sc-pal-layer[data-sc-item][data-sc-state="fade"] {
+  transition: opacity 360ms var(--ease-out);
+}
+.sc-pal-spacer {
+  height: 52px;
+  flex: none;
+}
+.sc-pal-phone-spacer {
+  height: 49px;
+  flex: none;
+}
+.sc-pal-fieldbox {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+.sc-pal-fieldbox[data-phone] {
+  border-radius: 0;
+  background: var(--sc-sheet);
+}
+.sc .sc-pal-fieldbox[data-sc-item] {
+  transition: none;
+}
+.sc .sc-pal-fieldbox[data-sc-item][data-sc-state] {
+  opacity: 1;
+  transform: none;
+}
+/* Ask, on the field over the layers: the agent's wash, its square leading
+   the words 2px further in, the knob across (as .sc-pal[data-sc-state=on]). */
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-input::before {
+  opacity: 1;
+}
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-lead > [data-lead="search"] {
+  opacity: 0;
+}
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-lead > [data-lead="ask"] {
+  opacity: 1;
+}
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-field {
+  transform: translateX(2px);
+}
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-knob {
+  transform: translateX(100%);
+}
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-seg > [data-seg="search"] {
+  color: var(--sc-ink-3);
+}
+.sc-pal-fieldbox[data-sc-state="on"] .sc-pal-seg > [data-seg="ask"] {
+  color: var(--sc-agent-ink);
+}
+/* The field typed into: the placeholder (ink-3) until the first key, the
+   question as it is typed, and the accent caret after it, held solid while
+   the keys come (a field's caret blinks only when they stop). */
+.sc-pal-field[data-typed] {
+  position: relative;
+}
+.sc-pal-ph {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -12px;
+  color: var(--sc-ink-3);
+  white-space: nowrap;
+}
+.sc .sc-pal-ph[data-sc-item],
+.sc .sc-pal-field [data-sc-item] {
+  transition: none;
+}
+.sc .sc-pal-ph[data-sc-item][data-sc-state="off"],
+.sc .sc-pal-field [data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc-pal-field[data-typed] > .sc-pal-tcaret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+}
+/* The search on its way, the first time (CommandPalette: "Searching…", 14/20
+   ink-3, 8px by 12px). */
+.sc-pal-status {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sc-ink-3);
+}
+/* An older answer, dimmed to 60% over 150ms while the next one loads. */
+.sc .sc-pal .sc-pal-hits[data-sc-item] {
+  transition: opacity 150ms var(--ease-out);
+}
+.sc .sc-pal .sc-pal-hits[data-sc-item][data-sc-state="off"] {
+  opacity: 1;
+}
+.sc .sc-pal .sc-pal-hits[data-sc-item][data-sc-state="on"] {
+  opacity: 0.6;
+}
+/* The selection and ⏎ move from row to row at once, as cmdk's do; the
+   thinking line goes the moment the first words come. */
+.sc .sc-pal .sc-pal-enter[data-sc-item],
+.sc .sc-pal .sc-pal-think[data-sc-item] {
+  transition: none;
+}
+
+/* Ask's panel grows with its answer (PaletteAsk is content-sized): while the
+   answer streams (data-rows-live, motion/engine) the panel is as tall as the
+   lines that have arrived, the shield line rides under them from the first
+   word, the sources come in above it at the end, and the hints stay on the
+   panel's foot. Laid out whole (block, not flex, so nothing in it depends on
+   its height): the panel's own height changes and what follows the words
+   moves by transform, the app's 23px a line, at once. */
+.sc-pal-layer[data-ask-layer] {
+  display: block;
+  --sc-lines: max(var(--sc-rows, 0), 1);
+  --sc-first: min(var(--sc-rows, 0), 1);
+  --sc-src: 0;
+}
+.sc-pal-layer[data-ask-layer]:has(.sc-pal-sources[data-sc-state="on"]) {
+  --sc-src: 1;
+}
+.sc-pal-layer[data-ask-layer][data-rows-live]:not([data-phone]) {
+  height: calc(128px + var(--sc-lines) * 23px + var(--sc-first) * 32px + var(--sc-src) * 36px);
+}
+/* The shield line while the answer streams: laid out under the whole answer,
+   moved up to the last line that is in; once it is whole the sources come
+   in under the words and the line drops under them (the line at the end is
+   the one laid out after the sources). */
+.sc-pal-textbox {
+  position: relative;
+}
+.sc-pal-prov-live {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+}
+.sc .sc-pal-layer[data-ask-layer][data-rows-live] .sc-pal-prov-live {
+  transform: translateY(calc((var(--sc-lines) - var(--sc-rows-all, 1)) * 23px));
+}
+.sc .sc-pal .sc-pal-prov[data-sc-item] {
+  transition: none;
+}
+.sc .sc-pal .sc-pal-prov[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc-pal-layer[data-ask-layer][data-rows-live] > .sc-pal-foot {
+  transform: translateY(calc((var(--sc-lines) - var(--sc-rows-all, 1)) * 23px - (1 - var(--sc-first)) * 32px - (1 - var(--sc-src)) * 36px));
+}
+.sc-pal-layer[data-ask-layer] .sc-pal-foot > [data-for="search"] {
+  opacity: 0;
+}
+.sc-pal-layer[data-ask-layer] .sc-pal-foot > [data-for="ask"] {
+  opacity: 1;
+}
+.sc .sc-pal-layer[data-ask-layer] .sc-pal-sources[data-sc-item] {
+  transition: none;
+}
+.sc .sc-pal-layer[data-ask-layer] .sc-pal-sources[data-sc-item][data-sc-state="off"] {
+  transform: none;
 }

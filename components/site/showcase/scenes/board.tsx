@@ -15,22 +15,30 @@ import {
   type Project,
 } from "../BoardView"
 import { JONAS, MAYA, SAM } from "../data"
+import { pathAt, type PathKey } from "../motion/engine"
+import { PointerLayer } from "../motion/Pointer"
 import type { Script } from "../SceneDirector"
 import { SIZES, type SceneSpec } from "./types"
 
 /**
- * THE TASKS TAB'S MOMENT: Maya's "Set up SSO for the pilot customer" leaves
- * QA for Done. The card is picked up (its copy lifts 3% and tilts, a dashed
- * slot stays behind), carried to Done, which lights while it is over it and
- * makes room, and put down; it lands done, the moss check springs, the
- * columns' counts tick, and the project's line under its name moves with it.
+ * THE TASKS TAB'S MOMENT, as the app's board drags (TaskBoard on dnd-kit):
+ * Maya's "Set up SSO for the pilot customer" leaves QA for Done. The pointer
+ * comes to the card (an open hand over it), presses (closed), and after 5px
+ * the copy in the hand lifts 3% and tilts towards the move while a dashed
+ * slot stays behind; the hand carries it to Done, which lights while the
+ * card is over it and makes room; let go, the copy settles into its place
+ * over 200ms, the card lands done, flashes and its check springs, the
+ * columns' counts tick and the project's line under its name moves with it.
+ * On a phone the card is held (it dips, then lifts without a tilt), carried
+ * to the screen's edge, the board scrolls a column to Done under it, and it
+ * is put down there.
  *
  * The board is the demo's Q4 launch (business/DemoSeed CuratedProject),
  * scrolled to its last two columns, under the project's own header (the
  * breadcrumb bar above it, which names the project again, is left out so the
  * columns hold whole cards); dates beyond tomorrow are weekdays, so the scene
- * never goes stale. Everything is laid out where it ends from the
- * start and only moves (BoardView, board.css "the moment").
+ * never goes stale. Everything is laid out where it ends from the start and
+ * only moves (BoardView, board.css "the moment").
  */
 
 const PROJECT: Project = {
@@ -101,9 +109,9 @@ function columns(card: number, done: Card[]) {
         foot={<ColumnFoot data-sc-item="empty" data-bd="empty" data-sc-state="off" />}
         enter
       >
-        <div className="relative flex-none">
+        <div className="relative flex-none" data-sc-item="src-press" data-bd="press" data-sc-state="off">
           <span className="bd-slot" data-sc-item="slot" data-bd="slot" data-sc-state="off" />
-          <TaskCard card={SSO} data-sc-item="src" data-bd="src" data-sc-state="off" />
+          <TaskCard card={SSO} data-sc-item="src" data-bd="src" data-sc-state="off" data-sc-target="bd-src" />
         </div>
       </BoardColumn>
       <BoardColumn
@@ -120,6 +128,7 @@ function columns(card: number, done: Card[]) {
               <StatusGlyph kind="done" size={14} />
             </span>
           }
+          under={<span className="bd-flash" data-sc-item="flash" data-bd="flash" data-sc-state="off" />}
           data-sc-item="land"
           data-bd="land"
           data-sc-state="off"
@@ -135,63 +144,117 @@ function columns(card: number, done: Card[]) {
 }
 
 /**
- * The copy in the hand, over QA's first slot (8px in, under the 40px head).
- * `move` carries it to Done on the desktop; on a phone the board moves under
- * it instead.
+ * The copy in the hand (DragOverlay), over QA's first card (8px in, under
+ * the 40px head): moved by the scene's path, lifted and tilted by its own
+ * transform, and settled back flat for the drop.
  */
-function Fly({ width, move }: { width: number; move?: number }) {
-  const card = (
-    <div data-sc-item="lift" data-bd="lift" data-sc-state="off">
-      <TaskCard card={SSO} />
-    </div>
-  )
+function Fly({ width, phone }: { width: number; phone?: boolean }) {
   return (
-    <div className="bd-fly" style={{ left: 8, top: 40, width }} data-sc-item="fly" data-bd="fly" data-sc-state="off">
-      {move ? (
-        <div data-sc-item="move" data-bd="move" data-sc-state="off" style={{ "--bd-move": `${move}px` } as CSSProperties}>
-          {card}
-        </div>
-      ) : (
-        card
-      )}
+    <div className="bd-fly" style={{ left: 8, top: 40, width }} data-sc-path="bd-fly" data-sc-item="fly" data-bd="fly" data-sc-state="off">
+      <div className="bd-lift" data-sc-item="lift" data-bd="lift" data-phone={phone ? "" : undefined} data-sc-state="off">
+        <TaskCard card={SSO} />
+      </div>
     </div>
   )
 }
 
-/** Lift, carry, light Done, make room, put down; it lands done, then the counts and the line move. */
+/** Where the hand holds the card: 62% across it, 45% down. */
+const HOLD = { to: "bd-src", fx: 0.62, fy: 0.45 }
+
+/** The columns' step: 280px and their 12px gap. */
+const STEP = 280 + 12
+
+/* The desktop's beats, in ms from the start of a play. */
+const REACH = 760
+const PRESS = 900
+const PICK = 990
+const CARRY = 1720
+const SETTLE = 1930
+const LET_GO = 2020
+const DROPPED = LET_GO + 200
+
+/** The carry, as the card moves from where it was picked up: a hand's reach to Done, a little past and back, and still. */
+const CARRY_KEYS: PathKey[] = [
+  { at: PRESS, x: 0, y: 0 },
+  { at: PICK, x: 6, y: 1, ease: "linear" },
+  { at: CARRY, x: STEP + 7, y: 5, ease: "move", arc: -14 },
+  { at: SETTLE, x: STEP + 1, y: 2, ease: "move" },
+]
+
+/** When the copy is over Done: past the half of the step. */
+function overDone(keys: PathKey[], from: number, to: number): number {
+  for (let t = from; t <= to; t += 5) if (pathAt(keys, t).x >= STEP / 2) return t
+  return to
+}
+
+/** Lift, carry, light Done, make room, put down; it lands done, flashes, then the counts and the line move. */
 export const boardScript: Script = {
   delay: 700,
   plays: 1,
   steps: [
-    { at: 0, on: ["src", "slot", "fly", "lift"] },
-    { at: 420, on: ["move"] },
-    { at: 560, on: ["over"] },
-    { at: 700, on: ["room"] },
-    { at: 1050, off: ["lift", "over"] },
-    { at: 1260, off: ["fly", "slot"], on: ["land", "qa-n", "done-n", "empty"] },
-    { at: 1340, on: ["check"] },
-    { at: 1520, on: ["glance"] },
+    { at: 0, on: ["bd-ptr"] },
+    // Over the card: an open hand. Pressed: closed.
+    { at: REACH, off: ["bd-ptr-arrow"], on: ["bd-ptr-grab"] },
+    { at: PRESS, off: ["bd-ptr-grab"], on: ["bd-ptr-grabbing"] },
+    // 5px of travel: the copy lifts in the hand, the dashed slot stays behind.
+    { at: PICK, on: ["src", "slot", "fly", "lift"] },
+    { at: overDone(CARRY_KEYS, PICK, SETTLE), on: ["over", "room"] },
+    // Let go: it settles into its place, flat, over 200ms.
+    { at: LET_GO, off: ["lift", "over", "bd-ptr-grabbing"], on: ["bd-ptr-grab"] },
+    { at: DROPPED, off: ["fly", "slot"], on: ["land", "qa-n", "done-n", "empty", "check"] },
+    { at: DROPPED + 200, on: ["flash"] },
+    { at: DROPPED + 220, off: ["flash"] },
+    { at: DROPPED + 260, on: ["glance"] },
   ],
+  paths: {
+    "bd-fly": [...CARRY_KEYS, { at: LET_GO, x: STEP + 1, y: 2 }, { at: DROPPED, x: STEP, y: 0, ease: "drop" }],
+    "bd-ptr": [
+      { at: 0, x: SIZES.tour.w + 30, y: 420 },
+      { at: REACH, ...HOLD, x: 0, y: 0, ease: "move", arc: 26 },
+      ...CARRY_KEYS.map((k) => ({ ...k, ...HOLD })),
+    ],
+  },
 }
 
-/** On a phone: lift, the board scrolls a column to Done under the card, then the same landing. */
+/* The phone's beats. */
+const P_HOLD = 180
+const P_EDGE = 720
+const P_SCROLL = 760
+const P_BACK = 1300
+const P_LET_GO = 1700
+const P_DROPPED = P_LET_GO + 200
+
+/** On a phone: held, carried to the edge, the board scrolls a column to Done under it, put down there. */
 export const boardPhoneScript: Script = {
   delay: 700,
   plays: 1,
   steps: [
-    { at: 0, on: ["src", "slot", "fly", "lift"] },
-    { at: 380, on: ["scroll", "pager"] },
-    { at: 640, on: ["over"] },
-    { at: 740, on: ["room"] },
-    { at: 1040, off: ["lift", "over"] },
-    { at: 1240, off: ["fly", "slot"], on: ["land", "qa-n", "done-n", "empty"] },
-    { at: 1320, on: ["check"] },
-    { at: 1500, on: ["glance"] },
+    // The finger: the card dips at once (90ms) and is lifted after the 180ms hold, without a tilt.
+    { at: 0, on: ["src-press"] },
+    { at: P_HOLD, off: ["src-press"], on: ["src", "slot", "fly", "lift"] },
+    // At the edge the board scrolls a column, Done under the card.
+    { at: P_SCROLL, on: ["scroll", "pager"] },
+    { at: P_SCROLL + 300, on: ["over", "room"] },
+    { at: P_LET_GO, off: ["lift", "over"] },
+    { at: P_DROPPED, off: ["fly", "slot"], on: ["land", "qa-n", "done-n", "empty", "check"] },
+    { at: P_DROPPED + 200, on: ["flash"] },
+    { at: P_DROPPED + 220, off: ["flash"] },
+    { at: P_DROPPED + 260, on: ["glance"] },
   ],
+  paths: {
+    "bd-fly": [
+      { at: P_HOLD, x: 0, y: 0 },
+      { at: P_EDGE, x: 78, y: -4, ease: "move", arc: -6 },
+      { at: P_BACK, x: 78, y: -4 },
+      { at: P_LET_GO - 60, x: 8, y: 0, ease: "move" },
+      { at: P_LET_GO, x: 8, y: 0 },
+      { at: P_DROPPED, x: 0, y: 0, ease: "drop" },
+    ],
+  },
 }
 
 /** The board's sideways scroll on the desktop: two columns and their gaps, so QA is first in view. */
-const DESKTOP_SCROLL = 2 * (280 + 12)
+const DESKTOP_SCROLL = 2 * STEP
 
 export const boardDesktop: SceneSpec = {
   ...SIZES.tour,
@@ -199,16 +262,19 @@ export const boardDesktop: SceneSpec = {
     "The Q4 launch project's board in OneCamp, at its QA and Done columns: Maya Chen's task “Set up SSO for the pilot customer” is dragged from QA to Done and checked off, and the project's line changes to 5 open, 4 due this week and 12 done.",
   script: boardScript,
   render: () => (
-    <AppFrame>
-      <BoardView uid="bd-tour" project={PROJECT} bar={false} columns={columns(DESKTOP_CARD, DONE_DESKTOP)} scroll={DESKTOP_SCROLL} overlay={<Fly width={264} move={280 + 12} />} enter />
-    </AppFrame>
+    <>
+      <AppFrame>
+        <BoardView uid="bd-tour" project={PROJECT} bar={false} columns={columns(DESKTOP_CARD, DONE_DESKTOP)} scroll={DESKTOP_SCROLL} overlay={<Fly width={264} />} enter />
+      </AppFrame>
+      <PointerLayer id="bd-ptr" shapes={["arrow", "grab", "grabbing"]} />
+    </>
   ),
 }
 
 export const boardPhone: SceneSpec = {
   ...SIZES.phone,
   label:
-    "The Q4 launch project's board on a phone, a column at a time: the task “Set up SSO for the pilot customer” is picked up in QA, the board scrolls to Done under it, and it lands there checked off, as the project's line changes to 5 open, 4 due this week and 12 done.",
+    "The Q4 launch project's board on a phone, a column at a time: the task “Set up SSO for the pilot customer” is picked up in QA, carried to the edge as the board scrolls to Done under it, and put down there checked off, as the project's line changes to 5 open, 4 due this week and 12 done.",
   script: boardPhoneScript,
   render: () => (
     <PhoneFrame tab="more">
@@ -236,9 +302,10 @@ export const boardPhone: SceneSpec = {
             </span>
           </div>
         }
-        overlay={<Fly width={312} />}
+        overlay={<Fly width={312} phone />}
         enter
       />
     </PhoneFrame>
   ),
 }
+

@@ -1,27 +1,34 @@
 import "./palette.css"
 
 import { Fragment, type ReactNode } from "react"
-import { CheckSquare, FileText, FolderKanban, Hash, MessageSquare, Search, Shield } from "lucide-react"
+import { BellOff, CheckSquare, FileText, FolderKanban, Hash, MessageSquare, MessageSquarePlus, Moon, Plus, Search, Shield } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 import type { CampHue } from "@/lib/campHue"
 
-import { AgentFace, Ico, Kbd } from "./parts"
-import { PROJECTS, SAM } from "./data"
+import { AgentFace, Face, Ico, Kbd } from "./parts"
+import { JONAS, MAYA, PROJECTS, SAM } from "./data"
+import { TypedText } from "./motion/parts"
 
 /**
  * ⌘K, the command palette (onecamp-fe components/ui/CommandPalette.tsx and
  * components/ai/PaletteAsk.tsx; design v3, shell P1, P2 and P4): one field
- * to search, jump and ask. Search lists the places that match, then the
- * workspace's messages, docs and tasks, then "Ask OneCamp AI"; Ask answers
- * from what the asker can open, with its sources and the line that says so.
+ * to search, jump and ask. Empty, it offers what you were just in and the
+ * few things people start from; as you type, the places that match answer at
+ * once, the workspace's messages, docs and tasks a moment later, and the last
+ * two rows always offer to search everything and to ask; Ask answers from
+ * what the asker can open, streaming, with the line that says so and then its
+ * sources.
  *
- * Server components with no state. A scene draws both modes at once, laid
- * out from the start, and SceneDirector turns the palette (the "pal-ask"
- * item) from Search to Ask and brings the answer in; palette.css says how.
+ * Server components with no state. A scene draws every list the palette
+ * shows on the way (PlayPalette), each a whole panel laid out once and
+ * stacked where the palette hangs, so the panel's height jumps with its
+ * list as the app's does without anything re-laid out; the field is drawn
+ * once over them, typed into by the scene (motion/engine), and the answer
+ * streams in place.
  */
 
-/** Which picture of a scene is drawn: its first (Search, before the moment) or its last (Ask, answered). */
+/** Which picture of a scene is drawn: its first (the palette just opened) or its last (asked and answered). */
 export type At = "start" | "end"
 
 type State = "on" | "off" | undefined
@@ -35,6 +42,8 @@ function item(id: string, state: State) {
 
 /** The question the scenes ask. */
 export const QUESTION = "What’s left before launch?"
+/** How Sam types it: his own keyboard, 84ms between keys in a word. */
+export const QUESTION_TYPING = { seed: "sam-asks", pace: 84 }
 
 /**
  * #engineering's and #design's hues. A message hit wears its channel's hue
@@ -46,27 +55,21 @@ const DESIGN_HUE: CampHue = "dusk"
 const Q4 = PROJECTS[0]
 
 /**
- * OneCamp AI's answer, in the parts it streams in. Its facts are the demo's:
- * the checklist post in #engineering, the announcement task (Sam's, due
- * today) and the rollback decision in the Launch sync notes.
+ * OneCamp AI's answer, its words and what is in weight. Its facts are the
+ * demo's: the checklist post in #engineering, the announcement task (Sam's,
+ * due today) and the rollback decision in the Launch sync notes.
  */
-const ANSWER: ReactNode[] = [
-  "Two things.",
-  <>
-    The <b>load test</b>: 11 of 12 checklist items are done,
-  </>,
-  "and Release Captain won’t mark the last one",
-  "until Maya posts the numbers in #engineering.",
-  <>
-    Then the <b>launch announcement</b>,
-  </>,
-  "which is yours and due today.",
-  "The rollback steps are already",
-  "in the Launch sync notes.",
+const ANSWER: [string, boolean][] = [
+  ["Two things. The ", false],
+  ["load test", true],
+  [": 11 of 12 checklist items are done, and Release Captain won’t mark the last one until Maya posts the numbers in #engineering. Then the ", false],
+  ["launch announcement", true],
+  [", which is yours and due today. The rollback steps are already in the Launch sync notes.", false],
 ]
-
-/** The answer's parts, for a scene's script (pal-a1 to pal-aN, each with its caret pal-c1 to pal-cN). */
-export const ANSWER_PARTS = ANSWER.length
+/** The answer as it streams (its characters, for the scene's timing). */
+export const ANSWER_TEXT = ANSWER.map(([t]) => t).join("")
+/** How it streams: a model's tokens, about 38ms apart. */
+export const ANSWER_STREAM = { seed: "onecamp-ai", pace: 38 }
 
 /** Its sources as the app labels them (PaletteAsk sourceLabel: a post by its channel, else 27 characters of the snippet). */
 const SOURCES: { icon: LucideIcon; label: string }[] = [
@@ -103,8 +106,8 @@ function HitMark({ hue, icon }: { hue: CampHue; icon: LucideIcon }) {
 /**
  * One row (PaletteRow): its mark, its title, its meta, its keys, and when it
  * is selected the press fill with the accent tick and ⏎ (not on a phone).
- * `sel` and `lit` are scene items: the selection that moves to a row, and the
- * ⏎ that lights when it is pressed.
+ * `sel` is the selection as a scene item (one that moves to or from the
+ * row), `lit` the ⏎ that lights when it is pressed.
  */
 function Row({
   mark,
@@ -127,6 +130,7 @@ function Row({
   lit?: { id: string; state: State }
   phone?: boolean
 }) {
+  const enter = !phone && (selected || sel)
   return (
     <div className="sc-pal-row" data-ask={ask ? "" : undefined}>
       {(selected || sel) && <span className="sc-pal-sel" {...(sel ? item(sel.id, sel.state) : {})} />}
@@ -138,8 +142,8 @@ function Row({
           <Kbd>{keys}</Kbd>
         </span>
       ) : null}
-      {selected && !phone ? (
-        <span className="sc-pal-enter">
+      {enter ? (
+        <span className="sc-pal-enter" {...(sel ? item(`${sel.id}-key`, sel.state) : {})}>
           <Kbd>⏎</Kbd>
           {lit ? (
             <span className="sc-pal-lit" {...item(lit.id, lit.state)}>
@@ -170,8 +174,13 @@ function Segmented({ phone }: { phone?: boolean }) {
   )
 }
 
-/** The field's row: what leads it (the search glyph, or in Ask the agent), the words with the caret, and Search | Ask (Cancel on a phone). */
-function Field({ query, phone }: { query: string; phone?: boolean }) {
+/**
+ * The field's row: what leads it (the search glyph, or in Ask the agent),
+ * the words with the caret, and Search | Ask (Cancel on a phone). In a scene
+ * the words are typed (`typed`): the placeholder until the first key, then
+ * the question a key at a time with the caret after it.
+ */
+function Field({ query, phone, typed }: { query: string; phone?: boolean; typed?: { start: boolean } }) {
   return (
     <div className="sc-pal-input">
       <span className="sc-pal-lead">
@@ -182,10 +191,24 @@ function Field({ query, phone }: { query: string; phone?: boolean }) {
           <AgentFace size={20} />
         </span>
       </span>
-      <span className="sc-pal-field">
-        <span className="min-w-0 truncate">{query}</span>
-        <span className="sc-pal-tcaret" />
-      </span>
+      {typed ? (
+        <span className="sc-pal-field" data-typed="">
+          <span className="sc-pal-ph" {...item("pal-ph", typed.start ? undefined : "off")}>
+            Search, jump, or ask…
+          </span>
+          <span className="min-w-0 truncate" {...item("pal-qtext", typed.start ? "off" : undefined)}>
+            <TypedText id="pal-q" cadence="local" seed={QUESTION_TYPING.seed} pace={QUESTION_TYPING.pace}>
+              {query}
+            </TypedText>
+          </span>
+          <span className="sc-pal-tcaret" data-sc-caret="pal-q" />
+        </span>
+      ) : (
+        <span className="sc-pal-field">
+          <span className="min-w-0 truncate">{query}</span>
+          <span className="sc-pal-tcaret" />
+        </span>
+      )}
       {phone ? <span className="sc-pal-cancel">Cancel</span> : <Segmented />}
     </div>
   )
@@ -309,35 +332,58 @@ export function LaunchSearch({ cap }: { cap?: number }) {
   )
 }
 
+/** The answer's words, with what is in weight. */
+function AnswerWords() {
+  return (
+    <>
+      {ANSWER.map(([t, b], i) => (
+        <Fragment key={i}>{b ? <b>{t}</b> : t}</Fragment>
+      ))}
+    </>
+  )
+}
+
 /**
- * The question, answered (PaletteAsk): the answer at 15/23 in the parts it
- * streams in, each with the caret that follows it, then the sources and the
- * shield line. Before the first word, the thinking line holds its place.
+ * The question, answered (PaletteAsk): the answer at 15/23, then its
+ * sources and the shield line. In a scene (`play`) the answer streams in: the
+ * thinking line holds the first line's place, the words arrive as a model's
+ * tokens with the 7x16 caret after them, the shield line comes with the first
+ * of them, and the sources once the answer is whole.
  */
-function Answer({ at }: { at: At }) {
-  const s = (id: string, end: State) => item(id, at === "end" ? end : "off")
+function Answer({ play, at = "end" }: { play?: boolean; at?: At }) {
+  const s = (id: string, start: State, end: State) => (play ? item(id, at === "end" ? end : start) : {})
   return (
     <div className="sc-pal-answer">
-      <div className="sc-pal-think" {...s("pal-think", "off")}>
-        <span className="sc-pal-dots">
-          <i />
-          <i />
-          <i />
-        </span>
-        Reading what you can open…
+      {play && (
+        <div className="sc-pal-think" {...s("pal-think", "off", "off")}>
+          <span className="sc-pal-dots">
+            <i />
+            <i />
+            <i />
+          </span>
+          Reading what you can open…
+        </div>
+      )}
+      <div className="sc-pal-textbox">
+        <p>
+          {play ? (
+            <TypedText id="pal-answer" cadence="stream" seed={ANSWER_STREAM.seed} pace={ANSWER_STREAM.pace}>
+              <AnswerWords />
+            </TypedText>
+          ) : (
+            <AnswerWords />
+          )}
+          {play && <span className="sc-pal-caret" data-sc-caret="pal-answer" {...item("pal-caret", "off")} />}
+        </p>
+        {/* While it streams the shield line rides under the words that are in. */}
+        {play && (
+          <div className="sc-pal-prov sc-pal-prov-live" {...item("pal-prov", "off")}>
+            <Ico icon={Shield} size={12} />
+            Answered from what you can open · on the record
+          </div>
+        )}
       </div>
-      <p>
-        {ANSWER.map((part, i) => (
-          <Fragment key={i}>
-            <span {...s(`pal-a${i + 1}`, "on")}>{part}</span>
-            <span className="sc-pal-caret-at">
-              <span className="sc-pal-caret" {...s(`pal-c${i + 1}`, "off")} />
-            </span>
-            {i < ANSWER.length - 1 ? " " : null}
-          </Fragment>
-        ))}
-      </p>
-      <div className="sc-pal-sources sc-pal-rise" {...s("pal-src", "on")}>
+      <div className="sc-pal-sources" {...s("pal-src", "off", "on")}>
         {SOURCES.map((src) => (
           <span key={src.label} className="sc-pal-source">
             <Ico icon={src.icon} size={14} />
@@ -345,7 +391,7 @@ function Answer({ at }: { at: At }) {
           </span>
         ))}
       </div>
-      <div className="sc-pal-prov sc-pal-rise" {...s("pal-prov", "on")}>
+      <div className="sc-pal-prov" {...s("pal-prov-end", "off", "on")}>
         <Ico icon={Shield} size={12} />
         Answered from what you can open · on the record
       </div>
@@ -354,85 +400,208 @@ function Answer({ at }: { at: At }) {
 }
 
 /**
- * The question typed into Search: the messages and tasks that hold its
- * words, Search everything, and Ask OneCamp AI with the question. On a
- * computer the Ask row is the selected one (one ↑ from the top, as the list
- * loops); on a phone the first row is, until a tap selects Ask.
+ * The question in a row, in its quotes: what it says while it is typed (a
+ * mirror of the field). The closing quote is the mirror's own, so the one
+ * text that changes starts where it always did and nothing after it moves.
  */
-function QuestionResults({ phone, at }: { phone?: boolean; at: At }) {
-  const end = at === "end"
+function Asked() {
   return (
     <>
-      <Group>Messages, docs and tasks</Group>
-      <Row
-        mark={<HitMark hue={ENGINEERING_HUE} icon={MessageSquare} />}
-        meta="#engineering · Release Captain"
-        phone={phone}
-        sel={phone ? { id: "pal-sel-first", state: end ? "off" : undefined } : undefined}
-      >
-        …The load test is the one <Hl>left</Hl>, and I will not mark it until someone posts the numbers here.
+      “
+      <span data-sc-mirror="pal-q" data-sc-after="”">
+        {QUESTION}”
+      </span>
+    </>
+  )
+}
+
+/** The last two rows, from the first key: Search everything, and Ask with Tab. */
+function QueryRows({ phone, first, ask }: { phone?: boolean; first?: boolean; ask?: { sel?: { id: string; state: State }; lit?: { id: string; state: State }; selected?: boolean } }) {
+  return (
+    <>
+      <Row mark={<Ico icon={Search} />} phone={phone} selected={first}>
+        Search everything for <Asked />
       </Row>
-      <Row mark={<HitMark hue={Q4.hue} icon={CheckSquare} />} meta={`Q4 launch · ${SAM.name}`} phone={phone}>
-        Write the <Hl>launch</Hl> announcement
-      </Row>
-      {phone && (
-        <>
-          <Row mark={<HitMark hue={ENGINEERING_HUE} icon={MessageSquare} />} meta="#engineering · Jonas Weber" phone>
-            @Sam Rivera can we get the rollback steps into the <Hl>Launch</Hl> sync notes <Hl>before</Hl> Thursday?
-          </Row>
-          <Row mark={<HitMark hue={ENGINEERING_HUE} icon={MessageSquare} />} meta={`#engineering · ${SAM.name}`} phone>
-            Release candidate for the Q4 <Hl>launch</Hl> is up on staging.
-          </Row>
-        </>
-      )}
-      <Row mark={<Ico icon={Search} />} phone={phone}>
-        Search everything for “{QUESTION}”
-      </Row>
-      <Row
-        mark={<AgentFace size={20} />}
-        keys={phone ? undefined : "Tab"}
-        ask
-        phone={phone}
-        selected={!phone}
-        sel={phone ? { id: "pal-sel-ask", state: end ? "on" : "off" } : undefined}
-        lit={phone ? undefined : { id: "pal-lit", state: "off" }}
-      >
-        Ask OneCamp AI: “{QUESTION}”
+      <Row mark={<AgentFace size={20} />} keys={phone ? undefined : "Tab"} ask phone={phone} selected={ask?.selected} sel={ask?.sel} lit={ask?.lit}>
+        Ask OneCamp AI: <Asked />
       </Row>
     </>
   )
 }
 
-/**
- * The question, as a scene draws it: Search with the question typed and Ask
- * answered, both laid out in one cell. At "start" it is Search (what a
- * reader without JavaScript sees, complete); at "end" it is Ask, answered.
- * `only` draws one mode alone, at that mode's own height, as a still.
- */
-export function QuestionPalette({ at = "start", phone, only, cap }: { at?: At; phone?: boolean; only?: "search" | "ask"; cap?: number }) {
-  if (only) {
-    return (
-      <Panel phone={phone} query={QUESTION} cap={cap} mode={{ state: only === "ask" ? "on" : undefined }}>
-        {only === "ask" ? (
-          <div data-layer="ask">
-            <Answer at="end" />
-          </div>
-        ) : (
-          <QuestionResults phone={phone} at="start" />
-        )}
-      </Panel>
-    )
-  }
+/** The Release Captain's checklist post, found by "left". */
+function LeftHit({ phone, sel }: { phone?: boolean; sel?: { id: string; state: State } | true }) {
   return (
-    <Panel phone={phone} query={QUESTION} cap={cap} mode={{ id: "pal-ask", state: at === "end" ? "on" : undefined }}>
-      <div className="sc-pal-stack">
-        <div data-layer="search">
-          <QuestionResults phone={phone} at={at} />
-        </div>
-        <div data-layer="ask">
-          <Answer at={at} />
-        </div>
+    <Row mark={<HitMark hue={ENGINEERING_HUE} icon={MessageSquare} />} meta="#engineering · Release Captain" phone={phone} selected={sel === true} sel={sel === true ? undefined : sel}>
+      …The load test is the one <Hl>left</Hl>, and I will not mark it until someone posts the numbers here.
+    </Row>
+  )
+}
+
+/**
+ * Every list the palette shows while the question is typed, as the app
+ * draws it (CommandPalette): the empty palette (Recent, Suggested, Ask…);
+ * at "W", Jonas Weber under Jump to (a place's name holds a w); from "Wh",
+ * the workspace's search on its way; then what it finds, the older answer
+ * dimmed while the next loads; the first row selected throughout, as every
+ * key selects it again.
+ */
+const LISTS = ["pal-l0", "pal-l1", "pal-l2", "pal-l3", "pal-l4"] as const
+export type ListId = (typeof LISTS)[number]
+
+function List({ id, phone }: { id: ListId; phone?: boolean }) {
+  switch (id) {
+    case "pal-l0":
+      return (
+        <>
+          <Group>Recent</Group>
+          <Row mark={<Ico icon={FileText} />} meta="Doc" phone={phone} selected>
+            Launch sync notes
+          </Row>
+          <Row mark={<ProjectMark hue={Q4.hue} />} meta="Project" phone={phone}>
+            Q4 launch
+          </Row>
+          <Row mark={<Ico icon={CheckSquare} />} meta="Task" phone={phone}>
+            Write the launch announcement
+          </Row>
+          <Row mark={<Ico icon={Hash} />} meta="Channel" phone={phone}>
+            engineering
+          </Row>
+          <Row mark={<Face person={MAYA} size={20} />} meta="Person" phone={phone}>
+            {MAYA.name}
+          </Row>
+          <Group>Suggested</Group>
+          <Row mark={<Ico icon={MessageSquarePlus} />} phone={phone}>
+            New message
+          </Row>
+          <Row mark={<Ico icon={Plus} />} phone={phone}>
+            New task
+          </Row>
+          <Row mark={<Ico icon={BellOff} />} phone={phone}>
+            Pause notifications…
+          </Row>
+          <Row mark={<Ico icon={Moon} />} phone={phone}>
+            Change theme…
+          </Row>
+          <Row mark={<AgentFace size={20} />} keys={phone ? undefined : "Tab"} ask phone={phone}>
+            Ask OneCamp AI…
+          </Row>
+        </>
+      )
+    case "pal-l1":
+      return (
+        <>
+          <Group>Jump to</Group>
+          <Row mark={<Face person={JONAS} size={20} />} meta="Person" phone={phone} selected>
+            Jonas <Hl>W</Hl>eber
+          </Row>
+          <QueryRows phone={phone} />
+        </>
+      )
+    case "pal-l2":
+      return (
+        <>
+          <Group>Messages, docs and tasks</Group>
+          <div className="sc-pal-status">Searching…</div>
+          <QueryRows phone={phone} first />
+        </>
+      )
+    case "pal-l3":
+      return (
+        <>
+          <div {...item("pal-dim", "off")} className="sc-pal-hits">
+            <Group>Messages, docs and tasks</Group>
+            <LeftHit phone={phone} sel />
+          </div>
+          <QueryRows phone={phone} />
+        </>
+      )
+    case "pal-l4":
+      return (
+        <>
+          <Group>Messages, docs and tasks</Group>
+          <LeftHit phone={phone} sel={{ id: "pal-sel-first", state: undefined }} />
+          <Row mark={<HitMark hue={Q4.hue} icon={CheckSquare} />} meta={`Q4 launch · ${SAM.name}`} phone={phone}>
+            Write the <Hl>launch</Hl> announcement
+          </Row>
+          {phone && (
+            <>
+              <Row mark={<HitMark hue={ENGINEERING_HUE} icon={MessageSquare} />} meta="#engineering · Jonas Weber" phone>
+                @Sam Rivera can we get the rollback steps into the <Hl>Launch</Hl> sync notes <Hl>before</Hl> Thursday?
+              </Row>
+              <Row mark={<HitMark hue={ENGINEERING_HUE} icon={MessageSquare} />} meta={`#engineering · ${SAM.name}`} phone>
+                Release candidate for the Q4 <Hl>launch</Hl> is up on staging.
+              </Row>
+            </>
+          )}
+          <QueryRows phone={phone} ask={{ sel: { id: "pal-sel-ask", state: "off" }, lit: phone ? undefined : { id: "pal-lit", state: "off" } }} />
+        </>
+      )
+  }
+}
+
+/**
+ * One list as a whole panel of its own (a layer), laid out where the palette
+ * hangs: the field's place, its list, its hints. Only one is shown at a time.
+ */
+function Layer({ id, phone, cap, shown, children, ask }: { id: string; phone?: boolean; cap?: number; shown: boolean; children: ReactNode; ask?: boolean }) {
+  return (
+    <div
+      className="sc-pal sc-pal-layer"
+      data-phone={phone ? "" : undefined}
+      data-ask-layer={ask ? "" : undefined}
+      data-sc-rows={ask ? "pal-answer" : undefined}
+      {...item(id, shown ? undefined : "off")}
+    >
+      <div className="sc-pal-spacer" />
+      {phone && <div className="sc-pal-phone-spacer" />}
+      <div className="sc-pal-list" style={cap && !phone ? { maxHeight: cap } : undefined}>
+        {children}
       </div>
+      {!phone && <Foot />}
+    </div>
+  )
+}
+
+/**
+ * The palette as a scene plays it: every list a layer, the Ask panel whose
+ * answer streams, and the field over them all, typed into. At "start" it is
+ * the palette just opened (what a reader without JavaScript sees, complete);
+ * at "end" the question asked and answered (a still of the end, and what a
+ * reader who asked for less motion sees).
+ */
+export function PlayPalette({ at = "start", phone, cap }: { at?: At; phone?: boolean; cap?: number }) {
+  const end = at === "end"
+  return (
+    <div className="sc-pal-play" data-phone={phone ? "" : undefined}>
+      {LISTS.map((id) => (
+        <Layer key={id} id={id} phone={phone} cap={cap} shown={id === "pal-l0" && !end}>
+          <List id={id} phone={phone} />
+        </Layer>
+      ))}
+      <Layer id="pal-la" phone={phone} cap={cap} shown={end} ask>
+        <Answer play at={at} />
+      </Layer>
+      <div className="sc-pal-fieldbox" data-phone={phone ? "" : undefined} {...item("pal-ask", end ? "on" : undefined)}>
+        <Field query={QUESTION} phone={phone} typed={{ start: !end }} />
+        {phone && (
+          <div className="sc-pal-phone-seg">
+            <Segmented phone />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The question as a still: Search with the question typed (its final list),
+ * or Ask answered, each at its own height. For the gallery's plates.
+ */
+export function QuestionPalette({ phone, only, cap }: { phone?: boolean; only: "search" | "ask"; cap?: number }) {
+  return (
+    <Panel phone={phone} query={QUESTION} cap={cap} mode={{ state: only === "ask" ? "on" : undefined }}>
+      {only === "ask" ? <Answer /> : <List id="pal-l4" phone={phone} />}
     </Panel>
   )
 }

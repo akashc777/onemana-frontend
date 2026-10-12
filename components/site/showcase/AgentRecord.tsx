@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { Download, Inbox, Link2, Shield, ShieldCheck, SlidersHorizontal } from "lucide-react"
+import { Download, Inbox, Link2, LoaderCircle, Shield, ShieldCheck, SlidersHorizontal } from "lucide-react"
 
 import "./record.css"
 import { AgentFace, Ico, Spark } from "./parts"
@@ -30,7 +30,7 @@ export type RecordEntry = {
 const OUTCOME: Record<Outcome, string> = { refused: "Refused by permissions", attempt: "Attempt recorded", done: "Done" }
 
 /** The outcome tag (aiActivityFeedRow OutcomeTag). */
-export function OutcomeTag({ outcome }: { outcome: Outcome }) {
+function OutcomeTag({ outcome }: { outcome: Outcome }) {
   return (
     <span className="sc-outcome" data-outcome={outcome}>
       {outcome === "refused" && <Ico icon={Shield} size={12} />}
@@ -44,10 +44,16 @@ export function RecordRow({ e, item, state, meta = true, link }: { e: RecordEntr
   return (
     <div className="sc-feedrow" data-sc-item={item} data-sc-state={state} data-sc-enter={item ? undefined : ""}>
       <span aria-hidden="true" className="relative">
-        {/* The chain link in the gutter, which Prove it ticks to moss (aiActivityFeedRow). */}
+        {/* The chain link in the gutter (aiActivityFeedRow): Prove it puts it
+            there small while it checks, then ticks it to moss. */}
         {link && (
-          <span className="sc-chain" data-sc-item={link} data-sc-pop="" data-sc-state="off">
-            <Ico icon={Link2} size={14} />
+          <span className="sc-chain" data-sc-item={link} data-sc-state="off">
+            <span className="sc-chain-wait">
+              <Ico icon={Link2} size={14} />
+            </span>
+            <span className="sc-chain-ok" data-sc-item={`${link}-ok`} data-sc-state="off">
+              <Ico icon={Link2} size={14} />
+            </span>
           </span>
         )}
       </span>
@@ -76,11 +82,11 @@ export function RecordRow({ e, item, state, meta = true, link }: { e: RecordEntr
   )
 }
 
-/** A secondary sm button (components/ui/button). */
-export function Btn({ icon, children }: { icon?: typeof Download; children: ReactNode }) {
+/** A secondary sm button (components/ui/button); `busy` turns its icon into the spinner. */
+export function Btn({ icon, children, busy, target }: { icon?: typeof Download; children: ReactNode; busy?: boolean; target?: string }) {
   return (
-    <span className="sc-btn" data-variant="secondary">
-      {icon && <Ico icon={icon} size={16} />}
+    <span className="sc-btn" data-variant="secondary" data-sc-target={target}>
+      {busy ? <Ico icon={LoaderCircle} size={16} className="sc-spin" /> : icon && <Ico icon={icon} size={16} />}
       {children}
     </span>
   )
@@ -138,10 +144,23 @@ export function AgentRecordView({
               </p>
             )}
           </div>
-          {/* On a phone the result takes the whole row, and the buttons give way to it. */}
-          <span className="flex flex-none items-center gap-2" data-sc-item={proving && phone ? "record-actions" : undefined}>
-            <Btn icon={Download}>Download the record</Btn>
-            <Btn icon={ShieldCheck}>Prove it</Btn>
+          {/* On a phone the result takes the whole row, and the buttons give way
+              to it. While it checks, Prove it is busy (MyAIActivityCard): its
+              spinner and "Checking 4 entries…", drawn as a row of its own over
+              the resting one, so the buttons never move. */}
+          <span className="sc-actions" data-sc-item={proving && phone ? "record-actions" : undefined}>
+            <span data-sc-item={proving ? "prove-rest" : undefined}>
+              <Btn icon={Download}>Download the record</Btn>
+              <Btn icon={ShieldCheck} target={proving ? "prove-btn" : undefined}>
+                Prove it
+              </Btn>
+            </span>
+            {proving && (
+              <span data-sc-item="prove-busy" data-sc-state="off">
+                <Btn icon={Download}>Download the record</Btn>
+                <Btn busy>Checking {entries.length} entries…</Btn>
+              </span>
+            )}
           </span>
         </div>
         {/* px-3 on a phone too: at the app's px-1 the chain links Prove it ticks sit off the sheet's edge. */}

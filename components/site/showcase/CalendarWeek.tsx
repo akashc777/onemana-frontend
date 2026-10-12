@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import { CalendarDays, ChevronLeft, ChevronRight, MoreHorizontal, Moon, Plus, Search } from "lucide-react"
 
 import "./calendar.css"
@@ -186,7 +186,7 @@ export function Block({
   /** The first hour drawn. */
   h0: number
   past?: boolean
-  /** A scene's arrival: its key and whether it is shown yet. */
+  /** A scene's arrival: its key and whether it is shown yet. It just appears, as an event does when the calendar fetches it. */
   sc?: { item: string; shown?: boolean }
 }) {
   const end = Math.max(item.end, item.start + 20)
@@ -205,7 +205,7 @@ export function Block({
       data-sc-enter={sc ? undefined : ""}
       data-sc-item={sc?.item}
       data-sc-state={sc && !sc.shown ? "off" : undefined}
-      data-sc-pop={sc ? "" : undefined}
+      data-sc-swap={sc ? "" : undefined}
       style={style}
     >
       <i />
@@ -278,10 +278,16 @@ export type WeekGridProps = {
   toHour?: number
   /** A scene's arrival: an item laid out in its place from the start, shown when the script says. */
   arrival?: { item: TimedItem; key: string; shown?: boolean }
+  /**
+   * What a scene draws into a day's column besides its events (the hover
+   * band, a dragged ghost, the card beside it), given the first hour drawn
+   * (h0) to place it by.
+   */
+  extra?: (day: number, h0: number) => ReactNode
 }
 
 /** The week or the day under the header (weekView): day headers, the all-day rail and the time grid. */
-export function WeekGrid({ monday, days = [0, 1, 2, 3, 4, 5, 6], today, nowMin, timed, allDay, fromHour, span = 12, toHour, arrival }: WeekGridProps) {
+export function WeekGrid({ monday, days = [0, 1, 2, 3, 4, 5, 6], today, nowMin, timed, allDay, fromHour, span = 12, toHour, arrival, extra }: WeekGridProps) {
   const single = days.length === 1
   const h0 = Math.max(0, Math.floor(fromHour) - 1)
   const h1 = Math.min(24, Math.ceil(fromHour) + span)
@@ -345,6 +351,7 @@ export function WeekGrid({ monday, days = [0, 1, 2, 3, 4, 5, 6], today, nowMin, 
                     <Block key={`${t.title}-${t.start}`} item={t} h0={h0} past={past(t)} />
                   ))}
                 {arrival && arrival.item.day === d && <Block item={arrival.item} h0={h0} sc={{ item: arrival.key, shown: arrival.shown }} />}
+                {extra?.(d, h0)}
               </div>
             ))}
           </div>

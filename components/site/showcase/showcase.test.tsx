@@ -35,7 +35,7 @@ import type { SceneSpec } from "@/components/site/showcase/scenes/types"
 const ROOT = process.cwd()
 const DIR = join(ROOT, "components/site/showcase")
 const files = (ext: string) =>
-  [DIR, join(DIR, "scenes")].flatMap((d) => readdirSync(d).filter((f) => f.endsWith(ext) && !f.includes(".test.")).map((f) => join(d, f)))
+  [DIR, join(DIR, "scenes"), join(DIR, "motion")].flatMap((d) => readdirSync(d).filter((f) => f.endsWith(ext) && !f.includes(".test.")).map((f) => join(d, f)))
 /** A list split at its own commas, not at those inside var() or cubic-bezier(). */
 function topLevel(list: string): string[] {
   const out: string[] = []
@@ -194,8 +194,28 @@ describe("motion is transform and opacity, and stands still for reduced motion",
     expect(src).toMatch(/requestIdleCallback/)
     expect(src).toMatch(/IntersectionObserver/)
     expect(src).toMatch(/visibilitychange/)
-    expect(src).not.toMatch(/\.animate\(|setInterval/)
     for (const [name, s] of SPECS) expect(s.script.plays ?? 1, name).toBeLessThanOrEqual(3)
+  })
+
+  it("moves things by transform and types by paint: the engine writes nothing else", () => {
+    const src = uncomment(readFileSync(join(DIR, "motion/engine.ts"), "utf8"))
+    const props = [...src.matchAll(/style\.setProperty\("([^"]+)"/g)].map((m) => m[1])
+    expect(new Set(props)).toEqual(new Set(["--sc-rows", "--sc-rows-all"]))
+    const styles = [...src.matchAll(/\.style\.(\w+)\s*=/g)].map((m) => m[1])
+    expect(new Set(styles)).toEqual(new Set(["transform"]))
+    // Typing hides by highlight (paint), never by moving letters between nodes.
+    expect(src).toMatch(/CSS\.highlights|highlights/)
+    expect(src).not.toMatch(/\.innerHTML|insertBefore|appendChild|\.remove\(\)/)
+  })
+
+  it("never runs forever, never times itself by an interval, never draws a random number", () => {
+    for (const f of [...files(".ts"), ...files(".tsx")]) {
+      const src = uncomment(readFileSync(f, "utf8"))
+      expect(src, f).not.toMatch(/\.animate\(|setInterval|Math\.random/)
+    }
+    for (const f of files(".css")) {
+      for (const m of uncomment(readFileSync(f, "utf8")).matchAll(/animation:\s*([^;]+);/g)) expect(m[1], f).not.toMatch(/\binfinite\b/)
+    }
   })
 })
 
@@ -237,6 +257,20 @@ describe("every scene", () => {
       const drawn = new Set([...html.matchAll(/data-sc-item="([^"]+)"/g)].map((m) => m[1]))
       if (spec.script.scope === "hero") drawn.add("record")
       for (const s of spec.script.steps) for (const k of [...(s.on ?? []), ...(s.off ?? []), ...(s.rise ?? [])]) expect(drawn, `${name} step at ${s.at}: ${k}`).toContain(k)
+      const typed = new Set([...html.matchAll(/data-sc-type="([^"]+)"/g)].map((m) => m[1]))
+      for (const s of spec.script.steps) for (const k of s.type ?? []) expect(typed, `${name} types ${k}`).toContain(k)
+      const moved = new Set([...html.matchAll(/data-sc-path="([^"]+)"/g)].map((m) => m[1]))
+      const targets = new Set([...html.matchAll(/data-sc-target="([^"]+)"/g)].map((m) => m[1]))
+      for (const [id, keys] of Object.entries(spec.script.paths ?? {})) {
+        expect(moved, `${name} moves ${id}`).toContain(id)
+        for (const k of keys) if (k.to) expect(targets, `${name} aims ${id} at ${k.to}`).toContain(k.to)
+      }
+    })
+
+    it(`${name}: its steps are in time order, and its label stays one sentence or two`, () => {
+      const at = spec.script.steps.map((s) => s.at)
+      expect(at, name).toEqual([...at].sort((a, b) => a - b))
+      expect(spec.label.length, name).toBeLessThan(400)
     })
   }
 })

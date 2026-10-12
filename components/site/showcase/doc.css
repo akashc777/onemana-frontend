@@ -346,9 +346,10 @@
   white-space: nowrap;
   font-feature-settings: "cv11", "ss01", "ss03";
 }
-/* The flag holds while they type and then folds to a 6px dot on the
-   caret's top (content-caret-flag, content-caret-dot: out over 400ms, the
-   dot the reverse), so it stops covering the line above. */
+/* The flag shows when the caret is made (it appears, or Enter moves it to a
+   new block) and folds to a 6px dot on the caret's top 3.2s later, typing or
+   not (content-caret-flag, content-caret-dot: in over 160ms, held 3s, out
+   over 400ms while the dot comes in), so it stops covering the line above. */
 .doc-caret > i {
   position: absolute;
   left: -4px;
@@ -358,35 +359,56 @@
   border-radius: 50%;
   background: var(--a1);
 }
-.sc .doc-caret > [data-sc-item] {
+.sc .doc-caret > span[data-sc-item] {
   transform-origin: left bottom;
   transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
 }
-.sc .doc-caret > [data-sc-item][data-sc-state="off"] {
+.sc .doc-caret > span[data-sc-item][data-sc-state="on"] {
+  transition-duration: 160ms;
+}
+.sc .doc-caret > span[data-sc-item][data-sc-state="off"] {
   transform: scale(0.9);
 }
 .sc .doc-caret > i[data-sc-item] {
   transform-origin: center;
-  transition: opacity 200ms var(--ease-out) 300ms, transform 200ms var(--ease-out) 300ms;
+  transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
 }
 .sc .doc-caret > i[data-sc-item][data-sc-state="off"] {
   transform: scale(0.6);
-  transition-delay: 0ms;
+  transition: none;
 }
 /* A caret jumps, as y-prosemirror redraws it: no fade between places. */
 .sc .doc-caret[data-sc-item] {
   transition: none;
 }
-/* A new line comes in at once, as Enter makes it: no rise. */
+.sc .doc-caret[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+/* The caret of words being typed (Caret follows): over its block, as tall as
+   the text (the inline caret's own box), placed by the engine's transform at
+   the end of what has arrived. */
+.doc-caret[data-float] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1.21em;
+}
+/* A new line comes in at once, as Enter makes it. */
 .sc .doc-li[data-sc-item] {
-  transition: opacity 120ms var(--ease-out);
+  transition: none;
 }
 .sc .doc-li[data-sc-item][data-sc-state="off"] {
   transform: none;
 }
-/* Typed words land in a quick fade (inline, so opacity only). */
-.sc .doc-typed[data-sc-item] {
-  transition: opacity 140ms var(--ease-out);
+/* Under reduced motion the app keeps the flag open and draws no dot. */
+@media (prefers-reduced-motion: reduce) {
+  .sc .doc-caret[data-float] > span[data-sc-item] {
+    opacity: 1;
+    transform: none;
+  }
+  .sc .doc-caret[data-float] > i[data-sc-item] {
+    opacity: 0;
+  }
 }
 
 /* -------------------------------------------------------------- a phone */

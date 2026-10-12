@@ -623,3 +623,485 @@
 .sc-daycell[data-selected] > i {
   background: var(--sc-sheet);
 }
+
+/*
+ * MAKING AN EVENT (QuickCreate.tsx): the hover band, the drag's ghost, the
+ * quick-create card and the phone's full dialog. Each rule mirrors the
+ * onecamp-fe rule named beside it (components/calendar weekView,
+ * quickCreateCard, createCalendarEventDialog; ui/dialog; app/content.css).
+ * Tokens only, as showcase.css.
+ */
+
+/* The 15 minutes under the pointer (weekView): 14px of hover across the
+   day, its time at its left in ink-2. It moves with the pointer, a slot at a
+   time, and is gone while a drag draws. */
+.sc-cal-band {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: var(--sc-hover);
+}
+.sc-cal-band > span {
+  position: absolute;
+  left: 6px;
+  top: 0;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.005em;
+  font-weight: 510;
+  color: var(--sc-ink-2);
+}
+
+/* The ghost (weekView's draft): 2px in from the day's sides, r8, a 1px
+   dashed brand ring over brand at 14%, the 3px brand bar, its times at
+   12/16 590 in the accent's ink. Each snap draws it anew, so its times pulse
+   to 1.04 and back over 90ms (content-ghost-pulse). */
+.sc-cal-ghost {
+  position: absolute;
+  z-index: 30;
+  left: 2px;
+  right: 2px;
+  overflow: hidden;
+  border: 1px dashed var(--sc-brand);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--sc-brand) 14%, transparent);
+  padding: 4px 6px 4px 9px;
+}
+.sc-cal-ghost > i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--sc-brand);
+}
+.sc-cal-ghost > span {
+  display: block;
+  transform-origin: left center;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 590;
+  color: var(--sc-brand-text);
+  white-space: nowrap;
+}
+@keyframes sc-cal-pulse {
+  50% {
+    transform: scale(1.04);
+  }
+}
+.sc .sc-cal-ghost[data-sc-state="on"] > span {
+  animation: sc-cal-pulse 90ms var(--ease-out);
+}
+/* The band and the ghost are redrawn, not eased: on and off at once. */
+.sc .sc-cal-band[data-sc-item],
+.sc .sc-cal-ghost[data-sc-item] {
+  transition: none;
+}
+.sc .sc-cal-band[data-sc-item][data-sc-state="off"],
+.sc .sc-cal-ghost[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+
+/* ------------------------------------------------- the quick-create card */
+/* quickCreateCard: 340px on the pop surface at e3, r12, 12px off the ghost
+   (on its left when the day is the last in view: Radix flips it). It comes
+   in from 4px down at .98 over 180ms (content-float-in) and goes over
+   120ms. */
+/* Where it hangs: off the left of the day's column, its top on the ghost's. */
+.sc-qc-anchor {
+  position: absolute;
+  z-index: 40;
+  right: calc(100% + 10px);
+  width: 340px;
+}
+.sc-qc {
+  position: relative;
+  width: 340px;
+  border-radius: 12px;
+  background: var(--sc-pop);
+  box-shadow: var(--e-e3);
+}
+.sc .sc-qc[data-sc-item] {
+  transition: opacity 120ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.sc .sc-qc[data-sc-item][data-sc-state="on"] {
+  transition-duration: 180ms;
+}
+.sc .sc-qc[data-sc-item][data-sc-state="off"],
+.sc .sc-qc[data-sc-item][data-sc-state="fade"] {
+  transform: translateY(4px) scale(0.98);
+}
+/* The title (px-4 pt-4, text-body): its example in ink-3 until the first
+   key, the words as they are typed, the caret after them. */
+.sc-qc-title {
+  position: relative;
+  min-height: 39px;
+  padding: 16px 16px 0;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: -0.009em;
+  color: var(--sc-ink);
+}
+.sc-qc-ph {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  color: var(--sc-ink-3);
+  white-space: nowrap;
+}
+.sc-qc-text {
+  display: block;
+  white-space: nowrap;
+}
+.sc-qc-caret,
+.sc-ed-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 18px;
+  background: var(--sc-ink);
+}
+.sc-ed-caret {
+  height: 24px;
+}
+.sc .sc-qc-ph[data-sc-item],
+.sc .sc-qc-text[data-sc-item],
+.sc .sc-ed-ph[data-sc-item],
+.sc .sc-ed-text[data-sc-item] {
+  transition: none;
+}
+.sc .sc-qc-ph[data-sc-item][data-sc-state="off"],
+.sc .sc-qc-text[data-sc-item][data-sc-state="off"],
+.sc .sc-ed-ph[data-sc-item][data-sc-state="off"],
+.sc .sc-ed-text[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+/* What the card understood, underlined under the words (decoration-brand/40,
+   4px under), as they are typed. */
+::highlight(sc-parsed) {
+  text-decoration-line: underline;
+  text-decoration-color: rgb(var(--brand) / 0.4);
+  text-decoration-thickness: 1px;
+}
+/* The chips (px-4 pb-3 pt-3, 6px apart): each reading of the guests chip a
+   row of its own, one shown, swapped at once as the title is typed. */
+.sc-qc-chipstack {
+  display: grid;
+  padding: 12px 16px;
+}
+.sc-qc-chipstack > * {
+  grid-area: 1 / 1;
+}
+.sc-qc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sc .sc-qc-chips[data-sc-item] {
+  transition: none;
+}
+.sc .sc-qc-chips[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc-qc-chip {
+  display: inline-flex;
+  height: 24px;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  background: var(--sc-hover);
+  padding: 0 8px;
+  box-shadow: inset 0 0 0 1px var(--sc-line);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 510;
+  color: var(--sc-ink-2);
+}
+.sc-qc-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--a1);
+}
+/* The foot (border-t px-3 py-2.5): More options, then Discard and Save ⏎. */
+.sc-qc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--sc-line);
+  padding: 10px 12px;
+}
+.sc-qc-ghostbtn {
+  display: inline-flex;
+  height: 24px;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 510;
+  color: var(--sc-ink-2);
+}
+.sc-qc-x {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--sc-ink-3);
+}
+
+/* ------------------------------------------------ the phone's dialog */
+/* ui/dialog on a phone: the scrim (ink-black at 32%) fades in over 180ms;
+   the card, 16px in from each side and at most 85% of the screen, r16 on
+   the pop surface at e4, comes up from 8px at .97 over 220ms and goes in
+   150ms. */
+.sc-ed-over {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+}
+.sc .sc-ed-over[data-sc-item] {
+  transition: opacity 150ms var(--ease-out);
+}
+.sc .sc-ed-over[data-sc-item][data-sc-state="on"] {
+  transition-duration: 180ms;
+}
+.sc .sc-ed-over[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc-ed-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.32);
+}
+.sc-ed {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 7.5%;
+  height: 85%;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--sc-pop);
+  box-shadow: var(--e-e4);
+  transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out);
+}
+.sc-ed-over[data-sc-state="on"] .sc-ed {
+  transition-duration: 220ms;
+}
+.sc-ed-over[data-sc-state="off"] .sc-ed,
+.sc-ed-over[data-sc-state="fade"] .sc-ed {
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+}
+.sc-ed-x {
+  position: absolute;
+  z-index: 1;
+  right: 14px;
+  top: 14px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--sc-ink-3);
+}
+.sc-ed-body {
+  padding: 24px 24px 0;
+}
+/* The title: 20/27 at 590, no box, its example in ink-4. */
+.sc-ed-title {
+  position: relative;
+  min-height: 27px;
+  margin: 0 28px 10px 0;
+  font-size: 20px;
+  line-height: 27px;
+  letter-spacing: -0.017em;
+  font-weight: 590;
+  color: var(--sc-ink);
+}
+.sc-ed-ph {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--sc-ink-4);
+  white-space: nowrap;
+}
+.sc-ed-text {
+  display: block;
+  white-space: nowrap;
+}
+/* A row on a phone: the label at 13/18 in ink-3, 4px over the control, 6px
+   above and below. */
+.sc-ed-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 6px 0;
+}
+.sc-ed-label {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.003em;
+  color: var(--sc-ink-3);
+}
+.sc-ed-field {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  background: var(--sc-raised);
+  padding: 0 12px;
+  box-shadow: var(--e-e1);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sc-ink);
+}
+.sc-ed-field svg.lucide {
+  color: var(--sc-ink-3);
+}
+.sc-ed-input {
+  display: flex;
+  width: 100%;
+  height: 44px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0 12px;
+  box-shadow: inset 0 0 0 1px var(--sc-line-2);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--sc-ink-4);
+}
+.sc-ed-free {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--sc-ink-3);
+}
+.sc-ed-find {
+  flex: none;
+  font-weight: 510;
+  color: var(--sc-agent-ink);
+}
+.sc-ed-notes {
+  display: block;
+  width: 100%;
+  height: 76px;
+  border-radius: 12px;
+  background: var(--sc-raised);
+  padding: 8px 12px;
+  box-shadow: var(--e-e1);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sc-ink-4);
+}
+.sc-ed-cal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sc-ink-2);
+}
+.sc-ed-cal > .sc-qc-dot {
+  width: 8px;
+  height: 8px;
+}
+/* The switches (FocusTimeCheckbox) under a hairline: 44px rows, the label at
+   14/20 510, its hint at 12px in ink-3, a 28 by 16 switch. */
+.sc-ed-switches {
+  margin-top: 6px;
+  border-top: 1px solid var(--sc-line);
+}
+.sc-ed-switch {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+.sc-ed-switch > span {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+}
+.sc-ed-switch b {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 510;
+}
+.sc-ed-switch small {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--sc-ink-3);
+}
+.sc-ed-switch > i {
+  width: 28px;
+  height: 16px;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--sc-press);
+  box-shadow: inset 0 0 0 1px var(--sc-line);
+}
+/* The foot: the sunken ground under a hairline, Create event over Cancel. */
+.sc-ed-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px -24px 0;
+  border-top: 1px solid var(--sc-line);
+  background: var(--sc-sunken);
+  padding: 16px 24px 20px;
+}
+.sc-ed-create,
+.sc-ed-cancel {
+  position: relative;
+  display: flex;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 510;
+}
+.sc-ed-create {
+  background: var(--sc-brand);
+  color: var(--sc-on-brand);
+}
+.sc-ed-cancel {
+  color: var(--sc-ink-2);
+}
+/* A finger on Create event: it darkens while pressed. */
+.sc-ed-press {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.14);
+}
+.sc .sc-ed-press[data-sc-item] {
+  transition: opacity 90ms var(--ease-out);
+}
+.sc .sc-ed-press[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc .sc-ed-body[data-sc-path] {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc .sc-cal-ghost[data-sc-state="on"] > span {
+    animation: none;
+  }
+}

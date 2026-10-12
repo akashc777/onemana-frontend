@@ -184,34 +184,33 @@ export function DocItem({ children, item, state }: { children: ReactNode; item?:
   )
 }
 
-/** Words a collaborator types, brought in by a scene a few at a time. */
-export function Typed({ children, item, state }: { children: ReactNode; item: string; state?: "off" | "on" }) {
-  return (
-    <span className="doc-typed" data-sc-item={item} data-sc-state={state}>
-      {children}
-    </span>
-  )
-}
-
 /**
  * Someone else's caret (collaboratorCaret, D14): 2px in their avatar's first
  * stop, with their first name on a flag in their avatar colour. A scene can
  * fold the flag to the 6px dot (`fold`: the flag's and the dot's item names
- * and states), as the app does once they stop typing.
+ * and states), as the app does 3.2s after the caret is made.
+ *
+ * `follows` makes it the caret of a typed text (motion/parts TypedText, by
+ * its id): laid over its block rather than in its words, and moved by
+ * transform to the end of what is typed, a character at a time, as
+ * y-prosemirror redraws a remote caret on every update. The block is its
+ * frame (position: relative).
  */
 export function Caret({
   person,
   item,
   state,
   fold,
+  follows,
 }: {
   person: Person
   item?: string
   state?: "off" | "on"
   fold?: { flag: string; flagState?: "off" | "on"; dot: string; dotState?: "off" | "on" }
+  follows?: string
 }) {
   return (
-    <span className="doc-caret" data-hue={person.hue} data-sc-item={item} data-sc-state={state}>
+    <span className="doc-caret" data-hue={person.hue} data-sc-item={item} data-sc-state={state} data-sc-caret={follows} data-float={follows ? "" : undefined}>
       <span data-sc-item={fold?.flag} data-sc-state={fold?.flagState}>
         {person.name.split(" ")[0]}
       </span>

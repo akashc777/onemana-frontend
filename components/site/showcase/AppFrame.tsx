@@ -9,8 +9,26 @@ import { Ico } from "./parts"
  * it, and the page on its own sheet 8px off the frame on every side but the
  * sidebar's (the seam is the sidebar's last 8px). Without a sidebar the sheet
  * sits 8px in all round, as a split pane does.
+ *
+ * `split` is the same page with a panel open beside it (a thread), laid out
+ * whole over it and out of sight until a scene turns it on (`item`) and the
+ * single page off (`sheetItem`): the app snaps the page narrower when a panel
+ * opens, so the scene swaps the two at once rather than re-laying anything
+ * out.
  */
-export function AppFrame({ sidebar, children, className }: { sidebar?: ReactNode; children: ReactNode; className?: string }) {
+export function AppFrame({
+  sidebar,
+  children,
+  className,
+  sheetItem,
+  split,
+}: {
+  sidebar?: ReactNode
+  children: ReactNode
+  className?: string
+  sheetItem?: string
+  split?: { page: ReactNode; panel: ReactNode; item: string }
+}) {
   // The glow lives behind the workspace mark at the frame's top left. A sheet
   // shown on its own is the app's right-hand part, where the frame is plain
   // graphite: drawn there, the glow was a peach rim round the sheet's corner.
@@ -19,7 +37,15 @@ export function AppFrame({ sidebar, children, className }: { sidebar?: ReactNode
       {sidebar}
       {sidebar ? <span aria-hidden="true" className="sc-seam w-2 flex-none" /> : null}
       <div className={["sc-main relative z-[1] flex min-w-0 flex-1 flex-col py-2 pr-2", sidebar ? "" : "pl-2"].join(" ")}>
-        <div className="sc-sheet flex h-full min-h-0 flex-col">{children}</div>
+        <div className="sc-sheet flex h-full min-h-0 flex-col" data-sc-item={sheetItem} data-sc-swap={sheetItem ? "" : undefined}>
+          {children}
+        </div>
+        {split && (
+          <div className="sc-split" data-sc-item={split.item} data-sc-state="off" data-sc-swap="">
+            <div className="sc-sheet flex h-full min-w-0 flex-1 flex-col">{split.page}</div>
+            {split.panel}
+          </div>
+        )}
       </div>
     </div>
   )

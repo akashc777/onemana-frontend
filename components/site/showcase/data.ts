@@ -66,7 +66,7 @@ export const STORY = {
   reply: {
     by: CAPTAIN,
     at: "11:20 AM",
-    text: "I can't post in #finance. Jonas isn't a member there, and I act only with the access of whoever asks.",
+    text: "I can't post in #finance. You aren't a member there, and I act only with the access of whoever asks.",
   },
   record: {
     who: "Release Captain",

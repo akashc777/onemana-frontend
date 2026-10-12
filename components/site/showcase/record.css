@@ -165,7 +165,73 @@
   width: 14px;
   height: 14px;
   place-items: center;
+}
+.sc-chain > span {
+  display: grid;
+  grid-area: 1 / 1;
+  place-items: center;
+}
+/* While it checks: the link small (.6) in ink-3. Checked: moss at full size
+   on the spring (200ms), each row 30ms after the one above (proveIt). */
+.sc-chain-wait {
+  color: var(--sc-ink-3);
+  transform: scale(0.6);
+}
+.sc-chain:has(> .sc-chain-ok[data-sc-state="on"]) > .sc-chain-wait {
+  opacity: 0;
+}
+.sc-chain-ok {
   color: rgb(var(--camp-moss));
+}
+.sc .sc-chain[data-sc-item] {
+  transition: none;
+}
+.sc .sc-chain[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+.sc .sc-chain-ok[data-sc-item] {
+  transition: opacity 120ms var(--ease-out), transform 200ms var(--ease-spring);
+}
+.sc .sc-chain-ok[data-sc-item][data-sc-state="off"] {
+  transform: scale(0.6);
+}
+/* The record's buttons: at rest, and busy while it checks, drawn over them
+   from the right (the row is the resting buttons' width, so the record's line
+   keeps its room); they swap at once. */
+.sc-actions {
+  position: relative;
+  display: flex;
+  flex: none;
+}
+.sc-actions > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sc-actions > span + span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+.sc .sc-actions > span[data-sc-item] {
+  transition: none;
+}
+.sc .sc-actions > span[data-sc-item][data-sc-state="off"] {
+  transform: none;
+}
+@keyframes sc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sc [data-sc-state="on"] .sc-spin {
+  animation: sc-spin 700ms linear 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc [data-sc-state="on"] .sc-spin {
+    animation: none;
+  }
 }
 .sc-proved {
   position: absolute;
@@ -187,6 +253,14 @@
 .sc-proved[data-wide] {
   inset: 2px 16px;
   max-width: none;
+}
+/* The result drops in where the record's line was: from 6px up at .98,
+   180ms (MyAIActivityCard's banner). */
+.sc .sc-proved[data-sc-item] {
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+.sc .sc-proved[data-sc-item][data-sc-state="off"] {
+  transform: translateY(-6px) scale(0.98);
 }
 .sc-proved > svg {
   width: 16px;

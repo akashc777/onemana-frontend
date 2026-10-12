@@ -1,20 +1,30 @@
 import { AppFrame, PhoneFrame } from "../AppFrame"
-import { Caret, DocH2, DocItem, DocList, DocP, DocPage, PhoneDocPage, Typed, type Here } from "../DocPage"
+import { Caret, DocH2, DocItem, DocList, DocP, DocPage, PhoneDocPage, type Here } from "../DocPage"
 import { MAYA, SAM } from "../data"
+import { keyTimes, lastTime } from "../motion/cadence"
+import { TypedText } from "../motion/parts"
 import type { Script, Step } from "../SceneDirector"
 import { SIZES, type SceneSpec } from "./types"
 
 /**
  * The Docs tab: the demo's "Launch sync notes" (DemoSeed workspace.go
  * CuratedDocs), open for Sam, while Maya adds the rollback steps under
- * Decisions, live: Maya's caret and name flag end the last decision, a new
- * one starts, and its words arrive as they are typed. The demo's
- * #engineering says the same: Jonas asked for the rollback steps in these
- * notes, and Maya "added them under Decisions".
+ * Decisions, live. The demo's #engineering says the same: Jonas asked for
+ * the rollback steps in these notes, and Maya "added them under Decisions".
  *
- * The new decision is the doc's last block, laid out from the start and
- * revealed (SceneDirector), so nothing moves while it arrives. The doc's
- * Actions section, which the seed has after Decisions, is not written yet.
+ * As the app shows another person typing (y-prosemirror over Hocuspocus, one
+ * update per key): her caret rests at the end of the last decision, its flag
+ * folded to the dot; she presses Enter, and a new bullet appears with her
+ * caret on it and her name on its flag; then the words arrive a key at a
+ * time at her pace, the caret jumping with each. The flag folds to the dot
+ * 3.2s after the caret was made, while she is still typing (the app reuses
+ * the caret's element within a block, so its one fold animation is not
+ * replayed). Sam's save dot never moves: it follows only his own edits.
+ *
+ * The new decision is the doc's last block, laid out whole from the start and
+ * typed in by paint (motion/engine), so nothing moves while it arrives. The
+ * doc's Actions section, which the seed has after Decisions, is not written
+ * yet.
  */
 const EDITOR = MAYA
 
@@ -23,45 +33,41 @@ const DOC = { title: "Launch sync notes", meta: ["Sam Rivera", "Edited 6 hours a
 /** Sam reads; the editor is here too. Each in the hue their name gives them, as everywhere on the site. */
 const HERE: Here[] = [{ person: SAM }, { person: EDITOR }]
 
-/** The new decision, in the pieces it arrives in, with the caret after each. */
-const WORDS = ["Rollback, if Thursday goes wrong:", " first redeploy the previous release tag,", " then restore the pre-release backup.", " Both steps tried on staging."]
+/**
+ * The new decision. Its first words are what Ask's source chip quotes from
+ * the notes ("Rollback, if Thursday goes…", Palette.tsx).
+ */
+export const DECISION = "Rollback, if Thursday goes wrong: redeploy the last tag, then restore the backup."
 
-/** The last caret, after the last words. */
-const LAST = `doc-c${WORDS.length + 1}`
+/** Maya's pace: a quick typist, 66ms between keys in a word. */
+const PACE = 66
+const KEYS = keyTimes(DECISION, "maya", { pace: PACE, remote: true })
+
+/** Enter, then her first key a beat later. */
+const FIRST_KEY = 300
+/** The app's flag: 160ms in, 3s held, then 400ms out to the dot, from when the caret is made. */
+const FOLD = 3160
 
 const steps: Step[] = [
-  // Enter at the end of the last decision: a new bullet, the caret on it,
-  // its flag up again now the caret moves.
-  { at: 0, off: ["doc-c0"], on: ["doc-line"] },
-  ...WORDS.map((_, i) => ({ at: 700 + i * 520, off: [`doc-c${i + 1}`], on: [`doc-w${i + 1}`, `doc-c${i + 2}`] })),
-  // Typing stops: the flag folds to the dot (the app holds it 3s).
-  { at: 700 + (WORDS.length - 1) * 520 + 2000, off: ["doc-flag"], on: ["doc-dot"] },
+  // Enter at the end of the last decision: the new bullet at once, the
+  // caret on it, its flag up.
+  { at: 0, off: ["doc-c0"], on: ["doc-line", "doc-cf", "doc-flag"] },
+  { at: FIRST_KEY, type: ["doc-type"] },
+  { at: FOLD, off: ["doc-flag"], on: ["doc-dot"] },
 ]
 
 const SCRIPT: Script = { steps, plays: 1, delay: 700, stagger: 40 }
 
+/** How long the moment lasts, from Enter to her last key. */
+export const DOC_MOMENT = FIRST_KEY + lastTime(KEYS)
+
 type State = "off" | "on" | undefined
 
-/** What each piece shows before the moment, and after it (for a still of its end). */
-function states(final: boolean): (item: string) => State {
-  // Before the moment the caret has idled at the end of the last decision,
-  // its flag folded: a first paint where nothing covers the words.
-  const at: Record<string, State> = { "doc-line": "off", "doc-flag0": "off", "doc-dot": "off" }
-  WORDS.forEach((_, i) => {
-    at[`doc-w${i + 1}`] = "off"
-    at[`doc-c${i + 2}`] = "off"
-  })
-  if (final) {
-    for (const s of steps) {
-      s.on?.forEach((k) => (at[k] = "on"))
-      s.off?.forEach((k) => (at[k] = "off"))
-    }
-  }
-  return (item) => at[item]
-}
-
 function Body({ final }: { final: boolean }) {
-  const st = states(final)
+  // Before the moment her caret has idled at the end of the last decision,
+  // its flag folded: a first paint where nothing covers the words. The end
+  // (a still of it) is the decision whole with her caret resting after it.
+  const st = (start: State, end: State) => (final ? end : start)
   return (
     <>
       <DocP>
@@ -72,23 +78,17 @@ function Body({ final }: { final: boolean }) {
         <DocItem>Business tier is on the pricing page at launch, not a week later.</DocItem>
         <DocItem>
           The walkthrough is one take, five minutes, no voiceover script.
-          <Caret person={EDITOR} item="doc-c0" state={st("doc-c0")} fold={{ flag: "doc-flag0", flagState: st("doc-flag0"), dot: "doc-dot0" }} />
+          <Caret person={EDITOR} item="doc-c0" state={st(undefined, "off")} fold={{ flag: "doc-flag0", flagState: "off", dot: "doc-dot0" }} />
         </DocItem>
-        <DocItem item="doc-line" state={st("doc-line")}>
-          <Caret person={EDITOR} item="doc-c1" state={st("doc-c1")} />
-          {WORDS.map((w, i) => (
-            <span key={w} className="contents">
-              <Typed item={`doc-w${i + 1}`} state={st(`doc-w${i + 1}`)}>
-                {w}
-              </Typed>
-              <Caret
-                person={EDITOR}
-                item={`doc-c${i + 2}`}
-                state={st(`doc-c${i + 2}`)}
-                fold={`doc-c${i + 2}` === LAST ? { flag: "doc-flag", flagState: st("doc-flag"), dot: "doc-dot", dotState: st("doc-dot") } : undefined}
-              />
-            </span>
-          ))}
+        <DocItem item="doc-line" state={st("off", "on")}>
+          <TypedText id="doc-type" cadence="remote" seed="maya" pace={PACE}>
+            {DECISION}
+          </TypedText>
+          {final ? (
+            <Caret person={EDITOR} item="doc-cend" fold={{ flag: "doc-flagend", flagState: "off", dot: "doc-dotend" }} />
+          ) : (
+            <Caret person={EDITOR} item="doc-cf" state="off" follows="doc-type" fold={{ flag: "doc-flag", flagState: "off", dot: "doc-dot", dotState: "off" }} />
+          )}
         </DocItem>
       </DocList>
     </>
@@ -119,14 +119,14 @@ const first = EDITOR.name.split(" ")[0]
 
 export const docDesktop: SceneSpec = {
   ...SIZES.tour,
-  label: `A OneCamp doc, the Launch sync notes, where ${EDITOR.name}'s live caret and name flag add the rollback steps under Decisions while ${SAM.name} reads.`,
+  label: `A OneCamp doc, the Launch sync notes, where ${EDITOR.name}'s live caret and name flag type the rollback steps under Decisions while ${SAM.name} reads.`,
   script: SCRIPT,
   render: () => <DocScene />,
 }
 
 export const docPhone: SceneSpec = {
   ...SIZES.phone,
-  label: `The Launch sync notes on a phone, where ${first}'s live caret adds the rollback steps under Decisions.`,
+  label: `The Launch sync notes on a phone, where ${first}'s live caret types the rollback steps under Decisions.`,
   script: SCRIPT,
   render: () => <DocScene phone />,
 }
