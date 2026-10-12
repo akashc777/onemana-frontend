@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { Icon } from "@/components/ui/icons";
 
 /**
@@ -17,7 +17,7 @@ function fadeTo(set: (t: string) => void, theme: string) {
 
 /**
  * Light or dark, drawn on the server and correct before any script runs.
- * next-themes sets the theme class on <html> before the page paints, so CSS
+ * The theme script sets the theme class on <html> before the page paints, so CSS
  * chooses both the icon and the button's name: each is in the markup twice
  * and the `dark:` variant shows one. The icon turns a quarter on a change
  * (S17), on the spring.

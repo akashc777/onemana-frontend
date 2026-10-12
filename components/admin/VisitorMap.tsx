@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import type { CountryCount } from "@/lib/adminApi";
 import { COUNTRIES, countryName, countryFlag } from "@/lib/geo";
