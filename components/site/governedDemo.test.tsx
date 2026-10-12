@@ -1,7 +1,8 @@
+import { readFileSync } from "node:fs"
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
-import { GovernedDemo, AUDIT_ROW, STEPS, initialStep } from "@/components/site/GovernedDemo"
+import { GovernedDemo, AUDIT_ROW, OPEN_STEP, STEPS } from "@/components/site/GovernedDemo"
 
 /**
  * Node, no DOM, in this repo's idiom: the data and the one decision are
@@ -32,15 +33,13 @@ describe("the governed walkthrough", () => {
         expect(STEPS[0].call).toBeUndefined()
     })
 
-    // Somebody who asked for less motion gets the point without operating a
-    // control to reach it, and a sales link can hand somebody the answer.
-    it("opens on the answer for reduced motion or a sales link", () => {
-        expect(initialStep({ reduced: true, deepLinked: false })).toBe(STEPS.length - 1)
-        expect(initialStep({ reduced: false, deepLinked: true })).toBe(STEPS.length - 1)
-    })
-
-    it("otherwise starts at the beginning, so the refusal is watched rather than read", () => {
-        expect(initialStep({ reduced: false, deepLinked: false })).toBe(0)
+    // The hero plays this same #finance story, so this card is the evidence
+    // at rest: it opens finished and never plays by itself, only on Replay.
+    it("opens on the evidence and never plays by itself", () => {
+        expect(OPEN_STEP).toBe(STEPS.length - 1)
+        const src = readFileSync("components/site/GovernedDemo.tsx", "utf8")
+        expect(src).not.toMatch(/IntersectionObserver|setInterval/)
+        expect(src).toMatch(/setPlaying\(true\)/)
     })
 
     it("says what it is, and does not claim to be the live app", () => {
@@ -50,13 +49,18 @@ describe("the governed walkthrough", () => {
         expect(html).not.toMatch(/live app/i)
     })
 
-    // The server render is what a crawler and a no-JS reader get. It must show
-    // the thread rather than the conclusion, and it must not be empty.
-    it("renders the first step on the server", () => {
+    // The server render is what a crawler, a no-JS reader and a reader who
+    // asked for less motion get: the refusal, its row and the record's line,
+    // with nothing drawing itself in.
+    it("renders the evidence, still, on the server", () => {
         const html = renderToString(<GovernedDemo />)
         expect(html).toContain("#finance")
         expect(html).toContain("Priya N.")
-        expect(html).not.toContain(AUDIT_ROW.action)
+        expect(html).toContain("You are not a member of this channel.")
+        expect(html).toContain(AUDIT_ROW.action)
+        expect(html).toMatch(/<a[^>]*href="\/verify"[^>]*>.*Prove it<\/a>/)
+        expect(html).toContain(">Replay<")
+        expect(html).not.toMatch(/\bfx-(slide|shake|stamp|spring)\b/)
     })
 
     // WCAG 2.2 target size: each step was an 8 px button. The dot is still
