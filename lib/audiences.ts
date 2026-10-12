@@ -188,7 +188,7 @@ export const audiences: Audience[] = [
   },
   {
     slug: "compliance",
-    label: "Compliance",
+    label: "Regulated teams",
     eyebrow: "For privacy-minded and regulated teams",
     title: "AI agents you can account for",
     subtitle:
@@ -232,7 +232,7 @@ export const audiences: Audience[] = [
     priceNote: "Company controls (single sign-on, LDAP, SCIM, audit export) come with a licence or Cloud.",
     faqs: [
       {
-        q: "Does OneCamp make us compliant?",
+        q: "Is OneCamp enough to satisfy our regulator?",
         a: "No software can. OneCamp gives you controls and records; whether they meet a regulation for your use is for you and your advisers to decide.",
       },
       {

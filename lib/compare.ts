@@ -80,7 +80,7 @@ export const rivals: Rival[] = [
         what: "Hardened team chat with an agents framework",
         billing: "Annual seat licences, quoted by sales",
         agents: "Bring your own model and MCP tools; governance framed as deployment control",
-        theyWin: "A decade of hardening, FIPS and STIG compliance, and the deepest security review record in this list",
+        theyWin: "A decade of hardening, FIPS and STIG support, and the deepest security review record in this list",
         source: "https://mattermost.com/pricing/",
         // Open core: the server's source is public, the paid editions are not.
         openSource: true,

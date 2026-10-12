@@ -278,7 +278,7 @@ export const stats = [
 export const whyBuilt = {
   eyebrow: "Why we built it",
   title: "AI got access before anyone agreed to it",
-  subtitle: "Not a compliance problem. A Tuesday morning problem.",
+  subtitle: "Not a paperwork problem. A Tuesday morning problem.",
   story:
     "An assistant gets wired into the wiki, the tickets, and the chat, and within a week it can reach more than most of the people who work there. Nobody decided that. Ask who authorised a particular action and the answer is usually a shrug and a log line with a token id in it. OneCamp starts from the other end. OneMana runs the company on it.",
 };

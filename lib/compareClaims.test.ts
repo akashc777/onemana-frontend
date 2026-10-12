@@ -175,7 +175,11 @@ describe("what the page says about the regulation", () => {
             expect(forbidden.test(text), `the page claims compliance: ${forbidden}`).toBe(false)
         }
         // And says the opposite, in the place a reader is most likely to assume it.
-        expect(VIEW).toContain("No software can make you compliant")
+        expect(VIEW).toContain("No software meets a regulation for you")
+        // The site's word for what it offers is "recorded", never "compliant"
+        // or "compliance", not even to disclaim it (owner rule, 13 Oct 2026).
+        const words = (VIEW.match(/>[^<{}]*</g) ?? []).join(" ") + JSON.stringify(recordKeeping)
+        expect(words).not.toMatch(/complian/i)
     })
 
     it("dates the obligation and links the article", () => {

@@ -295,9 +295,9 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 </div>
                 <div className="mt-6">
                     <p className="max-w-2xl text-small text-muted-foreground">
-                        No software can make you compliant. Compliance is a property of your deployment
-                        and what you use it for, and anyone selling you the word is selling you
-                        something they cannot deliver. Every line in the right-hand column is a thing
+                        No software meets a regulation for you. Whether you meet one depends on your
+                        deployment and what you use it for, and anyone selling you that promise is
+                        selling something they cannot deliver. Every line in the right-hand column is a thing
                         you can check on a running install in about a minute. Whether that satisfies
                         an obligation is for you and your counsel.{" "}
                         <a
