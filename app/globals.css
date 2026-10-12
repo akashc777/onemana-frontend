@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Inter's stand-ins while it loads, sized to Inter so no line rewraps when it
+   lands. next/font sizes Arial (Windows, Apple) and nothing else; Android
+   has Roboto and Linux Liberation Sans (Arial's metrics), and unsized they
+   set text about 7% narrower, so a heading or a line of copy gained a line
+   when Inter arrived and the page below it moved (CLS 0.0575 on /pricing in a
+   phone Lighthouse run). The numbers are next/font's own formula on Next's
+   metrics table (lib/fonts.test.ts recomputes them). Named in lib/fonts.ts. */
+@font-face {
+  font-family: "Inter Fallback Roboto";
+  src: local("Roboto"), local("Roboto Regular"), local("Roboto-Regular");
+  size-adjust: 107.29%;
+  ascent-override: 90.29%;
+  descent-override: 22.51%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Inter Fallback Liberation";
+  src: local("Liberation Sans"), local("LiberationSans"), local("LiberationSans-Regular");
+  size-adjust: 107.06%;
+  ascent-override: 90.49%;
+  descent-override: 22.56%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* THE PALETTE is not written here. Every colour token (--background,
      --brand, the camp hues and the rest, light and dark) comes from the one

@@ -28,6 +28,25 @@ describe("fonts", () => {
     expect(loader("fontSans")).toMatch(/fallback: \[[^\]]*"sans-serif"\]/);
   });
 
+  // Unsized, Roboto (Android) and Liberation Sans (Linux) set text about 7%
+  // narrower than Inter, so lines rewrapped when Inter landed: CLS 0.0575 on
+  // /pricing in a phone Lighthouse run. Each stand-in is sized by next/font's
+  // own formula on Next's metrics table, recomputed here so the CSS can't drift.
+  it("puts Inter's sized stand-ins for Android and Linux before the generic families", () => {
+    expect(loader("fontSans")).toMatch(/fallback: \["Inter Fallback Roboto", "Inter Fallback Liberation", "ui-sans-serif"/);
+    const css = readFileSync(join(__dirname, "../app/globals.css"), "utf8");
+    const m = JSON.parse(readFileSync(join(__dirname, "../node_modules/next/dist/server/capsize-font-metrics.json"), "utf8"));
+    const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
+    for (const [family, metrics] of [["Inter Fallback Roboto", m.roboto], ["Inter Fallback Liberation", m.arial]] as const) {
+      const face = new RegExp(`@font-face \\{\\s*font-family: "${family}";([^}]*)\\}`).exec(css)?.[1] ?? "";
+      expect(face, family).toContain("src: local(");
+      const s = (m.inter.xWidthAvg / m.inter.unitsPerEm) / (metrics.xWidthAvg / metrics.unitsPerEm);
+      expect(face, family).toContain(`size-adjust: ${pct(s)};`);
+      expect(face, family).toContain(`ascent-override: ${pct(m.inter.ascent / (m.inter.unitsPerEm * s))};`);
+      expect(face, family).toContain(`descent-override: ${pct(Math.abs(m.inter.descent) / (m.inter.unitsPerEm * s))};`);
+    }
+  });
+
   it("gives every font whose class is used on an element a generic fallback", () => {
     const root = join(__dirname, "..");
     const used = new Set<string>();

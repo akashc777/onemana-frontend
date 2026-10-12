@@ -14,10 +14,12 @@ export const fontSans = Inter({
   // next/font's own fallback is a copy of Arial sized to match, which Android
   // and most Linux machines cannot load. With nothing after it, text set by
   // this class (the <body>) fell to the browser's serif until Inter arrived,
-  // then jumped. Written out, as next/font reads only literals. JetBrains
-  // Mono is used only through its variable, which every stack follows with
-  // these same families.
-  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+  // then jumped. Roboto (Android) and Liberation Sans (Linux) come next, sized
+  // to Inter the same way (@font-face in app/globals.css), so text set in them
+  // keeps its line breaks when Inter lands. Written out, as next/font reads
+  // only literals. JetBrains Mono is used only through its variable, which
+  // every stack follows with these same families.
+  fallback: ["Inter Fallback Roboto", "Inter Fallback Liberation", "ui-sans-serif", "system-ui", "sans-serif"],
 });
 
 /** Code, keys, identifiers and timestamps. Never eyebrows. */
