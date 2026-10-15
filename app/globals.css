@@ -292,6 +292,29 @@ body {
       text-decoration-color: rgb(var(--brand-ink));
     }
   }
+  /* A citation (a source in a table or under a figure): the text's own ink
+     over a hairline underline, solid and in ink under the pointer. With .link
+     for links in running text and .go for one that stands alone, these are
+     the site's three link looks; it drew links seven ways (storefront audit
+     G23). */
+  .link-quiet {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--line-3-c);
+    border-radius: 2px;
+    transition: text-decoration-color var(--ix-colour) var(--ix-ease), color var(--ix-colour) var(--ix-ease);
+  }
+  @media (hover: hover) {
+    .link-quiet:hover {
+      color: rgb(var(--foreground));
+      text-decoration-color: currentColor;
+    }
+  }
+  /* Pressed, a link's underline thickens (INTERACTION_SPEC.md §4, Link). */
+  :is(.link, .link-quiet):active {
+    text-decoration-thickness: 2px;
+  }
   /* A link that stands alone ("Open it in the live demo"), its arrow moving
      2px under the pointer, as a primary button's does. */
   .go {
@@ -466,41 +489,6 @@ body {
     border-radius: inherit;
     box-shadow: inset 0 0 0 1px var(--line-2-c);
     pointer-events: none;
-  }
-
-  /* /compare's team-size slider (site.md C7): a sunken track filled in the
-     brand to the value, and the thumb a raised 20px disc. */
-  .team-range {
-    appearance: none;
-    background: transparent;
-  }
-  .team-range::-webkit-slider-runnable-track {
-    height: 6px;
-    border-radius: 9999px;
-    background: linear-gradient(to right, rgb(var(--brand)) var(--fill), rgb(var(--muted)) var(--fill));
-    box-shadow: inset 0 0 0 1px var(--line-c);
-  }
-  .team-range::-moz-range-track {
-    height: 6px;
-    border-radius: 9999px;
-    background: linear-gradient(to right, rgb(var(--brand)) var(--fill), rgb(var(--muted)) var(--fill));
-  }
-  .team-range::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    margin-top: -7px;
-    border-radius: 9999px;
-    background: rgb(var(--card));
-    box-shadow: var(--e-e2);
-  }
-  .team-range::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border: 0;
-    border-radius: 9999px;
-    background: rgb(var(--card));
-    box-shadow: var(--e-e2);
   }
 
   /* A row that scrolls sideways fades at its edges. */

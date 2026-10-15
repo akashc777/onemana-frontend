@@ -165,12 +165,18 @@ describe("the interaction layer's guard", () => {
   it("the CSS never takes a focus outline away without a box-shadow ring in its place", async () => {
     const root = await siteCss()
     const offenders: string[] = []
+    const ringed = new Set<string>()
     root.walkRules((rule) => {
-      if (!/:focus(-visible)?\b/.test(rule.selector)) return
+      // A ring drawn on the control's own part (a slider's thumb) rings it.
+      const part = /^(.*:focus-visible)::[\w-]+$/.exec(rule.selector)
+      if (part && rule.nodes.some((d) => d.type === "decl" && d.prop === "box-shadow" && d.value.includes("var(--ring)"))) ringed.add(part[1]!)
+    })
+    root.walkRules((rule) => {
+      if (!/:focus(-visible)?\b/.test(rule.selector) || /::/.test(rule.selector)) return
       const removes = rule.nodes.some((d) => d.type === "decl" && /^outline(-style)?$/.test(d.prop) && /^(none|0|2px solid transparent)$/.test(d.value.trim()))
       const ring = rule.nodes.some((d) => d.type === "decl" && d.prop === "box-shadow" && d.value !== "none")
       // A list option's highlight is its focus (spec §2.4), drawn by the list.
-      if (removes && !ring && !/data-interactive="item"/.test(rule.selector)) offenders.push(rule.selector)
+      if (removes && !ring && !ringed.has(rule.selector) && !/data-interactive="item"/.test(rule.selector)) offenders.push(rule.selector)
     })
     expect(offenders).toEqual([])
   }, 90_000)

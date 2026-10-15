@@ -55,6 +55,7 @@ describe("words a person reads clear AA", () => {
       "app/docs/page.tsx": 1, // a row's arrow icon
       "components/ui/Select.tsx": 1, // the placeholder
       "components/site/Footer.tsx": 1, // the phone accordion's plus icon
+      "components/ui/Field.tsx": 1, // a required field's aria-hidden "*" (storefront audit K4)
     })
   })
 })

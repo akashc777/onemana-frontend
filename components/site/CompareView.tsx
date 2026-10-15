@@ -23,6 +23,10 @@ import {
     rivalsLine,
 } from "@/lib/compare";
 import { site } from "@/lib/site";
+import { StackTable } from "@/components/ui/StackTable";
+
+/** The billing table's rows: OneCamp's first, raised, then the rivals. */
+const BILLING_ROWS = [{ ...onecampRow, onecamp: true as const, source: "", also: undefined }, ...rivals.map((r) => ({ ...r, onecamp: false as const }))];
 
 /**
  * The comparison page.
@@ -86,71 +90,53 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     subtitle="Billing shape rather than today's price, because the shape is what you live with. Prices move; who you are billed for does not."
                 />
                 <div className="mt-8">
-                    {/* The table is the only element on the site allowed to scroll
-                        sideways, and it does so inside its own box so the page
-                        itself never does. */}
-                    <div className="fade-x -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 sm:[mask-image:none]">
-                        <table className="w-full min-w-[46rem] border-collapse text-left text-small">
-                            <caption className="sr-only">
-                                {`OneCamp compared with ${countWord(rivals.length)} alternatives on billing and agent governance`}
-                            </caption>
-                            <thead>
-                                <tr className="border-b border-border">
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Product</th>
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">What it is</th>
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">How you pay</th>
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Agent governance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {/* OneCamp's row, lifted (site.md C3): the raised surface with a 2px brand rule. */}
-                                <tr className="bg-card shadow-e1">
-                                    <th scope="row" className="rounded-l-xl border-l-2 border-brand px-4 py-4 align-top font-semibold text-foreground">
-                                        <ProductName name={onecampRow.name} />
-                                    </th>
-                                    <td className="px-4 py-4 align-top text-foreground">{onecampRow.what}</td>
-                                    <td className="px-4 py-4 align-top text-foreground">{onecampRow.billing}</td>
-                                    <td className="rounded-r-xl px-4 py-4 align-top font-[510] text-foreground">{onecampRow.agents}</td>
-                                </tr>
-                                {rivals.map((r) => (
-                                    <tr key={r.name} className="border-b border-border last:border-0">
-                                        <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
-                                            <ProductName name={r.name}>
-                                                <a
-                                                    href={r.source}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="tap-target underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
-                                                >
-                                                    {r.name}
+                    {/* A table where it fits (from lg), one card per product
+                        below that, OneCamp's raised: nothing scrolls sideways
+                        (storefront audit C1). */}
+                    <StackTable
+                        caption={`OneCamp compared with ${countWord(rivals.length)} alternatives on billing and agent governance`}
+                        from="lg"
+                        rows={BILLING_ROWS}
+                        rowKey={(r) => r.name}
+                        featured={(r) => r.onecamp}
+                        columns={[
+                            {
+                                key: "product",
+                                label: "Product",
+                                cell: (r) =>
+                                    r.onecamp ? (
+                                        <ProductName name={r.name} />
+                                    ) : (
+                                        <ProductName name={r.name}>
+                                            <a href={r.source} target="_blank" rel="noreferrer" className="link-quiet tap-target">
+                                                {r.name}
+                                            </a>
+                                        </ProductName>
+                                    ),
+                            },
+                            {
+                                key: "what",
+                                label: "What it is",
+                                cell: (r) => (
+                                    <>
+                                        {r.what}
+                                        {/* A part of the row its own page does not say, sourced where it is said. */}
+                                        {r.also && (
+                                            <>
+                                                {" ("}
+                                                <a href={r.also.href} target="_blank" rel="noreferrer" className="link-quiet">
+                                                    {r.also.label}
                                                 </a>
-                                            </ProductName>
-                                        </th>
-                                        <td className="px-4 py-4 align-top text-muted-foreground">
-                                            {r.what}
-                                            {/* A part of the row its own page does not say, sourced where it is said. */}
-                                            {r.also && (
-                                                <>
-                                                    {" ("}
-                                                    <a
-                                                        href={r.also.href}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="underline decoration-border-strong underline-offset-4 hover:text-foreground hover:decoration-foreground"
-                                                    >
-                                                        {r.also.label}
-                                                    </a>
-                                                    )
-                                                </>
-                                            )}
-                                        </td>
-                                        <td className="px-4 py-4 align-top text-muted-foreground">{r.billing}</td>
-                                        <td className="px-4 py-4 align-top text-muted-foreground">{r.agents}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                                )
+                                            </>
+                                        )}
+                                    </>
+                                ),
+                            },
+                            { key: "billing", label: "How you pay", cell: (r) => r.billing },
+                            { key: "agents", label: "Agent governance", cell: (r) => r.agents },
+                        ]}
+                    />
                 </div>
                 <p className="mt-4 text-caption text-muted-foreground">
                     Each rival&apos;s name links to the page its row was read from, in {CLAIMS_CHECKED}. If one of these
@@ -195,7 +181,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 <div className="mt-4">
                     <p className="max-w-2xl text-body text-muted-foreground">
                         Then take it away and check it. Download the record from the demo and drop it on{" "}
-                        <a href="/verify" className="underline underline-offset-4 hover:text-foreground">
+                        <a href="/verify" className="link">
                             the verifier
                         </a>
                         , which recomputes every row in your browser. It needs no account and uploads nothing.
@@ -219,37 +205,26 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                     title="Already paying for an agent? Bring it."
                     subtitle="Hosted or your own, each arrives as a named agent acting for a person. It reaches no further than that person can, shows up in the agent inventory, and stops when you pause it."
                 />
-                <div className="mt-8">
-                    <div className="fade-x -mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0 sm:[mask-image:none]">
-                        <table className="w-full min-w-[40rem] border-collapse text-left text-small">
-                            <caption className="sr-only">How the agents you already pay for connect to OneCamp</caption>
-                            <thead>
-                                <tr className="border-b border-border">
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Agent</th>
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">How it is billed</th>
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">How it joins OneCamp</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {agentsYouBring.map((a) => (
-                                    <tr key={a.name} className="border-b border-border last:border-0">
-                                        <th scope="row" className="px-4 py-4 align-top font-semibold text-foreground">
-                                            <a
-                                                href={a.source}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="tap-target underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
-                                            >
-                                                {a.name}
-                                            </a>
-                                        </th>
-                                        <td className="px-4 py-4 align-top text-muted-foreground">{a.billing}</td>
-                                        <td className="px-4 py-4 align-top text-muted-foreground">{a.connects}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                <div className="mt-8 md:border-y md:border-border">
+                    {/* A table from md, a card per agent below it (C2). */}
+                    <StackTable
+                        caption="How the agents you already pay for connect to OneCamp"
+                        rows={agentsYouBring}
+                        rowKey={(a) => a.name}
+                        columns={[
+                            {
+                                key: "agent",
+                                label: "Agent",
+                                cell: (a) => (
+                                    <a href={a.source} target="_blank" rel="noreferrer" className="link-quiet tap-target">
+                                        {a.name}
+                                    </a>
+                                ),
+                            },
+                            { key: "billing", label: "How it is billed", cell: (a) => a.billing },
+                            { key: "connects", label: "How it joins OneCamp", cell: (a) => a.connects },
+                        ]}
+                    />
                 </div>
                 <p className="mt-4 max-w-2xl text-small text-muted-foreground">
                     No token to paste: the agent signs in, and whoever approves it picks the agent it acts as and what
@@ -268,30 +243,17 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         />
                     }
                 >
-                <div>
-                    <div className="fade-x -mx-4 overflow-x-auto border-y border-border px-4 sm:mx-0 sm:px-0 sm:[mask-image:none]">
-                        <table className="w-full min-w-[42rem] border-collapse text-left text-small">
-                            <caption className="sr-only">
-                                Record-keeping obligations and what OneCamp produces against each
-                            </caption>
-                            <thead>
-                                <tr className="border-b border-border">
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">Asked for</th>
-                                    <th scope="col" className="px-4 py-3 text-caption font-[510] text-muted-foreground">What this produces</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recordKeeping.map((r) => (
-                                    <tr key={r.asked} className="border-b border-border last:border-0">
-                                        <th scope="row" className="px-4 py-4 align-top font-normal text-muted-foreground">
-                                            {r.asked}
-                                        </th>
-                                        <td className="px-4 py-4 align-top text-foreground">{r.produced}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                <div className="md:border-y md:border-border">
+                    {/* A table from md, a card per obligation below it (C2). */}
+                    <StackTable
+                        caption="Record-keeping obligations and what OneCamp produces against each"
+                        rows={recordKeeping}
+                        rowKey={(r) => r.asked}
+                        columns={[
+                            { key: "asked", label: "Asked for", cell: (r) => r.asked },
+                            { key: "produced", label: "What this produces", cell: (r) => <span className="text-foreground">{r.produced}</span> },
+                        ]}
+                    />
                 </div>
                 <div className="mt-6">
                     <p className="max-w-2xl text-small text-muted-foreground">
@@ -300,12 +262,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                         selling something they cannot deliver. Every line in the right-hand column is a thing
                         you can check on a running install in about a minute. Whether that satisfies
                         an obligation is for you and your counsel.{" "}
-                        <a
-                            href={RECORD_KEEPING_SOURCE}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline decoration-border-strong underline-offset-4 hover:decoration-foreground"
-                        >
+                        <a href={RECORD_KEEPING_SOURCE} target="_blank" rel="noreferrer" className="link">
                             Read Article 12
                         </a>
                         .

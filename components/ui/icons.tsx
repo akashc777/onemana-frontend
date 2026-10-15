@@ -46,6 +46,7 @@ const ICONS = {
   "chevron-down": [["path", "M6 9l6 6 6-6"]],
   check: [["path", "M5 12.5l4.5 4.5L19 7.5"]],
   plus: [["path", "M12 5v14M5 12h14"]],
+  minus: [["path", "M5 12h14"]],
   close: [["path", "M6 6l12 12M18 6L6 18"]],
   menu: [["path", "M4 7h16M4 12h16M4 17h16"]],
   sun: [

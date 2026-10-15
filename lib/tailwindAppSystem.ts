@@ -192,6 +192,61 @@ export const fieldHalo = (colour: "brand" | "danger") =>
 /** A switch, checkbox or radio under the pointer: a 4px halo of the hover tint (INTERACTION_SPEC.md §4, Toggle). */
 const TOGGLE_HALO = "0 0 0 4px color-mix(in srgb, rgb(var(--brand)) var(--ix-hover-a), transparent)"
 
+/**
+ * THE SLIDER KIND (a site addition to INTERACTION_SPEC.md, proposed to its
+ * owner): a sunken track filled in the accent to the value (--fill), and the
+ * raised thumb. It answers the hand (storefront audit C7: a flat disc that
+ * never changed): grab under the pointer, grabbing while held, the hover's
+ * halo round the thumb, and held, the thumb lifts to e3 and grows to 1.1 on
+ * the spring. The focus ring is drawn round the thumb, not the box. A 44 px
+ * box under a finger. Each engine's pseudo-element is its own rule: a browser
+ * drops a whole rule over one selector it does not know.
+ */
+function rangeComponent(): Record<string, Record<string, unknown>> {
+  const track = {
+    height: "6px",
+    borderRadius: "9999px",
+    background: "linear-gradient(to right, rgb(var(--brand)) var(--fill, 0%), rgb(var(--muted)) var(--fill, 0%))",
+    boxShadow: "inset 0 0 0 1px var(--line-c)",
+  }
+  const thumb = {
+    width: "20px",
+    height: "20px",
+    borderRadius: "9999px",
+    backgroundColor: "rgb(var(--card))",
+    boxShadow: "var(--e-e2)",
+    transition: "scale var(--ix-settle) var(--ix-spring), box-shadow var(--ix-colour) var(--ix-ease)",
+  }
+  const halo = { boxShadow: `var(--e-e2), ${TOGGLE_HALO}` }
+  const held = { scale: "1.1", boxShadow: "var(--e-e3)" }
+  const ring = { boxShadow: "var(--e-e2), 0 0 0 2px rgb(var(--card)), 0 0 0 4px rgb(var(--ring))" }
+  return {
+    ".ui-range": {
+      appearance: "none",
+      WebkitAppearance: "none",
+      height: px(40),
+      background: "transparent",
+      cursor: "grab",
+      WebkitTapHighlightColor: "transparent",
+      "&:active": { cursor: "grabbing" },
+      "&:focus-visible": { outline: "none" },
+      "&::-webkit-slider-runnable-track": track,
+      "&::-moz-range-track": track,
+      "&::-webkit-slider-thumb": { ...thumb, WebkitAppearance: "none", appearance: "none", marginTop: "-7px" },
+      "&::-moz-range-thumb": { ...thumb, border: "0" },
+      [HOVER]: {
+        "&:hover::-webkit-slider-thumb": halo,
+        "&:hover::-moz-range-thumb": halo,
+      },
+      "&:active::-webkit-slider-thumb": held,
+      "&:active::-moz-range-thumb": held,
+      "&:focus-visible::-webkit-slider-thumb": ring,
+      "&:focus-visible::-moz-range-thumb": ring,
+      [COARSE]: { height: px(44) },
+    },
+  }
+}
+
 /** The checkbox's white tick, the icon set's check on its 24 grid. */
 const CHECK_TICK =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E\")"
@@ -275,7 +330,13 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       "&[aria-invalid='true']": { boxShadow: fieldHalo("danger") },
       "&:disabled": { cursor: "not-allowed", backgroundColor: "rgb(var(--muted))", opacity: String(APP.field.disabledOpacity) },
       [MD]: { height: px(APP.field.height), ...sizeOf(APP.field.text) },
+      // A number field shows its number, not the browser's spin buttons
+      // (storefront audit C5): a stepper or a slider beside it steps it.
+      "&[type='number']": { appearance: "textfield", MozAppearance: "textfield", fontVariantNumeric: "tabular-nums" },
+      "&[type='number']::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: "0" },
+      "&[type='number']::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: "0" },
     },
+    ...rangeComponent(),
     ".ui-chip": {
       display: "inline-flex",
       alignItems: "center",
@@ -692,6 +753,8 @@ export function interactionCss(): Record<string, unknown>[] {
       // REDUCED MOTION: no transform anywhere in the layer; colour at once.
       "@media (prefers-reduced-motion: reduce)": {
         "[data-interactive], [data-interactive]::before, .ui-btn, .go-arrow": { scale: "none !important", translate: "none !important", rotate: "none !important" },
+        ".ui-range::-webkit-slider-thumb": { scale: "none !important" },
+        ".ui-range::-moz-range-thumb": { scale: "none !important" },
       },
     },
   ]

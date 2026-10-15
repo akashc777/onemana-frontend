@@ -32,6 +32,11 @@ import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fmtINRFor, fromUsd, localEsti
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
+import { Icon } from "@/components/ui/icons"
+import { ix } from "@/lib/interactive"
+
+/** The calculator's team, 1 to 1000 people. */
+const clampTeam = (n: number) => Math.min(1000, Math.max(1, n))
 
 // The totals are in the reader's money. In India, rupees: the rivals' dollar
 // list prices at the day's rate (pricing.usd_rate), rounded to the hundred.
@@ -71,15 +76,41 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                 <label htmlFor="team-size" className="text-small text-foreground">
                     Our team is
                 </label>
-                <input
-                    id="team-size"
-                    type="number"
-                    min={1}
-                    max={1000}
-                    value={people}
-                    onChange={(e) => setPeople(Number(e.target.value) || 1)}
-                    className="ui-field w-24 tabular-nums"
-                />
+                {/* A stepper: the number between a step down and a step up,
+                    the browser's spin buttons gone (storefront audit C5). */}
+                <span className="inline-flex items-center gap-1">
+                    <button
+                        type="button"
+                        aria-label="One person fewer"
+                        aria-controls="team-size"
+                        disabled={people <= 1}
+                        onClick={() => setPeople((n) => clampTeam(n - 1))}
+                        {...ix("icon")}
+                        className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground disabled:opacity-40 sm:size-9"
+                    >
+                        <Icon name="minus" />
+                    </button>
+                    <input
+                        id="team-size"
+                        type="number"
+                        min={1}
+                        max={1000}
+                        value={people}
+                        onChange={(e) => setPeople(Number(e.target.value) || 1)}
+                        className="ui-field w-20 text-center tabular-nums"
+                    />
+                    <button
+                        type="button"
+                        aria-label="One person more"
+                        aria-controls="team-size"
+                        disabled={people >= 1000}
+                        onClick={() => setPeople((n) => clampTeam(n + 1))}
+                        {...ix("icon")}
+                        className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground disabled:opacity-40 sm:size-9"
+                    >
+                        <Icon name="plus" />
+                    </button>
+                </span>
                 <span className="text-small text-foreground">people.</span>
                 <label className="flex min-h-11 cursor-pointer items-center gap-2 text-small text-foreground sm:min-h-0">
                     <input
@@ -91,8 +122,9 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     We want AI too.
                 </label>
             </div>
-            {/* The same number on a slider (site.md C7): the brand fills the
-                track up to the team's size; the thumb is the raised disc. */}
+            {/* The same number on a slider (site.md C7), the layer's slider
+                kind (ui-range): the brand fills the track up to the team's
+                size; the thumb lifts and grows while it is held. */}
             <input
                 type="range"
                 min={1}
@@ -100,7 +132,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                 value={Math.min(200, people)}
                 onChange={(e) => setPeople(Number(e.target.value))}
                 aria-label="Team size"
-                className="team-range mt-4 h-10 w-full max-w-xl cursor-pointer"
+                className="ui-range mt-4 w-full max-w-xl"
                 style={{ "--fill": `${((Math.min(200, people) - 1) / 199) * 100}%` } as React.CSSProperties}
             />
 
@@ -164,7 +196,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     return cloud ? (
                         <>
                             {" "}Or nobody does:{" "}
-                            <Link href={cloud.href} className="underline underline-offset-2 hover:text-foreground">
+                            <Link href={cloud.href} className="link">
                                 OneCamp Cloud ({cloud.plan}) is {(() => {
                                     const inr = cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr
                                     const est = localEstimate(pricing, inr, region)
