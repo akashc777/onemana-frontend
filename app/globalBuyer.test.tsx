@@ -161,6 +161,19 @@ describe("a buyer outside India", () => {
     expect(india).toContain("₹24,999 once")
     expect(india).not.toContain("≈")
   })
+
+  // Under the pay button the note named "Dollar amounts" and the dollar's
+  // rate, beside a button that said "(≈ £194)", and said the same in India,
+  // where no estimate is shown at all. It names the estimate's own currency.
+  it("is told the rate of the currency the checkout's estimate is in", async () => {
+    const gb = words((await pagesFor(regionFor("GB", "en-GB")))["buy-lifetime"])
+    expect(gb).toContain("Pay ₹24,999 (≈ £194) and get your key")
+    expect(gb).toContain("The estimate is at today's exchange rate (₹129.16 to the pound)")
+    expect(gb).not.toMatch(/Dollar amounts|to the dollar/)
+    const india = words((await pagesFor(INDIA))["buy-lifetime"])
+    expect(india).toContain("You pay in Indian rupees, with a GST invoice.")
+    expect(india).not.toMatch(/exchange rate|to the dollar/)
+  })
 })
 
 describe("a buyer in India, the control", () => {

@@ -95,7 +95,7 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
         <strong>{priceWithEstimate(pricing, pricing.storage_addon_inr, region, " a month")}</strong>.
       </p>
       <p className="mt-1 text-caption text-muted-foreground">{paymentTerms("addon")}</p>
-      <p className="mt-1 text-caption text-muted-foreground">{currencyNote(pricing)}</p>
+      <p className="mt-1 text-caption text-muted-foreground">{currencyNote(pricing, { region })}</p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           type="button"

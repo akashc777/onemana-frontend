@@ -22,6 +22,18 @@ describe("currencyNote", () => {
     expect(currencyNote(dollars, { inIndia: false, cloud: true })).toMatch(/^OneCamp Cloud is billed in Indian rupees\./)
   })
 
+  it("names the currency the estimate beside it is in, and talks of none in India", () => {
+    const live = { ...rupeesOnly, rates: { USD: 96.87, GBP: 129.16, EUR: 112.64 } }
+    expect(currencyNote(live, { region: regionFor("GB", "en-GB") })).toBe(
+      "You pay in Indian rupees. The estimate is at today's exchange rate (₹129.16 to the pound); your card converts at its own rate and may add a small foreign transaction fee.",
+    )
+    expect(currencyNote(live, { region: regionFor("DE", "de-DE") })).toContain("(₹112.64 to the euro)")
+    // A currency with no rate today is estimated in dollars, and the note says the dollar's.
+    expect(currencyNote(live, { region: regionFor("AU", "en-AU") })).toContain("(₹96.87 to the dollar)")
+    expect(currencyNote(live, { region: regionFor("IN", "en-IN") })).toBe("You pay in Indian rupees, with a GST invoice.")
+    expect(currencyNote(live, { inIndia: true })).toBe("You pay in Indian rupees, with a GST invoice.")
+  })
+
   it("explains both where the country is unknown", () => {
     const note = currencyNote(dollars)
     expect(note).toContain("charged in US dollars outside India and in rupees in India")

@@ -489,7 +489,7 @@ export function BuyCheckout({
               </li>
               <li className="flex gap-2 text-muted-foreground">
                 <Icon name="globe" size={14} className="mt-0.5" />
-                {currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })}
+                {currencyNote(pricing, { cloud: isCloud, region })}
               </li>
               {isCloud && setupEstimateFor(pricing, business) && <li className="pl-[22px] text-muted-foreground">{setupEstimateFor(pricing, business)?.sentence}</li>}
             </ul>

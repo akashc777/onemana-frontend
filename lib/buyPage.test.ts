@@ -109,7 +109,7 @@ describe("the buy page quotes the price it charges", () => {
   // Rupees in India and for Cloud; dollars for the licence abroad once the
   // backend charges them (charge_usd). The note under the button says which.
   it("says how the charge is made where the money is paid", () => {
-    expect(page).toContain("currencyNote(pricing, { inIndia: isIndia, cloud: isCloud })")
+    expect(page).toContain("currencyNote(pricing, { cloud: isCloud, region })")
   })
 })
 

@@ -159,21 +159,37 @@ export function fmtINR(n: number): string {
   return inr.format(n || 0);
 }
 
+/** What one unit of each estimate's currency is called: "₹129.16 to the pound". */
+const UNIT_NAME: Record<DisplayCurrency, string> = {
+  USD: "dollar",
+  EUR: "euro",
+  GBP: "pound",
+  SGD: "Singapore dollar",
+  AUD: "Australian dollar",
+  CAD: "Canadian dollar",
+};
+
 /**
  * The line under every price list and beside every pay button. A card
  * outside India is charged in rupees and converted by the card's issuer, so
- * the dollar figure is close, not exact, and saying so here is cheaper than
- * a buyer finding out on their statement.
+ * the estimate is close, not exact, and saying so here is cheaper than a
+ * buyer finding out on their statement. It names the currency the estimate
+ * beside it is in (the region's, as localEstimate chooses), and in India,
+ * where no estimate is shown, it talks of none.
  */
-export function currencyNote(p: Pricing, ctx: { inIndia?: boolean; cloud?: boolean } = {}): string {
-  const rate = p.usd_rate > 0 ? ` (₹${p.usd_rate.toFixed(2)} to the dollar)` : "";
-  const rupees = `Dollar amounts are at today's exchange rate${rate}; your card converts at its own rate and may add a small foreign transaction fee.`;
-  if (!p.charge_usd) return `You pay in Indian rupees. ${rupees}`;
+export function currencyNote(p: Pricing, ctx: { inIndia?: boolean; cloud?: boolean; region?: Region | null } = {}): string {
+  const inIndia = ctx.inIndia ?? ctx.region?.inIndia;
+  const estimate = inIndia ? null : estimateIn(p, ctx.region ?? null);
+  const converts = "your card converts at its own rate and may add a small foreign transaction fee.";
+  const rupees = estimate
+    ? `The estimate is at today's exchange rate (₹${estimate.rate.toFixed(2)} to the ${UNIT_NAME[estimate.currency]}); ${converts}`
+    : `${converts.charAt(0).toUpperCase()}${converts.slice(1)}`;
+  if (!p.charge_usd) return inIndia ? "You pay in Indian rupees, with a GST invoice." : `You pay in Indian rupees. ${rupees}`;
   // The licence is charged in dollars outside India; Cloud is still a rupee
   // subscription. Say which applies to what this note sits under.
   if (ctx.cloud) return `OneCamp Cloud is billed in Indian rupees. ${rupees}`;
-  if (ctx.inIndia === true) return "You pay in Indian rupees, with a GST invoice.";
-  if (ctx.inIndia === false) return "Charged in US dollars: the price shown is the amount on your card.";
+  if (inIndia === true) return "You pay in Indian rupees, with a GST invoice.";
+  if (inIndia === false) return "Charged in US dollars: the price shown is the amount on your card.";
   return `The licence is charged in US dollars outside India and in rupees in India. OneCamp Cloud is billed in rupees: ${rupees.charAt(0).toLowerCase()}${rupees.slice(1)}`;
 }
 
@@ -194,18 +210,29 @@ function rupeesPer(p: Pricing, currency: DisplayCurrency): number {
 }
 
 /**
- * A rupee amount in the reader's own currency, at the day's rate: "≈ €224".
- * Dollars when the region is not known yet (the server's HTML) or its
- * currency has no rate. "" in India, where the rupee is home, and when there
- * is no amount or no rate at all. Worked out, never typed.
+ * The currency a reader's estimate is in, and its rupees per unit today: the
+ * region's own, else dollars when the region is not known yet (the server's
+ * HTML) or its currency has no rate. Null in India, where the rupee is home,
+ * and with no rate at all. localEstimate writes with it and currencyNote
+ * names it, so the two never disagree.
  */
-export function localEstimate(p: Pricing, inr: number, region: Region | null): string {
-  if (region?.inIndia || !(inr > 0)) return "";
+function estimateIn(p: Pricing, region: Region | null): { currency: DisplayCurrency; rate: number } | null {
+  if (region?.inIndia) return null;
   let currency: DisplayCurrency = region?.currency ?? "USD";
   if (!rupeesPer(p, currency)) currency = "USD";
   const rate = rupeesPer(p, currency);
-  if (!rate) return "";
-  return `≈ ${fmtLocal(inr / rate, currency, region?.locale ?? "en-US")}`;
+  return rate ? { currency, rate } : null;
+}
+
+/**
+ * A rupee amount in the reader's own currency, at the day's rate: "≈ €224",
+ * in the currency estimateIn picks. "" in India, and when there is no amount
+ * or no rate at all. Worked out, never typed.
+ */
+export function localEstimate(p: Pricing, inr: number, region: Region | null): string {
+  const estimate = estimateIn(p, region);
+  if (!estimate || !(inr > 0)) return "";
+  return `≈ ${fmtLocal(inr / estimate.rate, estimate.currency, region?.locale ?? "en-US")}`;
 }
 
 /**
