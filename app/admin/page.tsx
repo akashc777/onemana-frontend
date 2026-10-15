@@ -3,29 +3,11 @@
 import { useState } from "react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { AdminLogin } from "@/components/admin/AdminLogin";
-import { MetricsPanel } from "@/components/admin/MetricsPanel";
-import { OrdersTable } from "@/components/admin/OrdersTable";
-import { EmailsTable } from "@/components/admin/EmailsTable";
-import { CustomersTable } from "@/components/admin/CustomersTable";
-import { InvoicesTable } from "@/components/admin/InvoicesTable";
-import { SubscriptionsTable } from "@/components/admin/SubscriptionsTable";
-import { SettingsForm } from "@/components/admin/SettingsForm";
-import { BlogManager } from "@/components/admin/BlogManager";
-import { DocsManager } from "@/components/admin/DocsManager";
-import { VisitorsPanel } from "@/components/admin/VisitorsPanel";
-import { EarningsPanel } from "@/components/admin/EarningsPanel";
-import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
-import { GiftForm } from "@/components/admin/GiftForm";
-import { WorkspacesPanel } from "@/components/admin/WorkspacesPanel";
-
-// "emails" sits next to orders because that is the pairing that matters: an
-// order is only fulfilled once its email actually left the building.
-const TABS = ["metrics", "orders", "emails", "workspaces", "earnings", "subscriptions", "customers", "invoices", "visitors", "announcements", "blog", "docs", "settings"] as const;
-type Tab = (typeof TABS)[number];
+import { ADMIN_TABS, AdminPanel, type AdminTab } from "@/components/admin/AdminPanel";
 
 export default function AdminPage() {
   const { status, signIn, signOut } = useAdminAuth();
-  const [tab, setTab] = useState<Tab>("metrics");
+  const [tab, setTab] = useState<AdminTab>("metrics");
 
   if (status === "checking") {
     return <div className="grid min-h-[70vh] place-items-center text-sm text-muted-foreground">Loading…</div>;
@@ -44,7 +26,7 @@ export default function AdminPage() {
       </header>
 
       <nav className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-border bg-muted p-1 text-sm" aria-label="Admin sections">
-        {TABS.map((t) => (
+        {ADMIN_TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -58,24 +40,7 @@ export default function AdminPage() {
         ))}
       </nav>
 
-      {tab === "metrics" && <MetricsPanel />}
-      {tab === "orders" && <OrdersTable />}
-      {tab === "emails" && <EmailsTable />}
-      {tab === "workspaces" && <WorkspacesPanel />}
-      {tab === "earnings" && <EarningsPanel />}
-      {tab === "subscriptions" && <SubscriptionsTable />}
-      {tab === "customers" && (
-        <div>
-          <GiftForm />
-          <CustomersTable />
-        </div>
-      )}
-      {tab === "invoices" && <InvoicesTable />}
-      {tab === "visitors" && <VisitorsPanel />}
-      {tab === "announcements" && <AnnouncementsManager />}
-      {tab === "blog" && <BlogManager />}
-      {tab === "docs" && <DocsManager />}
-      {tab === "settings" && <SettingsForm />}
+      <AdminPanel tab={tab} />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { adminApi, type VisitStats, type FunnelStop } from "@/lib/adminApi";
 import { countryName, countryFlag } from "@/lib/geo";
 import { OwnBrowsersCard } from "./OwnBrowsersCard";
+import { PanelBoundary } from "./PanelBoundary";
 
 // Map is client-only (react-simple-maps fetches its topojson at runtime).
 const VisitorMap = dynamic(() => import("./VisitorMap").then((m) => m.VisitorMap), {
@@ -308,7 +309,11 @@ export function VisitorsReport({ data }: { data: VisitStats }) {
               No geographic data yet. Country is read from the CDN geo header - it populates once the backend is behind a geo-aware proxy (e.g. Cloudflare).
             </p>
           ) : (
-            <VisitorMap data={byCountry} />
+            // The map's code is the one chunk this page fetches after it loads;
+            // if a deploy took it away, the numbers around it still show.
+            <PanelBoundary name="map">
+              <VisitorMap data={byCountry} />
+            </PanelBoundary>
           )}
         </div>
         <div className="rounded-2xl border border-border bg-muted/30 p-5">

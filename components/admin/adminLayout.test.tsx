@@ -127,6 +127,12 @@ describe("the visitors report on a phone", () => {
     const row = html.slice(0, step!.index).match(/<div class="([^"]*)"[^>]*>$/)
     expect(row?.[1]).toContain("grid-cols-[minmax(0,1fr)_minmax(5rem,auto)]")
   })
+
+  it("the map sits in its own boundary", async () => {
+    const { VisitorsReport } = await import("./VisitorsPanel")
+    const html = renderToString(<VisitorsReport data={STATS} />)
+    expect(html).toMatch(/<div data-panel="map">/)
+  })
 })
 
 vi.mock("@/hooks/useAsync", () => ({
