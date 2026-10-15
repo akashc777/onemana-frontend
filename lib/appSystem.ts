@@ -394,11 +394,13 @@ export const APP = {
   /**
    * onecamp-fe components/ui/input.tsx (field-surface in globals.css): 44px
    * and 16px text on a phone, 32px and 14px from md; the raised surface at
-   * e1 with no border, a 1px accent ring at 50% and a 3px halo at 12% on
-   * focus.
+   * e1 with no border. On focus (and while a select is open) the spec's D5:
+   * a full-strength 1px accent ring and a 4px halo at --ix-halo-a (18%, 22%
+   * in dark). The 50% ring it replaces measured 2.1:1 light and 2.6:1 dark,
+   * under the 3:1 an indicator needs (storefront audit G18).
    */
   // The storefront draws its forms (/buy, /account) at 40px from md (site.md S10).
-  field: { height: 40, phoneHeight: 44, paddingX: 10, text: "sm", phoneText: "base", radius: "md", ringMix: 50, haloMix: 12, disabledOpacity: 0.7 },
+  field: { height: 40, phoneHeight: 44, paddingX: 10, text: "sm", phoneText: "base", radius: "md", halo: 4, disabledOpacity: 0.7 },
 
   /** onecamp-fe app/globals.css @utility chip: 22px, r6, 12/510, the hover overlay in a hairline. */
   chip: { height: 22, paddingX: 8, text: "2xs", weight: 510, radius: "sm" },

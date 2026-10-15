@@ -5,7 +5,7 @@ import { renderToString } from "react-dom/server"
 
 import { buttonClasses } from "@/components/ui/Button"
 import { LogoRing } from "@/components/ui/v3"
-import { ALPHA, APP, ELEVATION, tracking } from "@/lib/appSystem"
+import { ALPHA, APP, ELEVATION, SHARED, tracking } from "@/lib/appSystem"
 import { appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
 
 /**
@@ -156,7 +156,37 @@ describe("the components are the app's shapes", () => {
     expect(rem(f.borderRadius)).toBe(8)
     expect(f.backgroundColor).toBe("rgb(var(--card))")
     expect(f.boxShadow).toBe("var(--e-e1)")
-    expect((f["&:focus-visible"] as Record<string, string>).boxShadow).toBe("0 0 0 1px color-mix(in oklab, rgb(var(--brand)) 50%, transparent), 0 0 0 3px color-mix(in oklab, rgb(var(--brand)) 12%, transparent)")
+    // Spec D5: a full-strength ring and a 4px halo at the layer's alpha;
+    // the same when a select is open.
+    const focus = f["&:focus-visible, &[aria-expanded='true']"] as Record<string, string>
+    expect(focus.boxShadow).toBe("0 0 0 1px rgb(var(--brand)), 0 0 0 4px color-mix(in srgb, rgb(var(--brand)) var(--ix-halo-a), transparent)")
+    expect(focus.outline).toBe("none")
+    expect((f["&[aria-invalid='true']"] as Record<string, string>).boxShadow).toBe("0 0 0 1px rgb(var(--danger)), 0 0 0 4px color-mix(in srgb, rgb(var(--danger)) var(--ix-halo-a), transparent)")
+  })
+
+  // The audit measured the old 50% ring at 2.1:1 light and 2.6:1 dark. The
+  // ring's strength is read from the rule itself, so a weaker mix fails here.
+  it("ui-field: the focus ring clears 3:1 against the field and the page, in both themes", () => {
+    const shadows = comps[".ui-field"] as Record<string, Record<string, string>>
+    const ring = /^0 0 0 1px (.+?), 0 0 0 \d+px/.exec(Object.entries(shadows).find(([k]) => k.includes(":focus-visible"))![1].boxShadow)![1]
+    const mix = /color-mix\(in \w+, rgb\(var\(--brand\)\) (\d+)%, transparent\)/.exec(ring)
+    const alpha = ring === "rgb(var(--brand))" ? 1 : mix ? Number(mix[1]) / 100 : NaN
+    const lum = (rgb: readonly number[]) => {
+      const lin = (c: number) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4)
+      return 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2])
+    }
+    const contrast = (a: readonly number[], b: readonly number[]) => {
+      const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x)
+      return (hi + 0.05) / (lo + 0.05)
+    }
+    for (const theme of ["light", "dark"] as const) {
+      const brand = SHARED[theme].brand
+      for (const ground of ["card", "background"] as const) {
+        const under = SHARED[theme][ground]
+        const painted = brand.map((c, i) => c * alpha + under[i] * (1 - alpha))
+        expect(contrast(painted, under), `${theme} ring on ${ground}`).toBeGreaterThanOrEqual(3)
+      }
+    }
   })
 
   it("ui-chip: the app's chip, 22px r6 12/510 on the hover overlay in a hairline", () => {

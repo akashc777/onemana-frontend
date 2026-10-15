@@ -163,6 +163,15 @@ export const appTheme = {
 
 const sizeOf = (step: TypeStep) => ({ fontSize: px(APP.type[step][0]), lineHeight: px(APP.type[step][1]), letterSpacing: em(tracking(APP.type[step][0])) })
 
+/**
+ * A field's focus ring (INTERACTION_SPEC.md §2.4, D5): the colour at full
+ * strength as a 1px ring, so the indicator clears 3:1, and a 4px halo of it
+ * at --ix-halo-a (18% light, 22% dark). The danger ring of a field a check
+ * refused has the same shape.
+ */
+export const fieldHalo = (colour: "brand" | "danger") =>
+  `0 0 0 1px rgb(var(--${colour})), 0 0 0 ${APP.field.halo}px color-mix(in srgb, rgb(var(--${colour})) var(--ix-halo-a), transparent)`
+
 /** The checkbox's white tick, the icon set's check on its 24 grid. */
 const CHECK_TICK =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E\")"
@@ -219,13 +228,9 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       transitionTimingFunction: APP.motion.ease,
       "&::placeholder": { color: "rgb(var(--faint))" },
       "&:hover": { boxShadow: "0 0 0 1px var(--line-3-c), 0 1px 2px rgb(16 18 26 / 0.05)" },
-      "&:focus-visible": {
-        outline: "none",
-        boxShadow: `0 0 0 1px color-mix(in oklab, rgb(var(--brand)) ${APP.field.ringMix}%, transparent), 0 0 0 3px color-mix(in oklab, rgb(var(--brand)) ${APP.field.haloMix}%, transparent)`,
-      },
-      "&[aria-invalid='true']": {
-        boxShadow: `0 0 0 1px color-mix(in oklab, rgb(var(--danger)) ${APP.field.ringMix}%, transparent), 0 0 0 3px color-mix(in oklab, rgb(var(--danger)) ${APP.field.haloMix}%, transparent)`,
-      },
+      // Focused, or a select that is open: the spec's D5 halo (fieldHalo).
+      "&:focus-visible, &[aria-expanded='true']": { outline: "none", boxShadow: fieldHalo("brand") },
+      "&[aria-invalid='true']": { boxShadow: fieldHalo("danger") },
       "&:disabled": { cursor: "not-allowed", backgroundColor: "rgb(var(--muted))", opacity: String(APP.field.disabledOpacity) },
       [MD]: { height: px(APP.field.height), ...sizeOf(APP.field.text) },
     },
