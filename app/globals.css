@@ -208,9 +208,15 @@ body {
     color: rgb(var(--muted-foreground));
     transition: color var(--d-hover) var(--ease-out), background-color var(--d-hover) var(--ease-out);
   }
-  .nav-link:hover {
-    background: var(--hover-c);
-    color: rgb(var(--foreground));
+  /* Hover only where a pointer hovers: on a touch screen a :hover style
+     stays on after the tap and reads as a selection (storefront audit G19).
+     Every :hover on the site sits in (hover: hover); app/interaction.test.ts
+     reads the compiled CSS to keep it so. */
+  @media (hover: hover) {
+    .nav-link:hover {
+      background: var(--hover-c);
+      color: rgb(var(--foreground));
+    }
   }
   .nav-link[aria-current="page"] {
     color: rgb(var(--foreground));
@@ -241,9 +247,11 @@ body {
   .nav-idle {
     color: rgb(var(--muted-foreground));
   }
-  .nav-idle:hover {
-    background: var(--hover-c);
-    color: rgb(var(--foreground));
+  @media (hover: hover) {
+    .nav-idle:hover {
+      background: var(--hover-c);
+      color: rgb(var(--foreground));
+    }
   }
 
   /* 1120px of content, 16px gutters on a phone. */
@@ -308,8 +316,10 @@ body {
     border-radius: 2px;
     transition: text-decoration-color var(--d-hover) var(--ease-out), color var(--d-hover) var(--ease-out);
   }
-  .link:hover {
-    text-decoration-color: rgb(var(--brand-ink));
+  @media (hover: hover) {
+    .link:hover {
+      text-decoration-color: rgb(var(--brand-ink));
+    }
   }
   /* A link that stands alone ("Open it in the live demo"), its arrow moving
      2px under the pointer, as a primary button's does. */
@@ -319,10 +329,12 @@ body {
     border-radius: 2px;
   }
   .go-arrow {
-    transition: transform var(--d-hover) var(--ease-out);
+    transition: translate var(--d-hover) var(--ease-out);
   }
-  :is(.go, .ui-btn, .lift):hover .go-arrow {
-    transform: translateX(2px);
+  @media (hover: hover) {
+    :is(.go, .ui-btn, .lift):hover .go-arrow {
+      translate: 2px 0;
+    }
   }
 
   /* A row of an index ("Also in the box"): under the pointer, or reached by
@@ -690,10 +702,12 @@ body {
   .reading .heading-anchor::before {
     content: "#";
   }
-  .reading :where(h2, h3, h4):hover .heading-anchor,
-  .reading .heading-anchor:hover {
-    opacity: 1;
-    color: rgb(var(--brand-ink));
+  @media (hover: hover) {
+    .reading :where(h2, h3, h4):hover .heading-anchor,
+    .reading .heading-anchor:hover {
+      opacity: 1;
+      color: rgb(var(--brand-ink));
+    }
   }
 
   .reading :where(a):not(.heading-anchor) {
@@ -706,8 +720,10 @@ body {
     border-radius: 2px;
     transition: text-decoration-color var(--d-hover) var(--ease-out);
   }
-  .reading :where(a):not(.heading-anchor):hover {
-    text-decoration-color: rgb(var(--brand-ink));
+  @media (hover: hover) {
+    .reading :where(a):not(.heading-anchor):hover {
+      text-decoration-color: rgb(var(--brand-ink));
+    }
   }
   .reading :where(strong) {
     color: rgb(var(--foreground));
@@ -788,9 +804,11 @@ body {
       inset: calc(-0.5rem - 1px);
     }
   }
-  .reading .code-copy:hover {
-    color: rgb(var(--foreground));
-    background-color: var(--press-c);
+  @media (hover: hover) {
+    .reading .code-copy:hover {
+      color: rgb(var(--foreground));
+      background-color: var(--press-c);
+    }
   }
   .reading .code-copy[data-copied] {
     color: rgb(var(--success-ink));
@@ -1023,7 +1041,7 @@ body {
   .orbit-turn {
     animation: none !important;
   }
-  .hover-lift:hover {
+  .hover-lift {
     translate: none !important;
   }
 }

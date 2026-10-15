@@ -6,7 +6,7 @@ import { renderToString } from "react-dom/server"
 import { buttonClasses } from "@/components/ui/Button"
 import { LogoRing } from "@/components/ui/v3"
 import { ALPHA, APP, ELEVATION, SHARED, tracking } from "@/lib/appSystem"
-import { appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
+import { HOVER, appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
 
 /**
  * The site is built from the one table (lib/appSystem.ts), which mirrors the
@@ -142,7 +142,8 @@ describe("the components are the app's shapes", () => {
     expect((comps[".dark .ui-btn-primary"] as Record<string, unknown>).boxShadow).toBe(APP.button.primaryShadow.dark)
     const sec = comps[".ui-btn-secondary"] as Record<string, unknown>
     expect(sec.boxShadow).toBe("var(--e-e1)")
-    expect(sec["&:hover"]).toEqual({ boxShadow: "var(--e-e2)" })
+    // Under a pointer that hovers only (storefront audit G19).
+    expect((sec[HOVER] as Record<string, unknown>)["&:hover"]).toEqual({ boxShadow: "var(--e-e2)" })
   })
 
   // The storefront's forms are 40px from md and 44 on a phone (site.md S10).

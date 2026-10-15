@@ -6,6 +6,10 @@ import appSystem, { alphaColour, appTheme } from "./lib/tailwindAppSystem";
 const config: Config = {
   darkMode: "class",
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  // Every hover: (and group-hover:) utility only where a pointer can hover,
+  // as Tailwind 4 does for the app: on a touch screen a hover style stays on
+  // after the tap and reads as a selection (storefront audit G19).
+  future: { hoverOnlyWhenSupported: true },
   theme: {
     extend: {
       colors: {

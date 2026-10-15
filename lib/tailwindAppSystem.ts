@@ -17,6 +17,8 @@ import { ALPHA, APP, AVATAR, CAMP, ELEVATION, GLOW, MARK_RING, NIGHT, PAPER, SHA
 const px = (n: number) => `${n / 16}rem`
 const em = (n: number) => `${n}em`
 const MD = "@media (min-width: 768px)"
+/** Hover only where a pointer hovers: on a touch screen a :hover stays on after the tap (storefront audit G19). */
+export const HOVER = "@media (hover: hover)"
 
 /** A type step as Tailwind's [size, { lineHeight, letterSpacing }] pair, tracking from Inter's metrics. */
 export function typeStep(step: TypeStep, extra: Record<string, string> = {}): [string, Record<string, string>] {
@@ -201,7 +203,7 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       backgroundColor: "rgb(var(--brand))",
       color: "rgb(var(--brand-foreground))",
       boxShadow: b.primaryShadow.light,
-      "&:hover": { backgroundColor: `color-mix(in oklab, rgb(var(--brand)) ${b.hoverMix}%, black)` },
+      [HOVER]: { "&:hover": { backgroundColor: `color-mix(in oklab, rgb(var(--brand)) ${b.hoverMix}%, black)` } },
     },
     ".dark .ui-btn-primary": { boxShadow: b.primaryShadow.dark },
     // The secondary: the raised surface at e1, e2 under the cursor.
@@ -209,7 +211,7 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       backgroundColor: "rgb(var(--card))",
       color: "rgb(var(--foreground))",
       boxShadow: "var(--e-e1)",
-      "&:hover": { boxShadow: "var(--e-e2)" },
+      [HOVER]: { "&:hover": { boxShadow: "var(--e-e2)" } },
     },
     ".ui-field": {
       display: "flex",
@@ -227,7 +229,7 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       transitionDuration: `${APP.motion.duration}ms`,
       transitionTimingFunction: APP.motion.ease,
       "&::placeholder": { color: "rgb(var(--faint))" },
-      "&:hover": { boxShadow: "0 0 0 1px var(--line-3-c), 0 1px 2px rgb(16 18 26 / 0.05)" },
+      [HOVER]: { "&:hover": { boxShadow: "0 0 0 1px var(--line-3-c), 0 1px 2px rgb(16 18 26 / 0.05)" } },
       // Focused, or a select that is open: the spec's D5 halo (fieldHalo).
       "&:focus-visible, &[aria-expanded='true']": { outline: "none", boxShadow: fieldHalo("brand") },
       "&[aria-invalid='true']": { boxShadow: fieldHalo("danger") },
@@ -447,7 +449,7 @@ export function motionCss(): Record<string, unknown> {
       ".ui-field[aria-invalid='true']": { animation: `v3-flash ${ms(MS.durations.page)} ${MS.ease} 1 !important` },
       ".read-progress": { display: "none !important" },
       ".in-ping": { opacity: "0" },
-      ".lift:hover, .lift-move:hover, .lift-2:hover": { translate: "none !important" },
+      ".lift, .lift-move, .lift-2": { translate: "none !important" },
     },
   }
   for (const d of MOTION_DELAYS) classes[`.at-${d}`] = { animationDelay: ms(d) }

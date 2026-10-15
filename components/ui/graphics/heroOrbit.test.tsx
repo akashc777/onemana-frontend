@@ -59,6 +59,6 @@ describe("the one-pixel lift", () => {
   it("lifts a pixel on pointers that hover, and not at all for reduced motion", () => {
     expect(css).toMatch(/@media \(hover: hover\) \{\s*\.hover-lift:hover \{\s*translate: 0 -1px;/)
     const reduced = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"))
-    expect(reduced).toMatch(/\.hover-lift:hover \{\s*translate: none !important;/)
+    expect(reduced).toMatch(/\.hover-lift \{\s*translate: none !important;/)
   })
 })
