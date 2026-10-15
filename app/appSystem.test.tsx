@@ -218,6 +218,22 @@ describe("nothing is written around the table", () => {
     expect(rule).toContain(`outline-offset: ${APP.button.focus.offset}px`)
   })
 
+  // The global rule comes after the utilities, so a radius in it squared
+  // every focused pill, button and card (storefront audit G17: 1,382 of
+  // 1,430 controls). The outline follows each element's own corners.
+  it("focus never changes a control's shape: no rule that matches on focus sets a radius", () => {
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "")
+    for (const m of css.matchAll(/([^{}]*:focus(?:-visible|-within)?[^{}]*)\{([^{}]*)\}/g)) {
+      expect(m[2], `${m[1].trim()} sets a radius on focus`).not.toMatch(/border-radius/)
+    }
+    // Text links carry the spec's 2px corner at rest, so their ring is round too.
+    for (const sel of [".link {", ".go {", ".reading :where(a):not(.heading-anchor) {"]) {
+      const at = css.indexOf(sel)
+      expect(at, sel).toBeGreaterThan(-1)
+      expect(css.slice(at, css.indexOf("}", at)), sel).toContain("border-radius: 2px")
+    }
+  })
+
   it("text is drawn as the app draws Inter: features, optical sizes, word gap, no optimizeLegibility", () => {
     const css = read("app/globals.css")
     expect(css).toContain(`font-feature-settings: ${APP.text.featureSettings};`)

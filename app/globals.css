@@ -148,11 +148,13 @@ body {
 
 /* One visible focus state for everything a keyboard can reach, in the accent:
    the app's ring (design v3), 2px of the accent 2px off, drawn as an outline
-   so forced-colours mode still shows it. */
+   so forced-colours mode still shows it. An outline follows the element's own
+   corners, so the ring never sets a radius: one here, after the utilities,
+   squared every focused pill, button and card (storefront audit G17). Text
+   links take the spec's 2px corner in their own rule (.link, .go, .reading). */
 :focus-visible {
   outline: 2px solid rgb(var(--ring));
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 ::-webkit-scrollbar {
@@ -302,6 +304,8 @@ body {
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
     text-decoration-color: rgb(var(--brand-ink) / 0.4);
+    /* The focus ring's corner on text (INTERACTION_SPEC.md §4, Link: r2). */
+    border-radius: 2px;
     transition: text-decoration-color var(--d-hover) var(--ease-out), color var(--d-hover) var(--ease-out);
   }
   .link:hover {
@@ -312,6 +316,7 @@ body {
   .go {
     @apply inline-flex items-center gap-1 text-small text-brand-ink;
     font-weight: 510;
+    border-radius: 2px;
   }
   .go-arrow {
     transition: transform var(--d-hover) var(--ease-out);
@@ -698,6 +703,7 @@ body {
     text-decoration-thickness: 1px;
     text-decoration-color: rgb(var(--brand-ink) / 0.35);
     text-underline-offset: 3px;
+    border-radius: 2px;
     transition: text-decoration-color var(--d-hover) var(--ease-out);
   }
   .reading :where(a):not(.heading-anchor):hover {
