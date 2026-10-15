@@ -35,15 +35,21 @@ function statusLabel(status: string): string {
 
 // Invoices, read once per visit: the Invoices tab asks for them when it is
 // pointed at, so they are usually there by the time it opens.
-let invoiceRequest: Promise<Invoice[]> | null = null;
-function loadInvoices(fresh = false): Promise<Invoice[]> {
-  if (fresh || !invoiceRequest) {
-    invoiceRequest = portalApi.invoices().catch((e) => {
-      invoiceRequest = null;
+//
+// KEPT FOR ONE CUSTOMER. The read outlives the dashboard (it is module state),
+// and signing out does not reload the page: whoever signed in next in the tab,
+// after a sign-out or an expired session, was shown the invoices read for the
+// account before. A read is reused only for the customer it was made for.
+let invoiceRequest: { customer: string; request: Promise<Invoice[]> } | null = null;
+export function loadInvoices(customer: string, fresh = false): Promise<Invoice[]> {
+  if (fresh || !invoiceRequest || invoiceRequest.customer !== customer) {
+    const request: Promise<Invoice[]> = portalApi.invoices().catch((e) => {
+      if (invoiceRequest?.request === request) invoiceRequest = null;
       throw e;
     });
+    invoiceRequest = { customer, request };
   }
-  return invoiceRequest;
+  return invoiceRequest.request;
 }
 
 export function AccountDashboard({
@@ -119,8 +125,8 @@ export function AccountDashboard({
               aria-controls={`${id}-panel`}
               tabIndex={selected ? 0 : -1}
               onClick={() => choose(t.key)}
-              onPointerEnter={t.key === "invoices" ? () => void loadInvoices().catch(() => {}) : undefined}
-              onFocus={t.key === "invoices" ? () => void loadInvoices().catch(() => {}) : undefined}
+              onPointerEnter={t.key === "invoices" ? () => void loadInvoices(c.id).catch(() => {}) : undefined}
+              onFocus={t.key === "invoices" ? () => void loadInvoices(c.id).catch(() => {}) : undefined}
               className={`-mb-px shrink-0 whitespace-nowrap border-b-2 py-2.5 text-small font-medium transition-colors ${
                 selected ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
@@ -137,7 +143,7 @@ export function AccountDashboard({
             what has already happened. */}
         {tab === "overview" && <WorkspaceSection onReload={onReload} subscriptions={overview.subscriptions} initial={instances} />}
         {tab === "overview" && <OverviewTab overview={overview} onOpen={choose} />}
-        {tab === "invoices" && <InvoicesTab />}
+        {tab === "invoices" && <InvoicesTab customer={c.id} />}
         {tab === "subscription" && <SubscriptionTab initial={overview.subscriptions} onChanged={onReload} />}
         {tab === "billing" && <BillingTab overview={overview} onChanged={onReload} />}
       </div>
@@ -203,7 +209,7 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
           detail="GST invoices, as PDFs."
           action={
             invoices > 0 ? (
-              <button type="button" onClick={() => onOpen("invoices")} onPointerEnter={() => void loadInvoices().catch(() => {})} className={tileLink}>
+              <button type="button" onClick={() => onOpen("invoices")} onPointerEnter={() => void loadInvoices(overview.customer.id).catch(() => {})} className={tileLink}>
                 Download invoices
               </button>
             ) : null
@@ -286,7 +292,7 @@ function ErrorState({ msg, onRetry }: { msg: string; onRetry: () => void }) {
   );
 }
 
-function InvoicesTab() {
+function InvoicesTab({ customer }: { customer: string }) {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState<string | null>(null);
@@ -294,10 +300,10 @@ function InvoicesTab() {
 
   const load = useCallback((fresh = false) => {
     setError("");
-    loadInvoices(fresh)
+    loadInvoices(customer, fresh)
       .then(setInvoices)
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"));
-  }, []);
+  }, [customer]);
 
   useEffect(() => {
     load();
