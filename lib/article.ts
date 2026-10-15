@@ -93,13 +93,20 @@ function headings(html: string): Article {
  * A code block gets a copy button, and can be scrolled from the keyboard.
  * The button only exists here (the sanitiser drops any <button> an article
  * contains), and components/reading/CopyCode.tsx is what makes it copy.
+ *
+ * Its words sit in a span that reserves the width of the longest thing it
+ * says (COPY_LABEL_RESERVE, by the site's data-label rule), so "Copy" turning
+ * into "Copied" or "Press Ctrl+C" never resizes it (storefront audit B5).
  */
+/** The longest thing a copy button says (CopyCode.tsx), whose width it keeps. */
+export const COPY_LABEL_RESERVE = "Press Ctrl+C";
+
 function codeBlocks(html: string): string {
   return html.replace(
     /<pre((?:\s+class="[^"]*")?)><code((?:\s+class="[^"]*")?)>([\s\S]*?)<\/code><\/pre>/g,
     (_m, preAttrs: string, codeAttrs: string, body: string) =>
       `<div class="code-block"><pre${preAttrs} tabindex="0"><code${codeAttrs}>${body}</code></pre>` +
-      `<button type="button" class="code-copy" data-copy-code aria-label="Copy code">Copy</button></div>`,
+      `<button type="button" class="code-copy" data-copy-code aria-label="Copy code"><span data-label="${COPY_LABEL_RESERVE}">Copy</span></button></div>`,
   );
 }
 

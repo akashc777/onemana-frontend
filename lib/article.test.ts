@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { articleSections, bindLastWords, enhanceArticle, slugify, textOf } from "./article";
+import { COPY_LABEL_RESERVE, articleSections, bindLastWords, enhanceArticle, slugify, textOf } from "./article";
 import { renderMarkdown } from "./markdown";
+import { setCopyLabel } from "@/components/reading/CopyCode";
 
 const article = (md: string) => enhanceArticle(renderMarkdown(md));
 
@@ -52,7 +55,27 @@ describe("code blocks", () => {
   it("get a copy button and can be scrolled from the keyboard, with the code untouched", () => {
     const { html } = article('```bash\necho "<hi>" & make install\n```');
     expect(html).toContain('<div class="code-block"><pre tabindex="0"><code class="language-bash">echo "&lt;hi&gt;" &amp; make install\n</code></pre>');
-    expect(html).toContain('<button type="button" class="code-copy" data-copy-code aria-label="Copy code">Copy</button></div>');
+    expect(html).toContain('<button type="button" class="code-copy" data-copy-code aria-label="Copy code"><span data-label="Press Ctrl+C">Copy</span></button></div>');
+  });
+
+  // Storefront audit B5: the button widened from "Copy" to "Copied" or "Press
+  // Ctrl+C". Its words reserve the longest of them, by the site's data-label rule.
+  it("keep the width of the longest thing their copy button says", () => {
+    const { html } = article("```\nx\n```");
+    expect(html).toContain(`<span data-label="${COPY_LABEL_RESERVE}">Copy</span>`);
+    const said = ["Copy", "Copied", "Press Ctrl+C", "Press ⌘C"];
+    expect(Math.max(...said.map((s) => s.length))).toBe(COPY_LABEL_RESERVE.length);
+    const css = readFileSync(join(process.cwd(), "lib", "tailwindAppSystem.ts"), "utf8");
+    expect(css).toContain('"[data-label]::after": {');
+    expect(css).toContain('content: "attr(data-label)"');
+  });
+
+  it("change only their words when they say something new", () => {
+    const words = { textContent: "Copy" };
+    const button = { textContent: "Copy", querySelector: () => words };
+    setCopyLabel(button as unknown as HTMLElement, "Copied");
+    expect(words.textContent).toBe("Copied");
+    expect(button.textContent).toBe("Copy");
   });
 
   it("the only copy button is one this module wrote: an article's <button> never survives", () => {

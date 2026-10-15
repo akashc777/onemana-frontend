@@ -3,6 +3,16 @@
 import { useEffect, useRef } from "react";
 
 /**
+ * What a copy button says. Its words are the span lib/article.ts wrote, which
+ * keeps the width of the longest of them, so only the span's text changes.
+ */
+export function setCopyLabel(button: Pick<HTMLElement, "querySelector" | "textContent">, label: string): void {
+  const words = button.querySelector<HTMLElement>("[data-label]");
+  if (words) words.textContent = label;
+  else button.textContent = label;
+}
+
+/**
  * Makes the copy buttons in an article copy (lib/article.ts writes them).
  *
  * One listener on the document, not one per block: an article is static HTML,
@@ -17,11 +27,11 @@ export function CopyCode() {
   useEffect(() => {
     const timers = new Set<number>();
     const say = (button: HTMLElement, label: string, announce: string) => {
-      button.textContent = label;
+      setCopyLabel(button, label);
       button.setAttribute("data-copied", "");
       if (status.current) status.current.textContent = announce;
       const t = window.setTimeout(() => {
-        button.textContent = "Copy";
+        setCopyLabel(button, "Copy");
         button.removeAttribute("data-copied");
         timers.delete(t);
       }, 1600);
