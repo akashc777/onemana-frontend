@@ -142,3 +142,77 @@ describe("the interaction layer's guard", () => {
   }, 90_000)
 })
 
+
+/** Every rule the compiled CSS carries for a selector, with the media it sits in and its place in the sheet. */
+async function rulesFor(selector: string): Promise<{ decls: Record<string, string>; media: string[]; at: number }[]> {
+  const root = await siteCss()
+  const out: { decls: Record<string, string>; media: string[]; at: number }[] = []
+  let at = 0
+  root.walkRules((rule) => {
+    at++
+    if (rule.selector.replace(/\s+/g, " ") !== selector) return
+    const decls: Record<string, string> = {}
+    rule.walkDecls((d) => {
+      decls[d.prop] = d.important ? `${d.value} !important` : d.value
+    })
+    out.push({ decls, media: mediaOf(rule), at })
+  })
+  return out
+}
+/** The one rule for a selector: outside any media query, or inside the one named. */
+const one = async (selector: string, media?: string) => {
+  const found = (await rulesFor(selector)).filter((r) => (media ? r.media.some((m) => m.includes(media)) : r.media.length === 0))
+  expect(found, `no single rule for ${selector}${media ? ` in ${media}` : ""}`).toHaveLength(1)
+  return found[0]!
+}
+
+// INTERACTION_SPEC.md §9.3 on the site: the state language every kind shares.
+describe("the interaction layer, as the site ships it", () => {
+  const ENABLED = ":not(:disabled, [aria-disabled='true'])"
+
+  it("tints in the accent by default and in an object's hue when it has one", async () => {
+    expect((await one("[data-interactive]")).decls).toMatchObject({ "--ix-tint": "rgb(var(--brand))", "--ix-a": "0%", "-webkit-tap-highlight-color": "transparent" })
+    expect((await one('[data-interactive][data-hue="sky"]')).decls).toMatchObject({ "--ix-tint": "rgb(var(--camp-sky))", "--ix-mark": "rgb(var(--camp-sky-a2))" })
+    expect((await one('[data-interactive][data-hue="agent"]')).decls["--ix-tint"]).toBe("rgb(var(--agent))")
+  }, 90_000)
+
+  it("hovers only where a pointer hovers, presses everywhere, and a press wins over a hover", async () => {
+    const hover = await one(`[data-interactive]:hover${ENABLED}`, "hover: hover")
+    expect(hover.decls["--ix-a"]).toBe("var(--ix-hover-a)")
+    const press = await one(`[data-interactive]:active${ENABLED}`)
+    expect(press.media).toEqual([])
+    expect(press.decls["--ix-a"]).toBe("var(--ix-press-a)")
+    expect(press.at, "the press comes after the hover, or a held pointer shows the hover").toBeGreaterThan(hover.at)
+  }, 90_000)
+
+  // Storefront audit G20: 66 of 1,346 phone controls answered a press, and
+  // the answer was a half-pixel drop.
+  it("answers a finger as the app's F2 does", async () => {
+    const coarse = async (sel: string) => (await rulesFor(sel)).find((r) => r.media.some((m) => m.includes("pointer: coarse")))?.decls
+    expect(await coarse(`[data-interactive="chip"]:active${ENABLED}`)).toMatchObject({ scale: "var(--ix-press-scale-touch)" })
+    expect(await coarse(`[data-interactive="icon"]:active${ENABLED}`)).toMatchObject({ scale: "var(--ix-press-scale-icon)" })
+    expect(await coarse(`[data-interactive="card"]:active${ENABLED}`)).toMatchObject({ scale: "var(--ix-press-scale-card-touch)" })
+    expect(await coarse('[data-interactive="item"]')).toMatchObject({ "min-height": "2.75rem" })
+    expect(await coarse(`.ui-btn:active${ENABLED}`)).toMatchObject({ scale: "var(--ix-press-scale-touch)" })
+    expect((await one(`.ui-btn:active${ENABLED}`)).decls).toMatchObject({ scale: "var(--ix-press-scale)" })
+  }, 90_000)
+
+  it("lifts a card on its own ::before, never by transitioning a shadow", async () => {
+    expect((await one('[data-interactive="card"]::before')).decls).toMatchObject({ "box-shadow": "var(--e-lift)", opacity: "0", "pointer-events": "none" })
+    expect((await one(`[data-interactive="card"]:hover${ENABLED}::before`, "hover: hover")).decls).toMatchObject({ opacity: "1" })
+    expect((await one('[data-interactive="card"]')).decls["transition-property"]).toBe("translate, scale")
+  }, 90_000)
+
+  it("marks what is on with a cue that is not colour", async () => {
+    const on = ':is([aria-selected="true"], [aria-checked="true"], [aria-pressed="true"])'
+    expect((await one(`[data-interactive="tab"]:not([data-thumb])${on}`)).decls).toMatchObject({ "background-color": "rgb(var(--card))" })
+    expect((await one('[data-interactive="nav"]:is([aria-current="page"], [aria-current="true"])')).decls).toMatchObject({ "box-shadow": "var(--e-sel)" })
+    expect((await one(`[data-interactive="chip"]${on}`)).decls["box-shadow"]).toMatch(/^inset 0 0 0 1\.5px/)
+    expect((await one('[data-interactive] [data-label]::after')).decls).toMatchObject({ content: "attr(data-label)", "font-weight": "510", height: "0" })
+  }, 90_000)
+
+  it("takes every transform away for reduced motion", async () => {
+    const reduced = await one("[data-interactive], [data-interactive]::before, .ui-btn, .go-arrow", "prefers-reduced-motion: reduce")
+    expect(reduced.decls).toMatchObject({ scale: "none !important", translate: "none !important", rotate: "none !important" })
+  }, 90_000)
+})

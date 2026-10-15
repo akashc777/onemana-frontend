@@ -176,7 +176,10 @@ describe("a failed pricing refresh on /buy", () => {
     } finally {
       globalThis.fetch = real
     }
-  })
+    // The first import of lib/pricing compiles its module graph, which took
+    // over the default 5 s on a loaded machine (a full run beside other
+    // gates); alone it takes well under one.
+  }, 30_000)
 
   it("leaves the server's prices in place", () => {
     const checkout = readFileSync(join(__dirname, "..", "app", "buy", "BuyCheckout.tsx"), "utf8")

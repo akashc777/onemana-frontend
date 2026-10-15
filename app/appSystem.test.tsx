@@ -6,7 +6,7 @@ import { renderToString } from "react-dom/server"
 import { buttonClasses } from "@/components/ui/Button"
 import { LogoRing } from "@/components/ui/v3"
 import { ALPHA, APP, ELEVATION, SHARED, tracking } from "@/lib/appSystem"
-import { HOVER, appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
+import { COARSE, HOVER, appComponents, appTheme, colourTokens } from "@/lib/tailwindAppSystem"
 
 /**
  * The site is built from the one table (lib/appSystem.ts), which mirrors the
@@ -123,14 +123,24 @@ describe("the components are the app's shapes", () => {
     expect(rem((comps[".ui-btn-xl"] as Record<string, unknown>).borderRadius)).toBe(10)
   })
 
-  it("ui-btn: radius 8, weight 510, a half-pixel press in 90ms, disabled fade, the 2px ring 2px off", () => {
+  // The press was a half-pixel drop, the site's only answer to a press and
+  // hardly one (storefront audit G20); it is the spec's scale now, stronger
+  // under a finger, with the press tint, and it comes back over the settle step.
+  it("ui-btn: radius 8, weight 510, a .98 press (.96 under a finger), disabled fade that stays hoverable, the 2px ring 2px off", () => {
     const c = comps[".ui-btn"] as Record<string, unknown>
     expect(rem(c.borderRadius)).toBe(8)
     expect(c.fontWeight).toBe("510")
-    expect(c["&:active"]).toEqual({ transform: "translateY(0.5px)", transitionDuration: "90ms" })
-    expect((c["&:disabled, &[aria-disabled='true']"] as Record<string, string>).opacity).toBe(String(APP.button.disabledOpacity))
-    // A colour change takes the interaction layer's 120 ms (INTERACTION_SPEC.md §2.1).
-    expect(c.transitionDuration).toBe("120ms")
+    expect(c["&:active:not(:disabled, [aria-disabled='true'])"]).toEqual({ "--ix-a": "var(--ix-press-a)", scale: "var(--ix-press-scale)", transitionDuration: "var(--ix-press)" })
+    expect((c[COARSE] as Record<string, unknown>)["&:active:not(:disabled, [aria-disabled='true'])"]).toEqual({ scale: "var(--ix-press-scale-touch)" })
+    expect((c[HOVER] as Record<string, unknown>)["&:hover:not(:disabled, [aria-disabled='true'])"]).toEqual({ "--ix-a": "var(--ix-hover-a)" })
+    const disabled = c["&:disabled, &[aria-disabled='true']"] as Record<string, string>
+    expect(disabled.opacity).toBe(String(APP.button.disabledOpacity))
+    expect(disabled.cursor).toBe("not-allowed")
+    // A reason in a tip needs the pointer: never pointer-events: none (spec §3).
+    expect(disabled.pointerEvents).toBeUndefined()
+    // A colour change takes the layer's 120 ms; the scale settles over 200.
+    expect(c.transitionDuration).toBe("var(--ix-colour), var(--ix-colour), var(--ix-colour), var(--ix-colour), var(--ix-settle)")
+    expect(c.transitionTimingFunction).toBe("var(--ix-ease)")
     expect(c["&:focus-visible"]).toEqual({ outline: "2px solid rgb(var(--ring))", outlineOffset: "2px" })
   })
 
@@ -140,10 +150,15 @@ describe("the components are the app's shapes", () => {
     expect(p.boxShadow).toBe(APP.button.primaryShadow.light)
     expect(String(p.boxShadow)).toMatch(/^inset 0 1px 0 rgb\(255 255 255 \/ 0\.2\)/)
     expect((comps[".dark .ui-btn-primary"] as Record<string, unknown>).boxShadow).toBe(APP.button.primaryShadow.dark)
+    expect(p["&:active:not(:disabled, [aria-disabled='true'])"]).toEqual({ backgroundColor: "color-mix(in oklab, rgb(var(--brand)) 86%, black)" })
     const sec = comps[".ui-btn-secondary"] as Record<string, unknown>
     expect(sec.boxShadow).toBe("var(--e-e1)")
-    // Under a pointer that hovers only (storefront audit G19).
-    expect((sec[HOVER] as Record<string, unknown>)["&:hover"]).toEqual({ boxShadow: "var(--e-e2)" })
+    // The raised surface takes the accent's tint (the layer's --ix-a), and
+    // e2 under a pointer that hovers only (storefront audit G19).
+    expect(sec.backgroundColor).toBe("color-mix(in srgb, rgb(var(--brand)) var(--ix-a), rgb(var(--card)))")
+    expect((sec[HOVER] as Record<string, unknown>)["&:hover:not(:disabled, [aria-disabled='true'])"]).toEqual({ boxShadow: "var(--e-e2)" })
+    const sub = comps[".ui-btn-subtle"] as Record<string, unknown>
+    expect(sub.backgroundColor).toBe("color-mix(in srgb, rgb(var(--brand)) var(--ix-a), transparent)")
   })
 
   // The storefront's forms are 40px from md and 44 on a phone (site.md S10).
@@ -224,7 +239,7 @@ describe("nothing is written around the table", () => {
     expect(buttonClasses("brand", "md")).toContain("ui-btn-primary")
     expect(buttonClasses("primary", "md")).toContain("ui-btn-secondary")
     expect(buttonClasses("ghost", "md")).toContain("ui-btn-secondary")
-    expect(buttonClasses("subtle", "md")).toMatch(/hover:bg-hover/)
+    expect(buttonClasses("subtle", "md")).toContain("ui-btn-subtle")
   })
 
   it("a text field is ui-field, not a hand-drawn box", () => {

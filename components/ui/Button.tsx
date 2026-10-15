@@ -21,8 +21,8 @@ const variants: Record<Variant, string> = {
   brandPremium: "ui-btn-primary",
   /** The app's secondary, beside a primary (was the outline). */
   ghost: "ui-btn-secondary",
-  /** The app's ghost: ink-2, the hover overlay and ink under the pointer. */
-  subtle: "text-muted-foreground hover:bg-hover hover:text-foreground",
+  /** The app's ghost: ink-2, the accent's tint and ink under the pointer (ui-btn-subtle). */
+  subtle: "ui-btn-subtle",
 };
 
 // The app's sm (28), default (32), lg (40) and the marketing xl (46); below

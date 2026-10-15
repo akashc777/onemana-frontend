@@ -2,6 +2,7 @@ import plugin from "tailwindcss/plugin"
 import type { CSSRuleObject } from "tailwindcss/types/config"
 
 import { ALPHA, APP, AVATAR, CAMP, ELEVATION, GLOW, MARK_RING, NIGHT, PAPER, SHARED, hexToTriple, tracking, type TypeStep } from "./appSystem"
+import { CAMP_HUES } from "./campHue"
 
 /**
  * Builds the site from the one table (lib/appSystem.ts): the colour custom
@@ -19,6 +20,10 @@ const em = (n: number) => `${n}em`
 const MD = "@media (min-width: 768px)"
 /** Hover only where a pointer hovers: on a touch screen a :hover stays on after the tap (storefront audit G19). */
 export const HOVER = "@media (hover: hover)"
+/** A finger: the phone's stronger press (the app's F2) and 44 px items. */
+export const COARSE = "@media (pointer: coarse)"
+/** A state a disabled control never shows. */
+const ENABLED = ":not(:disabled, [aria-disabled='true'])"
 
 /** A type step as Tailwind's [size, { lineHeight, letterSpacing }] pair, tracking from Inter's metrics. */
 export function typeStep(step: TypeStep, extra: Record<string, string> = {}): [string, Record<string, string>] {
@@ -50,6 +55,9 @@ export function colourTokens(theme: "light" | "dark"): Record<string, string> {
     out[`--${name}-c`] = `rgb(${rgb.join(" ")} / ${a})`
   }
   for (const [step, value] of Object.entries(ELEVATION[theme])) out[`--e-${step}`] = value
+  // A card's lift (the interaction layer): e2's drops alone, laid on the
+  // card's own e1 and faded in, so e1's ring is not drawn twice.
+  out["--e-lift"] = liftShadow(ELEVATION[theme].e2)
   out["--paper"] = PAPER[theme].join(" ")
   if (theme === "light") {
     out["--e-mark"] = MARK_RING
@@ -99,6 +107,13 @@ export function interactionTokens(theme: "light" | "dark"): Record<string, strin
   out["--ix-disabled"] = String(ix.disabledOpacity)
   return out
 }
+
+/** A step of the ladder without its ring and its top highlight: the drops a lift adds. */
+export const liftShadow = (step: string) =>
+  step
+    .split(/,\s*(?![^()]*\))/)
+    .filter((part) => !/^0 0 0 1px/.test(part.trim()) && !/^inset/.test(part.trim()))
+    .join(", ")
 
 /** The night section's tokens (NIGHT): the dark page's ink and surfaces, and the dark camp cuts, in either theme. */
 export function nightTokens(theme: "light" | "dark"): Record<string, string> {
@@ -174,6 +189,9 @@ const sizeOf = (step: TypeStep) => ({ fontSize: px(APP.type[step][0]), lineHeigh
 export const fieldHalo = (colour: "brand" | "danger") =>
   `0 0 0 1px rgb(var(--${colour})), 0 0 0 ${APP.field.halo}px color-mix(in srgb, rgb(var(--${colour})) var(--ix-halo-a), transparent)`
 
+/** A switch, checkbox or radio under the pointer: a 4px halo of the hover tint (INTERACTION_SPEC.md §4, Toggle). */
+const TOGGLE_HALO = "0 0 0 4px color-mix(in srgb, rgb(var(--brand)) var(--ix-hover-a), transparent)"
+
 /** The checkbox's white tick, the icon set's check on its 24 grid. */
 const CHECK_TICK =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E\")"
@@ -182,7 +200,13 @@ const CHECK_TICK =
 export function appComponents(): Record<string, Record<string, unknown>> {
   const b = APP.button
   const out: Record<string, Record<string, unknown>> = {
+    // THE BUTTON KIND (INTERACTION_SPEC.md §4): the tint's alpha (--ix-a)
+    // rises to the hover step under a pointer and the press step while held;
+    // a variant paints with it. A press scales the button (.98, .96 under a
+    // finger) and comes back over the settle step. Disabled stays hoverable
+    // and focusable, so a reason can be shown (data-disabled-reason).
     ".ui-btn": {
+      "--ix-a": "0%",
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
@@ -191,27 +215,41 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       whiteSpace: "nowrap",
       borderRadius: px(APP.radius[b.radius]),
       fontWeight: String(b.weight),
-      transitionProperty: "color, background-color, box-shadow, opacity, transform",
-      transitionDuration: `${APP.motion.duration}ms`,
-      transitionTimingFunction: APP.motion.ease,
-      "&:active": { transform: `translateY(${b.press.y}px)`, transitionDuration: `${b.press.ms}ms` },
-      "&:disabled, &[aria-disabled='true']": { pointerEvents: "none", opacity: String(b.disabledOpacity) },
+      transitionProperty: "color, background-color, box-shadow, opacity, scale",
+      transitionDuration: "var(--ix-colour), var(--ix-colour), var(--ix-colour), var(--ix-colour), var(--ix-settle)",
+      transitionTimingFunction: "var(--ix-ease)",
+      WebkitTapHighlightColor: "transparent",
+      [HOVER]: { [`&:hover${ENABLED}`]: { "--ix-a": "var(--ix-hover-a)" } },
+      [`&:active${ENABLED}`]: { "--ix-a": "var(--ix-press-a)", scale: "var(--ix-press-scale)", transitionDuration: "var(--ix-press)" },
+      [COARSE]: { [`&:active${ENABLED}`]: { scale: "var(--ix-press-scale-touch)" } },
+      "&:disabled, &[aria-disabled='true']": { cursor: "not-allowed", opacity: String(b.disabledOpacity) },
       "&:focus-visible": { outline: `${b.focus.width}px solid rgb(var(--ring))`, outlineOffset: `${b.focus.offset}px` },
     },
-    // The primary: the accent with an inner highlight and a tinted drop.
+    // The primary: the accent with an inner highlight and a tinted drop; it
+    // darkens under the pointer and a step more while pressed.
     ".ui-btn-primary": {
       backgroundColor: "rgb(var(--brand))",
       color: "rgb(var(--brand-foreground))",
       boxShadow: b.primaryShadow.light,
-      [HOVER]: { "&:hover": { backgroundColor: `color-mix(in oklab, rgb(var(--brand)) ${b.hoverMix}%, black)` } },
+      [HOVER]: { [`&:hover${ENABLED}`]: { backgroundColor: `color-mix(in oklab, rgb(var(--brand)) ${b.hoverMix}%, black)` } },
+      [`&:active${ENABLED}`]: { backgroundColor: `color-mix(in oklab, rgb(var(--brand)) ${b.pressMix}%, black)` },
     },
     ".dark .ui-btn-primary": { boxShadow: b.primaryShadow.dark },
-    // The secondary: the raised surface at e1, e2 under the cursor.
+    // The secondary: the raised surface at e1, tinted in the accent and
+    // raised to e2 under the cursor, back to e1 while pressed.
     ".ui-btn-secondary": {
-      backgroundColor: "rgb(var(--card))",
+      backgroundColor: "color-mix(in srgb, rgb(var(--brand)) var(--ix-a), rgb(var(--card)))",
       color: "rgb(var(--foreground))",
       boxShadow: "var(--e-e1)",
-      [HOVER]: { "&:hover": { boxShadow: "var(--e-e2)" } },
+      [HOVER]: { [`&:hover${ENABLED}`]: { boxShadow: "var(--e-e2)" } },
+      [`&:active${ENABLED}`]: { boxShadow: "var(--e-e1)" },
+    },
+    // The app's ghost (the site calls it subtle): ink-2 on nothing, the tint
+    // and ink under the pointer.
+    ".ui-btn-subtle": {
+      backgroundColor: "color-mix(in srgb, rgb(var(--brand)) var(--ix-a), transparent)",
+      color: "rgb(var(--muted-foreground))",
+      [HOVER]: { [`&:hover${ENABLED}`]: { color: "rgb(var(--foreground))" } },
     },
     ".ui-field": {
       display: "flex",
@@ -229,7 +267,9 @@ export function appComponents(): Record<string, Record<string, unknown>> {
       transitionDuration: `${APP.motion.duration}ms`,
       transitionTimingFunction: APP.motion.ease,
       "&::placeholder": { color: "rgb(var(--faint))" },
-      [HOVER]: { "&:hover": { boxShadow: "0 0 0 1px var(--line-3-c), 0 1px 2px rgb(16 18 26 / 0.05)" } },
+      // THE FIELD KIND's hover (§4): the hairline ring, mixed a quarter
+      // toward the accent.
+      [HOVER]: { "&:hover": { boxShadow: "0 0 0 1px color-mix(in srgb, rgb(var(--brand)) 25%, var(--line-3-c)), 0 1px 2px rgb(16 18 26 / 0.05)" } },
       // Focused, or a select that is open: the spec's D5 halo (fieldHalo).
       "&:focus-visible, &[aria-expanded='true']": { outline: "none", boxShadow: fieldHalo("brand") },
       "&[aria-invalid='true']": { boxShadow: fieldHalo("danger") },
@@ -294,6 +334,15 @@ export function appComponents(): Record<string, Record<string, unknown>> {
         boxShadow: "none",
         backgroundImage: CHECK_TICK,
         animation: `v3-check ${APP.motion.durations.spring}ms ${APP.motion.spring}`,
+      },
+      // THE TOGGLE KIND (§4): under the pointer, on the box or its label, a
+      // 4px halo of the hover tint round the box (a shadow, so nothing
+      // moves), and the empty box's ring a step darker.
+      [HOVER]: {
+        "label:hover > &:not(:checked, [data-checked]), &:hover:not(:checked, [data-checked])": {
+          boxShadow: `inset 0 0 0 ${APP.check.ring}px rgb(var(--faint)), ${TOGGLE_HALO}`,
+        },
+        "label:hover > &:is(:checked, [data-checked]), &:hover:is(:checked, [data-checked])": { boxShadow: TOGGLE_HALO },
       },
       "&:focus-visible": { outline: `${b.focus.width}px solid rgb(var(--ring))`, outlineOffset: `${b.focus.offset}px` },
     },
@@ -456,10 +505,204 @@ export function motionCss(): Record<string, unknown> {
   return classes
 }
 
+/** The kinds that answer with a tint (a card lifts instead). */
+const TINTED = ["icon", "row", "nav", "tab", "chip", "item"] as const
+/** One kind, or several, as a selector. */
+const kind = (...k: string[]) => (k.length === 1 ? `[data-interactive="${k[0]}"]` : `:is(${k.map((x) => `[data-interactive="${x}"]`).join(", ")})`)
+/** What ARIA says is on: a tab chosen, a radio checked, a toggle pressed. */
+const ON = `:is([aria-selected="true"], [aria-checked="true"], [aria-pressed="true"])`
+/** The current page, for a nav row or a row. */
+const CURRENT = `:is([aria-current="page"], [aria-current="true"])`
+
+/**
+ * THE INTERACTION LAYER (INTERACTION_SPEC.md §9.3), the app's attribute API on
+ * this site. A component says what kind of thing it is, once, on the element
+ * that takes the pointer (data-interactive, written by lib/interactive.ts's
+ * ix()), and whose colour it is (data-hue); these rules draw every state from
+ * the --ix tokens, so a component carries no hover, press or selected classes
+ * of its own (app/interaction.test.ts holds that).
+ *
+ * - The tint is the accent, or the object's hue: --ix-tint at --ix-a. Hover
+ *   raises --ix-a to the hover step, only where a pointer hovers; a press to
+ *   the press step; never on a parent while a nested control is the one under
+ *   the pointer.
+ * - The press answers a finger as the app's F2 does: a chip .98 (.96 under a
+ *   finger), an icon button .92 under a finger, a card .99 (.985) and back to
+ *   e1, a row, a tab and a nav row their press tint at once; the browser's
+ *   grey tap flash is off, so the press is the one answer.
+ * - Selected is a tint plus a cue that is not colour: the raised knob for a
+ *   segmented tab, the raised chip for a nav row, a 1.5px ring for a chip, the
+ *   2px bar for a row, the highlight for a list option. A label that turns 510
+ *   when current reserves that width (data-label), so nothing moves.
+ * - Focus is the global ring, outside; inset for a row and a nav row.
+ * - A card lifts to e2 a pixel up, its e2 drawn on ::before and faded in, so
+ *   the lift never transitions a box-shadow.
+ * - Disabled stays focusable and says why (data-disabled-reason).
+ * - Reduced motion: no transform anywhere, and colour changes at once.
+ *
+ * An ordered list of blocks, because the cascade's order is part of the
+ * design: hover, then press, then what is on, then what is on under the
+ * pointer.
+ */
+export function interactionCss(): Record<string, unknown>[] {
+  const hues: Record<string, unknown> = {}
+  for (const hue of [...CAMP_HUES, "agent"] as const) {
+    const strong = hue === "agent" ? "--agent" : `--camp-${hue}`
+    hues[`[data-interactive][data-hue="${hue}"]`] = { "--ix-tint": `rgb(var(${strong}))`, "--ix-mark": `rgb(var(${strong}-a2))` }
+    // Light marks use the avatar's deep stop (a2), which holds 3:1 on its own
+    // tint; dark ones the strong cut (spec D2).
+    hues[`:is(.dark, .night) [data-interactive][data-hue="${hue}"]`] = { "--ix-mark": `rgb(var(${strong}))` }
+  }
+  return [
+    {
+      // The tint's source, declared on the element, so it sees the theme on body.
+      "[data-interactive]": {
+        "--ix-tint": "rgb(var(--brand))",
+        "--ix-mark": "rgb(var(--brand))",
+        "--ix-a": "0%",
+        WebkitTapHighlightColor: "transparent",
+      },
+      ...hues,
+      // Zero specificity: a component's own ground (a raised chip, a card)
+      // always wins over the tint.
+      [`:where(${TINTED.map((k) => `[data-interactive="${k}"]`).join(", ")})`]: {
+        backgroundColor: "color-mix(in srgb, var(--ix-tint) var(--ix-a), transparent)",
+        transitionProperty: "background-color, color, box-shadow, scale",
+        transitionDuration: "var(--ix-colour), var(--ix-colour), var(--ix-colour), var(--ix-settle)",
+        transitionTimingFunction: "var(--ix-ease)",
+      },
+      // THE CARD: e1 at rest; e2 under the pointer, drawn on ::before.
+      [kind("card")]: {
+        position: "relative",
+        transitionProperty: "translate, scale",
+        transitionDuration: "var(--ix-lift), var(--ix-settle)",
+        transitionTimingFunction: "var(--ix-ease)",
+      },
+      [`${kind("card")}::before`]: {
+        content: '""',
+        position: "absolute",
+        inset: "0",
+        borderRadius: "inherit",
+        boxShadow: "var(--e-lift)",
+        opacity: "0",
+        pointerEvents: "none",
+        transition: "opacity var(--ix-lift) var(--ix-ease)",
+      },
+    },
+    {
+      // HOVER: devices that hover; the nested control answers, not its parent.
+      [HOVER]: {
+        [`[data-interactive]:hover${ENABLED}`]: { "--ix-a": "var(--ix-hover-a)" },
+        "[data-interactive]:hover:has([data-interactive]:hover)": { "--ix-a": "0%" },
+        // Labels go to ink; dense lists answer at once and let go over 120ms.
+        [`${kind("icon", "nav", "tab", "chip")}:hover${ENABLED}`]: { color: "rgb(var(--foreground))" },
+        [`${kind("row", "nav", "item")}:hover`]: { transitionDuration: "0ms" },
+        [`${kind("card")}:hover${ENABLED}`]: { translate: "0 -1px" },
+        [`${kind("card")}:hover${ENABLED}::before`]: { opacity: "1" },
+        "[data-disabled-reason]:hover::after": { opacity: "1", translate: "-50% 0", transitionDelay: "var(--ix-tip-delay)" },
+      },
+    },
+    {
+      // PRESSED: the press tint in 90ms; chips and icon buttons scale too, and a
+      // card goes back to e1 at .99.
+      [`[data-interactive]:active${ENABLED}`]: { "--ix-a": "var(--ix-press-a)", transitionDuration: "var(--ix-press)" },
+      [`${kind("chip", "icon")}:active${ENABLED}`]: { scale: "var(--ix-press-scale)" },
+      [`${kind("card")}:active${ENABLED}`]: { translate: "0 0", scale: "var(--ix-press-scale-card)" },
+      [`${kind("card")}:active::before`]: { opacity: "0" },
+      // A finger hides what it presses: the stronger press, and a row's tint
+      // at once (the app's F2).
+      [COARSE]: {
+        [`${kind("chip")}:active${ENABLED}`]: { scale: "var(--ix-press-scale-touch)" },
+        [`${kind("icon")}:active${ENABLED}`]: { scale: "var(--ix-press-scale-icon)" },
+        [`${kind("card")}:active${ENABLED}`]: { scale: "var(--ix-press-scale-card-touch)" },
+        [`${kind("row", "nav", "tab", "item")}:active${ENABLED}`]: { transitionDuration: "0ms" },
+        // A list option is 44 px tall under a finger (spec §6.6).
+        [kind("item")]: { minHeight: "2.75rem" },
+      },
+    },
+    {
+      // SELECTED: the tint plus a cue that is not colour.
+      // A segmented tab: the raised knob, unless a sliding thumb draws it (data-thumb).
+      [`[data-interactive="tab"]:not([data-thumb])${ON}`]: {
+        backgroundColor: "rgb(var(--card))",
+        boxShadow: "var(--ix-knob, var(--e-e1))",
+      },
+      [`[data-interactive="tab"]${ON}`]: { color: "rgb(var(--foreground))" },
+      // A nav row: the raised chip at e-sel, the sidebar's form (spec D3).
+      [`[data-interactive="nav"]${CURRENT}`]: {
+        backgroundColor: "rgb(var(--card))",
+        boxShadow: "var(--e-sel)",
+        color: "rgb(var(--foreground))",
+      },
+      [`${kind("tab", "nav")}:is(${CURRENT}, ${ON}) .icon`]: { color: "var(--ix-mark)" },
+      // A chip that is on: the selected tint and a 1.5px ring in the mark.
+      [`[data-interactive="chip"]${ON}`]: {
+        "--ix-a": "var(--ix-sel-a)",
+        boxShadow: "inset 0 0 0 1.5px color-mix(in srgb, var(--ix-mark) 60%, transparent)",
+        color: "rgb(var(--foreground))",
+      },
+      // A row: the selected tint and the 2px bar on its leading edge.
+      [`[data-interactive="row"]:is(${CURRENT}, [aria-selected="true"])`]: {
+        "--ix-a": "var(--ix-sel-a)",
+        boxShadow: "inset var(--ix-bar) 0 0 0 var(--ix-mark)",
+      },
+      // A list option under the keys or the pointer: the press tint, no ring
+      // (the highlight is the focus, spec §2.4).
+      [`[data-interactive="item"][data-active]`]: { "--ix-a": "var(--ix-press-a)", color: "rgb(var(--foreground))" },
+      // Weight never moves layout: a label reserves its 510 width.
+      "[data-interactive] [data-label]": { display: "inline-flex", flexDirection: "column" },
+      "[data-interactive] [data-label]::after": {
+        content: "attr(data-label)",
+        height: "0",
+        overflow: "hidden",
+        visibility: "hidden",
+        fontWeight: "510",
+        userSelect: "none",
+        pointerEvents: "none",
+      },
+    },
+    {
+      // What is on, under the pointer: a step stronger than either.
+      [HOVER]: {
+        [`${kind("chip", "row")}:is(${ON}, ${CURRENT}):hover`]: { "--ix-a": "var(--ix-sel-hover-a)" },
+      },
+      // FOCUS: the global ring, outside; inset for a full-bleed row.
+      [`${kind("row", "nav")}:focus-visible`]: { outlineOffset: "calc(var(--ix-ring) * -1)" },
+      [`${kind("item")}:focus-visible`]: { outline: "none" },
+      // DISABLED, with its reason in a tip: on hover after the tip's wait, on focus at once.
+      "[data-interactive][aria-disabled='true']": { opacity: "var(--ix-disabled)", cursor: "not-allowed" },
+      "[data-disabled-reason]": { position: "relative" },
+      "[data-disabled-reason]::after": {
+        content: "attr(data-disabled-reason)",
+        position: "absolute",
+        left: "50%",
+        bottom: "calc(100% + 6px)",
+        zIndex: "60",
+        padding: "4px 8px",
+        borderRadius: "6px",
+        backgroundColor: "rgb(var(--foreground))",
+        color: "rgb(var(--background))",
+        font: "510 12px/16px var(--font-sans), ui-sans-serif, system-ui, sans-serif",
+        whiteSpace: "nowrap",
+        pointerEvents: "none",
+        opacity: "0",
+        translate: "-50% 4px",
+        transition: "opacity var(--ix-pop) var(--ix-ease), translate var(--ix-pop) var(--ix-ease)",
+      },
+      "[data-disabled-reason]:focus-visible::after": { opacity: "1", translate: "-50% 0" },
+      // REDUCED MOTION: no transform anywhere in the layer; colour at once.
+      "@media (prefers-reduced-motion: reduce)": {
+        "[data-interactive], [data-interactive]::before, .ui-btn, .go-arrow": { scale: "none !important", translate: "none !important", rotate: "none !important" },
+      },
+    },
+  ]
+}
+
 export default plugin(({ addBase, addComponents, addUtilities }) => {
   addBase({ ":root": { ...colourTokens("light"), ...interactionTokens("light") }, ".dark": { ...colourTokens("dark"), ...interactionTokens("dark") } })
   addBase({ ".night": nightTokens("light"), ".dark .night": nightTokens("dark") })
   addBase(motionCss() as CSSRuleObject)
+  addBase(interactionCss() as CSSRuleObject[])
   addComponents(appComponents() as CSSRuleObject)
   addUtilities(marketingUtilities() as CSSRuleObject)
 })

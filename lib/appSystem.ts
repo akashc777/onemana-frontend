@@ -377,11 +377,16 @@ export const APP = {
     weight: 510,
     radius: "md",
     xlRadius: 10,
-    disabledOpacity: 0.5,
+    disabledOpacity: INTERACTION.disabledOpacity,
     /** Primary hover: the accent mixed 92% with black. */
     hoverMix: 92,
-    /** Press: half a pixel down, in 90ms. */
-    press: { y: 0.5, ms: 90 },
+    /**
+     * Primary press: the accent mixed 86% with black (INTERACTION_SPEC.md §4).
+     * Every button also scales on a press, .98 for a pointer and .96 for a
+     * finger, from INTERACTION.scale: the half-pixel drop it replaces was the
+     * site's only answer to a press, and hardly one (storefront audit G20).
+     */
+    pressMix: 86,
     /** Every button: a 2px accent ring 2px off (§3.11). */
     focus: { width: 2, offset: 2 },
     /** The primary's inner highlight and tinted drop, light and dark (§3.8). */
