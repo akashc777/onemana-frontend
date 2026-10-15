@@ -24,6 +24,12 @@ import { ix } from "@/lib/interactive";
 
 /** How many highlights an entry shows on /changelog before "All changes". */
 export const DIGEST_ITEMS = 4;
+/**
+ * How many of a release's fixes its page shows before folding the rest
+ * (storefront audit §7 row 5: an entry ran 12,323 px on a phone, most of it
+ * one ungrouped wall of fixes).
+ */
+export const FIXES_SHOWN = 10;
 /** A note for admins on /changelog is a line or two; its page has it in full. */
 const NOTICE_CHARS = 160;
 
@@ -146,7 +152,8 @@ export function EntryDigest({ entry, isNew = false }: { entry: ChangelogEntry; i
         {isNew ? <NewTag /> : null}
       </p>
       <h2 id={`${entry.slug}-title`} className="mt-3 text-balance text-h3 text-foreground">
-        <Link href={href} className="transition-colors hover:text-brand-ink">
+        {/* A 44 px target on a phone (L1: 29 px tall links). */}
+        <Link href={href} className="tap-target transition-colors hover:text-brand-ink">
           {entry.title}
         </Link>
       </h2>
@@ -232,7 +239,7 @@ export function EntryFull({ entry, isNew = false }: { entry: ChangelogEntry; isN
                     </span>
                   ) : null}
                 </p>
-                <Prose html={listHtml(f.items)} kind="docs" className="mt-3" />
+                <FoldedFixes items={f.items} />
               </div>
             ))}
           </div>
@@ -245,6 +252,35 @@ export function EntryFull({ entry, isNew = false }: { entry: ChangelogEntry; isN
           <Tags of={entry} />
         </span>
       </div>
+    </>
+  );
+}
+
+/**
+ * A release's fixes: the first ten, then the rest folded under one
+ * disclosure that says how many it holds ("Show 52 more fixes"). Native
+ * <details>, so it opens with no script, find in page reaches inside it, and
+ * the fixes stay in the page for a crawler.
+ */
+export function FoldedFixes({ items }: { items: string[] }) {
+  const shown = items.slice(0, FIXES_SHOWN);
+  const rest = items.slice(FIXES_SHOWN);
+  return (
+    <>
+      <Prose html={listHtml(shown)} kind="docs" className="mt-3" />
+      {rest.length ? (
+        <details className="group/fold mt-1">
+          <summary
+            {...ix("row")}
+            className="-mx-3 flex min-h-11 w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg px-3 text-small font-[510] text-brand-ink [&::-webkit-details-marker]:hidden"
+          >
+            <span className="group-open/fold:hidden">{`Show ${rest.length} more ${rest.length === 1 ? "fix" : "fixes"}`}</span>
+            <span className="hidden group-open/fold:inline">{`Hide ${rest.length === 1 ? "it" : `the ${rest.length}`}`}</span>
+            <Icon name="chevron-down" size={14} className="transition-transform duration-pop group-open/fold:rotate-180" />
+          </summary>
+          <Prose html={listHtml(rest)} kind="docs" className="mt-1" />
+        </details>
+      ) : null}
     </>
   );
 }
