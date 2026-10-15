@@ -171,7 +171,7 @@ export function EarningsPanel() {
             <h3 className="text-sm font-semibold text-foreground">Tax filings &amp; payments</h3>
             <p className="mt-1 text-xs text-muted-foreground">Record what you remit so you can reconcile collected vs paid. GST is monthly; MCA/ROC is annual. Use the Period field (e.g. &quot;Jun 2026&quot; or &quot;FY 2026-27&quot;).</p>
 
-            <form onSubmit={addPayment} className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
+            <form onSubmit={addPayment} className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-7">
               <select value={kind} onChange={(e) => setKind(e.target.value)} className={inputCls}>
                 <option value="gst">GST (monthly)</option>
                 <option value="mca">MCA / ROC (annual)</option>

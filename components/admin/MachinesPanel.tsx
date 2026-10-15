@@ -96,7 +96,7 @@ export function MachinesPanel() {
       </div>
       {error && <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>}
       {previews && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {previews.map((p) => (
             <PreviewCard key={p.size} p={p} />
           ))}

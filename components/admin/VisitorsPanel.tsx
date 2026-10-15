@@ -102,19 +102,6 @@ export function VisitorsPanel() {
     load();
   }, [load]);
 
-  const daily = data?.daily ?? [];
-  const topPaths = data?.top_paths ?? [];
-  const byCountry = data?.by_country ?? [];
-  const byDevice = data?.by_device ?? [];
-  // Furthest first, so the card reads as a funnel top to bottom rather than by volume.
-  const demoFunnel = [...(data?.demo_drop_off ?? [])].reverse();
-  const demoClicks = data?.demo_clicks ?? 0;
-  const checkoutFunnel = data?.checkout_funnel ?? [];
-  const freeFunnel = data?.free_funnel ?? [];
-  const maxDay = daily.reduce((m, d) => Math.max(m, d.views), 0) || 1;
-  const countryTotal = byCountry.reduce((s, c) => s + c.views, 0) || 1;
-  const deviceTotal = byDevice.reduce((s, d) => s + d.views, 0) || 1;
-
   return (
     <div>
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -160,168 +147,194 @@ export function VisitorsPanel() {
         </div>
       )}
 
-      {!loading && !error && data && (
-        <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <StatCard label="Total views" value={data.total_views.toLocaleString()} />
-            <StatCard label="Unique visitors" value={data.unique_visitors.toLocaleString()} />
-            <StatCard
-              label="Views / visitor"
-              value={data.unique_visitors ? (data.total_views / data.unique_visitors).toFixed(1) : "0"}
-            />
-          </div>
-
-          <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-muted/30 p-5">
-              <p className="mb-3 text-sm font-semibold text-foreground">Daily traffic</p>
-              {daily.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">No visits in this range.</p>
-              ) : (
-                <div className="space-y-1.5">
-                  {daily.map((d) => (
-                    <div key={d.date} className="flex items-center gap-2 text-xs">
-                      <span className="w-20 flex-shrink-0 text-muted-foreground">{d.date.slice(5)}</span>
-                      <div className="h-4 flex-1 overflow-hidden rounded bg-muted">
-                        <div className="h-full rounded bg-gradient-to-r from-brand to-brand-light" style={{ width: `${(d.views / maxDay) * 100}%` }} />
-                      </div>
-                      <span className="w-16 flex-shrink-0 text-right text-muted-foreground">{d.views} / {d.uniques}u</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <p className="mt-3 text-[10px] text-muted-foreground">views / unique visitors per day</p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-muted/30 p-5">
-              <p className="mb-3 text-sm font-semibold text-foreground">Top pages</p>
-              {topPaths.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">No data.</p>
-              ) : (
-                <div className="space-y-2">
-                  {topPaths.map((p) => (
-                    <div key={p.path} className="flex items-center justify-between gap-2 text-sm">
-                      <span className="truncate font-mono text-xs text-foreground/80">{p.path || "/"}</span>
-                      <span className="flex-shrink-0 text-muted-foreground">{p.views}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Where demo visitors got to.
-              
-              This is the question the rest of this panel cannot answer. Pageviews
-              stop at this domain, so for a long time the only thing anybody could
-              say about a demo visitor was that they clicked and did not come back.
-              These rows are the same people, followed across. */}
-          <FunnelCard
-            title="How far demo visitors got"
-            total={demoClicks}
-            totalLabel={`${demoClicks} clicked through`}
-            caption="Everyone who clicked a demo link in this window, counted once, at the furthest point they reached."
-            empty="Nobody clicked through to the demo in this range."
-            stops={demoFunnel}
-          />
-
-          {/* The step after the demo: where buyers stop between the buy page
-              and paying. Each step counts distinct visitors, so a visitor who
-              closed the window and then paid appears in both. */}
-          <FunnelCard
-            title="How far buyers got"
-            total={checkoutFunnel[0]?.visitors ?? 0}
-            totalLabel={`${checkoutFunnel[0]?.visitors ?? 0} reached the buy page`}
-            caption="Distinct visitors at each step of the checkout in this window."
-            empty="Nobody reached the buy page in this range."
-            stops={checkoutFunnel}
-          />
-
-          {/* The free plan, beside the checkout: a claim is a team that
-              installs before anyone pays. */}
-          <FunnelCard
-            title="The free plan"
-            total={freeFunnel[0]?.visitors ?? 0}
-            totalLabel={`${freeFunnel[0]?.visitors ?? 0} opened the free plan`}
-            caption="Distinct visitors who opened /free, and who claimed a key, in this window."
-            empty="Nobody opened the free plan in this range."
-            stops={freeFunnel.slice(0, 2)}
-          />
-          {/* Claimed from the demo's own prompt: those never open /free, so they
-              are counted beside the page's funnel, not as a share of it. */}
-          {freeFunnel[2] && (
-            <p className="mt-2 px-1 text-xs text-muted-foreground">
-              Claimed from the demo&apos;s prompt: <span className="font-medium text-foreground">{freeFunnel[2].visitors}</span>
-            </p>
-          )}
-
-          {/* Devices */}
-          <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
-            <p className="mb-3 text-sm font-semibold text-foreground">Devices</p>
-            {byDevice.length === 0 ? (
-              <p className="py-4 text-center text-sm text-muted-foreground">No data.</p>
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {byDevice.map((d) => {
-                  const meta = DEVICE_META[d.device] ?? DEVICE_META.unknown;
-                  const pct = Math.round((d.views / deviceTotal) * 100);
-                  return (
-                    <div key={d.device} className="rounded-xl border border-border bg-muted/20 p-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">
-                          <span className="mr-1.5">{meta.icon}</span>{meta.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{pct}%</span>
-                      </div>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded bg-muted">
-                        <div className="h-full rounded bg-gradient-to-r from-brand to-brand-light" style={{ width: `${pct}%` }} />
-                      </div>
-                      <p className="mt-2 text-xs text-muted-foreground">{d.views.toLocaleString()} views · {d.uniques.toLocaleString()} visitors</p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Geography */}
-          <div className="mt-6 grid gap-6 lg:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-muted/30 p-5 lg:col-span-2">
-              <p className="mb-3 text-sm font-semibold text-foreground">Where your visitors are</p>
-              {byCountry.length === 0 ? (
-                <p className="py-12 text-center text-sm text-muted-foreground">
-                  No geographic data yet. Country is read from the CDN geo header - it populates once the backend is behind a geo-aware proxy (e.g. Cloudflare).
-                </p>
-              ) : (
-                <VisitorMap data={byCountry} />
-              )}
-            </div>
-            <div className="rounded-2xl border border-border bg-muted/30 p-5">
-              <p className="mb-3 text-sm font-semibold text-foreground">Top countries</p>
-              {byCountry.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">No data.</p>
-              ) : (
-                <div className="max-h-[380px] space-y-1.5 overflow-y-auto pr-1">
-                  {byCountry.map((c) => {
-                    const pct = Math.round((c.views / countryTotal) * 100);
-                    return (
-                      <div key={c.code} className="flex items-center gap-2 text-sm">
-                        <span className="w-6 flex-shrink-0 text-base">{countryFlag(c.code)}</span>
-                        <span className="w-28 flex-shrink-0 truncate text-foreground/80">{countryName(c.code)}</span>
-                        <div className="h-2 flex-1 overflow-hidden rounded bg-muted">
-                          <div className="h-full rounded bg-gradient-to-r from-brand to-brand-light" style={{ width: `${pct}%` }} />
-                        </div>
-                        <span className="w-10 flex-shrink-0 text-right text-xs text-muted-foreground">{c.views}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </>
-      )}
+      {!loading && !error && data && <VisitorsReport data={data} />}
       <OwnBrowsersCard onChange={load} />
     </div>
+  );
+}
+
+/**
+ * What one range's numbers look like. Pure: the panel above fetches, this
+ * draws, so a test can render it with the data that broke it.
+ *
+ * Every grid here sets its base column count (grid-cols-1 is a minmax(0, 1fr)
+ * track). Without one a phone gets a single implicit auto column, which is at
+ * least as wide as the longest line it holds: one long blog path in Top pages
+ * made the whole tab 624 px wide on a 390 px phone.
+ */
+export function VisitorsReport({ data }: { data: VisitStats }) {
+  const daily = data.daily ?? [];
+  const topPaths = data.top_paths ?? [];
+  const byCountry = data.by_country ?? [];
+  const byDevice = data.by_device ?? [];
+  // Furthest first, so the card reads as a funnel top to bottom rather than by volume.
+  const demoFunnel = [...(data.demo_drop_off ?? [])].reverse();
+  const demoClicks = data.demo_clicks ?? 0;
+  const checkoutFunnel = data.checkout_funnel ?? [];
+  const freeFunnel = data.free_funnel ?? [];
+  const maxDay = daily.reduce((m, d) => Math.max(m, d.views), 0) || 1;
+  const countryTotal = byCountry.reduce((s, c) => s + c.views, 0) || 1;
+  const deviceTotal = byDevice.reduce((s, d) => s + d.views, 0) || 1;
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <StatCard label="Total views" value={data.total_views.toLocaleString()} />
+        <StatCard label="Unique visitors" value={data.unique_visitors.toLocaleString()} />
+        <StatCard
+          label="Views / visitor"
+          value={data.unique_visitors ? (data.total_views / data.unique_visitors).toFixed(1) : "0"}
+        />
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl border border-border bg-muted/30 p-5">
+          <p className="mb-3 text-sm font-semibold text-foreground">Daily traffic</p>
+          {daily.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">No visits in this range.</p>
+          ) : (
+            <div className="space-y-1.5">
+              {daily.map((d) => (
+                <div key={d.date} className="flex items-center gap-2 text-xs">
+                  <span className="w-20 flex-shrink-0 text-muted-foreground">{d.date.slice(5)}</span>
+                  <div className="h-4 flex-1 overflow-hidden rounded bg-muted">
+                    <div className="h-full rounded bg-gradient-to-r from-brand to-brand-light" style={{ width: `${(d.views / maxDay) * 100}%` }} />
+                  </div>
+                  <span className="w-16 flex-shrink-0 text-right text-muted-foreground">{d.views} / {d.uniques}u</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="mt-3 text-[10px] text-muted-foreground">views / unique visitors per day</p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-muted/30 p-5">
+          <p className="mb-3 text-sm font-semibold text-foreground">Top pages</p>
+          {topPaths.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">No data.</p>
+          ) : (
+            <div className="space-y-2">
+              {topPaths.map((p) => (
+                <div key={p.path} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="truncate font-mono text-xs text-foreground/80" title={p.path || "/"}>{p.path || "/"}</span>
+                  <span className="flex-shrink-0 text-muted-foreground">{p.views}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Where demo visitors got to.
+          
+          This is the question the rest of this panel cannot answer. Pageviews
+          stop at this domain, so for a long time the only thing anybody could
+          say about a demo visitor was that they clicked and did not come back.
+          These rows are the same people, followed across. */}
+      <FunnelCard
+        title="How far demo visitors got"
+        total={demoClicks}
+        totalLabel={`${demoClicks} clicked through`}
+        caption="Everyone who clicked a demo link in this window, counted once, at the furthest point they reached."
+        empty="Nobody clicked through to the demo in this range."
+        stops={demoFunnel}
+      />
+
+      {/* The step after the demo: where buyers stop between the buy page
+          and paying. Each step counts distinct visitors, so a visitor who
+          closed the window and then paid appears in both. */}
+      <FunnelCard
+        title="How far buyers got"
+        total={checkoutFunnel[0]?.visitors ?? 0}
+        totalLabel={`${checkoutFunnel[0]?.visitors ?? 0} reached the buy page`}
+        caption="Distinct visitors at each step of the checkout in this window."
+        empty="Nobody reached the buy page in this range."
+        stops={checkoutFunnel}
+      />
+
+      {/* The free plan, beside the checkout: a claim is a team that
+          installs before anyone pays. */}
+      <FunnelCard
+        title="The free plan"
+        total={freeFunnel[0]?.visitors ?? 0}
+        totalLabel={`${freeFunnel[0]?.visitors ?? 0} opened the free plan`}
+        caption="Distinct visitors who opened /free, and who claimed a key, in this window."
+        empty="Nobody opened the free plan in this range."
+        stops={freeFunnel.slice(0, 2)}
+      />
+      {/* Claimed from the demo's own prompt: those never open /free, so they
+          are counted beside the page's funnel, not as a share of it. */}
+      {freeFunnel[2] && (
+        <p className="mt-2 px-1 text-xs text-muted-foreground">
+          Claimed from the demo&apos;s prompt: <span className="font-medium text-foreground">{freeFunnel[2].visitors}</span>
+        </p>
+      )}
+
+      {/* Devices */}
+      <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
+        <p className="mb-3 text-sm font-semibold text-foreground">Devices</p>
+        {byDevice.length === 0 ? (
+          <p className="py-4 text-center text-sm text-muted-foreground">No data.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {byDevice.map((d) => {
+              const meta = DEVICE_META[d.device] ?? DEVICE_META.unknown;
+              const pct = Math.round((d.views / deviceTotal) * 100);
+              return (
+                <div key={d.device} className="rounded-xl border border-border bg-muted/20 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground">
+                      <span className="mr-1.5">{meta.icon}</span>{meta.label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{pct}%</span>
+                  </div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded bg-muted">
+                    <div className="h-full rounded bg-gradient-to-r from-brand to-brand-light" style={{ width: `${pct}%` }} />
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">{d.views.toLocaleString()} views · {d.uniques.toLocaleString()} visitors</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Geography */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="rounded-2xl border border-border bg-muted/30 p-5 lg:col-span-2">
+          <p className="mb-3 text-sm font-semibold text-foreground">Where your visitors are</p>
+          {byCountry.length === 0 ? (
+            <p className="py-12 text-center text-sm text-muted-foreground">
+              No geographic data yet. Country is read from the CDN geo header - it populates once the backend is behind a geo-aware proxy (e.g. Cloudflare).
+            </p>
+          ) : (
+            <VisitorMap data={byCountry} />
+          )}
+        </div>
+        <div className="rounded-2xl border border-border bg-muted/30 p-5">
+          <p className="mb-3 text-sm font-semibold text-foreground">Top countries</p>
+          {byCountry.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">No data.</p>
+          ) : (
+            <div className="max-h-[380px] space-y-1.5 overflow-y-auto pr-1">
+              {byCountry.map((c) => {
+                const pct = Math.round((c.views / countryTotal) * 100);
+                return (
+                  <div key={c.code} className="flex items-center gap-2 text-sm">
+                    <span className="w-6 flex-shrink-0 text-base">{countryFlag(c.code)}</span>
+                    <span className="w-28 flex-shrink-0 truncate text-foreground/80">{countryName(c.code)}</span>
+                    <div className="h-2 flex-1 overflow-hidden rounded bg-muted">
+                      <div className="h-full rounded bg-gradient-to-r from-brand to-brand-light" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="w-10 flex-shrink-0 text-right text-xs text-muted-foreground">{c.views}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -348,12 +361,18 @@ function FunnelCard({ title, total, totalLabel, caption, empty, stops }: {
           {stops.map((stop) => {
             const pct = total > 0 ? Math.round((stop.visitors / total) * 100) : 0;
             return (
-              <div key={stop.step} className="flex items-center gap-3 text-sm">
-                <span className="w-56 flex-shrink-0 text-foreground/80">{stop.step}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+              // On a phone the step takes its own line, so the bar keeps room;
+              // from sm up it is the 14rem | bar | count row it always was. The
+              // count column is at least 5rem in both, so the bars line up.
+              <div
+                key={stop.step}
+                className="grid grid-cols-[minmax(0,1fr)_minmax(5rem,auto)] items-center gap-x-3 gap-y-1 text-sm sm:grid-cols-[14rem_minmax(0,1fr)_minmax(5rem,auto)]"
+              >
+                <span className="col-span-2 text-foreground/80 sm:col-span-1">{stop.step}</span>
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
                   <div className="h-full rounded-full bg-foreground/30" style={{ width: `${pct}%` }} />
                 </div>
-                <span className="w-20 flex-shrink-0 text-right tabular-nums text-muted-foreground">
+                <span className="text-right tabular-nums text-muted-foreground">
                   {stop.visitors} · {pct}%
                 </span>
               </div>

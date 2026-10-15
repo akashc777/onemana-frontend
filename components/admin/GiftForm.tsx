@@ -56,7 +56,7 @@ export function GiftForm({ onGifted }: { onGifted?: () => void }) {
         <h2 className="font-semibold text-foreground">Gift access</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">Grant a free lifetime license or a few months of Cloud to any email. They&apos;ll get their key by email.</p>
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Recipient email" className={`${inputCls} lg:col-span-2`} />
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (optional)" className={inputCls} />
         <select value={kind} onChange={(e) => setKind(e.target.value as "license" | "subscription")} className={inputCls}>

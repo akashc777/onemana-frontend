@@ -141,7 +141,7 @@ export function MetricsPanel() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Money{m.range.applied ? " in this period" : ", all time"}
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat
             label="Revenue to date"
             value={formatINR(m.revenue.gross_paise)}
@@ -170,7 +170,7 @@ export function MetricsPanel() {
 
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">People</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat
             label={m.range.applied ? "New paying customers" : "Paying customers"}
             value={String(m.customers.paying)}
@@ -273,7 +273,7 @@ export function MetricsPanel() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Where they came from
         </h2>
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-muted/30 px-5 py-2">
             <p className="py-2 text-xs uppercase tracking-wider text-muted-foreground">Channel</p>
             {m.acquisition.channels.map((c) => (
