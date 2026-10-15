@@ -1,6 +1,9 @@
+import { readdirSync, readFileSync, statSync } from "node:fs"
+import { join } from "node:path"
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
+import { HomeComparison } from "@/components/site/HomeComparison"
 import { PlanComparison } from "@/components/site/PlanComparison"
 import { PLAN_HUE } from "@/components/site/planHues"
 import { HUE_CLASS } from "@/components/ui/graphics/hues"
@@ -36,6 +39,42 @@ function contrast(a: RGB, b: RGB): number {
 function raisedCells(html: string): string[] {
   return [...html.matchAll(/<t[hd][^>]*class="([^"]*)"/g)].map((m) => m[1]!).filter((c) => c.includes("inset_1px_0_0_var(--line-2-c)"))
 }
+
+// The home page's comparison raised OneCamp's column on the same white card
+// (bg-card on the white page). Both tables take one rule, planHues RAISED_COLUMN.
+describe("the home comparison's raised column", () => {
+  const cells = raisedCells(renderToString(<HomeComparison pricing={defaultPricing} />))
+
+  it("is OneCamp's heading and a cell for every row", () => {
+    expect(cells.length).toBeGreaterThanOrEqual(6)
+  })
+
+  it("stands on the same tint as the plan table's, never the card's white", () => {
+    for (const c of cells) {
+      expect(c.split(/\s+/), c).toContain(HUE_CLASS[PLAN_HUE.lifetime])
+      expect(c.split(/\s+/), c).toContain("bg-hue-tint")
+      expect(c, c).not.toMatch(/(^|\s)bg-(card|white|background)(\s|$)/)
+    }
+  })
+})
+
+describe("the raised column", () => {
+  it("is written once, in planHues.ts, for every table that raises one", () => {
+    const walk = (dir: string, out: string[] = []): string[] => {
+      for (const e of readdirSync(dir)) {
+        const p = join(dir, e)
+        if (statSync(p).isDirectory()) walk(p, out)
+        else if (/\.tsx?$/.test(p) && !/\.test\.tsx?$/.test(p)) out.push(p)
+      }
+      return out
+    }
+    const writers = ["app", "components", "lib"]
+      .flatMap((d) => walk(join(process.cwd(), d)))
+      .filter((f) => readFileSync(f, "utf8").includes("inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)"))
+      .map((f) => f.slice(process.cwd().length + 1))
+    expect(writers).toEqual(["components/site/planHues.ts"])
+  })
+})
 
 describe("the plan table's raised licence column", () => {
   const html = renderToString(<PlanComparison pricing={defaultPricing} />)

@@ -5,11 +5,13 @@ import { type Pricing } from "@/lib/pricing";
 import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearUsd } from "@/lib/teamCost";
 import { Rupees, StackBasis, StackCost } from "@/components/site/RegionalMoney";
 import { LogoRing } from "@/components/ui/v3";
+import { RAISED_COLUMN } from "@/components/site/planHues";
 
 /**
  * Facts in rows, four products in columns: the proof that stands in for the
- * customer logos OneCamp does not have yet. OneCamp's column sits on the muted
- * surface, so the eye reads down it first; nothing else on the table is tinted.
+ * customer logos OneCamp does not have yet. OneCamp's column is raised on the
+ * licence's tint (RAISED_COLUMN, as in the plan table), so the eye reads down
+ * it first; nothing else on the table is tinted.
  *
  * It includes a row OneCamp loses (ready-made integrations), on purpose: a
  * table where one column wins everything is an advert, and readers discount it
@@ -25,8 +27,8 @@ import { LogoRing } from "@/components/ui/v3";
  * before: it used to start on the tint's edge, its words touching it.
  */
 const AFTER_TINT = "pl-4";
-/** The lifted column's cells: the raised surface between two hairlines. */
-const LIFT = "bg-card shadow-[inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)]";
+/** The lifted column's cells: the licence's raised column (planHues.ts). */
+const LIFT = RAISED_COLUMN;
 
 /** The row OneCamp loses, said with a berry chip. */
 function LoseChip() {
