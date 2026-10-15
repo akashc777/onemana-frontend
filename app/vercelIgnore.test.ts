@@ -66,6 +66,12 @@ describe("scripts/vercel-ignore.sh", () => {
     expect(decide(first)).toBe(1)
   })
 
+  it("builds a push that changes only a legal page's Markdown, which the site builds in", () => {
+    const deployed = commit("docs/notes.md", "notes\n")
+    commit("content/legal/refund-policy.md", "words\n")
+    expect(decide(deployed)).toBe(1)
+  })
+
   it("builds when the last deploy's commit isn't in the clone", () => {
     expect(decide("85249c0fd33d3c12115fc48e691ac393acdfbafa")).toBe(1)
   })

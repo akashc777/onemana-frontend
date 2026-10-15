@@ -10,6 +10,13 @@ const nextConfig = {
     // static file of its own size; blog covers (CMS content) are shown as
     // published, in a fixed 16:10 box (components/blog/PostCover.tsx).
     images: { unoptimized: true },
+    // A legal page's words are Markdown in content/legal, built into the page
+    // as text ("<file>.md?raw", lib/legalPages.ts), so no page reads a file
+    // when it is rendered again on the server. Vitest reads ?raw on its own.
+    webpack(config) {
+        config.module.rules.push({ test: /\.md$/, resourceQuery: /raw/, type: "asset/source" });
+        return config;
+    },
     // Addresses people type or search engines guess. /pricing is a page of its
     // own since 10 Oct 2026, so it no longer redirects to the home page.
     async redirects() {

@@ -17,8 +17,9 @@ import { legalPages } from "./legalPages"
  * (ComputeGSTInclusive in onemana-backend business/onecamp/tax.go), adding
  * nothing. A buyer told both cannot know what they will pay.
  *
- * content/ is not read: it holds the original Page Builder export, which
- * nothing renders.
+ * The legal pages' words are Markdown in content/legal (lib/legalPages.ts),
+ * read here through legalPages; the rest of content/ is the original Page
+ * Builder export, which nothing renders.
  */
 const COPY_ROOTS = ["app", "components/site", "lib"]
 
@@ -58,6 +59,12 @@ describe("tax in customer-facing copy", () => {
           const hit = src.match(pattern)
           if (hit) offenders.push(`${file}: ${hit[0]}`)
         }
+      }
+    }
+    for (const [slug, page] of Object.entries(legalPages)) {
+      for (const pattern of TAX_ON_TOP) {
+        const hit = page.source.match(pattern)
+        if (hit) offenders.push(`content/legal/${slug}.md: ${hit[0]}`)
       }
     }
     expect(offenders, "copy says tax comes on top, but the price charged includes GST").toEqual([])

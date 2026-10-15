@@ -12,6 +12,9 @@
 # ignoreCommand longer than 256 characters as an invalid project config.
 prev="${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}"
 git cat-file -e "${prev}^{commit}" 2>/dev/null || exit 1
+# The legal pages' words are Markdown the site builds in (lib/legalPages.ts):
+# a change to them always builds.
+git diff --quiet "$prev" HEAD -- content/legal || exit 1
 if git diff --quiet "$prev" HEAD -- . \
   ':(exclude)*.test.ts' ':(exclude)*.test.tsx' ':(exclude)*.test.mjs' \
   ':(exclude)e2e' ':(exclude)design' ':(exclude)scripts' ':(exclude)*.md'; then

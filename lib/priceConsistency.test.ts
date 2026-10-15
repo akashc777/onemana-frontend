@@ -144,12 +144,13 @@ describe("estimates in the visitor's currency", () => {
       for (const e of readdirSync(dir)) {
         const p = join(dir, e)
         if (statSync(p).isDirectory()) walk(p, out)
-        else if (/\.tsx?$/.test(p) && !/\.test\.tsx?$/.test(p)) out.push(p)
+        else if (/\.(tsx?|md)$/.test(p) && !/\.test\.tsx?$/.test(p)) out.push(p)
       }
       return out
     }
     const sources = Object.fromEntries(
-      ["app", "components", "lib", "hooks"].flatMap((d) => walk(join(root, d))).map((f) => [
+      // content/legal: the legal pages' words, which are Markdown.
+      ["app", "components", "lib", "hooks", "content/legal"].flatMap((d) => walk(join(root, d))).map((f) => [
         f.slice(root.length + 1),
         // Comments may show what an estimate looks like; code may not type one.
         readFileSync(f, "utf8").replace(/\/\*[\s\S]*?\*\//g, " ").replace(/(^|\s)\/\/[^\n]*/g, "$1"),

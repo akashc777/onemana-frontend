@@ -64,6 +64,13 @@ describe("visible copy", () => {
     const found = SOURCE_DIRS.flatMap((d) => sourceFiles(join(ROOT, d))).flatMap((f) =>
       dashedCopy(f, readFileSync(f, "utf8")),
     )
+    // The legal pages' words are Markdown (content/legal), all of it copy.
+    const legal = join(ROOT, "content", "legal")
+    for (const name of readdirSync(legal)) {
+      readFileSync(join(legal, name), "utf8").split("\n").forEach((line, i) => {
+        if (DASH.test(line)) found.push(`content/legal/${name}:${i + 1}: ${line.trim().slice(0, 100)}`)
+      })
+    }
     expect(found).toEqual([])
   })
 
