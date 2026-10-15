@@ -48,7 +48,7 @@ export const legalPages: Record<string, LegalPage> = {
   "terms-of-service": legalPage("Terms of service", "", termsOfService, "2026-10-15"),
   "refund-policy": legalPage("Refund policy", "", refundPolicy, "2026-06-10"),
   "taxes-on-services": legalPage("Tax and invoices", "", taxesOnServices, "2026-10-15"),
-  "account-ownership-policy": legalPage("Account ownership policy", "", accountOwnershipPolicy, "2026-06-10"),
+  "account-ownership-policy": legalPage("Account ownership policy", "", accountOwnershipPolicy, "2026-10-15"),
 };
 
 /** A legal page's tab title and canonical address: its own name, as its H1 says it. */

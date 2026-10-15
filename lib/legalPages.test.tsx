@@ -22,9 +22,9 @@ import { LegalPageView } from "@/components/site/LegalPageView";
 const PINS: Record<string, { updated: string; words: string }> = {
   "privacy-policy": { updated: "2026-10-01", words: "380342bfd4d7" },
   "refund-policy": { updated: "2026-06-10", words: "ba704d7017ce" },
-  "terms-of-service": { updated: "2026-10-15", words: "cfb552176801" },
+  "terms-of-service": { updated: "2026-10-15", words: "2309ccfd9251" },
   "taxes-on-services": { updated: "2026-10-15", words: "3ae2e71c30b3" },
-  "account-ownership-policy": { updated: "2026-06-10", words: "1bfe451740aa" },
+  "account-ownership-policy": { updated: "2026-10-15", words: "53e7fc083c6a" },
 };
 
 const ENTITIES: Record<string, string> = { "&amp;": "&", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&lt;": "<", "&gt;": ">", "&nbsp;": " " };
@@ -163,6 +163,17 @@ describe("legal pages", () => {
       }
     }
     expect(headings).toBeGreaterThan(10);
+  });
+
+  // The site writes British English; the terms said "organizations" and
+  // "unauthorized", and the ownership policy "organization".
+  it("spell the British way", () => {
+    const AMERICAN = /\b[a-z]*?(?:iz|yz)(?:e|es|ed|ing|ation|ations)\b/gi;
+    const FINE = new Set(["size", "sizes", "sized", "prize", "prizes", "seize", "seized"]);
+    for (const [slug, p] of Object.entries(legalPages)) {
+      const found = [...`${p.title} ${p.subtitle} ${p.source}`.matchAll(AMERICAN)].map((m) => m[0]).filter((w) => !FINE.has(w.toLowerCase()));
+      expect(found, slug).toEqual([]);
+    }
   });
 
   // Storefront audit P3 #17: straight quotes ("Company", "OneCamp").

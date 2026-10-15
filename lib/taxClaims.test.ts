@@ -71,7 +71,8 @@ describe("tax in customer-facing copy", () => {
   })
 
   it("says prices include GST where tax is explained", () => {
-    expect(legalPages["terms-of-service"].bodyHtml).toContain("Prices include GST")
+    // "Any GST due": an invoice made out as an export of services carries none.
+    expect(legalPages["terms-of-service"].bodyHtml).toContain("Prices include any GST due")
     expect(legalPages["taxes-on-services"].bodyHtml).toContain("is included in the price you pay")
     expect(legalPages["taxes-on-services"].bodyHtml).toContain("nothing is added to it at checkout")
     expect(audienceBySlug("india")?.priceNote).toMatch(/^Prices include GST/)

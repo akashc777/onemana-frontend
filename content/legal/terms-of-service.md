@@ -4,7 +4,7 @@
 
 “Services” refers to OneCamp (all versions) whether delivered within a web browser, desktop application, mobile application, or another format.
 
-Finally, “you” or “your” refers to the people or organizations that own an account with one or more of our Services. We have a specific [account ownership policy](/account-ownership-policy) for our products.
+Finally, “you” or “your” refers to the people or organisations that own an account with one or more of our Services. We have a specific [account ownership policy](/account-ownership-policy) for our products.
 
 ### Account terms
 
@@ -16,12 +16,12 @@ Finally, “you” or “your” refers to the people or organizations that own 
 1. If you are using a free version of one of our Services, it is really free: we do not ask you for your credit card or sell your data.
 2. Paid Services are paid in advance, for the period you choose when you buy.
 3. If you are upgrading from a free plan to a paid plan, we will charge your card immediately and your billing cycle starts on the day of upgrade.
-4. Prices include GST, which your invoice shows separately. Our [tax and invoices](/taxes-on-services) page has the details.
+4. Prices include any GST due, which your invoice shows separately. Our [tax and invoices](/taxes-on-services) page has the details.
 5. We process refunds according to our [refund policy](/refund-policy).
 
 ### Liability
 
-You agree that the Company is not liable to you or to any third party for damages of any kind that result from the use of the Services, inability to access data, or unauthorized access of your data or account.
+You agree that the Company is not liable to you or to any third party for damages of any kind that result from the use of the Services, inability to access data, or unauthorised access of your data or account.
 
 When you use any OneMana products or services, you are agreeing to these latest terms of service. Violation of these terms may, at our discretion, result in us terminating your account.
 
