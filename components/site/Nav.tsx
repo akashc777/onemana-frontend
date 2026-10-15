@@ -4,23 +4,27 @@ import { ButtonLink } from "@/components/ui/Button";
 import { LogoRing } from "@/components/ui/v3";
 import { ThemeToggle, ThemeSegments } from "@/components/site/ThemeToggle";
 import { MobileMenu, NavBar, NavLink } from "@/components/site/NavParts";
+import { GitHubLink } from "@/components/site/GitHubLink";
 import { NewTabMark } from "@/components/ui/icons";
 import { ix } from "@/lib/interactive";
 
 /**
  * The nav (design v3, site.md S1): 64px, transparent at the top and the page
  * under a blur once you scroll. The gradient ring and "OneCamp", five links,
- * then the theme, Sign in, "Live demo" as a text link and one secondary
- * button, "Install free". The demo and the free plan are the two ways in that
- * need no money, so they are the two the nav offers; nothing in it is filled
- * in the brand.
+ * then the theme, Sign in, "Live demo" as a text link, the code on GitHub
+ * with its stars, and one secondary button, "Install free". The demo and the
+ * free plan are the two ways in that need no money, so they are the two the
+ * nav offers; nothing in it is filled in the brand.
  *
  * Drawn on the server. Only the scroll state (NavBar), the current-page mark
  * (NavLink) and the phone menu's open state (MobileMenu) are client parts.
  * On a phone, Pricing stays beside the menu button, so the way to buy is one
- * tap from every page.
+ * tap from every page, and GitHub is a row of the menu.
+ *
+ * `stars` is the four repositories' total (lib/github.ts, read by the root
+ * layout), or null when GitHub did not answer.
  */
-export function Nav() {
+export function Nav({ stars = null }: { stars?: number | null }) {
   return (
     <NavBar>
       <nav className="container-x flex h-14 items-center justify-between gap-6 lg:h-16" aria-label="Primary">
@@ -46,6 +50,8 @@ export function Nav() {
             Live demo
             <NewTabMark />
           </a>
+          {/* Beside the bar's one button, the code it runs on (GitHubLink). */}
+          <GitHubLink stars={stars} />
           <ButtonLink href="/free" size="md" variant="ghost" className="ml-2">
             Install free
           </ButtonLink>
@@ -56,8 +62,8 @@ export function Nav() {
             Pricing
           </NavLink>
           <MobileMenu>
-            {/* Nav rows, the current page on the raised chip, then the theme
-                under a hairline, then the two ways in. */}
+            {/* Nav rows, the current page on the raised chip, GitHub with its
+                stars, then the theme under a hairline, then the two ways in. */}
             <div className="container-x flex flex-col gap-0.5 pb-5 pt-2">
               {navLinks.map((l) => (
                 <NavLink key={l.href} href={l.href} look="menu">
@@ -67,6 +73,7 @@ export function Nav() {
               <NavLink href="/account" look="menu">
                 Sign in
               </NavLink>
+              <GitHubLink stars={stars} look="menu" />
               <div className="mt-2 flex min-h-14 items-center justify-between border-t border-border pt-2">
                 <span className="text-body font-[510] text-foreground">Theme</span>
                 <ThemeSegments />

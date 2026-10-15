@@ -3,6 +3,7 @@ import "./globals.css";
 import { fontMono, fontRupee, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
+import { getOpenSource } from "@/lib/github";
 import { jsonLdScript } from "@/lib/jsonLd";
 import { defaultOgImages, defaultTwitterImages, OG_DESCRIPTION, OG_TITLE } from "@/lib/og-card";
 import { Nav } from "@/components/site/Nav";
@@ -96,7 +97,9 @@ function buildJsonLd(lifetimeInr: number, lifetimeUsd: number, cloudInr: number,
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const pricing = await getPricing();
+  // The open-source read is kept an hour (lib/github.ts); null when GitHub is
+  // silent, and the nav then says "GitHub" with no number.
+  const [pricing, openSource] = await Promise.all([getPricing(), getOpenSource()]);
   const jsonLd = buildJsonLd(pricing.lifetime_inr, pricing.lifetime_usd, pricing.cloud_inr, pricing.cloud_usd);
   return (
     <html
@@ -116,7 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           >
             Skip to content
           </a>
-          <Nav />
+          <Nav stars={openSource?.stars ?? null} />
           {/* The app's frame: the nav and the gutter are the canvas (the
               warm wash), and the page is one sheet on it. On a phone the
               sheet is the whole width, as the app's is. */}
