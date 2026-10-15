@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-import { APP, CAMP, INTERACTION, SHARED, hexToTriple } from "@/lib/appSystem"
+import { APP, CAMP, INTERACTION, NIGHT, SHARED, hexToTriple } from "@/lib/appSystem"
 import { colourTokens, interactionTokens, nightTokens } from "@/lib/tailwindAppSystem"
 
 /**
@@ -133,5 +133,41 @@ describe("shared interaction tokens", () => {
   it("globals.css writes no --ix- token of its own", () => {
     const css = readFileSync(resolve(__dirname, "globals.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
     expect(css).not.toMatch(/--ix-[\w-]+\s*:/)
+  })
+})
+
+/**
+ * The night surfaces (home's Safe AI, /free's terminal, the compliance
+ * record, the 404's record) in dark: #060708 on the #0B0C0E page, the page's
+ * anchor nearly vanished (storefront audit §7 row 2). In dark the ground sits
+ * a step above the page, and its raised cards a step above the ground.
+ */
+describe("the night surfaces", () => {
+  const lum = ([r, g, b]: readonly number[]) => {
+    const lin = (c: number) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * lin(r!) + 0.7152 * lin(g!) + 0.0722 * lin(b!)
+  }
+  const contrast = (a: readonly number[], b: readonly number[]) => {
+    const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x)
+    return (hi! + 0.05) / (lo! + 0.05)
+  }
+
+  it("in dark, the ground is drawn above the page, not below it", () => {
+    expect(lum(NIGHT.ground.dark)).toBeGreaterThan(lum(SHARED.dark.background))
+    // The app's own step, its sheet on its frame (#131416 on #0B0C0E): the
+    // old ground sat a step below the page.
+    expect(NIGHT.ground.dark).toEqual(SHARED.dark.sheet)
+    expect(contrast(NIGHT.ground.dark, SHARED.dark.background)).toBeGreaterThan(1.05)
+    expect(nightTokens("dark")["--background"]).toBe(NIGHT.ground.dark.join(" "))
+  })
+
+  it("its raised cards sit a step above the ground in either theme, and its ink reads on them", () => {
+    for (const theme of ["light", "dark"] as const) {
+      const card = NIGHT.raised[theme].card
+      expect(lum(card), theme).toBeGreaterThan(lum(NIGHT.ground[theme]))
+      expect(nightTokens(theme)["--card"]).toBe(card.join(" "))
+      expect(contrast(NIGHT.tokens.foreground, card), theme).toBeGreaterThan(7)
+      expect(contrast(NIGHT.tokens["muted-foreground"], card), theme).toBeGreaterThanOrEqual(4.5)
+    }
   })
 })

@@ -127,24 +127,33 @@ export const ALPHA: Record<"light" | "dark", Record<string, [[number, number, nu
 }
 
 /**
- * NIGHT (site.md S6): the storefront's one dark section, the same in both
- * themes, with ink inverted; in dark the ground steps down to #060708 so it
- * still reads as a step. The camp hues take their dark cuts.
+ * NIGHT (site.md S6): the storefront's night surfaces (home's Safe AI, /free's
+ * terminal, the compliance record, the 404's record), dark in both themes,
+ * with ink inverted. The camp hues take their dark cuts.
+ *
+ * In light the ground is the dark page's #0B0C0E. In dark it is drawn one
+ * step ABOVE the page, on the app's sheet (#131416), with its raised cards a
+ * step above that (#1B1C1F, the dark ladder's raised): it stepped down to
+ * #060708 on the #0B0C0E page, and in the theme a technical buyer most
+ * likely runs, the page's anchor nearly vanished (storefront audit §7 row 2).
  */
 export const NIGHT = {
-  ground: { light: [11, 12, 14], dark: [6, 7, 8] } as Record<"light" | "dark", [number, number, number]>,
+  ground: { light: [11, 12, 14], dark: [19, 20, 22] } as Record<"light" | "dark", [number, number, number]>,
   tokens: {
     foreground: [238, 238, 240],
     "muted-foreground": [168, 171, 177],
     faint: [114, 116, 123],
-    card: [20, 21, 24],
-    pop: [27, 28, 31],
     muted: [15, 16, 18],
     "brand-ink": [255, 138, 76],
     agent: [154, 162, 246],
     "agent-ink": [201, 205, 251],
     "agent-muted": [30, 32, 64],
   } as Record<string, [number, number, number]>,
+  /** The surfaces raised on the ground, a step above it in either theme. */
+  raised: {
+    light: { card: [20, 21, 24], pop: [27, 28, 31] },
+    dark: { card: [27, 28, 31], pop: [31, 32, 36] },
+  } as Record<"light" | "dark", Record<"card" | "pop", [number, number, number]>>,
   line: 0.08,
 }
 

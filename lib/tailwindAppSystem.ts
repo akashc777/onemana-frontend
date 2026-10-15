@@ -119,6 +119,7 @@ export const liftShadow = (step: string) =>
 export function nightTokens(theme: "light" | "dark"): Record<string, string> {
   const out: Record<string, string> = { "--background": NIGHT.ground[theme].join(" ") }
   for (const [name, rgb] of Object.entries(NIGHT.tokens)) out[`--${name}`] = rgb.join(" ")
+  for (const [name, rgb] of Object.entries(NIGHT.raised[theme])) out[`--${name}`] = rgb.join(" ")
   for (const [name, hex] of Object.entries(CAMP.dark)) out[`--${name}`] = hexToTriple(hex).join(" ")
   out["--line"] = "255 255 255"
   out["--line-a"] = String(NIGHT.line)
