@@ -100,8 +100,8 @@ describe("the buy page quotes the price it charges", () => {
   it("prices the pay button from the chosen plan", () => {
     // Rupees first, the figure on Razorpay's window, with the estimate in the
     // buyer's own currency beside it (plan A6).
-    expect(page).toContain("Subscribe for ${withEstimate(fmtINR(price.inr) + price.per, localEstimate(pricing, price.inr, region))}")
-    expect(page).toContain("Pay ${withEstimate(fmtINR(pricing.lifetime_inr), localEstimate(pricing, pricing.lifetime_inr, region))} and get your key")
+    expect(page).toContain("Subscribe for ${priceWithEstimate(pricing, price.inr, region, price.per)}")
+    expect(page).toContain("Pay ${priceWithEstimate(pricing, pricing.lifetime_inr, region)} and get your key")
     expect(page).not.toMatch(/Subscribe for \$\{fmtUSD\(pricing\.cloud_usd\)/)
     expect(page).not.toMatch(/`[^`]* - \$\{/)
   })

@@ -168,11 +168,6 @@ export function dual(usdAmount: number, inrAmount: number, per = ""): string {
   return usdAmount > 0 ? `${fmtINR(inrAmount)}${per} (about ${fmtUSD(usdAmount)})` : `${fmtINR(inrAmount)}${per}`;
 }
 
-/** The dollar estimate on its own, for the line under a rupee price: "≈ $263 at today's rate". */
-export function usdEstimate(usdAmount: number): string {
-  return usdAmount > 0 ? `≈ ${fmtUSD(usdAmount)} at today's rate` : "";
-}
-
 /**
  * The line under every price list and beside every pay button. A card
  * outside India is charged in rupees and converted by the card's issuer, so
@@ -220,6 +215,19 @@ export function localEstimate(p: Pricing, inr: number, region: Region | null): s
   const rate = rupeesPer(p, currency);
   if (!rate) return "";
   return `≈ ${fmtLocal(inr / rate, currency, region?.locale ?? "en-US")}`;
+}
+
+/**
+ * A rupee price in running text, with localEstimate beside it: "₹24,999
+ * (≈ £194)", "₹9,999/mo (≈ $103)". The rupees alone in India, and when there
+ * is no rate to estimate with. The one way a sentence or a button writes a
+ * price; a plan card gives the same estimate on a line of its own
+ * (components/site/RegionalMoney).
+ */
+export function priceWithEstimate(p: Pricing, inr: number, region: Region | null, per = ""): string {
+  const estimate = localEstimate(p, inr, region);
+  const rupees = `${fmtINRFor(inr, region)}${per}`;
+  return estimate ? `${rupees} (${estimate})` : rupees;
 }
 
 /**

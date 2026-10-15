@@ -28,7 +28,7 @@ import React, { useMemo, useState } from "react"
 import Link from "next/link"
 import type { Pricing } from "@/lib/pricing"
 import { cloudYearFor } from "@/lib/cloudYear"
-import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fmtINRFor, fromUsd, localEstimate } from "@/lib/pricing"
+import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fromUsd, priceWithEstimate } from "@/lib/pricing"
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
@@ -58,9 +58,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     const p = pricing ?? defaultPricing
     const fmt = (usd: number) => (region?.inIndia ? inrAt(usd, rate) : fromUsd(p, usd, region))
     // OneCamp's own price stays in rupees, the charge, with the estimate beside it.
-    const licence = pricing
-        ? `${fmtINRFor(pricing.lifetime_inr, region)}${region?.inIndia ? "" : ` (${localEstimate(pricing, pricing.lifetime_inr, region)})`}`
-        : fmt(lifetimeUsd)
+    const licence = pricing ? priceWithEstimate(pricing, pricing.lifetime_inr, region) : fmt(lifetimeUsd)
     const [withAi, setWithAi] = useState(true)
 
     // First year, so a licence is included rather than amortised away; a team
@@ -197,11 +195,13 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                         <>
                             {" "}Or nobody does:{" "}
                             <Link href={cloud.href} className="link">
-                                OneCamp Cloud ({cloud.plan}) is {(() => {
-                                    const inr = cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr
-                                    const est = localEstimate(pricing, inr, region)
-                                    return `${fmtINRFor(inr, region)}${est ? ` (${est})` : ""}`
-                                })()} a year
+                                OneCamp Cloud ({cloud.plan}) is{" "}
+                                {priceWithEstimate(
+                                    pricing,
+                                    cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr,
+                                    region,
+                                )}{" "}
+                                a year
                             </Link>
                             , hosted, backed up and updated for you.
                         </>

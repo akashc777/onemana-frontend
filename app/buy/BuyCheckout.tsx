@@ -10,7 +10,7 @@ import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, currencyNote, localEstimate, setupEstimateFor, type Pricing } from "@/lib/pricing";
+import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, currencyNote, priceWithEstimate, setupEstimateFor, type Pricing } from "@/lib/pricing";
 import { regionFor } from "@/lib/visitorCurrency";
 import { taxIdLabel } from "@/lib/invoiceFields";
 import { RegionProvider } from "@/hooks/useVisitorRegion";
@@ -469,10 +469,10 @@ export function BuyCheckout({
                 : isCloud
                   ? // The chosen plan's own price: Business once read Team's here.
                     // The rupees first, the figure on Razorpay's window (plan A6).
-                    `Subscribe for ${withEstimate(fmtINR(price.inr) + price.per, localEstimate(pricing, price.inr, region))}`
+                    `Subscribe for ${priceWithEstimate(pricing, price.inr, region, price.per)}`
                   : pricing.charge_usd
                     ? `Pay ${isIndia ? fmtINR(pricing.lifetime_inr) : fmtUSD(pricing.lifetime_usd)} & get your key`
-                    : `Pay ${withEstimate(fmtINR(pricing.lifetime_inr), localEstimate(pricing, pricing.lifetime_inr, region))} and get your key`}
+                    : `Pay ${priceWithEstimate(pricing, pricing.lifetime_inr, region)} and get your key`}
             </Button>
             </div>
             {/* The one sentence about money that has to be read before it is
@@ -531,11 +531,6 @@ export function BuyCheckout({
       </section>
     </>
   );
-}
-
-/** "₹24,999 (≈ $258)", or the rupees alone when there is no estimate (India). */
-function withEstimate(rupees: string, estimate: string): string {
-  return estimate ? `${rupees} (${estimate})` : rupees;
 }
 
 const inputCls =
