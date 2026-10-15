@@ -24,7 +24,10 @@ import { Tile } from "@/components/ui/graphics/Tile";
 import { Arrow } from "@/components/ui/v3";
 import { Icon } from "@/components/ui/icons";
 import { SunStroke } from "@/components/ui/graphics/v3marks";
+import { RepoCards } from "@/components/site/RepoCard";
 import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
+import { factsFor, getOpenSource } from "@/lib/github";
+import { REPO_COPY } from "@/lib/openSource";
 import { ix } from "@/lib/interactive";
 
 export const revalidate = 300;
@@ -33,8 +36,9 @@ export const revalidate = 300;
  * The home page, design v3 (design/v3-areas/site.md §4): what it is, with the
  * product itself on the camp canvas; the facts; the product by surface; what
  * else is in the box; the argument, shown, on the page's one night section;
- * what running it involves; how it compares; the price; the questions people
- * ask before paying; and the close, on the page's one band.
+ * what running it involves; that it is open source, end to end; how it
+ * compares; the price; the questions people ask before paying; and the
+ * close, on the page's one band.
  *
  * Calls to action, in rank: the live demo (the one primary per screen),
  * Install free (secondary), then buying, in the plan columns. "See pricing"
@@ -77,7 +81,21 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
   );
 }
 
-/** The two ways in, each with its hint (site.md H1, H11); on a phone, stacked full width with one shared hint. */
+/** "Open source" in a hint: the hint's own ink over a hairline, to the page that says what is open. */
+function OpenSourceHint() {
+  return (
+    <Link href="/open-source" className="link-quiet tap-target">
+      Open source
+    </Link>
+  );
+}
+
+/**
+ * The two ways in, each with its hint (site.md H1, H11); on a phone, stacked
+ * full width with one shared hint. Install free's hint says what it is free
+ * to take: open source, and free for up to 25 people (the owner's ask, 15 Oct
+ * 2026), "Open source" opening /open-source. Nothing else joined the hero.
+ */
 function WaysIn() {
   return (
     <div className="grid gap-2.5 sm:flex sm:items-start sm:gap-3">
@@ -85,21 +103,25 @@ function WaysIn() {
         <ButtonLink href={site.demoStartUrl} external variant="brand" size="xl" arrow>
           Try the live demo
         </ButtonLink>
-        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-muted-foreground sm:block">No sign-up · opens in seconds</span>
+        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-muted-foreground sm:block">No sign-up · Opens in seconds</span>
       </div>
       <div className="grid gap-2">
         <ButtonLink href="/free" variant="ghost" size="xl">
           Install free
         </ButtonLink>
-        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-muted-foreground sm:block">Up to {FREE_SEATS} people, no card</span>
+        <span className="hidden pl-0.5 text-[12.5px] leading-4 text-muted-foreground sm:block">
+          <OpenSourceHint /> · Free for up to {FREE_SEATS} people
+        </span>
       </div>
-      <span className="mt-1 text-center text-[12.5px] leading-4 text-muted-foreground sm:hidden">No sign-up · free for up to {FREE_SEATS} people</span>
+      <span className="mt-1 text-center text-[12.5px] leading-4 text-muted-foreground sm:hidden">
+        <OpenSourceHint /> · No sign-up · Free for up to {FREE_SEATS} people
+      </span>
     </div>
   );
 }
 
 export default async function HomePage() {
-  const [pricing, release] = await Promise.all([getPricing(), getReleaseFacts()]);
+  const [pricing, release, openSource] = await Promise.all([getPricing(), getReleaseFacts(), getOpenSource()]);
   const byQ = (q: string) => faqs.find((f) => f.q === q)!;
 
   return (
@@ -226,7 +248,26 @@ export default async function HomePage() {
         </Margin>
       </Section>
 
-      {/* 6. How it compares, including where it loses (H8). */}
+      {/* 6. Open source, end to end (the owner's ask, 15 Oct 2026): the four
+          repositories, each a card with what GitHub says of it now, after
+          what running it involves. Below the fold, drawn on the server with
+          no script, so the first screen weighs what it did. */}
+      <Section id="open-source">
+        <SectionHeading
+          layout="split"
+          title="Open source, end to end"
+          subtitle="The server, the web app, the desktop app and the Omarchy kit are all on GitHub."
+          className="mb-8 lg:mb-10"
+        />
+        <RepoCards compact copies={REPO_COPY} facts={(repo) => factsFor(openSource, repo)} />
+        <p className="mt-6 text-small">
+          <Link href="/open-source" className="go tap-target">
+            How it is licensed, and how to help <Arrow size={14} />
+          </Link>
+        </p>
+      </Section>
+
+      {/* 7. How it compares, including where it loses (H8). */}
       <Section id="compare">
         <SectionHeading
           title="Against a Slack, Notion and Zoom stack, Mattermost and Huly"
@@ -236,7 +277,7 @@ export default async function HomePage() {
         <HomeComparison pricing={pricing} />
       </Section>
 
-      {/* 7. The price (H9). */}
+      {/* 8. The price (H9). */}
       <Section id="pricing">
         <SectionHeading eyebrow="Pricing" title="Free for small teams. Pay once when you grow." className="mb-10" />
         <PlanColumns pricing={pricing} />
@@ -247,7 +288,7 @@ export default async function HomePage() {
         </p>
       </Section>
 
-      {/* 8. Before you pay (H10): three groups, answers open. */}
+      {/* 9. Before you pay (H10): three groups, answers open. */}
       <Section id="faq">
         <SectionHeading title="Before you pay" className="mb-10" />
         <QuestionGroups
