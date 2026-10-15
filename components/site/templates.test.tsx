@@ -19,7 +19,8 @@ describe("the template gallery", () => {
     it("lifts a card under the pointer and keeps the site's focus ring", () => {
         expect(cards.length).toBe(templates.length)
         for (const a of cards) {
-            expect(a).toMatch(/(^|\s)lift(\s|$)/)
+            // The interaction layer's card: the lift, and .99 when pressed.
+            expect(a).toContain('data-interactive="card"')
             expect(a).not.toMatch(/outline-none|focus-visible:ring/)
         }
     })

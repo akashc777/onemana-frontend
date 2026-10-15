@@ -25,6 +25,7 @@ import { Arrow } from "@/components/ui/v3";
 import { Icon } from "@/components/ui/icons";
 import { SunStroke } from "@/components/ui/graphics/v3marks";
 import { attemptAndRefusal, recordDay } from "@/lib/recordExcerpt";
+import { ix } from "@/lib/interactive";
 
 export const revalidate = 300;
 
@@ -66,7 +67,8 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
     <Link
       href={release.pill.href}
       prefetch={false}
-      className="tap-target in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1 transition-shadow duration-hover hover:shadow-e2"
+      {...ix("card")}
+      className="tap-target in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1"
     >
       <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
       <span className="truncate">{release.pill.headline}</span>

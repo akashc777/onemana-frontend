@@ -401,8 +401,8 @@ export function marketingUtilities(): Record<string, Record<string, unknown>> {
  * - scroll entrance: reveal, 8px on a view() timeline where the browser has
  *   one, never opacity, so nothing is ever hidden;
  * - ambient: spin-40, spin-60, spin-90r and bob, paused by [data-paused];
- * - response: fx-shake, fx-stamp, fx-fade, fx-slide, fx-spring and lift
- *   (a card's hover, e1 to e2 and a pixel up, on pointers that hover).
+ * - response: fx-shake, fx-stamp, fx-fade, fx-slide and fx-spring. A card's
+ *   lift is the interaction layer's card kind (interactionCss), not a class.
  *
  * Under prefers-reduced-motion every one of them is off and the finished
  * state shows, because every keyframe ends at the element's own state.
@@ -471,18 +471,6 @@ export function motionCss(): Record<string, unknown> {
     ".fx-slide": { animation: anim("v3-slide", t.moment, MS.ease) },
     ".fx-spring": { animation: anim("v3-spring", t.chip, MS.spring) },
     ".drift": { translate: "calc(var(--px, 0) * 2px) calc(var(--py, 0) * 2px)", transition: `translate ${ms(MS.durations.page)} ${MS.ease}` },
-    ".lift, .lift-move": {
-      // translate, not transform: a card that has revealed keeps its
-      // animation's end state on transform, which would win over a hover.
-      transitionProperty: "translate, box-shadow, background-color",
-      transitionDuration: ms(MS.durations.hover),
-      transitionTimingFunction: MS.ease,
-    },
-    "@media (hover: hover)": {
-      ".lift:hover": { translate: "0 -1px", boxShadow: "var(--e-e2)" },
-      ".lift-move:hover": { translate: "0 -1px" },
-      ".lift-2:hover": { translate: "0 -2px" },
-    },
     // A post's reading progress (site.md BL2): a 2px brand bar scaling with
     // the page's scroll, decoration only, and absent without scroll timelines.
     "@keyframes v3-progress": { from: { transform: "scaleX(0)" }, to: { transform: "scaleX(1)" } },
@@ -498,7 +486,6 @@ export function motionCss(): Record<string, unknown> {
       ".ui-field[aria-invalid='true']": { animation: `v3-flash ${ms(MS.durations.page)} ${MS.ease} 1 !important` },
       ".read-progress": { display: "none !important" },
       ".in-ping": { opacity: "0" },
-      ".lift, .lift-move, .lift-2": { translate: "none !important" },
     },
   }
   for (const d of MOTION_DELAYS) classes[`.at-${d}`] = { animationDelay: ms(d) }

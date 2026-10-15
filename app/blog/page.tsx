@@ -13,6 +13,7 @@ import { BLOG_TOPICS, blogTopic } from "@/lib/blogTopics";
 import { mediaUrl } from "@/lib/blog";
 import { formatDayMonth } from "@/lib/format";
 import Link from "next/link";
+import { ix } from "@/lib/interactive";
 
 /** One CSS rule a topic: while a topic is chosen, the other topics' posts are hidden (TopicFilter). */
 const FILTER_CSS = BLOG_TOPICS.map((t) => `#posts[data-topic-filter="${t.key}"] [data-topic]:not([data-topic="${t.key}"]){display:none}`).join("");
@@ -128,9 +129,9 @@ function Featured({ post }: { post: Post }) {
   const topic = blogTopic(post.tags, post.title);
   const cover = mediaUrl(post.cover_image);
   return (
-    <Link href={`/blog/${post.slug}`} data-topic={topic.key} className="lift group grid gap-6 overflow-hidden rounded-[20px] bg-card p-4 shadow-e1 sm:p-5 lg:grid-cols-2 lg:items-center lg:gap-10">
+    <Link href={`/blog/${post.slug}`} data-topic={topic.key} {...ix("card")} className="group grid gap-6 rounded-[20px] bg-card p-4 shadow-e1 sm:p-5 lg:grid-cols-2 lg:items-center lg:gap-10">
       {cover ? (
-        <div className="overflow-hidden rounded-xl [&_img]:transition-transform [&_img]:duration-page [&_img]:ease-out group-hover:[&_img]:scale-[1.02]">
+        <div className="overflow-hidden rounded-xl">
           <PostCover src={cover} hue={topic.hue} />
         </div>
       ) : (

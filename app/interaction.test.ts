@@ -141,6 +141,27 @@ describe("the interaction layer's guard", () => {
     expect(offenders).toEqual([])
   })
 
+  // A site rule (storefront audit H16, A5): a card lifts because it opens
+  // something. The plan cards and the audience pages' price cards lifted
+  // though they were not links, beside a button with a hover of its own.
+  it("only something that opens lifts: the card kind on a link or a button, and no lift class of its own", () => {
+    const lifts = ELEMENTS.filter((e) => tokens(e.className).some((c) => /^(lift|lift-2|lift-move|hover-lift)$/.test(c))).map(where)
+    expect(lifts).toEqual([])
+    const cards = ELEMENTS.filter((e) => e.attrs.get("data-interactive") === "card" || e.spreads.some((x) => /^ix\("card"/.test(x)))
+    expect(cards.length).toBeGreaterThan(5)
+    expect(cards.filter((e) => !/^(a|Link|button)$/.test(e.tag) && !e.attrs.has("role")).map(where)).toEqual([])
+  })
+
+  // Spec §1.1: reduced motion means no transforms at all. A transform under
+  // the pointer or a press waits for motion to be welcome (motion-safe:),
+  // where the theme icon's turn, the tiles' tilt, the cover's zoom and the
+  // template bars still moved (storefront audit G21).
+  it("a transform on hover or press waits for motion to be welcome", () => {
+    const moving = /^(group-|peer-)?(hover|active)(\/\w+)?:(group-(hover|active):)?(\[[^\]]+\]:)?-?(translate|scale|rotate|skew)/
+    const offenders = ELEMENTS.flatMap((e) => tokens(e.className).filter((c) => moving.test(c)).map((c) => `${where(e)} ${c}`))
+    expect(offenders).toEqual([])
+  })
+
   it("the CSS never takes a focus outline away without a box-shadow ring in its place", async () => {
     const root = await siteCss()
     const offenders: string[] = []

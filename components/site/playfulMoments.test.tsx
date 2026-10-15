@@ -73,5 +73,5 @@ describe("the receipt's celebration", () => {
 });
 
 it("the cards that open the next guide lift under a pointer", () => {
-  expect(renderToString(<DocsPager next={{ slug: "b", title: "B" }} />)).toMatch(/class="lift /);
+  expect(renderToString(<DocsPager next={{ slug: "b", title: "B" }} />)).toMatch(/<a[^>]*data-interactive="card"/);
 });

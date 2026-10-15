@@ -55,10 +55,11 @@ describe("HeroOrbit", () => {
   })
 })
 
+// The one-pixel lift is the interaction layer's card kind now, one rule for
+// every card that opens something (app/interaction.test.ts reads it from the
+// compiled CSS); no class of its own is left to drift from it.
 describe("the one-pixel lift", () => {
-  it("lifts a pixel on pointers that hover, and not at all for reduced motion", () => {
-    expect(css).toMatch(/@media \(hover: hover\) \{\s*\.hover-lift:hover \{\s*translate: 0 -1px;/)
-    const reduced = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"))
-    expect(reduced).toMatch(/\.hover-lift \{\s*translate: none !important;/)
+  it("is not a class of globals.css any more", () => {
+    expect(css).not.toMatch(/\.hover-lift\b/)
   })
 })

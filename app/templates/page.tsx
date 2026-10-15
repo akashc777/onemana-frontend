@@ -11,6 +11,7 @@ import { landingMetadata } from "@/lib/landingMetadata";
 import { taskCount, templates, weeksLong } from "@/lib/templates";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
+import { ix } from "@/lib/interactive";
 
 const meta = {
   seoTitle: "Free project templates: client project, launch, onboarding and more",
@@ -59,8 +60,8 @@ export default function TemplatesPage() {
               <li key={t.id} className={gallerySpans(templates.length)[i]}>
                 <Link
                   href={`/templates/${t.id}`}
-                  data-hue={hueFor(t.id)}
-                  className={`${HUE_CLASS[hueFor(t.id)]} reveal lift group flex h-full flex-col rounded-2xl bg-card p-6 shadow-e1`}
+                  {...ix("card", { hue: hueFor(t.id) })}
+                  className={`${HUE_CLASS[hueFor(t.id)]} reveal group flex h-full flex-col rounded-2xl bg-card p-6 shadow-e1`}
                 >
                   {/* The project tile (DESIGN_V3): the hue's gradient under the template's own white glyph. */}
                   <TemplateTile id={t.id} />
@@ -72,7 +73,7 @@ export default function TemplatesPage() {
                       plan's tasks due that week; the bars fill out on hover. */}
                   <div aria-hidden="true" className="mt-5 flex h-1.5 gap-1">
                     {weekShares(t).map((w, i) => (
-                      <span key={i} className="h-full flex-1 origin-left scale-x-[0.85] rounded-[3px] bg-hue transition-transform duration-page ease-out group-hover:scale-x-100" style={{ opacity: 0.3 + 0.7 * w, transitionDelay: `${i * 30}ms` }} />
+                      <span key={i} className="h-full flex-1 origin-left scale-x-[0.85] rounded-[3px] bg-hue transition-transform duration-pop ease-out motion-safe:group-hover:scale-x-100" style={{ opacity: 0.3 + 0.7 * w, transitionDelay: `${i * 20}ms` }} />
                     ))}
                   </div>
                   <p className="mt-3 text-caption tabular-nums text-muted-foreground">

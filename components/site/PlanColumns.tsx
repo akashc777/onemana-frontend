@@ -134,7 +134,7 @@ export function PlanColumns({
           <div
             key={c.key}
             data-plan={c.key}
-            className={`${HUE_CLASS[c.hue]} reveal group relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 lift-2 ${c.lifted ? "lift-move shadow-e3 ring-1 ring-brand/45 hover:ring-brand/55" : "lift shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
+            className={`${HUE_CLASS[c.hue]} reveal relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 ${c.lifted ? "shadow-e3 ring-1 ring-brand/45" : "shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
           >
             {c.key === "cloud" && detailed && cloudOptions.length > 1 ? (
               <CloudChoice options={cloudOptions} title={<CardName H={H} hue={c.hue} name={c.name} />} pricing={pricing} body={c.body} list={<BenefitList items={c.list} />} gets={<Gets>{c.gets}</Gets>} />

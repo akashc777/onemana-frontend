@@ -5,6 +5,7 @@ import { LogoRing } from "@/components/ui/v3";
 import { SpotError } from "@/components/ui/graphics/spots";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { SECTION_END } from "@/components/ui/Section";
+import { ix } from "@/lib/interactive";
 
 /** The three places people are usually looking for, each with its own colour. */
 const WAYS = [
@@ -53,7 +54,7 @@ export default function NotFound() {
         <ul role="list" className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
           {WAYS.map((w) => (
             <li key={w.href}>
-              <Link href={w.href} className="lift flex h-full items-start gap-3 rounded-xl bg-card p-5 shadow-e1">
+              <Link href={w.href} {...ix("card")} className="flex h-full items-start gap-3 rounded-xl bg-card p-5 shadow-e1">
                 {/* One tile language for all four: the home page's tile holds
                     the logo's gradient ring on the brand's soft ground, where
                     it used to be a bare flat ring among three tiles. */}

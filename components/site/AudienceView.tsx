@@ -91,9 +91,9 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
             {a.points.map((p) => {
               const mark = FEATURE_MARK[p.icon];
               return (
-                <div key={p.title} className="reveal group grid min-h-[72px] gap-2 border-b border-border py-6 md:grid-cols-12 md:gap-x-8">
+                <div key={p.title} className="reveal grid min-h-[72px] gap-2 border-b border-border py-6 md:grid-cols-12 md:gap-x-8">
                   <dt className="flex items-start gap-3.5 md:col-span-4 md:pr-6">
-                    <Tile hue={mark.hue} size="lg" className="mt-0.5 transition-transform duration-spring ease-spring group-hover:-rotate-6">
+                    <Tile hue={mark.hue} size="lg" className="mt-0.5">
                       <mark.Glyph />
                     </Tile>
                     <span className="pt-1.5 text-[17px] font-[590] leading-6 tracking-[-0.013em] text-balance text-foreground">{p.title}</span>
@@ -185,7 +185,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
       <Section>
         {/* AU5: the price as two mini plan cards, each in its plan's hue. */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
-          <div className="lift rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
+          <div className="rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
             <p data-hue={PLAN_HUE.lifetime} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
               <Dot hue={PLAN_HUE.lifetime} />
               Own it
@@ -198,12 +198,12 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               <PriceLines pricing={pricing} inr={pricing.lifetime_inr} why="/pricing#currency" />
             </div>
             <p className="mt-2 text-small text-muted-foreground">Everyone on your server, for good.</p>
-            <ButtonLink href="/buy" variant="ghost" size="sm" className="mt-4 max-md:min-h-11">
+            <ButtonLink href="/buy" variant="ghost" size="md" className="mt-4">
               Buy a licence
             </ButtonLink>
           </div>
           {pricing.cloud_configured && (
-            <div className="lift rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
+            <div className="rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
               <p data-hue={PLAN_HUE.cloud} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
                 <Dot hue={PLAN_HUE.cloud} />
                 Or we run it
@@ -213,7 +213,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                 <PriceLines pricing={pricing} inr={pricing.cloud_inr} why="/pricing#currency" />
               </div>
               <p className="mt-2 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
-              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="sm" className="mt-4 max-md:min-h-11">
+              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="md" className="mt-4">
                 Choose Cloud
               </ButtonLink>
             </div>

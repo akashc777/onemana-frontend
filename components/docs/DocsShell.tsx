@@ -125,12 +125,11 @@ export function DocsPager({
   next?: { slug: string; title: string };
 }) {
   if (!prev && !next) return null;
-  const card =
-    "lift group flex min-h-[4.5rem] flex-col justify-start rounded-xl bg-card px-4 py-3 shadow-e1";
+  const card = "group flex min-h-[4.5rem] flex-col justify-start rounded-xl bg-card px-4 py-3 shadow-e1";
   return (
     <nav aria-label="More guides" className="mt-14 grid gap-3 sm:grid-cols-2">
       {prev ? (
-        <Link href={`/docs/${prev.slug}`} rel="prev" className={card}>
+        <Link href={`/docs/${prev.slug}`} rel="prev" {...ix("card")} className={card}>
           <span className="text-[12px] font-[510] leading-4 text-muted-foreground">Previous</span>
           <span className="mt-1 text-body font-[590] text-foreground">{prev.title}</span>
         </Link>
@@ -138,7 +137,7 @@ export function DocsPager({
         <span className="hidden sm:block" />
       )}
       {next ? (
-        <Link href={`/docs/${next.slug}`} rel="next" className={`${card} sm:items-end sm:text-right`}>
+        <Link href={`/docs/${next.slug}`} rel="next" {...ix("card")} className={`${card} sm:items-end sm:text-right`}>
           <span className="text-[12px] font-[510] leading-4 text-muted-foreground">Next</span>
           <span className="mt-1 text-body font-[590] text-foreground">{next.title}</span>
         </Link>

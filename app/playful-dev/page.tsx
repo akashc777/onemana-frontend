@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/graphics"
 import { CAMP_HUES, hueFor } from "@/lib/campHue"
 import { CAMP } from "@/lib/palette"
+import { ix } from "@/lib/interactive"
 
 export const metadata: Metadata = {
   title: "Playful layer",
@@ -213,7 +214,7 @@ export default function PlayfulDevPage() {
 
       <Section title="Motion and bands" note="A card that is a thing to open lifts a pixel. A section may sit on a full-width tint band, at most every other one.">
         <div className="grid gap-4 md:grid-cols-2">
-          <a href="#motion" className="hover-lift card block">
+          <a href="#motion" {...ix("card")} className="card block">
             <p className="text-small font-medium">A card that lifts</p>
             <p className="text-caption text-muted-foreground">1px and a little shadow, on pointers that hover.</p>
           </a>

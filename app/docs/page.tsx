@@ -87,7 +87,7 @@ export default async function DocsIndexPage() {
             <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-3">
               {START_HERE.map((c) => (
                 <li key={c.slug}>
-                  <Link href={`/docs/${c.slug}`} className="lift flex h-full flex-col gap-3 rounded-xl bg-card p-5 shadow-e1">
+                  <Link href={`/docs/${c.slug}`} {...ix("card")} className="flex h-full flex-col gap-3 rounded-xl bg-card p-5 shadow-e1">
                     <Tile hue={c.hue} size="lg">
                       <Icon d={c.d} />
                     </Tile>

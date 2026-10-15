@@ -57,13 +57,10 @@
      table, lib/appSystem.ts, which mirrors the app; lib/tailwindAppSystem.ts
      writes them into :root and .dark. Change a colour there, in step with
      the app. Values are space-separated sRGB so Tailwind can add alpha. */
-  /* .hover-lift's shadow: e2, a card a pixel off the page (design v3). */
-  --shadow-lift: var(--e-e2);
   color-scheme: light;
 }
 
 .dark {
-  --shadow-lift: var(--e-e2);
   color-scheme: dark;
 }
 
@@ -306,7 +303,7 @@ body {
     transition: translate var(--d-hover) var(--ease-out);
   }
   @media (hover: hover) {
-    :is(.go, .ui-btn, .lift):hover .go-arrow {
+    :is(.go, .ui-btn, [data-interactive="card"]):hover .go-arrow {
       translate: 2px 0;
     }
   }
@@ -972,22 +969,10 @@ body {
 }
 
 /* THE PLAYFUL LAYER'S MOTION (PLAYFUL_LAYER.md, "Motion"; the storefront is at
-   MOTION 4). A card that is a thing to open lifts one pixel with its shadow
-   growing a little, on pointers that hover; the hero's orbit turns once in
-   160s and pauses while the hero is off screen (components/ui/graphics/
-   HeroOrbit sets data-paused). Both stand still for reduced motion below. */
-.hover-lift {
-  transition-property: translate, box-shadow;
-  transition-duration: var(--d-hover);
-  transition-timing-function: var(--ease-out);
-}
-@media (hover: hover) {
-  .hover-lift:hover {
-    translate: 0 -1px;
-    box-shadow: var(--shadow-lift);
-  }
-}
-
+   MOTION 4). A card that is a thing to open lifts: the interaction layer's
+   card kind (lib/tailwindAppSystem.ts). The hero's orbit turns once in 160s
+   and pauses while the hero is off screen (components/ui/graphics/HeroOrbit
+   sets data-paused); it stands still for reduced motion below. */
 @keyframes orbit-turn {
   to {
     rotate: 360deg;
@@ -1015,8 +1000,11 @@ body {
   .orbit-turn {
     animation: none !important;
   }
-  .hover-lift {
-    translate: none !important;
+  /* No transform under the pointer either (INTERACTION_SPEC.md §1.1): an
+     index row's arrow appears in place instead of sliding in. The layer's
+     own transforms are taken away in lib/tailwindAppSystem.ts. */
+  .box-name::after {
+    transform: none !important;
   }
 }
 

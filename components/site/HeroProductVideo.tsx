@@ -45,7 +45,7 @@ export function HeroProductVideo({ className = "" }: { className?: string }) {
                 wordmark. A chip on the pop surface at e3, with the play glyph
                 on a brand disc that grows a little under the pointer. */}
             <span className="absolute bottom-3 left-3 inline-flex h-11 items-center gap-2.5 rounded-full bg-pop py-1.5 pl-1.5 pr-4 text-small font-[510] text-foreground shadow-e3 sm:bottom-5 sm:left-5">
-              <span className="inline-flex size-8 items-center justify-center rounded-full bg-brand text-brand-foreground transition-transform duration-hover ease-out group-hover:scale-[1.06]">
+              <span className="inline-flex size-8 items-center justify-center rounded-full bg-brand text-brand-foreground transition-transform duration-hover ease-out motion-safe:group-hover:scale-[1.06]">
                 <Icon name="play" size={14} />
               </span>
               Watch the film
