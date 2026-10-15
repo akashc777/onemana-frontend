@@ -22,6 +22,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
+import { Field } from "@/components/ui/Field";
 import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
 import { EDITION_CHOICES, type EditionChoice, type SlugVerdict } from "@/lib/workspaceAddress";
 import { CloudGlyph, KeyGlyph } from "@/components/site/Glyphs";
@@ -376,25 +377,17 @@ export function BuyCheckout({
             <Field label="Name">
               <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Your name or company…" autoComplete="name" />
             </Field>
-            <Field label="Country">
-              <Select
-                value={country}
-                onChange={changeCountry}
-                ariaLabel="Country"
-                options={countries.map((c) => ({ value: c.code, label: c.name }))}
-              />
-            </Field>
+            <Select label="Country" value={country} onChange={changeCountry} options={COUNTRY_OPTIONS} />
             {isIndia && (
               <>
-                <Field label="State" hint="For your GST invoice (place of supply).">
-                  <Select
-                    value={stateName}
-                    onChange={setStateName}
-                    ariaLabel="State"
-                    placeholder="Select state"
-                    options={indianStates.map((s) => ({ value: s.name, label: s.name }))}
-                  />
-                </Field>
+                <Select
+                  label="State"
+                  hint="For your GST invoice (place of supply)."
+                  value={stateName}
+                  onChange={setStateName}
+                  placeholder="Select state"
+                  options={STATE_OPTIONS}
+                />
                 <Field label="GSTIN (optional)" hint="Add to claim input tax credit (B2B).">
                   <input value={gstin} onChange={(e) => setGstin(e.target.value.toUpperCase())} className={inputCls} placeholder="29ABCDE1234F1Z5" maxLength={15} />
                 </Field>
@@ -529,14 +522,6 @@ function withEstimate(rupees: string, estimate: string): string {
 const inputCls =
   "ui-field";
 
-function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-caption font-[510] text-foreground">
-        {label} {required && <span className="text-danger-ink">*</span>}
-      </span>
-      {children}
-      {hint && <span className="mt-1 block text-caption text-muted-foreground">{hint}</span>}
-    </label>
-  );
-}
+/** The select's options, built once rather than on every keystroke in the form. */
+const COUNTRY_OPTIONS = countries.map((c) => ({ value: c.code, label: c.name }));
+const STATE_OPTIONS = indianStates.map((s) => ({ value: s.name, label: s.name }));

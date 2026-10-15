@@ -81,7 +81,7 @@ describe("a phone's targets", () => {
 
   it("fields: the update form's address and a select", () => {
     expectTall(classesOf(renderToString(<SubscribeForm source="t" cta="Go" hint="" />), /<input[^>]*type="email"[^>]*>/g), "email field")
-    expectTall(classesOf(renderToString(<Select value="" onChange={() => {}} options={[]} ariaLabel="State" />), /<button[^>]*>/g), "select")
+    expectTall(classesOf(renderToString(<Select label="State" value="" onChange={() => {}} options={[]} />), /<div[^>]*role="combobox"[^>]*>/g), "select")
     for (const file of ["../app/buy/BuyCheckout.tsx", "../app/free/FreeInstall.tsx"]) {
       const src = readFileSync(join(__dirname, file), "utf8")
       expect(src, file).toMatch(/const inputCls =\s*"ui-field"/)
