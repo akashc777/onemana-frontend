@@ -288,3 +288,14 @@ describe("every scene", () => {
     })
   }
 })
+
+// /for/india: the calendar's now line (z 25) was drawn over the phone's
+// event sheet and its scrim, its time chip out at the window's edge.
+describe("the calendar's layers", () => {
+  it("keep the now line inside the grid, under anything drawn over the grid", () => {
+    const css = readFileSync(join(__dirname, "calendar.css"), "utf8")
+    const grid = /\n\.sc-cal-grid \{([^}]*)\}/.exec(css)?.[1] ?? ""
+    expect(grid).toContain("isolation: isolate;")
+    expect(/\n\.sc-cal-now \{([^}]*)\}/.exec(css)?.[1]).toContain("z-index: 25;")
+  })
+})

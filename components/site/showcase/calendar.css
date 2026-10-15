@@ -259,6 +259,12 @@
    strength. The grid shows from a chosen hour, as the app opens scrolled. */
 .sc-cal-grid {
   position: relative;
+  /* The grid's layers (the ghost, the now line, the quick-create card) keep
+     their order inside it, and the grid stays one layer under anything drawn
+     over it: the now line (z 25) crossed the phone's event sheet and its
+     scrim, its time chip out at the window's edge (storefront audit P3 #13,
+     /for/india). */
+  isolation: isolate;
   min-height: 0;
   flex: 1 1 0%;
   overflow: hidden;
