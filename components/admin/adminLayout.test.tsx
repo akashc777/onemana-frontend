@@ -6,6 +6,15 @@ import { describe, expect, it, vi } from "vitest"
 
 import type { VisitStats } from "@/lib/adminApi"
 
+/**
+ * A test's first import of an admin panel compiles its module graph (the
+ * visitors report brings the world map): over the default 5 s on a loaded
+ * machine, as app/canonical.test.ts found for the legal pages. The visitors
+ * report's first test timed out at 5,031 ms in a gate beside two others (16
+ * Oct 2026). The import is setting up, not the behaviour under test.
+ */
+const FIRST_IMPORT = { timeout: 30_000 }
+
 // The admin draws data it does not control: paths, emails, JSON. On a phone,
 // one long unbroken line in a card made the Visitors tab 624 px wide (15 Oct
 // 2026). These hold the two rules that keep data from widening the page.
@@ -105,7 +114,7 @@ function elementsWith(html: string, token: string): { tag: string; classes: stri
     .filter((e) => e.classes.includes(token))
 }
 
-describe("the visitors report on a phone", () => {
+describe("the visitors report on a phone", FIRST_IMPORT, () => {
   it("every grid in it has a base column", async () => {
     const { VisitorsReport } = await import("./VisitorsPanel")
     const html = renderToString(<VisitorsReport data={STATS} />)
@@ -139,7 +148,7 @@ vi.mock("@/hooks/useAsync", () => ({
   useAsync: () => ({ data: {}, error: null, status: "success", loading: false, reload: () => {} }),
 }))
 
-describe("the day's mail", () => {
+describe("the day's mail", FIRST_IMPORT, () => {
   // The backend gives each kind of mail nobody waits on a share of the day
   // (mailShare.go), and tells the admin to raise it; the form is where.
   it("can set each kind's share, as a number, saying what it is for", async () => {
@@ -152,7 +161,7 @@ describe("the day's mail", () => {
   })
 })
 
-describe("settings on a phone", () => {
+describe("settings on a phone", FIRST_IMPORT, () => {
   it("a hint with a long JSON example wraps instead of widening the page", async () => {
     const { SettingsForm } = await import("./SettingsForm")
     const html = renderToString(<SettingsForm />)
