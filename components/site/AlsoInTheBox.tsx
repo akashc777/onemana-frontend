@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CAMP_HUES } from "@/lib/campHue";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { Icon } from "@/components/ui/icons";
+import { ix } from "@/lib/interactive";
 
 /**
  * "Also in the box" (site.md H5): the breadth that lived only in the docs,
@@ -39,7 +40,10 @@ export function AlsoInTheBox() {
       {BOX.map((b, i) => (
         <li key={b.slug} className="border-t border-border">
           {/* .box-row and .box-name (globals.css): the name's ink and its arrow under the pointer. */}
-          <Link href={`/docs/${b.slug}`} className="box-row flex h-full min-h-11 gap-3.5 py-4 sm:py-5">
+          {/* A row of the interaction layer: the quiet tint under the pointer
+              and the press tint under a finger (storefront audit H11), past
+              the text by 12 px so the words keep their line. */}
+          <Link href={`/docs/${b.slug}`} {...ix("row", { quiet: true })} className="box-row -mx-3 flex h-full min-h-11 gap-3.5 rounded-lg px-3 py-4 sm:py-5">
             <span aria-hidden="true" className={`${HUE_CLASS[CAMP_HUES[i % CAMP_HUES.length]!]} mt-[3px] text-hue`}>
               <Icon d={b.d} size={20} />
             </span>

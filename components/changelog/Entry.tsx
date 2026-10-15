@@ -6,6 +6,7 @@ import { formatDay } from "@/lib/format";
 import { Prose } from "@/components/reading/Prose";
 import { Icon } from "@/components/ui/icons";
 import { Arrow } from "@/components/ui/v3";
+import { ix } from "@/lib/interactive";
 
 /**
  * A changelog entry, drawn from a release's own notes (lib/changelog.ts).
@@ -254,7 +255,7 @@ export function EntryRows({ entries }: { entries: ChangelogEntry[] }) {
     <ul className="m-0 list-none border-t border-border p-0">
       {entries.map((e) => (
         <li key={e.slug} className="border-b border-border">
-          <Link href={entryHref(e)} className="group flex min-h-11 flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+          <Link href={entryHref(e)} {...ix("row")} className="group -mx-3 flex min-h-11 flex-col gap-1 rounded-lg px-3 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
             <span className="min-w-0 text-balance text-body text-foreground transition-colors group-hover:text-brand-ink">{e.title}</span>
             <time dateTime={e.publishedAt} className="shrink-0 text-caption tabular-nums text-muted-foreground">
               {formatDay(e.publishedAt)}

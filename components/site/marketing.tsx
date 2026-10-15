@@ -1,5 +1,6 @@
 import { Icon } from "@/components/ui/icons";
 import type { ReactNode } from "react";
+import { ix } from "@/lib/interactive";
 
 type QA = { q: ReactNode; a: ReactNode; id?: string };
 
@@ -15,12 +16,14 @@ export function QuestionAccordion({ items, open = [], plus = "text-camp-sun", cl
     <div className={`border-t border-border ${className}`}>
       {items.map((f, i) => (
         <details key={f.id ?? (typeof f.q === "string" ? f.q : i)} id={f.id} open={open.includes(i)} className="group border-b border-border">
-          <summary className="group/q flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 [&::-webkit-details-marker]:hidden">
+          {/* The whole question is the row (storefront audit P2: only the
+              disc answered the pointer, and in grey). */}
+          <summary {...ix("row")} className="-mx-3 flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-3 py-3 [&::-webkit-details-marker]:hidden">
             <h3 className="m-0 font-sans text-body font-[590] text-foreground">{f.q}</h3>
             {/* The icon set's plus at its one stroke (it was a 22px "+" in the
                 text face, heavier than every icon beside it), on a disc that
                 answers the pointer as the app's icon buttons do. */}
-            <span aria-hidden="true" className="-mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded-full transition-colors duration-hover group-hover/q:bg-hover group-active/q:bg-press">
+            <span aria-hidden="true" className="-mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded-full">
               <Icon name="plus" size={20} className={`transition-transform duration-pop ease-out group-open:rotate-45 ${plus}`} />
             </span>
           </summary>

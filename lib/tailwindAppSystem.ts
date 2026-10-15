@@ -599,6 +599,8 @@ export function interactionCss(): Record<string, unknown>[] {
       // HOVER: devices that hover; the nested control answers, not its parent.
       [HOVER]: {
         [`[data-interactive]:hover${ENABLED}`]: { "--ix-a": "var(--ix-hover-a)" },
+        // A large row (two lines and more) hovers at the quiet step (spec D10).
+        [`[data-interactive="row"][data-quiet]:hover${ENABLED}`]: { "--ix-a": "var(--ix-hover-quiet-a)" },
         "[data-interactive]:hover:has([data-interactive]:hover)": { "--ix-a": "0%" },
         // Labels go to ink; dense lists answer at once and let go over 120ms.
         [`${kind("icon", "nav", "tab", "chip")}:hover${ENABLED}`]: { color: "rgb(var(--foreground))" },
@@ -639,6 +641,7 @@ export function interactionCss(): Record<string, unknown>[] {
         backgroundColor: "rgb(var(--card))",
         boxShadow: "var(--e-sel)",
         color: "rgb(var(--foreground))",
+        fontWeight: "510",
       },
       [`${kind("tab", "nav")}:is(${CURRENT}, ${ON}) .icon`]: { color: "var(--ix-mark)" },
       // A chip that is on: the selected tint and a 1.5px ring in the mark.
@@ -655,9 +658,10 @@ export function interactionCss(): Record<string, unknown>[] {
       // A list option under the keys or the pointer: the press tint, no ring
       // (the highlight is the focus, spec §2.4).
       [`[data-interactive="item"][data-active]`]: { "--ix-a": "var(--ix-press-a)", color: "rgb(var(--foreground))" },
-      // Weight never moves layout: a label reserves its 510 width.
-      "[data-interactive] [data-label]": { display: "inline-flex", flexDirection: "column" },
-      "[data-interactive] [data-label]::after": {
+      // Weight never moves layout (spec D8): a label that turns 510 when
+      // current reserves that width, wherever it is.
+      "[data-label]": { display: "inline-flex", flexDirection: "column" },
+      "[data-label]::after": {
         content: "attr(data-label)",
         height: "0",
         overflow: "hidden",

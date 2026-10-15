@@ -6,6 +6,7 @@ import { TemplateTile } from "@/components/site/TemplateTile";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { hueFor } from "@/lib/campHue";
 import { FREE_SEATS } from "@/lib/freePlan";
+import { ix } from "@/lib/interactive";
 import {
   byWeek,
   groupLists,
@@ -117,17 +118,17 @@ export function TemplateView({ t }: { t: ProjectTemplate }) {
                 <h2 id="more" className="text-small font-semibold text-foreground">More templates</h2>
                 {/* A stacked list: each row is 44 px on a phone, as the
                     footer's are, so neighbouring targets never overlap. */}
-                <ul className="mt-3 grid text-small sm:gap-1.5">
+                <ul className="mt-3 grid text-small sm:gap-0.5">
                   {others.map((o) => (
                     <li key={o.id}>
-                      <Link href={`/templates/${o.id}`} className="inline-flex min-h-11 items-center gap-2 text-muted-foreground transition-colors hover:text-foreground sm:min-h-0">
+                      <Link href={`/templates/${o.id}`} {...ix("row")} className="-mx-2 flex min-h-11 items-center gap-2 rounded-md px-2 text-muted-foreground hover:text-foreground sm:min-h-8">
                         <IdentityMark id={o.id} variant="square" />
                         {o.name}
                       </Link>
                     </li>
                   ))}
                   <li>
-                    <Link href="/templates" className="inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-foreground sm:min-h-0">All templates</Link>
+                    <Link href="/templates" {...ix("row")} className="-mx-2 flex min-h-11 items-center rounded-md px-2 text-muted-foreground hover:text-foreground sm:min-h-8">All templates</Link>
                   </li>
                 </ul>
               </nav>

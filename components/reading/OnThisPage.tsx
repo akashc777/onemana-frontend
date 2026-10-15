@@ -56,7 +56,7 @@ export function OnThisPage({ headings }: { headings: ArticleHeading[] }) {
       </p>
       <ul ref={list} className="relative border-l border-border">
         {bar && (
-          <li aria-hidden="true" className="pointer-events-none absolute -left-px top-0 w-0.5 rounded-full bg-brand transition-transform duration-panel ease-in-out" style={{ height: bar.h, transform: `translateY(${bar.y}px)` }} />
+          <li aria-hidden="true" className="pointer-events-none absolute -left-px top-0 w-0.5 rounded-full bg-brand transition-transform duration-panel ease-out" style={{ height: bar.h, transform: `translateY(${bar.y}px)` }} />
         )}
         {headings.map((h) => {
           const active = h.id === current;
@@ -70,7 +70,8 @@ export function OnThisPage({ headings }: { headings: ArticleHeading[] }) {
                   active ? "border-transparent font-[510] text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {h.text}
+                {/* The heading in view turns 510; its width is held (storefront audit D6). */}
+                <span data-label={h.text}>{h.text}</span>
               </a>
             </li>
           );

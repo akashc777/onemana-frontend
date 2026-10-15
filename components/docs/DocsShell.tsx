@@ -5,6 +5,7 @@ import { DocsSearch } from "./DocsSearch";
 import { ActiveInView } from "./ActiveInView";
 import { DocsGroupDot } from "./DocsGroupMark";
 import { Icon } from "@/components/ui/icons";
+import { ix } from "@/lib/interactive";
 
 /**
  * Every guide, grouped, with the open one marked. The same list sits in the
@@ -15,14 +16,16 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
     // Text lines up with the search field and the page's edge; the hover and
     // the current guide's background reach 10 px past it.
     <nav aria-label="Docs" className="-mx-2.5 text-small">
+      {/* Nav rows of the interaction layer: the accent's tint under the
+          pointer, and the open guide the raised chip at 510, its width held
+          (storefront audit D4). */}
       <Link
         href="/docs"
         aria-current={activeSlug ? undefined : "page"}
-        className={`mb-4 flex min-h-11 items-center rounded-md px-2.5 lg:min-h-8 transition-colors ${
-          activeSlug ? "nav-idle" : "nav-active font-medium"
-        }`}
+        {...ix("nav")}
+        className="mb-4 flex min-h-11 items-center rounded-md px-2.5 text-muted-foreground lg:min-h-8"
       >
-        All guides
+        <span data-label="All guides">All guides</span>
       </Link>
       {groups.map((group) => (
         <div key={group.category} className="mb-5 last:mb-0">
@@ -38,11 +41,10 @@ export function DocsNav({ groups, activeSlug }: { groups: DocNavGroup[]; activeS
                   <Link
                     href={`/docs/${item.slug}`}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-11 items-center text-balance rounded-md px-2.5 py-1 leading-5 lg:min-h-8 transition-colors ${
-                      active ? "nav-active font-medium" : "nav-idle"
-                    }`}
+                    {...ix("nav")}
+                    className="flex min-h-11 items-center text-balance rounded-md px-2.5 py-1 leading-5 text-muted-foreground lg:min-h-8"
                   >
-                    {item.title}
+                    <span data-label={item.title}>{item.title}</span>
                   </Link>
                 </li>
               );

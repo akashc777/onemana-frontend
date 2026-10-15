@@ -14,6 +14,7 @@ import { PostCover } from "@/components/blog/PostCover";
 import { TopicChip, TopicLabel } from "@/components/blog/Topic";
 import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
 import { Icon } from "@/components/ui/icons";
+import { ix } from "@/lib/interactive";
 
 export const revalidate = 120;
 
@@ -146,7 +147,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             <ul className="mt-3 border-t border-border">
               {next.map((p) => (
                 <li key={p.slug} className="border-b border-border">
-                  <Link href={`/blog/${p.slug}`} className="group flex flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                  <Link href={`/blog/${p.slug}`} {...ix("row")} className="group -mx-3 flex flex-col gap-1 rounded-lg px-3 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                     <span className="min-w-0 text-body text-foreground transition-colors group-hover:text-brand-ink">{p.title}</span>
                     <span className="flex shrink-0 items-center gap-3">
                       <TopicLabel topic={blogTopic(p.tags, p.title)} />

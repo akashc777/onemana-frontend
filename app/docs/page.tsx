@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/icons";
 import { ButtonLink } from "@/components/ui/Button";
 import { DocsSearch } from "@/components/docs/DocsSearch";
 import { DocsGroupTile } from "@/components/docs/DocsGroupMark";
+import { ix } from "@/lib/interactive";
 
 export const metadata: Metadata = {
   title: "Docs - install & run OneCamp",
@@ -116,7 +117,8 @@ export default async function DocsIndexPage() {
                     <li key={item.slug}>
                       <Link
                         href={`/docs/${item.slug}`}
-                        className="group -mx-3 flex min-h-14 items-baseline justify-between gap-6 rounded-lg px-3 py-4 transition-colors hover:bg-hover"
+                        {...ix("row", { quiet: true })}
+                        className="group -mx-3 flex min-h-14 items-baseline justify-between gap-6 rounded-lg px-3 py-4"
                       >
                         <span className="min-w-0">
                           <span className="block text-body font-[590] text-foreground">
@@ -128,7 +130,7 @@ export default async function DocsIndexPage() {
                             </span>
                           )}
                         </span>
-                        <Icon name="arrow-right" className="self-center text-faint transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-foreground" />
+                        <Icon name="arrow-right" className="self-center text-faint transition-[transform,color] group-hover:text-foreground motion-safe:group-hover:translate-x-0.5" />
                       </Link>
                     </li>
                   ))}

@@ -129,6 +129,18 @@ describe("the interaction layer's guard", () => {
     expect(offenders).toEqual([])
   })
 
+  // Spec §9.4.1: one state system per element. A component on the layer
+  // (data-interactive, or ix()) that also paints its own hover or selected
+  // background fights the layer, and one of the two silently loses.
+  it("an element on the layer paints no state background of its own", () => {
+    const onLayer = ELEMENTS.filter((e) => e.attrs.has("data-interactive") || e.spreads.some((x) => /^ix\(/.test(x)))
+    expect(onLayer.length, "nothing has adopted the layer").toBeGreaterThan(15)
+    const offenders = onLayer
+      .filter((e) => tokens(e.className).some((c) => /^(group-)?(hover|active|focus|aria-[^:]+|data-\[[^\]]+\]):(bg|shadow)-/.test(c)))
+      .map(where)
+    expect(offenders).toEqual([])
+  })
+
   it("the CSS never takes a focus outline away without a box-shadow ring in its place", async () => {
     const root = await siteCss()
     const offenders: string[] = []
@@ -228,7 +240,10 @@ describe("the interaction layer, as the site ships it", () => {
     expect((await one(`[data-interactive="tab"]:not([data-thumb])${on}`)).decls).toMatchObject({ "background-color": "rgb(var(--card))" })
     expect((await one('[data-interactive="nav"]:is([aria-current="page"], [aria-current="true"])')).decls).toMatchObject({ "box-shadow": "var(--e-sel)" })
     expect((await one(`[data-interactive="chip"]${on}`)).decls["box-shadow"]).toMatch(/^inset 0 0 0 1\.5px/)
-    expect((await one('[data-interactive] [data-label]::after')).decls).toMatchObject({ content: "attr(data-label)", "font-weight": "510", height: "0" })
+    expect((await one("[data-label]::after")).decls).toMatchObject({ content: "attr(data-label)", "font-weight": "510", height: "0" })
+    expect((await one('[data-interactive="nav"]:is([aria-current="page"], [aria-current="true"])')).decls).toMatchObject({ "font-weight": "510" })
+    // A large row hovers at the quiet step (spec D10).
+    expect((await one(`[data-interactive="row"][data-quiet]:hover${":not(:disabled, [aria-disabled='true'])"}`, "hover: hover")).decls).toMatchObject({ "--ix-a": "var(--ix-hover-quiet-a)" })
   }, 90_000)
 
   it("takes every transform away for reduced motion", async () => {

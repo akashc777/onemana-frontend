@@ -22,15 +22,17 @@ import type { CampHue } from "@/lib/campHue"
  * ui-field, .link/.go and ui-check, built from the same tokens.
  *
  * `hue` tints the element in its object's camp hue instead of the accent.
+ * `quiet` gives a large row (two lines and more) the quiet hover step.
  * `disabledReason` says why it cannot be used, in a tip; pair it with
  * aria-disabled="true", which keeps it focusable so the reason can be read.
  */
 export type InteractiveKind = "icon" | "row" | "nav" | "tab" | "chip" | "card" | "item"
 
-export function ix(kind: InteractiveKind, opts: { hue?: CampHue | "agent"; disabledReason?: string } = {}) {
+export function ix(kind: InteractiveKind, opts: { hue?: CampHue | "agent"; disabledReason?: string; quiet?: boolean } = {}) {
   return {
     "data-interactive": kind,
     ...(opts.hue ? { "data-hue": opts.hue } : {}),
+    ...(opts.quiet ? { "data-quiet": "" } : {}),
     ...(opts.disabledReason ? { "data-disabled-reason": opts.disabledReason } : {}),
   }
 }

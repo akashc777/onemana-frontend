@@ -228,25 +228,6 @@ body {
     view-transition-name: nav-mark;
   }
 
-  /* The app's navigation marks (design v3): the current place is a raised
-     chip at e-sel in ink at 510, hover the alpha overlay. */
-  .nav-active {
-    position: relative;
-    background: rgb(var(--card));
-    box-shadow: var(--e-sel);
-    color: rgb(var(--foreground));
-    font-weight: 510;
-  }
-  .nav-idle {
-    color: rgb(var(--muted-foreground));
-  }
-  @media (hover: hover) {
-    .nav-idle:hover {
-      background: var(--hover-c);
-      color: rgb(var(--foreground));
-    }
-  }
-
   /* 1120px of content, 16px gutters on a phone. */
   .container-x {
     @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
