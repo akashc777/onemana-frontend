@@ -5,13 +5,14 @@ import { type Pricing } from "@/lib/pricing";
 import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearUsd } from "@/lib/teamCost";
 import { Rupees, StackBasis, StackCost } from "@/components/site/RegionalMoney";
 import { LogoRing } from "@/components/ui/v3";
-import { RAISED_COLUMN } from "@/components/site/planHues";
+import { RAISED_COLUMN, RAISED_ROW } from "@/components/site/planHues";
 
 /**
  * Facts in rows, four products in columns: the proof that stands in for the
- * customer logos OneCamp does not have yet. OneCamp's column is raised on the
- * licence's tint (RAISED_COLUMN, as in the plan table), so the eye reads down
- * it first; nothing else on the table is tinted.
+ * customer logos OneCamp does not have yet. OneCamp's answers are raised on the
+ * licence's tint, as in the plan table (planHues.ts): its column from sm
+ * (RAISED_COLUMN) and its line in each card on a phone (RAISED_ROW), so the
+ * eye reads them first; nothing else is tinted.
  *
  * It includes a row OneCamp loses (ready-made integrations), on purpose: a
  * table where one column wins everything is an advert, and readers discount it
@@ -130,8 +131,8 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
         </tbody>
       </table>
 
-      {/* A phone: one card per row, OneCamp's answer on a raised line and the
-          others in two columns under it. Nothing scrolls sideways. */}
+      {/* A phone: one card per row, OneCamp's answer on the raised line and
+          the others in two columns under it. Nothing scrolls sideways. */}
       <ul className="m-0 list-none space-y-3 p-0 sm:hidden">
         {all.map((r) => (
           <li key={r.label} className="rounded-xl bg-card p-4 shadow-e1">
@@ -139,7 +140,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
               {r.label}
               {r.loses && <LoseChip />}
             </p>
-            <p className="m-0 mt-3 flex gap-2 rounded-lg bg-muted px-3 py-2 text-small font-[510] text-foreground ring-1 ring-inset ring-border">
+            <p className={`m-0 mt-3 flex gap-2 rounded-lg px-3 py-2 text-small font-[510] text-foreground ${RAISED_ROW}`}>
               <LogoRing size={16} className="mt-0.5 shrink-0" />
               <span className="text-balance">{r.cells[0]}</span>
             </p>

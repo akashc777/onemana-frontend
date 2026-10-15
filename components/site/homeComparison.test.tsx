@@ -5,11 +5,11 @@ import { HomeComparison } from "@/components/site/HomeComparison"
 import { defaultPricing } from "@/lib/pricing"
 
 /**
- * OneCamp's column is lifted (site.md S12): the raised surface between two
- * hairlines, under a 2px brand rule, with 16 px inside each edge, and the
- * column after it starts 16 px past it, in every row. On a phone the table
- * is one card per row, so nothing scrolls sideways, and the row OneCamp
- * loses keeps its berry chip.
+ * OneCamp's column is lifted (site.md S12): the raised tint between two
+ * hairlines (planHues RAISED_COLUMN), under a 2px brand rule, with 16 px
+ * inside each edge, and the column after it starts 16 px past it, in every
+ * row. On a phone the table is one card per row, so nothing scrolls sideways,
+ * and the row OneCamp loses keeps its berry chip.
  */
 describe("the home comparison's columns", () => {
   const html = renderToString(<HomeComparison pricing={defaultPricing} />)
@@ -20,7 +20,7 @@ describe("the home comparison's columns", () => {
     expect(rows.length).toBe(9)
     for (const row of rows) {
       const cells = [...row.matchAll(/<t[hd][^>]*class="([^"]*)"/g)].map((m) => m[1]!)
-      const lifted = cells.findIndex((c) => /\bbg-card\b/.test(c))
+      const lifted = cells.findIndex((c) => /\bbg-hue-tint\b/.test(c))
       expect(lifted).toBe(1)
       expect(cells[lifted]).toMatch(/(^|\s)pl-4(\s|$)/)
       expect(cells[lifted + 1]).toMatch(/(^|\s)pl-4(\s|$)/)

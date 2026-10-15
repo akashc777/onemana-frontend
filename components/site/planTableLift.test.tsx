@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest"
 
 import { HomeComparison } from "@/components/site/HomeComparison"
 import { PlanComparison } from "@/components/site/PlanComparison"
-import { PLAN_HUE } from "@/components/site/planHues"
+import { PLAN_HUE, RAISED_ROW } from "@/components/site/planHues"
 import { HUE_CLASS } from "@/components/ui/graphics/hues"
 import { PLAN_ROWS } from "@/lib/plans"
 import { CAMP, SHARED, hexToTriple } from "@/lib/palette"
@@ -18,6 +18,9 @@ import { defaultPricing } from "@/lib/pricing"
  * licence's dot), from the tokens and never a raw colour, so the column is a
  * ground of its own in both themes. In dark, where the card already read, the
  * tint is lighter than the page too.
+ *
+ * The home page's comparison raises OneCamp on the same tint (planHues.ts
+ * RAISED_TINT): its column from sm, and its line in each card on a phone.
  */
 
 type RGB = [number, number, number]
@@ -58,8 +61,38 @@ describe("the home comparison's raised column", () => {
   })
 })
 
-describe("the raised column", () => {
-  it("is written once, in planHues.ts, for every table that raises one", () => {
+// On a phone the home comparison is one card per row, with OneCamp's answer on
+// a raised line: the sunken surface, #F8F9FA inside a white card, so in light
+// mode it was the same white on white as the columns were.
+describe("the home comparison's raised line on a phone", () => {
+  const html = renderToString(<HomeComparison pricing={defaultPricing} />)
+  const cards = html.slice(html.indexOf("</table>"))
+  const row = RAISED_ROW.split(/\s+/)
+  const raised = [...cards.matchAll(/<p class="([^"]*)"/g)].map((m) => m[1]!.split(/\s+/)).filter((c) => row.every((k) => c.includes(k)))
+
+  it("is OneCamp's answer in every card, on the same tint as the columns", () => {
+    expect(raised).toHaveLength(8)
+    for (const c of raised) {
+      expect(c).toContain(HUE_CLASS[PLAN_HUE.lifetime])
+      expect(c).toContain("bg-hue-tint")
+      expect(c.join(" ")).not.toMatch(/(^|\s)bg-(card|white|background|muted)(\s|$)/)
+    }
+    expect(cards).not.toMatch(/class="[^"]*\bbg-muted\b/)
+  })
+
+  for (const theme of ["light", "dark"] as const) {
+    const tint = hexToTriple(CAMP[theme][`camp-${PLAN_HUE.lifetime}-tint`])
+    const card = SHARED[theme].card
+
+    it(`${theme}: is a ground of its own inside the card, and its words read on it`, () => {
+      expect(contrast(tint, card), `the tint in the card is ${contrast(tint, card).toFixed(3)}:1`).toBeGreaterThanOrEqual(1.05)
+      expect(contrast(SHARED[theme].foreground, tint)).toBeGreaterThanOrEqual(4.5)
+    })
+  }
+})
+
+describe("the raised ground", () => {
+  it("is written once, in planHues.ts, for every column and line that is raised", () => {
     const walk = (dir: string, out: string[] = []): string[] => {
       for (const e of readdirSync(dir)) {
         const p = join(dir, e)
@@ -68,11 +101,11 @@ describe("the raised column", () => {
       }
       return out
     }
-    const writers = ["app", "components", "lib"]
-      .flatMap((d) => walk(join(process.cwd(), d)))
-      .filter((f) => readFileSync(f, "utf8").includes("inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)"))
-      .map((f) => f.slice(process.cwd().length + 1))
-    expect(writers).toEqual(["components/site/planHues.ts"])
+    const sources = ["app", "components", "lib"].flatMap((d) => walk(join(process.cwd(), d)))
+    const writers = (rule: string) =>
+      sources.filter((f) => readFileSync(f, "utf8").includes(rule)).map((f) => f.slice(process.cwd().length + 1))
+    expect(writers("inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)")).toEqual(["components/site/planHues.ts"])
+    expect(writers("inset_0_0_0_1px_var(--line-2-c)")).toEqual(["components/site/planHues.ts"])
   })
 })
 
