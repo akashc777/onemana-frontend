@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { CampHue } from "@/lib/campHue";
 import type { StateTone } from "@/lib/instanceState";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { buttonClasses } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
+import { useCopy } from "@/hooks/useCopy";
 
 /**
  * The dot for each tone, from the meaning tokens (DESIGN.md: colour that
@@ -37,7 +38,7 @@ export function StatusDot({ tone, children }: { tone: StateTone; children: React
  * a moment, and a status line tells a screen reader the same.
  */
 export function CopyField({ value, label, wrap = false }: { value: string; label: string; wrap?: boolean }) {
-  const [done, setDone] = useState<"" | "copied" | "failed">("");
+  const [done, copy] = useCopy();
   return (
     <div className="flex items-start gap-2">
       <code
@@ -49,15 +50,7 @@ export function CopyField({ value, label, wrap = false }: { value: string; label
       </code>
       <button
         type="button"
-        onClick={async () => {
-          try {
-            await navigator.clipboard.writeText(value);
-            setDone("copied");
-          } catch {
-            setDone("failed");
-          }
-          window.setTimeout(() => setDone(""), 1600);
-        }}
+        onClick={() => void copy(value)}
         className={buttonClasses("ghost", "sm", "shrink-0")}
         aria-label={`Copy ${label}`}
       >

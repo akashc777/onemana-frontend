@@ -8,6 +8,7 @@ import { trackEvent } from "@/lib/track";
 import { freeClaimPayload } from "@/lib/freePlan";
 import { installerAsks } from "@/lib/content";
 import { Icon } from "@/components/ui/icons";
+import { useCopy } from "@/hooks/useCopy";
 
 /**
  * A URL that may wrap only after a slash of its path, never inside a word or
@@ -66,7 +67,7 @@ export function FreeCommand() {
   const [instant, setInstant] = useState<Instant | null>(null);
   const [instantBusy, setInstantBusy] = useState(false);
   const [instantError, setInstantError] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopy(1500);
   // The key types into its place (site.md S11): 18ms a character, never
   // more than 600ms, and all at once for a reader who asked for less motion.
   const [typed, setTyped] = useState(0);
@@ -103,17 +104,6 @@ export function FreeCommand() {
     }
   };
 
-  const copy = async () => {
-    if (!instant) return;
-    try {
-      await navigator.clipboard.writeText(instant.install_command);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* the command stays selectable */
-    }
-  };
-
   return (
     <div className="in-lift at-120 mt-8 max-w-[760px]">
       {/* The night terminal (site.md S11): the page's anchor, the same in
@@ -125,17 +115,19 @@ export function FreeCommand() {
           {instant ? (
             <button
               type="button"
-              onClick={copy}
+              onClick={() => void copy(instant.install_command)}
               // Drawn 28 px tall in the box's header; its hit area reaches
               // 44 px, inside the header's own padding. The inset counts
               // from inside the 1 px border, hence 9 px for 8 around it.
               className="relative inline-flex h-7 items-center gap-1.5 rounded-md bg-white/[0.08] px-2.5 text-caption font-[510] text-foreground transition-colors after:absolute after:-inset-[9px] after:content-[''] hover:bg-white/[0.12]"
             >
-              {copied ? (
+              {copied === "copied" ? (
                 <span key="done" className="fx-spring inline-flex items-center gap-1.5 text-camp-moss">
                   <Icon name="check" size={14} />
                   Copied
                 </span>
+              ) : copied === "failed" ? (
+                "Select it"
               ) : (
                 "Copy"
               )}
@@ -143,7 +135,7 @@ export function FreeCommand() {
           ) : null}
         </div>
         <span aria-live="polite" className="sr-only">
-          {copied ? "Copied" : ""}
+          {copied === "copied" ? "Copied" : copied === "failed" ? "Copying is not available here. Select the command instead." : ""}
         </span>
         <pre role={instant ? "status" : undefined} className="overflow-x-auto whitespace-pre-wrap p-4 font-mono text-[0.875rem] leading-6 text-foreground [overflow-wrap:anywhere]">
           {instant ? (
