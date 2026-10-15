@@ -16,12 +16,18 @@ export function WorkspaceAddressField({
   onChange,
   onVerdict,
   inputClassName,
+  refused = false,
 }: {
   value: string;
   onChange: (slug: string) => void;
   /** The verdict for what is in the field now, or null while it is unknown. */
   onVerdict: (v: SlugVerdict | null) => void;
   inputClassName: string;
+  /**
+   * A submit was refused because of this address: the field shakes once. The
+   * live check alone only marks it, with the ring and its words.
+   */
+  refused?: boolean;
 }) {
   const [verdict, setVerdict] = useState<SlugVerdict | null>(null);
   const [checking, setChecking] = useState(false);
@@ -79,7 +85,8 @@ export function WorkspaceAddressField({
           autoCapitalize="none"
           spellCheck={false}
           aria-describedby="workspace-address-status"
-          aria-invalid={verdict?.tone === "bad" || undefined}
+          aria-invalid={refused || verdict?.tone === "bad" || undefined}
+          data-shake={refused || undefined}
         />
         <span className="shrink-0 text-small text-muted-foreground">.{WORKSPACE_ZONE}</span>
       </div>

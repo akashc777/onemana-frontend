@@ -90,6 +90,13 @@ export function BuyCheckout({
   // Cloud: the workspace's address and whether it has AI, chosen before paying
   // so building starts from the payment itself. See lib/workspaceAddress.
   const [slug, setSlug] = useState("");
+  // A submit refused because of the address: the field shakes once, until the
+  // address changes. The live check alone never shakes it (K7).
+  const [addressRefused, setAddressRefused] = useState(false);
+  const changeSlug = (next: string) => {
+    setSlug(next);
+    setAddressRefused(false);
+  };
   const [addressVerdict, setAddressVerdict] = useState<SlugVerdict | null>(null);
   const [edition, setEdition] = useState<EditionChoice>("ai");
   // A first guess from the browser, replaced on mount; see lib/guessCountry.
@@ -148,10 +155,12 @@ export function BuyCheckout({
     // the window opens, and once more when the payment arrives.
     if (isCloud && slug.length < 3) {
       setError("Choose an address for your workspace: at least 3 letters or numbers.");
+      setAddressRefused(true);
       return;
     }
     if (isCloud && addressVerdict && !addressVerdict.canPay) {
       setError(addressVerdict.text);
+      setAddressRefused(true);
       return;
     }
     // What goes on an Indian tax invoice is checked here, before payment; see lib/gstin.
@@ -339,11 +348,11 @@ export function BuyCheckout({
             </div>
           </aside>
 
-          <form onSubmit={handleSubmit} className="h-fit space-y-5 rounded-2xl bg-card p-6 shadow-e2 sm:p-7 lg:sticky lg:top-[88px] lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
+          <form onSubmit={handleSubmit} className="pay-form h-fit space-y-5 rounded-2xl bg-card p-6 shadow-e2 sm:p-7 lg:sticky lg:top-[88px] lg:col-start-2 lg:row-span-2 lg:row-start-1" noValidate>
             {isCloud && (
               <>
                 <Field label="Workspace address" required>
-                  <WorkspaceAddressField value={slug} onChange={setSlug} onVerdict={setAddressVerdict} inputClassName={inputCls} />
+                  <WorkspaceAddressField value={slug} onChange={changeSlug} onVerdict={setAddressVerdict} inputClassName={inputCls} refused={addressRefused} />
                 </Field>
                 <fieldset>
                   <legend className={FIELD_LABEL}>AI features</legend>
@@ -378,7 +387,7 @@ export function BuyCheckout({
               required
               hint={isCloud ? "You sign in to your workspace with it, and your invoices are sent here." : "Your licence key and invoice are sent here."}
             >
-              <input type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setInvalid(""); }} aria-invalid={invalid === "email" || undefined} className={inputCls} placeholder="you@company.com" autoComplete="email" />
+              <input type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setInvalid(""); }} aria-invalid={invalid === "email" || undefined} data-shake={invalid === "email" || undefined} className={inputCls} placeholder="you@company.com" autoComplete="email" />
             </Field>
             <Field label="Name">
               <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Your name or company…" autoComplete="name" />
@@ -449,7 +458,10 @@ export function BuyCheckout({
             {/* On a phone the button stays in reach while the form is in view
                 (site.md B4): sticky at the foot, on the page at 90% with an e3
                 edge. Its width never changes, busy or not. */}
-            <div className="sticky bottom-3 z-20 -mx-2 rounded-ctl bg-background/95 p-2 shadow-e3 md:static md:mx-0 md:bg-transparent md:p-0 md:shadow-none">
+            {/* .pay-bar (globals.css): it lets go of the foot while a field
+                has focus, so a keyboard that resizes the page never puts the
+                bar over the field being typed into (storefront audit K8). */}
+            <div className="pay-bar sticky bottom-3 z-20 -mx-2 rounded-ctl bg-background/95 p-2 shadow-e3 md:static md:mx-0 md:bg-transparent md:p-0 md:shadow-none">
             <Button type="submit" disabled={busy} variant="brand" size="xl" className="w-full">
               <Icon name="lock" />
               {busy
@@ -481,10 +493,11 @@ export function BuyCheckout({
               </li>
               {isCloud && setupEstimateFor(pricing, business) && <li className="pl-[22px] text-muted-foreground">{setupEstimateFor(pricing, business)?.sentence}</li>}
             </ul>
-            <p className="text-[12px] leading-4 text-muted-foreground">
+            {/* 13 px, with the site's link: it was 12 px with a third link look (K9). */}
+            <p className="text-caption text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
-              <a href="/terms-of-service" className="underline underline-offset-2 hover:text-foreground">Terms</a> and{" "}
-              <a href="/refund-policy" className="underline underline-offset-2 hover:text-foreground">Refund policy</a>.
+              <a href="/terms-of-service" className="link">Terms</a> and{" "}
+              <a href="/refund-policy" className="link">Refund policy</a>.
             </p>
           </form>
 

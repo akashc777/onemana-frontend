@@ -509,6 +509,22 @@ body {
     mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
   }
 
+  /* THE CHECKOUT'S PAY BAR (site.md B4). On a phone the pay button sticks to
+     the foot of the screen while the form is in view, but never over the
+     field being typed into (storefront audit K8): where the keyboard resizes
+     the page (Firefox on Android, interactive-widget=resizes-content) it sat
+     over the email, name and mobile fields. While a field has focus the bar
+     lets go of the foot and waits in its place under the form, and a field
+     scrolled into view stops clear of where the bar would sit. */
+  @media (max-width: 767.98px) {
+    .pay-form :is(input, textarea, select, [role="combobox"]) {
+      scroll-margin-bottom: 6rem;
+    }
+    .pay-form:has(:is(input, textarea, select, [role="combobox"]):focus) .pay-bar {
+      position: static;
+    }
+  }
+
   .section-divider {
     @apply h-px w-full border-0 bg-border;
   }

@@ -6,12 +6,14 @@ export const FIELD_LABEL = "mb-1.5 block text-caption font-[510] text-foreground
 export const FIELD_HINT = "mt-1 block text-caption text-muted-foreground";
 
 /**
- * The mark beside a required field's label. The field says it is required
- * itself (required, aria-required), so the mark is for the eye.
+ * The mark beside a required field's label, in ink-3: in danger red at rest
+ * it read as an error before there was one (storefront audit K4). The field
+ * says it is required itself (required, aria-required), so the mark is for
+ * the eye.
  */
 export function RequiredMark() {
   return (
-    <span aria-hidden="true" className="text-danger-ink">
+    <span aria-hidden="true" className="text-faint">
       *
     </span>
   );
