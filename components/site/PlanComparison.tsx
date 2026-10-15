@@ -4,12 +4,19 @@ import { PLAN_HUE } from "@/components/site/planHues";
 import { PriceText } from "@/components/site/RegionalMoney";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { buttonClasses } from "@/components/ui/Button";
+import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { Dot } from "@/components/ui/v3";
 import type { Pricing } from "@/lib/pricing";
 import { PLAN_ROWS, planOptions, type PlanOption, type PlanRowKey } from "@/lib/plans";
 
-/** The lifted column's cells: the raised surface between two hairlines (site.md S12). */
-const LIFT = "bg-card shadow-[inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)]";
+/**
+ * The lifted column's cells (site.md S12): the licence's hue tint between two
+ * hairlines. It was the card's surface, which in light mode is the page's own
+ * white, so the column stood out by its hairlines alone (storefront audit
+ * §5.2). The tint is the licence's (PLAN_HUE, the colour of its dot), and
+ * under .dark it takes the dark cut, lighter than the page as the card was.
+ */
+const LIFT = `${HUE_CLASS[PLAN_HUE.lifetime]} bg-hue-tint shadow-[inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)]`;
 
 /**
  * "Which OneCamp is for you" (site.md P3): the four ways to have it,
