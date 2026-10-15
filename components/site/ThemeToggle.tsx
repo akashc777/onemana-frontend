@@ -1,10 +1,9 @@
 "use client";
 
 import { useTheme } from "@/components/providers/ThemeProvider";
-import { useRef, type KeyboardEvent } from "react";
 import { Icon } from "@/components/ui/icons";
 import { ix } from "@/lib/interactive";
-import { rovingIndex } from "@/lib/roving";
+import { Segmented } from "@/components/ui/Segmented";
 
 /**
  * The page's colours cross-fade when the theme changes (site.md G8): the
@@ -44,50 +43,27 @@ export function ThemeToggle() {
   );
 }
 
-const MODES = [
-  ["light", "Light"],
-  ["dark", "Dark"],
-  ["system", "System"],
-] as const;
+const MODES = ["light", "dark", "system"] as const;
+const MODE_LABEL: Record<(typeof MODES)[number], string> = { light: "Light", dark: "Dark", system: "System" };
 
 /**
- * The phone menu's theme row (S17): Light, Dark or System, as a segmented
- * control: one Tab stop, the arrows move and choose (lib/roving), and each
- * segment is 44 px tall (storefront audit G11: 36 px, and no arrow keys).
+ * The phone menu's theme row (S17): Light, Dark or System, a segmented
+ * control (components/ui/Segmented): one Tab stop, the arrows move and
+ * choose, and each segment is 44 px tall (storefront audit G11: 36 px, and
+ * no arrow keys).
  */
 export function ThemeSegments() {
   const { theme, setTheme } = useTheme();
-  const refs = useRef<(HTMLButtonElement | null)[]>([]);
-  const at = Math.max(0, MODES.findIndex(([value]) => value === (theme ?? "system")));
-  const onKeyDown = (e: KeyboardEvent) => {
-    const to = rovingIndex(e.key, at, MODES.length);
-    if (to === null) return;
-    e.preventDefault();
-    fadeTo(setTheme, MODES[to][0]);
-    refs.current[to]?.focus();
-  };
+  const value = MODES.find((m) => m === theme) ?? "system";
   return (
-    <div role="radiogroup" aria-label="Theme" onKeyDown={onKeyDown} className="inline-flex rounded-ctl bg-muted p-0.5 ring-1 ring-inset ring-border">
-      {MODES.map(([value, label], i) => {
-        const on = i === at;
-        return (
-          <button
-            key={value}
-            ref={(el) => {
-              refs.current[i] = el;
-            }}
-            type="button"
-            role="radio"
-            aria-checked={on}
-            tabIndex={on ? 0 : -1}
-            onClick={() => fadeTo(setTheme, value)}
-            {...ix("tab")}
-            className="min-h-11 rounded-md px-3 text-caption font-[510] text-muted-foreground"
-          >
-            {label}
-          </button>
-        );
-      })}
-    </div>
+    <Segmented
+      label="Theme"
+      options={MODES}
+      value={value}
+      onChange={(m) => fadeTo(setTheme, m)}
+      className="inline-flex rounded-ctl bg-muted p-0.5 ring-1 ring-inset ring-border"
+      itemClass="min-h-11 rounded-md px-3 text-caption font-[510] text-muted-foreground"
+      option={(m) => MODE_LABEL[m]}
+    />
   );
 }

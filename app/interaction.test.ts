@@ -6,6 +6,7 @@ import ts from "typescript"
 import { describe, expect, it } from "vitest"
 
 import config from "../tailwind.config"
+import { TINT_SELECTOR } from "../lib/tailwindAppSystem"
 
 /**
  * THE INTERACTION LAYER'S GUARD (INTERACTION_SPEC.md §9.4, for the site).
@@ -174,6 +175,25 @@ describe("the interaction layer, as the site ships it", () => {
     expect((await one("[data-interactive]")).decls).toMatchObject({ "--ix-tint": "rgb(var(--brand))", "--ix-a": "0%", "-webkit-tap-highlight-color": "transparent" })
     expect((await one('[data-interactive][data-hue="sky"]')).decls).toMatchObject({ "--ix-tint": "rgb(var(--camp-sky))", "--ix-mark": "rgb(var(--camp-sky-a2))" })
     expect((await one('[data-interactive][data-hue="agent"]')).decls["--ix-tint"]).toBe("rgb(var(--agent))")
+  }, 90_000)
+
+  // The tint is painted by one rule for every kind that tints. At zero
+  // specificity (:where) it lost to the reset's button { background-color:
+  // transparent }, and no tab, segment or icon button ever showed a tint.
+  it("paints the tint over the reset of a button's background, and under any utility", async () => {
+    const tint = await one(TINT_SELECTOR)
+    expect(tint.decls["background-color"]).toBe("color-mix(in srgb, var(--ix-tint) var(--ix-a), var(--ix-ground, transparent))")
+    expect(TINT_SELECTOR).toMatch(/^:is\(/)
+    // The reset that it must outweigh is in the same sheet, before it.
+    const root = await siteCss()
+    let reset = -1
+    let at = 0
+    root.walkRules((r) => {
+      at++
+      if (reset < 0 && /(^|,\s*)button(,|$)/.test(r.selector) && r.nodes.some((d) => d.type === "decl" && d.prop === "background-color" && d.value === "transparent")) reset = at
+    })
+    expect(reset, "the reset's button rule").toBeGreaterThan(0)
+    expect(tint.at).toBeGreaterThan(reset)
   }, 90_000)
 
   it("hovers only where a pointer hovers, presses everywhere, and a press wins over a hover", async () => {

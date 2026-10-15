@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
+import { Segmented } from "@/components/ui/Segmented";
 import { PriceLines } from "@/components/site/RegionalMoney";
 import type { Pricing } from "@/lib/pricing";
 
@@ -42,46 +43,40 @@ export function CloudChoice({
   list: ReactNode;
   gets: ReactNode;
 }) {
-  const [at, setAt] = useState(0);
-  const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [id, setId] = useState(options[0]!.id);
+  const at = Math.max(0, options.findIndex((opt) => opt.id === id));
   const o = options[at]!;
   const n = options.length;
 
-  const onKey = (e: KeyboardEvent) => {
-    const to = e.key === "ArrowRight" ? at + 1 : e.key === "ArrowLeft" ? at - 1 : null;
-    if (to === null) return;
-    e.preventDefault();
-    const next = (to + n) % n;
-    setAt(next);
-    refs.current[next]?.focus();
-  };
-
+  // One Tab stop; the arrows (all four), Home and End move and choose
+  // (components/ui/Segmented). Each segment takes the accent's tint under the
+  // pointer; the chosen one's knob is the thumb that slides under it.
   const control = (
-    <div role="radiogroup" aria-label="Cloud size" onKeyDown={onKey} className="relative mt-3 grid rounded-md bg-muted p-0.5 ring-1 ring-inset ring-border" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+    <Segmented
+      label="Cloud size"
+      options={options.map((opt) => opt.id)}
+      value={o.id}
+      onChange={setId}
+      thumb
+      className={`relative mt-3 grid rounded-md bg-muted p-0.5 ring-1 ring-inset ring-border ${n === 3 ? "grid-cols-3" : n === 2 ? "grid-cols-2" : "grid-cols-1"}`}
+      itemClass="relative z-10 flex min-h-11 flex-col items-center justify-center rounded-[6px] px-1 text-[12px] font-[510] leading-4 text-muted-foreground sm:min-h-8"
+      option={(value) => {
+        const opt = options.find((x) => x.id === value)!;
+        return (
+          <>
+            <span className="hidden sm:inline">{opt.label}</span>
+            <span className="sm:hidden">{opt.short}</span>
+            {opt.hint && <span className="text-[11px] font-normal leading-3 text-camp-moss-ink">{opt.hint}</span>}
+          </>
+        );
+      }}
+    >
       <span
         aria-hidden="true"
         className="pointer-events-none absolute bottom-0.5 left-0.5 top-0.5 rounded-[6px] bg-card shadow-e1 transition-transform duration-pop ease-out"
         style={{ width: `calc((100% - 4px) / ${n})`, transform: `translateX(${at * 100}%)` }}
       />
-      {options.map((opt, i) => (
-        <button
-          key={opt.id}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          type="button"
-          role="radio"
-          aria-checked={i === at}
-          tabIndex={i === at ? 0 : -1}
-          onClick={() => setAt(i)}
-          className={`relative z-10 flex min-h-11 flex-col items-center justify-center px-1 text-[12px] font-[510] leading-4 transition-colors sm:min-h-8 ${i === at ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-        >
-          <span className="hidden sm:inline">{opt.label}</span>
-          <span className="sm:hidden">{opt.short}</span>
-          {opt.hint && <span className="text-[11px] font-normal leading-3 text-camp-moss-ink">{opt.hint}</span>}
-        </button>
-      ))}
-    </div>
+    </Segmented>
   );
 
   // The rows are the card's subgrid rows (the name, the price, its lines,

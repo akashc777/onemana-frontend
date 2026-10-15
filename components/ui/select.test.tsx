@@ -131,8 +131,11 @@ describe("the select's markup", () => {
       expect(row).toContain('role="option"')
       expect(row).toContain(`aria-selected="${i === 2}"`)
       expect(row.includes("data-active"), `row ${i}`).toBe(i === 4)
-      // 44 px under a finger (the audit measured 36).
-      expect(row).toContain("[@media(pointer:coarse)]:min-h-11")
+      // The layer's item: its highlight is the press tint, and it is 44 px
+      // under a finger (the audit measured 36; app/interaction.test.ts reads
+      // the rule from the compiled CSS).
+      expect(row).toContain('data-interactive="item"')
+      expect(row).not.toMatch(/\bbg-/)
     })
     // The tick is on the chosen option alone.
     const ticked = (html.split("</li>")).map((li) => li.includes("<svg"))

@@ -22,7 +22,8 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { SECTION_END } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { Select } from "@/components/ui/Select";
-import { Field } from "@/components/ui/Field";
+import { FIELD_LABEL, Field } from "@/components/ui/Field";
+import { Segmented } from "@/components/ui/Segmented";
 import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
 import { EDITION_CHOICES, type EditionChoice, type SlugVerdict } from "@/lib/workspaceAddress";
 import { CloudGlyph, KeyGlyph } from "@/components/site/Glyphs";
@@ -33,6 +34,7 @@ import { Dot } from "@/components/ui/v3";
 import { Icon } from "@/components/ui/icons";
 
 export type Plan = "lifetime" | "cloud";
+const PLANS: readonly Plan[] = ["lifetime", "cloud"];
 
 /**
  * The checkout: the plan, its price, and the form that opens Razorpay.
@@ -207,30 +209,30 @@ export function BuyCheckout({
         <div className="container-x grid grid-cols-1 gap-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-4">
           <aside className="min-w-0 lg:col-start-1 lg:row-start-1">
 
-            {/* Plan switch */}
-            <div className="relative grid grid-cols-2 gap-1 rounded-ctl bg-muted p-1 text-small ring-1 ring-inset ring-border">
-              <button
-                type="button"
-                onClick={() => setPlan("lifetime")}
-                aria-pressed={!isCloud}
-                className={`min-h-11 rounded-sm px-3 py-2 max-sm:px-1.5 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${!isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Dot hue={PLAN_HUE.lifetime} className="max-sm:hidden" />
-                {/* Below 380 px the two labels do not fit side by side, and one
-                    wrapped while the other did not: the qualifier is then read
-                    but not shown. */}
-                <span>Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span></span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setPlan("cloud")}
-                aria-pressed={isCloud}
-                className={`min-h-11 rounded-sm px-3 py-2 max-sm:px-1.5 font-[510] transition-[background-color,box-shadow,color] duration-pop sm:min-h-8 inline-flex items-center justify-center gap-2 ${isCloud ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Dot hue={PLAN_HUE.cloud} className="max-sm:hidden" />
-                <span>Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span></span>
-              </button>
-            </div>
+            {/* Plan switch: a radiogroup, one Tab stop with the arrows
+                (storefront audit K1), each segment in its plan's hue. Below
+                380 px the two labels do not fit side by side, and one wrapped
+                while the other did not: the qualifier is then read but not
+                shown. */}
+            <Segmented
+              label="Licence or Cloud"
+              options={PLANS}
+              value={plan}
+              onChange={setPlan}
+              hue={(p) => PLAN_HUE[p]}
+              className="relative grid grid-cols-2 gap-1 rounded-ctl bg-muted p-1 text-small ring-1 ring-inset ring-border"
+              itemClass="min-h-11 rounded-sm px-3 py-2 max-sm:px-1.5 font-[510] text-muted-foreground sm:min-h-8 inline-flex items-center justify-center gap-2"
+              option={(p) => (
+                <>
+                  <Dot hue={PLAN_HUE[p]} className="max-sm:hidden" />
+                  {p === "lifetime" ? (
+                    <span>Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span></span>
+                  ) : (
+                    <span>Cloud<span className="sr-only min-[380px]:not-sr-only">, run by us</span></span>
+                  )}
+                </>
+              )}
+            />
 
             {/* THE FREE PLAN, WHERE THE PRICE IS. A team of under 25 that reaches
                 this page about to pay for something it can run free has been
@@ -293,31 +295,27 @@ export function BuyCheckout({
                       : "One-time, no tax added at checkout, unlimited users"}
               </p>
               {showChoices && (
-                <div
-                  role="radiogroup"
-                  aria-label="Plan"
+                /* Each choice is its name over what it adds, the three alike:
+                   as one line, "Team yearly · 2 months free" wrapped beside
+                   one-line neighbours. One Tab stop with the arrows (storefront
+                   audit K2: a radiogroup that did not act like one). */
+                <Segmented
+                  label="Cloud plan"
+                  options={choices}
+                  value={choice}
+                  onChange={setBilling}
                   className={`mt-4 grid gap-1 rounded-ctl bg-muted p-1 text-caption ring-1 ring-inset ring-border ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
-                >
-                  {/* Each choice is its name over what it adds, the three
-                      alike: as one line, "Team yearly · 2 months free"
-                      wrapped beside one-line neighbours. */}
-                  {choices.map((b) => {
+                  itemClass="flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 text-muted-foreground"
+                  option={(b) => {
                     const [name, detail] = choiceLabel(b, pricing).split(" · ");
                     return (
-                      <button
-                        key={b}
-                        type="button"
-                        role="radio"
-                        aria-checked={choice === b}
-                        onClick={() => setBilling(b)}
-                        className={`flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 transition-[background-color,box-shadow,color] duration-pop ${choice === b ? "bg-card text-foreground shadow-e1" : "text-muted-foreground hover:text-foreground"}`}
-                      >
+                      <>
                         <span className="font-medium">{name}</span>
                         {detail && <span className="font-normal">{detail}</span>}
-                      </button>
+                      </>
                     );
-                  })}
-                </div>
+                  }}
+                />
               )}
               <ul className="mt-5 space-y-2.5 border-t border-border pt-5 text-small text-foreground">
                 {benefits.map((b) => (
@@ -348,22 +346,30 @@ export function BuyCheckout({
                   <WorkspaceAddressField value={slug} onChange={setSlug} onVerdict={setAddressVerdict} inputClassName={inputCls} />
                 </Field>
                 <fieldset>
-                  <legend className="mb-1.5 block text-caption font-[510] text-foreground">AI features</legend>
-                  <div role="radiogroup" aria-label="AI features" className="grid gap-2 sm:grid-cols-2">
-                    {EDITION_CHOICES.map((c) => (
-                      <button
-                        key={c.value}
-                        type="button"
-                        role="radio"
-                        aria-checked={edition === c.value}
-                        onClick={() => setEdition(c.value)}
-                        className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left transition-colors ${edition === c.value ? "border-brand/60 bg-brand-soft" : "border-border bg-card hover:bg-hover"}`}
-                      >
-                        <span className="block text-small font-medium text-foreground">{c.label}</span>
-                        <span className="mt-0.5 block text-caption text-muted-foreground">{c.hint}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <legend className={FIELD_LABEL}>AI features</legend>
+                  {/* Two choice cards, the chosen one tinted, ringed and
+                      ticked: chosen by more than colour (storefront audit K3,
+                      a brand border and fill alone), one Tab stop with the
+                      arrows. */}
+                  <Segmented
+                    kind="chip"
+                    label="AI features"
+                    options={EDITION_CHOICES.map((c) => c.value)}
+                    value={edition}
+                    onChange={setEdition}
+                    className="grid gap-2 sm:grid-cols-2"
+                    itemClass={(_, on) => `relative flex flex-col justify-start rounded-md px-3.5 py-2.5 pr-9 text-left [--ix-ground:rgb(var(--card))] ${on ? "" : "shadow-e1"}`}
+                    option={(value, on) => {
+                      const c = EDITION_CHOICES.find((e) => e.value === value)!;
+                      return (
+                        <>
+                          <span className="block text-small font-medium text-foreground">{c.label}</span>
+                          <span className="mt-0.5 block text-caption text-muted-foreground">{c.hint}</span>
+                          {on && <Icon name="check" className="absolute right-3 top-3 text-brand-ink" />}
+                        </>
+                      );
+                    }}
+                  />
                 </fieldset>
               </>
             )}

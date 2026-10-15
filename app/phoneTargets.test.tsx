@@ -1,13 +1,21 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { renderToString } from "react-dom/server"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
+
+// The checkout asks for the app router, which a string render has not mounted.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => {}, replace: () => {}, prefetch: () => {} }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "",
+}))
 
 import { DocsNav } from "@/components/docs/DocsShell"
 import { OnThisPageDisclosure } from "@/components/reading/OnThisPageDisclosure"
 import { AboutView } from "@/components/site/AboutView"
 import { AudienceView } from "@/components/site/AudienceView"
-import { CloudPlanCard } from "@/components/site/CloudPlanCard"
+import { BuyCheckout } from "@/app/buy/BuyCheckout"
+import { PlanColumns } from "@/components/site/PlanColumns"
 import { FactsStrip } from "@/components/site/FactsStrip"
 import { Footer } from "@/components/site/Footer"
 import { GovernedDemo } from "@/components/site/GovernedDemo"
@@ -20,6 +28,7 @@ import { TemplateView } from "@/components/site/TemplateView"
 import { Select } from "@/components/ui/Select"
 import { alternatives } from "@/lib/alternatives"
 import { defaultPricing } from "@/lib/pricing"
+import { cloudChoices } from "@/lib/paymentTerms"
 import { templates } from "@/lib/templates"
 
 /**
@@ -88,16 +97,20 @@ describe("a phone's targets", () => {
     }
   })
 
-  it("switches: the plan tabs, the Cloud sizes and the walkthrough's controls", () => {
+  it("switches: the plan tabs, the Cloud sizes, the checkout's choices and the walkthrough's controls", () => {
     expectTall(classesOf(renderToString(<ProductTabs first={firstTourScene()} />), /<button[^>]*role="tab"[^>]*>/g), "product tabs")
     const onSale = { ...defaultPricing, cloud_yearly_configured: true, business_configured: true }
-    expectTall(classesOf(renderToString(<CloudPlanCard pricing={onSale} />), /<button[^>]*role="radio"[^>]*>/g), "Cloud sizes")
+    const sizes = renderToString(<PlanColumns pricing={onSale} detailed />)
+    expectTall(classesOf(sizes, /<button[^>]*role="radio"[^>]*>/g), "Cloud sizes")
+    // The checkout on Cloud: the plan switch and the billing segments. The AI
+    // choice cards are taller than 44 by their two lines.
+    const buy = renderToString(<BuyCheckout initialPlan="cloud" initialBilling="monthly" initialPricing={onSale} initialCountry="US" />)
+    const radios = classesOf(buy, /<button[^>]*role="radio"[^>]*>/g).filter((c) => !c.includes("[--ix-ground"))
+    expect(radios.length, "the plan switch and the billing segments").toBe(2 + cloudChoices(onSale).length)
+    expectTall(radios, "the checkout's choices")
     const demo = renderToString(<GovernedDemo />)
     expectTall(classesOf(demo, /<button[^>]*aria-label="Step[^>]*>/g), "walkthrough steps")
     expectTall(classesOf(demo, /<button type="button" class="ui-btn [^"]*"[^>]*>/g), "walkthrough replay")
-    const buy = readFileSync(join(__dirname, "../app/buy/BuyCheckout.tsx"), "utf8")
-    expect(buy.match(/className=\{`min-h-11 rounded-sm px-3/g) ?? []).toHaveLength(2)
-    expect(buy).toContain("className={`flex min-h-11 flex-col")
   })
 
   it("the two Copy buttons, drawn 28 px tall, answer 44", () => {

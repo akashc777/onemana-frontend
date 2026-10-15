@@ -507,6 +507,8 @@ export function motionCss(): Record<string, unknown> {
 
 /** The kinds that answer with a tint (a card lifts instead). */
 const TINTED = ["icon", "row", "nav", "tab", "chip", "item"] as const
+/** Every kind that tints, as one selector of one attribute's specificity. */
+export const TINT_SELECTOR = `:is(${TINTED.map((k) => `[data-interactive="${k}"]`).join(", ")})`
 /** One kind, or several, as a selector. */
 const kind = (...k: string[]) => (k.length === 1 ? `[data-interactive="${k[0]}"]` : `:is(${k.map((x) => `[data-interactive="${x}"]`).join(", ")})`)
 /** What ARIA says is on: a tab chosen, a radio checked, a toggle pressed. */
@@ -563,10 +565,14 @@ export function interactionCss(): Record<string, unknown>[] {
         WebkitTapHighlightColor: "transparent",
       },
       ...hues,
-      // Zero specificity: a component's own ground (a raised chip, a card)
-      // always wins over the tint.
-      [`:where(${TINTED.map((k) => `[data-interactive="${k}"]`).join(", ")})`]: {
-        backgroundColor: "color-mix(in srgb, var(--ix-tint) var(--ix-a), transparent)",
+      // One attribute's weight: above the reset's button { background-color:
+      // transparent } (a :where() here lost to it, and no button ever
+      // tinted), below any utility, so a component's own ground (a raised
+      // chip, a card) still wins over the tint.
+      [TINT_SELECTOR]: {
+        // Over the element's own ground when it has one (--ix-ground: a choice
+        // card's raised surface), else over whatever is under it.
+        backgroundColor: "color-mix(in srgb, var(--ix-tint) var(--ix-a), var(--ix-ground, transparent))",
         transitionProperty: "background-color, color, box-shadow, scale",
         transitionDuration: "var(--ix-colour), var(--ix-colour), var(--ix-colour), var(--ix-settle)",
         transitionTimingFunction: "var(--ix-ease)",

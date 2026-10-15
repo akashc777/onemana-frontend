@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } f
 import { Icon } from "@/components/ui/icons";
 import { FIELD_HINT, FIELD_LABEL, RequiredMark } from "@/components/ui/Field";
 import { closedState, optionId, selectKey, type SelectState } from "@/lib/selectKeys";
+import { ix } from "@/lib/interactive";
 
 export interface SelectOption {
   value: string;
@@ -193,7 +194,8 @@ export function comboboxAria({
 /**
  * The open list's options: each with the id the combobox points at, the
  * chosen one selected and ticked, the one under the keys or the pointer
- * highlighted. 44 px tall under a finger.
+ * highlighted (data-active). They are the interaction layer's items, 44 px
+ * tall under a finger.
  */
 export function SelectOptions({
   listId,
@@ -224,9 +226,10 @@ export function SelectOptions({
             data-active={isActive || undefined}
             onPointerMove={() => onActive(i)}
             onClick={() => onPick(i)}
-            className={`flex min-h-9 cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-small [@media(pointer:coarse)]:min-h-11 ${
-              isActive ? "bg-press text-foreground" : "text-muted-foreground"
-            }`}
+            // The layer's item: the highlight is the accent's press tint
+            // and the focus, with no ring; 44 px under a finger.
+            {...ix("item")}
+            className="flex min-h-9 cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-small text-muted-foreground"
           >
             <span className="truncate">{opt.label}</span>
             {isChosen && <Icon name="check" className="shrink-0 text-foreground" />}

@@ -1,5 +1,7 @@
 "use client";
 
+import { ix } from "@/lib/interactive";
+import { rovingIndex } from "@/lib/roving";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Arrow } from "@/components/ui/v3";
 import { hueOrAgent } from "@/components/ui/graphics/hues";
@@ -121,7 +123,7 @@ function fetchScene(id: LaterTourId): Promise<ScenePair> {
 function Stage({ children, hue }: { children: ReactNode; hue: CampHue | "agent" }) {
   return (
     <div
-      className={`${hueClass(hue)} relative isolate overflow-hidden rounded-3xl bg-hue-tint p-2 transition-colors duration-panel ease-in-out sm:p-8`}
+      className={`${hueClass(hue)} relative isolate overflow-hidden rounded-3xl bg-hue-tint p-2 transition-colors duration-panel ease-out sm:p-8`}
       style={{ backgroundImage: "radial-gradient(70% 70% at 100% 0%, rgb(var(--hue) / 0.22), transparent 65%)" } as CSSProperties}
     >
       {children}
@@ -194,13 +196,12 @@ export function ProductTabs({ first }: { first: ReactNode }) {
     refs.current[next]?.focus();
   };
 
+  // The one rule for a group that is one Tab stop (lib/roving).
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") move(active + 1);
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") move(active - 1);
-    else if (e.key === "Home") move(0);
-    else if (e.key === "End") move(TABS.length - 1);
-    else return;
+    const to = rovingIndex(e.key, active, TABS.length);
+    if (to === null) return;
     e.preventDefault();
+    move(to);
   };
 
   const tab = TABS[active];
@@ -230,9 +231,11 @@ export function ProductTabs({ first }: { first: ReactNode }) {
             onClick={() => choose(i)}
             onPointerEnter={() => want(t.id)}
             onFocus={() => want(t.id)}
-            className={`${hueClass(t.hue)} flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-md px-3 text-caption font-[510] transition-[background-color,box-shadow,color] duration-hover sm:min-h-8 ${
-              i === active ? "bg-card text-foreground shadow-e2" : "text-muted-foreground hover:bg-hover hover:text-foreground"
-            }`}
+            // A tab of the layer in its own hue (storefront audit H9: the
+            // hover was grey): its tint under the pointer, the raised knob
+            // at e2 when chosen.
+            {...ix("tab", { hue: t.hue })}
+            className={`${hueClass(t.hue)} flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-md px-3 text-caption font-[510] text-muted-foreground [--ix-knob:var(--e-e2)] sm:min-h-8`}
           >
             <span aria-hidden="true" className="size-[7px] rounded-full bg-hue" />
             {t.label}

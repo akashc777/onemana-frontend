@@ -1,8 +1,16 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { renderToString } from "react-dom/server"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
+// The checkout asks for the app router, which a string render has not mounted.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => {}, replace: () => {}, prefetch: () => {} }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "",
+}))
+
+import { BuyCheckout } from "@/app/buy/BuyCheckout"
 import { DocsPager } from "@/components/docs/DocsShell"
 import { CloudPlanCard } from "@/components/site/CloudPlanCard"
 import { CompareView } from "@/components/site/CompareView"
@@ -96,8 +104,15 @@ describe("things side by side line up", () => {
       expect(m[1]).toContain("justify-start")
       expect(m[1]).not.toContain("justify-center")
     }
-    const buy = readFileSync(join(__dirname, "buy/BuyCheckout.tsx"), "utf8")
-    expect(buy).toContain('className={`flex flex-col justify-start rounded-md border px-3.5 py-2.5 text-left')
+    // The AI choice cards, rendered: each starts its words at the top.
+    const buy = renderToString(<BuyCheckout initialPlan="cloud" initialBilling="monthly" initialPricing={defaultPricing} initialCountry="US" />)
+    const at = buy.indexOf('aria-label="AI features"')
+    const cards = buy.slice(at).match(/<button[^>]*role="radio"[^>]*class="([^"]*)"/g) ?? []
+    expect(cards).toHaveLength(2)
+    for (const c of cards) {
+      expect(c).toContain("flex-col justify-start")
+      expect(c).not.toContain("justify-center")
+    }
   })
 
   it("/compare's tools: each tool over its line, the hairline under the cell", () => {
