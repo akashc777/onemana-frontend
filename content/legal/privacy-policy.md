@@ -1,4 +1,4 @@
-**Effective 15 October 2026.** This policy covers onemana.dev, the OneCamp demo, the account page and OneCamp Cloud. It is run by OneMana Solutions (OPC) Private Limited, Bengaluru, India (“we”). Questions or requests: [support@onemana.dev](mailto:support@onemana.dev).
+**Effective 16 October 2026.** This policy covers onemana.dev, the OneCamp demo, the account page and OneCamp Cloud. It is run by OneMana Solutions (OPC) Private Limited, Bengaluru, India (“we”). Questions or requests: [support@onemana.dev](mailto:support@onemana.dev).
 
 ### The short version
 

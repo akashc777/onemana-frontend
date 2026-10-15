@@ -44,11 +44,11 @@ function legalPage(title: string, subtitle: string, source: string, updated: str
 }
 
 export const legalPages: Record<string, LegalPage> = {
-  "privacy-policy": legalPage("Privacy policy", "What we collect, why, and for how long.", privacyPolicy, "2026-10-15"),
-  "terms-of-service": legalPage("Terms of service", "", termsOfService, "2026-10-15"),
+  "privacy-policy": legalPage("Privacy policy", "What we collect, why, and for how long.", privacyPolicy, "2026-10-16"),
+  "terms-of-service": legalPage("Terms of service", "", termsOfService, "2026-10-16"),
   "refund-policy": legalPage("Refund policy", "", refundPolicy, "2026-06-10"),
   "taxes-on-services": legalPage("Tax and invoices", "", taxesOnServices, "2026-10-15"),
-  "account-ownership-policy": legalPage("Account ownership policy", "", accountOwnershipPolicy, "2026-10-15"),
+  "account-ownership-policy": legalPage("Account ownership policy", "", accountOwnershipPolicy, "2026-10-16"),
 };
 
 /** A legal page's tab title and canonical address: its own name, as its H1 says it. */

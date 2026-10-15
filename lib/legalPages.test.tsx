@@ -20,11 +20,11 @@ import { LegalPageView } from "@/components/site/LegalPageView";
  * The page's title is its name, held to the site's sentence case below.
  */
 const PINS: Record<string, { updated: string; words: string }> = {
-  "privacy-policy": { updated: "2026-10-15", words: "937949c1380e" },
+  "privacy-policy": { updated: "2026-10-16", words: "aa0746f8c553" },
   "refund-policy": { updated: "2026-06-10", words: "ba704d7017ce" },
-  "terms-of-service": { updated: "2026-10-15", words: "2309ccfd9251" },
+  "terms-of-service": { updated: "2026-10-16", words: "2309ccfd9251" },
   "taxes-on-services": { updated: "2026-10-15", words: "3ae2e71c30b3" },
-  "account-ownership-policy": { updated: "2026-10-15", words: "53e7fc083c6a" },
+  "account-ownership-policy": { updated: "2026-10-16", words: "53e7fc083c6a" },
 };
 
 const ENTITIES: Record<string, string> = { "&amp;": "&", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&lt;": "<", "&gt;": ">", "&nbsp;": " " };
@@ -228,7 +228,7 @@ describe("legal pages", () => {
 
   it("show their date, and sections a link can reach", () => {
     const html = renderToString(<LegalPageView slug="privacy-policy" />);
-    expect(html).toContain('Last updated <time dateTime="2026-10-15">15 Oct 2026</time>');
+    expect(html).toContain('Last updated <time dateTime="2026-10-16">16 Oct 2026</time>');
     expect(html).toContain('<h2 id="the-short-version">');
     expect(html).toContain('href="#your-rights"');
     expect(html).toContain("On this page");
