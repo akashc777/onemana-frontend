@@ -48,9 +48,9 @@ export const revalidate = 300;
  */
 
 const FACTS = [
-  { hue: "moss", bold: "Open source", rest: ", AGPL-3.0", at: "at-300", d: "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9" },
-  { hue: "sky", bold: "One command", rest: " on a 4 GB server", at: "at-340", d: "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01" },
-  { hue: "dusk", bold: "Agents on the record", rest: ", every attempt", at: "at-380", d: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4" },
+  { hue: "moss", bold: "Open source", rest: ", AGPL-3.0", d: "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9" },
+  { hue: "sky", bold: "One command", rest: " on a 4 GB server", d: "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01" },
+  { hue: "dusk", bold: "Agents on the record", rest: ", every attempt", d: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4" },
 ] as const;
 
 /**
@@ -134,7 +134,7 @@ export default async function HomePage() {
             <ul className="m-0 hidden list-none border-t border-border p-0 lg:col-span-4 lg:block">
               {FACTS.map((f) => (
                 <li key={f.bold} className="flex h-[52px] items-center gap-3 border-b border-border text-small text-muted-foreground">
-                  <Tile hue={f.hue} size="sm" className={`in-pop ${f.at}`}>
+                  <Tile hue={f.hue} size="sm">
                     <Icon d={f.d} />
                   </Tile>
                   <span>

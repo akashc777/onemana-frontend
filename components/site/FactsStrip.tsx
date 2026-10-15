@@ -62,7 +62,6 @@ export function FactsStrip({ release }: { release: ReleaseFacts | null }) {
             <dt className="flex items-start gap-2 text-body font-[590] text-foreground">
               <span aria-hidden="true" className={`${HUE_CLASS[FACT_HUES[i]!]} relative mt-[9px] inline-flex size-2 shrink-0`}>
                 <span className="size-2 rounded-full bg-hue" />
-                {i === 1 && <span className="in-ping at-900 absolute -inset-1 rounded-full ring-[1.5px] ring-hue" />}
               </span>
               {f.key}
             </dt>

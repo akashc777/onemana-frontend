@@ -18,40 +18,45 @@ const SEEN = "onecamp-close-burst";
 
 /**
  * The close's welcome spot (site.md H11): a raised 128px disc holding the
- * gradient ring, two rings round it (one dashed), and the six camp hues
- * orbiting at 122px in 40s, with the brand spark at the top right. The
- * first time it is half on screen, once a session, it bursts into fourteen
- * sparks (G11's one burst on this page) that fade as they land. Never under reduced motion; the
- * orbit pauses off screen and stops for reduced motion. 160px on a phone.
+ * gradient ring, two rings round it (one dashed), and the six camp hues at
+ * 122px, with the brand spark at the top right. The hues hold still: the
+ * hero's story is the page's one ambient element (storefront audit H19).
+ *
+ * The spot bursts into fourteen sparks that fade as they land (G11's one
+ * burst on this page) on intent, once a session: when the visitor moves onto
+ * or reaches by key one of the close's ways in. It burst on its own the first
+ * time it was half on screen; a burst is for a real moment, and scrolling is
+ * not one. Never under reduced motion. 160px on a phone.
  */
 export function CloseSpot() {
   const ref = useRef<HTMLDivElement>(null);
   const [burst, setBurst] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const host = ref.current?.closest("section");
+    if (!host || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     try {
       if (sessionStorage.getItem(SEEN)) return;
     } catch {
       /* storage blocked: burst anyway, once for this page */
     }
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
-        setBurst(true);
-        try {
-          sessionStorage.setItem(SEEN, "1");
-        } catch {
-          /* nothing to remember it in */
-        }
-        io.disconnect();
-      },
-      { threshold: 0.5 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    const onIntent = (e: Event) => {
+      if (!(e.target instanceof Element) || !e.target.closest("a, button")) return;
+      setBurst(true);
+      try {
+        sessionStorage.setItem(SEEN, "1");
+      } catch {
+        /* nothing to remember it in */
+      }
+      stop();
+    };
+    const stop = () => {
+      host.removeEventListener("pointerover", onIntent);
+      host.removeEventListener("focusin", onIntent);
+    };
+    host.addEventListener("pointerover", onIntent);
+    host.addEventListener("focusin", onIntent);
+    return stop;
   }, []);
 
   return (

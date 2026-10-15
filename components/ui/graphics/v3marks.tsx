@@ -71,7 +71,12 @@ export function CanvasRings({ still = false, dots = true, quiet = false }: { sti
   )
 }
 
-/** The close spot's orbit (H11): two rings, one dashed, and the six hues turning at 122px. */
+/**
+ * The close spot's orbit (H11): two rings, one dashed, and the six hues at
+ * 122px. They hold still: the hero's story is the home page's one ambient
+ * element, and a second, turning for as long as the close was in view, was
+ * one too many (storefront audit H19).
+ */
 export function CloseOrbit() {
   return (
     <div className="absolute inset-0">
@@ -79,7 +84,7 @@ export function CloseOrbit() {
         <circle cx="140" cy="140" r="122" className="stroke-camp-sky/45" strokeWidth="1.5" />
         <circle cx="140" cy="140" r="92" className="stroke-camp-sky/60" strokeWidth="1.5" strokeDasharray="2 6" />
       </svg>
-      <Turning spin="spin-40" size={280}>
+      <Turning size={280}>
         {CAMP_HUES.map((hue, i) => {
           const t = (-100 + i * 60 + (i % 2 ? 9 : -6)) * (Math.PI / 180)
           return <circle key={hue} cx={140 + 122 * Math.cos(t)} cy={140 + 122 * Math.sin(t)} r={i % 2 ? 6 : 7.5} className={`${HUE_CLASS[hue]} fill-hue`} />
