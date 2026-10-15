@@ -44,8 +44,10 @@ function SuccessInner() {
   const address = purchase?.slug ? `${purchase.slug}.${WORKSPACE_ZONE}` : "";
   // Opened from a bookmark, another tab or a link: there is no purchase here
   // to show, so the page says where the receipt is instead of claiming a
-  // payment it knows nothing about.
-  const direct = !purchase && !pending && !isCloud;
+  // payment it knows nothing about. ?cloud=1 and ?pending=1 are no proof of
+  // one: they are the addresses the checkout leaves, so they are what a
+  // bookmark, another tab or a shared link carries.
+  const direct = !purchase;
   // The invoice is named for where the buyer is: the country they chose at
   // checkout, else the browser's guess. GST is for India only.
   const region = useVisitorRegion();
@@ -72,17 +74,17 @@ function SuccessInner() {
     };
   }, [isCloud, purchase?.size]);
 
-  const mark = isCloud
-    ? { hue: "lake" as const, glyph: glyphs.cloud }
-    : direct
-      ? { hue: "sky" as const, glyph: glyphs.receipt }
+  const mark = direct
+    ? { hue: "sky" as const, glyph: glyphs.receipt }
+    : isCloud
+      ? { hue: "lake" as const, glyph: glyphs.cloud }
       : pending && !key
         ? { hue: "sun" as const, glyph: glyphs.clock }
         : { hue: "moss" as const, glyph: glyphs.check };
-  const title = isCloud
-    ? "Welcome to OneCamp Cloud"
-    : direct
-      ? "Your receipt is in your email"
+  const title = direct
+    ? "Your receipt is in your email"
+    : isCloud
+      ? "Welcome to OneCamp Cloud"
       : pending && !key
         ? "Payment received"
         : "Your licence is ready";
@@ -112,7 +114,14 @@ function SuccessInner() {
       </CampCanvas>
       <div className="mt-10 max-w-2xl">
 
-        {isCloud ? (
+        {direct ? (
+          <p className="mt-3 text-body-lg text-muted-foreground">
+            This page shows a purchase made in this browser tab, and there is none here.{" "}
+            {isCloud
+              ? `Your welcome email and ${invoice} are in the email you subscribed with, and your workspace is on your account page.`
+              : `Your licence key, install command and ${invoice} are in the email you paid with, and on your account page.`}
+          </p>
+        ) : isCloud ? (
           /* WHAT HAPPENS NEXT, AND WHERE TO FOLLOW IT. A buyer who named the
              workspace on /buy has nothing left to do: the payment names it and
              building starts. One who did not is asked for the address, the one
@@ -163,11 +172,6 @@ function SuccessInner() {
             Thank you for your purchase. Your licence key and setup instructions are being prepared and arrive at{" "}
             <span className="font-medium text-foreground">{email}</span> within a minute, with {invoice}.
           </p>
-        ) : direct ? (
-          <p className="mt-3 text-body-lg text-muted-foreground">
-            This page shows a purchase made in this browser tab, and there is none here. Your licence key, install
-            command and {invoice} are in the email you paid with, and on your account page.
-          </p>
         ) : (
           <p className="mt-3 text-body-lg text-muted-foreground">
             Welcome to OneCamp. We&apos;ve also emailed your key, install command, and {invoice} to{" "}
@@ -178,17 +182,21 @@ function SuccessInner() {
         {key && <LicenseInstall licenseKey={key} isCloud={isCloud} />}
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          {isCloud ? (
+          {direct ? (
+            <>
+              <ButtonLink href="/account" variant="brand">Go to your account</ButtonLink>
+              {isCloud ? (
+                <ButtonLink href="/docs/cloud" variant="ghost">How OneCamp Cloud works</ButtonLink>
+              ) : (
+                <ButtonLink href="/docs/installation" variant="ghost">Read the install guide</ButtonLink>
+              )}
+            </>
+          ) : isCloud ? (
             <>
               <ButtonLink href="/account" variant="brand">
                 {address ? "Go to your account" : "Choose your address"}
               </ButtonLink>
               <ButtonLink href="/docs/cloud" variant="ghost">How OneCamp Cloud works</ButtonLink>
-            </>
-          ) : direct ? (
-            <>
-              <ButtonLink href="/account" variant="brand">Go to your account</ButtonLink>
-              <ButtonLink href="/docs/installation" variant="ghost">Read the install guide</ButtonLink>
             </>
           ) : (
             <>

@@ -39,9 +39,12 @@ function flat(s: string): string {
   return s.replace(/\s+/g, " ").toLowerCase()
 }
 
-/** The cloud branch of the success page, which is the only part under test. */
+/**
+ * The cloud branch of the success page, which is the only part under test. It
+ * follows the direct visit's (a tab with no purchase), which claims nothing.
+ */
 function cloudBranch(): string {
-  const start = SUCCESS_PAGE.indexOf("{isCloud ? (")
+  const start = SUCCESS_PAGE.indexOf(") : isCloud ? (")
   expect(start, "the success page no longer branches on isCloud").toBeGreaterThan(-1)
   const end = SUCCESS_PAGE.indexOf(") : pending", start)
   expect(end, "the isCloud branch no longer ends where it did").toBeGreaterThan(start)
@@ -61,7 +64,7 @@ function cloudButtons(): string {
   const start = SUCCESS_PAGE.indexOf('<div className="mt-8 flex')
   expect(start, "the receipt's buttons moved").toBeGreaterThan(-1)
   const block = SUCCESS_PAGE.slice(start)
-  const cloud = block.indexOf("{isCloud ? (")
+  const cloud = block.indexOf(") : isCloud ? (")
   expect(cloud, "the buttons no longer differ for Cloud").toBeGreaterThan(-1)
   return block.slice(cloud, block.indexOf(") : (", cloud))
 }
