@@ -73,7 +73,23 @@ describe("tax in customer-facing copy", () => {
   it("says prices include GST where tax is explained", () => {
     expect(legalPages["terms-of-service"].bodyHtml).toContain("Prices include GST")
     expect(legalPages["taxes-on-services"].bodyHtml).toContain("is included in the price you pay")
-    expect(legalPages["taxes-on-services"].bodyHtml).toContain("Prices shown on our website and at checkout include GST")
+    expect(legalPages["taxes-on-services"].bodyHtml).toContain("nothing is added to it at checkout")
     expect(audienceBySlug("india")?.priceNote).toMatch(/^Prices include GST/)
+  })
+
+  // The taxes page said we "collect and remit consumption taxes (such as sales
+  // tax, VAT, GST, or equivalent) ... at local, state, provincial, and/or
+  // national levels", more than the invoices show, and that our tax collection
+  // was "compliant". It says only what an invoice shows (onemana-backend
+  // ComputeGSTInclusive in business/onecamp/tax.go, the export title in
+  // services/invoice/pdf.go): GST in India, split by state; outside India, an
+  // export of services with no Indian GST, or the price with IGST in it, as the
+  // export setting decides.
+  it("the taxes page claims only what an invoice shows", () => {
+    const page = legalPages["taxes-on-services"].bodyHtml
+    expect(page).not.toMatch(/\bVAT\b|sales tax|provincial|remit|jurisdiction|complian|input tax credit/i)
+    for (const said of ["GST at 18% is included in the price you pay", "as CGST and SGST or as IGST", "export of services", "shows no Indian GST", "Indian GST (IGST)"]) {
+      expect(page).toContain(said)
+    }
   })
 })

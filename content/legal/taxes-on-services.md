@@ -1,20 +1,15 @@
-Where our products are taxable, we collect and remit consumption taxes (such as sales tax, VAT, GST, or equivalent) to the relevant governments at local, state, provincial, and/or national levels, in accordance with applicable laws.
+### In India
 
-### India
+If your billing address is in India, GST at 18% is included in the price you pay. Your invoice shows it separately, as CGST and SGST or as IGST, depending on your state.
 
-If your billing address is in India:
+If you give your GSTIN at checkout, it is printed on your invoice.
 
-- GST at 18% is included in the price you pay. Your invoice shows it separately, as CGST and SGST or as IGST depending on your state.
-- If you add your GSTIN at checkout, it appears on your invoice so you can claim input tax credit.
+### Outside India
 
-### Other countries
+If your billing address is outside India, you pay the same price, and nothing is added to it at checkout. Your invoice comes from our company in India, in rupees.
 
-- You pay the same price, and we add nothing to it. Unless the sale is zero-rated as an export of services, it includes Indian GST (IGST), which your invoice shows.
+If we invoice the sale as an export of services, the invoice says so and shows no Indian GST. Otherwise the price includes Indian GST (IGST), which the invoice shows.
 
-### Pricing & tax display
+### How we work it out
 
-Prices shown on our website and at checkout include GST. The amount shown at checkout is the amount we charge, and your invoice shows how much of it is GST.
-
-Tax rates and rules are determined by each jurisdiction and may vary. We use your provided billing address to determine applicable taxes.
-
-Tax regulations change over time. We strive to keep our tax collection compliant and up to date.
+We use the country and state in the billing address you give at checkout.

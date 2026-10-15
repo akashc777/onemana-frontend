@@ -39,6 +39,6 @@ export const legalPages: Record<string, LegalPage> = {
   "privacy-policy": legalPage("Privacy policy", "What we collect, why, and for how long.", privacyPolicy, "2026-10-01"),
   "terms-of-service": legalPage("Terms of service", "", termsOfService, "2026-10-15"),
   "refund-policy": legalPage("Refund policy", "", refundPolicy, "2026-06-10"),
-  "taxes-on-services": legalPage("Taxes on services", "", taxesOnServices, "2026-10-09"),
+  "taxes-on-services": legalPage("Taxes on services", "", taxesOnServices, "2026-10-15"),
   "account-ownership-policy": legalPage("Account ownership policy", "", accountOwnershipPolicy, "2026-06-10"),
 };

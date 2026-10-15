@@ -23,7 +23,7 @@ const PINS: Record<string, { updated: string; words: string }> = {
   "privacy-policy": { updated: "2026-10-01", words: "380342bfd4d7" },
   "refund-policy": { updated: "2026-06-10", words: "ba704d7017ce" },
   "terms-of-service": { updated: "2026-10-15", words: "7bf84c069f7f" },
-  "taxes-on-services": { updated: "2026-10-09", words: "78c3254de1ec" },
+  "taxes-on-services": { updated: "2026-10-15", words: "3ae2e71c30b3" },
   "account-ownership-policy": { updated: "2026-06-10", words: "1bfe451740aa" },
 };
 

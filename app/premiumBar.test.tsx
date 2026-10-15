@@ -4,6 +4,7 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 
 import { Sentences } from "@/components/ui/Section"
+import { legalPages } from "@/lib/legalPages"
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/a-missing-page" }))
 import { MissingPath } from "@/components/site/MissingPath"
@@ -104,6 +105,8 @@ describe("never compliant, never compliance", () => {
       // A sentence or a label, not a slug or a path ("compliance" is the audience's URL).
       for (const m of strip(read(f)).matchAll(/"((?:[^"\\\n]|\\.)*)"/g)) if (/\s|^[A-Z]/.test(m[1]!)) shown.push(m[1]!)
     }
+    // The legal pages too, now that the taxes page no longer calls its tax "compliant".
+    for (const page of Object.values(legalPages)) shown.push(page.source, page.subtitle)
     expect(shown.filter((s) => /complian/i.test(s))).toEqual([])
   })
 })
