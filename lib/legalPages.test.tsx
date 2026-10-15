@@ -20,7 +20,7 @@ import { LegalPageView } from "@/components/site/LegalPageView";
  * The page's title is its name, held to the site's sentence case below.
  */
 const PINS: Record<string, { updated: string; words: string }> = {
-  "privacy-policy": { updated: "2026-10-01", words: "380342bfd4d7" },
+  "privacy-policy": { updated: "2026-10-15", words: "937949c1380e" },
   "refund-policy": { updated: "2026-06-10", words: "ba704d7017ce" },
   "terms-of-service": { updated: "2026-10-15", words: "2309ccfd9251" },
   "taxes-on-services": { updated: "2026-10-15", words: "3ae2e71c30b3" },
@@ -165,6 +165,44 @@ describe("legal pages", () => {
     expect(headings).toBeGreaterThan(10);
   });
 
+  // The policy said "name, email, billing address, country and state, and
+  // GSTIN", while the checkout also keeps a mobile number, a Cloud workspace's
+  // address and, from a buyer outside India, a company name, street address
+  // and tax number (lib/invoiceFields.ts), all but the mobile number printed
+  // on the invoice. Every field the checkout sends is named here with the
+  // words the policy uses for it, so a new field fails until the policy says
+  // what it keeps.
+  it("privacy policy: names everything the checkout keeps", () => {
+    const POLICY_WORDS: Record<string, string | null> = {
+      email: "email address",
+      name: "your name",
+      country: "country",
+      state: "your state",
+      state_code: "your state",
+      gstin: "GSTIN",
+      phone: "mobile number",
+      company: "company name",
+      address_line: "street address",
+      tax_id: "tax number",
+      slug: "workspace address",
+      // What is bought, not who buys it.
+      plan_code: null,
+      edition: null,
+    };
+    const checkout = readFileSync(join(process.cwd(), "app", "buy", "BuyCheckout.tsx"), "utf8");
+    const input = checkout.slice(checkout.indexOf("const input = {"), checkout.indexOf("};", checkout.indexOf("const input = {")));
+    const cloud = checkout.match(/startCloud\(\{([^}]*)\}/)![1]!;
+    const fields = new Set([...`${input} ${cloud}`.matchAll(/(?:^|[{,\s])([a-z_]+)(?=\s*[:,}]|\s*$)/g)].map((m) => m[1]!).filter((k) => k !== "const" && k !== "input"));
+    expect(fields.size).toBeGreaterThanOrEqual(12);
+    const buying = legalPages["privacy-policy"]!.source.split("### Buying OneCamp")[1]!.split("###")[0]!;
+    for (const field of fields) {
+      expect(field in POLICY_WORDS, `the checkout sends "${field}": say in the privacy policy what is kept, then name it here`).toBe(true);
+      const words = POLICY_WORDS[field];
+      if (words) expect(buying, field).toContain(words);
+    }
+    expect(buying).toContain("printed on your invoice");
+  });
+
   // The site writes British English; the terms said "organizations" and
   // "unauthorized", and the ownership policy "organization".
   it("spell the British way", () => {
@@ -190,7 +228,7 @@ describe("legal pages", () => {
 
   it("show their date, and sections a link can reach", () => {
     const html = renderToString(<LegalPageView slug="privacy-policy" />);
-    expect(html).toContain('Last updated <time dateTime="2026-10-01">1 Oct 2026</time>');
+    expect(html).toContain('Last updated <time dateTime="2026-10-15">15 Oct 2026</time>');
     expect(html).toContain('<h2 id="the-short-version">');
     expect(html).toContain('href="#your-rights"');
     expect(html).toContain("On this page");

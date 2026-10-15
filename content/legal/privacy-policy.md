@@ -1,4 +1,4 @@
-**Effective 1 October 2026.** This policy covers onemana.dev, the OneCamp demo, the account page and OneCamp Cloud. It is run by OneMana Solutions (OPC) Private Limited, Bengaluru, India (“we”). Questions or requests: [support@onemana.dev](mailto:support@onemana.dev).
+**Effective 15 October 2026.** This policy covers onemana.dev, the OneCamp demo, the account page and OneCamp Cloud. It is run by OneMana Solutions (OPC) Private Limited, Bengaluru, India (“we”). Questions or requests: [support@onemana.dev](mailto:support@onemana.dev).
 
 ### The short version
 
@@ -28,7 +28,11 @@ When you claim a free licence we keep your email address and, if you give it, yo
 
 ### Buying OneCamp
 
-We keep your name, email, billing address, country and state, and GSTIN if you give one, because Indian tax law requires them on invoices. Payments are handled by Razorpay. We never see or store your card or bank details. Invoices and payment records are kept for as long as Indian tax law requires, currently about six years.
+When you buy, we keep your email address and country, and your name if you give it. In India we also keep your state, and your GSTIN if you give one. Outside India, if you add company details, we also keep your company name, street address and tax number. All of these are printed on your invoice.
+
+If you give a mobile number, the payment window opens with it filled in, and we keep it with your order. It is not printed on your invoice. For OneCamp Cloud, we also keep the workspace address you choose.
+
+Payments are handled by Razorpay. We never see or store your card or bank details. Invoices and payment records are kept for as long as Indian tax law requires, currently about six years.
 
 ### Your account page
 

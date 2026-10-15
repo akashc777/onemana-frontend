@@ -44,7 +44,7 @@ function legalPage(title: string, subtitle: string, source: string, updated: str
 }
 
 export const legalPages: Record<string, LegalPage> = {
-  "privacy-policy": legalPage("Privacy policy", "What we collect, why, and for how long.", privacyPolicy, "2026-10-01"),
+  "privacy-policy": legalPage("Privacy policy", "What we collect, why, and for how long.", privacyPolicy, "2026-10-15"),
   "terms-of-service": legalPage("Terms of service", "", termsOfService, "2026-10-15"),
   "refund-policy": legalPage("Refund policy", "", refundPolicy, "2026-06-10"),
   "taxes-on-services": legalPage("Tax and invoices", "", taxesOnServices, "2026-10-15"),
