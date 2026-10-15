@@ -18,10 +18,12 @@ const LEGAL = ["privacy-policy", "refund-policy", "terms-of-service", "taxes-on-
 
 describe("the legal pages", () => {
   for (const slug of LEGAL) {
+    // A page's first import compiles its module graph: over the default 5 s
+    // on a loaded machine (a full run beside other gates).
     it(`/${slug} is its own canonical page`, async () => {
       const { metadata } = (await import(`./${slug}/page`)) as { metadata: Metadata }
       expect(metadata.alternates?.canonical).toBe(`/${slug}`)
-    })
+    }, 30_000)
   }
 })
 
