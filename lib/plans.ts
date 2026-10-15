@@ -90,7 +90,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       licence: "Commercial: no AGPL obligations",
       controls: "Included",
       help: "Email support",
-      cta: { label: "Buy once", href: "/buy?plan=lifetime" },
+      cta: { label: "Buy a licence", href: "/buy?plan=lifetime" },
     },
     {
       key: "cloud",
