@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import {
   GITHUB_REVALIDATE,
@@ -174,8 +174,16 @@ describe("what a repository is read as", () => {
 })
 
 describe("the requests", () => {
-  afterEach(() => {
+  // A token in the environment (a deploy's, or a developer's shell) is set
+  // aside, so each test says for itself whether there is one.
+  let ambient: string | undefined
+  beforeEach(() => {
+    ambient = process.env.GITHUB_TOKEN
     delete process.env.GITHUB_TOKEN
+  })
+  afterEach(() => {
+    if (ambient === undefined) delete process.env.GITHUB_TOKEN
+    else process.env.GITHUB_TOKEN = ambient
   })
 
   const ok = (body: unknown) => new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } })
