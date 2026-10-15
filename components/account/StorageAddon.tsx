@@ -3,7 +3,8 @@
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import { portalApi, type PortalInstance } from "@/lib/portalApi";
-import { fetchPricingClient, defaultPricing, type Pricing, dual, currencyNote } from "@/lib/pricing";
+import { fetchPricingClient, defaultPricing, type Pricing, priceWithEstimate, currencyNote } from "@/lib/pricing";
+import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { paymentTerms, storageOffered } from "@/lib/paymentTerms";
 import { storageLine } from "@/lib/storageLine";
 import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
@@ -43,6 +44,7 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [paid, setPaid] = useState(false);
+  const region = useVisitorRegion();
 
   useEffect(() => {
     let alive = true;
@@ -90,7 +92,7 @@ export function StorageAddon({ inst, onChanged }: { inst: PortalInstance; onChan
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <p className="text-small text-foreground">
         Need more room for files and recordings? Add <strong>{pricing.storage_addon_gb} GB</strong> for{" "}
-        <strong>{dual(pricing.storage_addon_usd, pricing.storage_addon_inr)} a month</strong>.
+        <strong>{priceWithEstimate(pricing, pricing.storage_addon_inr, region, " a month")}</strong>.
       </p>
       <p className="mt-1 text-caption text-muted-foreground">{paymentTerms("addon")}</p>
       <p className="mt-1 text-caption text-muted-foreground">{currencyNote(pricing)}</p>

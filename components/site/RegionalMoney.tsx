@@ -1,7 +1,7 @@
 "use client";
 
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
-import { BILLED_IN_RUPEES, fmtINRFor, fromUsd, localEstimate, taxWords, type Pricing } from "@/lib/pricing";
+import { BILLED_IN_RUPEES, fmtINRFor, fromUsd, localEstimate, priceWithEstimate, taxWords, type Pricing } from "@/lib/pricing";
 
 /**
  * The money words that depend on where the reader is, for pages the server
@@ -78,6 +78,21 @@ export function PriceLines({ pricing, inr, why = "#currency", free }: { pricing:
         </>
       )}
     </span>
+  );
+}
+
+/**
+ * A rupee price in running text with the estimate beside it, in the reader's
+ * money (lib/pricing priceWithEstimate): "From ₹9,999/mo (≈ £77)". The plan
+ * table's prices, so a reader meets the cards' own estimate there too.
+ */
+export function PriceText({ pricing, inr, per, lead = "" }: { pricing: Pricing; inr: number; per?: string; lead?: string }) {
+  const region = useVisitorRegion();
+  return (
+    <>
+      {lead}
+      {priceWithEstimate(pricing, inr, region, per)}
+    </>
   );
 }
 

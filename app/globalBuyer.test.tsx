@@ -17,6 +17,7 @@ import SuccessPage from "@/app/buy/success/page"
 import { BuyCheckout } from "@/app/buy/BuyCheckout"
 import { AboutView } from "@/components/site/AboutView"
 import { PlanColumns } from "@/components/site/PlanColumns"
+import { PlanComparison } from "@/components/site/PlanComparison"
 import { HomeComparison } from "@/components/site/HomeComparison"
 import { CostCalculator } from "@/components/site/CostCalculator"
 import { RegionProvider } from "@/hooks/useVisitorRegion"
@@ -139,6 +140,26 @@ describe("a buyer outside India", () => {
     expect(by("CA", "en-CA")).toContain("≈ C$356")
     // A country with no display currency sees dollars.
     expect(by("JP", "ja-JP")).toContain("≈ $258")
+  })
+
+  // "Which OneCamp is for you" said "(about $261)" under cards that said
+  // "≈ £197" to the same reader (storefront audit §5.2 and P3). The table
+  // writes its prices through lib/pricing priceWithEstimate, so its estimate
+  // is the cards' own, in the reader's money.
+  it("reads the plan table's prices in the same money as the cards above it", () => {
+    const readers = [["US", "en-US", "≈ $258"], ["GB", "en-GB", "≈ £194"], ["DE", "de-DE", "≈ 222 €"], ["SG", "en-SG", "≈ S$335"]] as const
+    for (const [country, locale, figure] of readers) {
+      const region = regionFor(country, locale)
+      const cards = words(as(region, <PlanColumns pricing={live} />))
+      const table = words(as(region, <PlanComparison pricing={live} />))
+      expect(cards, country).toContain(figure)
+      expect(table, country).toContain(`₹24,999 once (${figure})`)
+      expect(table, country).toMatch(/From ₹9,999\/mo \(≈ /)
+      expect(table, country).not.toMatch(/about \$/)
+    }
+    const india = words(as(INDIA, <PlanComparison pricing={live} />))
+    expect(india).toContain("₹24,999 once")
+    expect(india).not.toContain("≈")
   })
 })
 

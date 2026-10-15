@@ -1,4 +1,4 @@
-import { dual, type Pricing } from "@/lib/pricing";
+import type { Pricing } from "@/lib/pricing";
 import { FREE_SEATS } from "@/lib/freePlan";
 import { site } from "@/lib/site";
 
@@ -16,7 +16,7 @@ export interface PlanOption {
   key: "source" | "free" | "lifetime" | "cloud";
   name: string;
   summary: string;
-  price: string;
+  price: PlanPrice;
   runs: string;
   people: string;
   install: string;
@@ -29,12 +29,23 @@ export interface PlanOption {
 }
 
 /**
+ * A plan's price: words ("Free"), or rupees the page writes with the
+ * reader's estimate beside them (lib/pricing priceWithEstimate). Not a
+ * finished string, because the estimate is in the reader's own money, and
+ * only the browser knows where the reader is.
+ */
+export type PlanPrice = string | { inr: number; per?: string; lead?: string };
+
+/** A row of the comparison: every part of a plan but its name, summary and button. */
+export type PlanRowKey = keyof Omit<PlanOption, "key" | "name" | "summary" | "cta">;
+
+/**
  * The rows the plans are compared on. A label is short enough for its column
  * on one line; what it covers goes in `note`, a smaller line under it. "Company
  * controls (SSO, LDAP, SCIM, audit export)" as one label was squeezed into
  * four lines of one or two words in a phone's 112 px label column.
  */
-export const PLAN_ROWS: { key: keyof Omit<PlanOption, "key" | "name" | "summary" | "cta">; label: string; note?: string }[] = [
+export const PLAN_ROWS: { key: PlanRowKey; label: string; note?: string }[] = [
   { key: "price", label: "Price" },
   { key: "runs", label: "Who runs it" },
   { key: "people", label: "People" },
@@ -82,7 +93,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       key: "lifetime",
       name: "Licence",
       summary: "The ready-made release for any number of people, under a commercial licence. Pay once.",
-      price: `${dual(p.lifetime_usd, p.lifetime_inr)} once`,
+      price: { inr: p.lifetime_inr, per: " once" },
       runs: "You, from our official release",
       people: "Unlimited",
       install: "One command",
@@ -96,7 +107,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       key: "cloud",
       name: "OneCamp Cloud",
       summary: "We run it for you on a server of your own, with backups and updates.",
-      price: `From ${dual(p.cloud_usd, p.cloud_inr, "/mo")}`,
+      price: { lead: "From ", inr: p.cloud_inr, per: "/mo" },
       runs: "We do",
       people: cloudPeople,
       install: "Nothing to install",

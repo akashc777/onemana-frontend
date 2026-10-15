@@ -9,6 +9,7 @@ import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
 import { cloudCheckoutDescription, cloudPlanCode } from "@/lib/paymentTerms";
 import { fetchPricingClient, defaultPricing, type Pricing } from "@/lib/pricing";
 import { portalApi, type PortalInstance, type PortalOverview, type PortalSubscription, type Invoice } from "@/lib/portalApi";
+import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { formatINR, formatDate, formatDay } from "@/lib/format";
 import { subscriptionTone } from "@/lib/instanceState";
 import { WorkspaceSection } from "./WorkspaceSection";
@@ -413,6 +414,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<Record<string, string>>({});
   const [pricing, setPricing] = useState<Pricing>(defaultPricing);
+  const region = useVisitorRegion();
   useEffect(() => {
     let alive = true;
     fetchPricingClient().then((p) => { if (alive) setPricing(p); }).catch(() => {});
@@ -420,7 +422,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   }, []);
 
   async function changePlan(s: PortalSubscription, to: string) {
-    if (!window.confirm(switchConfirm(to, s.plan_code, pricing))) return;
+    if (!window.confirm(switchConfirm(to, s.plan_code, pricing, region))) return;
     setBusy(s.id);
     const done = async (detail: string) => {
       setNote((n) => ({ ...n, [s.id]: detail }));

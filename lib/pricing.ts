@@ -160,15 +160,6 @@ export function fmtINR(n: number): string {
 }
 
 /**
- * A price in running text: "₹9,999/mo (about $105)". The rupee amount is the
- * price, because it is what is charged; the dollar figure is the same charge
- * at today's rate, an estimate for readers who think in dollars.
- */
-export function dual(usdAmount: number, inrAmount: number, per = ""): string {
-  return usdAmount > 0 ? `${fmtINR(inrAmount)}${per} (about ${fmtUSD(usdAmount)})` : `${fmtINR(inrAmount)}${per}`;
-}
-
-/**
  * The line under every price list and beside every pay button. A card
  * outside India is charged in rupees and converted by the card's issuer, so
  * the dollar figure is close, not exact, and saying so here is cheaper than

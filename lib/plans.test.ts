@@ -17,12 +17,13 @@ describe("planOptions", () => {
 
   it("takes prices and seats from live pricing, never from copy", () => {
     const plans = planOptions(p);
-    expect(plans[2].price).toContain("₹24,999");
-    expect(plans[3].price).toContain("₹9,999");
+    // Rupees, which the table writes with the reader's estimate beside them (lib/pricing priceWithEstimate).
+    expect(plans[2].price).toEqual({ inr: 24999, per: " once" });
+    expect(plans[3].price).toEqual({ lead: "From ", inr: 9999, per: "/mo" });
     expect(plans[3].people).toContain("30");
     expect(plans[1].people).toContain(String(FREE_SEATS));
     const changed = planOptions({ ...p, lifetime_inr: 30000, cloud_seats: 40, business_configured: false } as Pricing);
-    expect(changed[2].price).toContain("₹30,000");
+    expect(changed[2].price).toEqual({ inr: 30000, per: " once" });
     expect(changed[3].people).toBe("Up to 40");
   });
 

@@ -1,10 +1,12 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { PLAN_HUE } from "@/components/site/planHues";
+import { PriceText } from "@/components/site/RegionalMoney";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { buttonClasses } from "@/components/ui/Button";
 import { Dot } from "@/components/ui/v3";
 import type { Pricing } from "@/lib/pricing";
-import { PLAN_ROWS, planOptions } from "@/lib/plans";
+import { PLAN_ROWS, planOptions, type PlanOption, type PlanRowKey } from "@/lib/plans";
 
 /** The lifted column's cells: the raised surface between two hairlines (site.md S12). */
 const LIFT = "bg-card shadow-[inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)]";
@@ -51,7 +53,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               </th>
               {plans.map((p) => (
                 <td key={p.key} className={`border-t border-border px-4 py-4 align-top text-foreground ${p.key === "lifetime" ? `${LIFT} font-[510]` : ""}`}>
-                  {p[row.key]}
+                  {cell(p, row.key, pricing)}
                 </td>
               ))}
             </tr>
@@ -79,7 +81,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
               {PLAN_ROWS.map((row) => (
                 <div key={row.key} className="contents">
                   <dt className="text-muted-foreground">{row.label}</dt>
-                  <dd className="m-0 text-foreground">{p[row.key]}</dd>
+                  <dd className="m-0 text-foreground">{cell(p, row.key, pricing)}</dd>
                 </div>
               ))}
             </dl>
@@ -91,6 +93,16 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
       </div>
     </Section>
   );
+}
+
+/**
+ * What a row says for a plan. A price is written with the reader's estimate
+ * beside it, the cards' own (RegionalMoney PriceText); every other row as
+ * lib/plans words it.
+ */
+function cell(p: PlanOption, key: PlanRowKey, pricing: Pricing): ReactNode {
+  if (key !== "price") return p[key];
+  return typeof p.price === "string" ? p.price : <PriceText pricing={pricing} {...p.price} />;
 }
 
 function PlanButton({ cta, primary }: { cta: { label: string; href: string; external?: boolean }; primary: boolean }) {

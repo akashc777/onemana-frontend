@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { changesNow, switchConfirm, switchLabel } from "./billingSwitch";
 import { defaultPricing } from "./pricing";
+import { regionFor } from "./visitorCurrency";
 
 const p = { ...defaultPricing, cloud_yearly_free_months: 2 };
 
@@ -22,13 +23,21 @@ describe("plan change words", () => {
   });
 
   it("says what is charged and that nothing is refunded", () => {
-    const up = switchConfirm("business", "onecamp_cloud_team", p);
+    const up = switchConfirm("business", "onecamp_cloud_team", p, null);
     expect(up).toContain("difference");
     expect(up).toContain("₹24,999");
     expect(up).toContain("we do not offer refunds");
-    const down = switchConfirm("monthly", "onecamp_cloud_business", p);
+    const down = switchConfirm("monthly", "onecamp_cloud_business", p, null);
     expect(down).toContain("Nothing is charged");
     expect(down).toContain("not refunded");
-    expect(switchConfirm("monthly", "onecamp_cloud_team_yearly", p)).toContain("the paid year ends");
+    expect(switchConfirm("monthly", "onecamp_cloud_team_yearly", p, null)).toContain("the paid year ends");
+  });
+
+  // The estimate beside a price is in the reader's money, as on every other
+  // page (lib/pricing priceWithEstimate), and none in India.
+  it("gives Business's price with the reader's own estimate", () => {
+    const gb = { ...p, rates: { USD: 96.87, GBP: 129.16 } };
+    expect(switchConfirm("business", "onecamp_cloud_team", gb, regionFor("GB", "en-GB"))).toContain("Business is ₹24,999 a month (≈ £194) for 100 users");
+    expect(switchConfirm("business", "onecamp_cloud_team", gb, regionFor("IN", "en-IN"))).toContain("Business is ₹24,999 a month for 100 users");
   });
 });
