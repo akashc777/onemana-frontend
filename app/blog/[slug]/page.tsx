@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
+import { PostNextStep } from "@/components/blog/PostNextStep";
 import { getPost, listPublishedPosts, mediaUrl, type BlogPost } from "@/lib/blog";
 import { renderMarkdown, readingTime } from "@/lib/markdown";
 import { enhanceArticle } from "@/lib/article";
@@ -126,7 +127,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {/* AT THE END OF A POST, not in front of it. Somebody who has read to
             the bottom of a technical write-up is the warmest reader this site
             gets, and organic search sends more people here than to any other
-            page. Until now they left with no way to hear from us again. */}
+            page. Until now they left with no way to hear from us again, and
+            no way to the product either (PostNextStep): first the way in,
+            then the way to keep in touch. */}
+        <PostNextStep />
         <div className="mt-10 border-t border-border pt-8">
           <p className="text-small font-medium text-foreground">Get the next one</p>
           <p className="mb-4 mt-1 text-small text-muted-foreground">
