@@ -95,9 +95,11 @@ describe("icons", () => {
   })
 
   it("beside text are 16 px", () => {
-    const plan = readFileSync(join(ROOT, "components/site/PlanCard.tsx"), "utf8")
-    expect(plan).toContain('<Glyph className="size-4 shrink-0 text-hue" />')
+    // The plan's glyph beside its name on /buy (the plan cards that also drew
+    // one were removed with the older look, storefront audit P3 #16).
     const buy = readFileSync(join(ROOT, "app/buy/BuyCheckout.tsx"), "utf8")
+    expect(buy).toContain('<CloudGlyph className="size-4 shrink-0 text-hue" />')
+    expect(buy).toContain('<KeyGlyph className="size-4 shrink-0 text-hue" />')
     expect(buy).not.toMatch(/Glyph className="size-5/)
   })
 })
