@@ -27,8 +27,12 @@ describe("the legal pages", () => {
   }
 })
 
-/** Says where a page's canonical comes from: its own metadata, or a layout on the way up. */
-const SETS_CANONICAL = /canonical|landingMetadata\(|index:\s*false/
+/**
+ * Says where a page's canonical comes from: its own metadata, a helper that
+ * writes it (landingMetadata; legalMetadata, whose pages the test above
+ * imports and checks), or a layout on the way up.
+ */
+const SETS_CANONICAL = /canonical|landingMetadata\(|legalMetadata\(|index:\s*false/
 
 function pages(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
