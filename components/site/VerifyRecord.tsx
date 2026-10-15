@@ -27,6 +27,8 @@
 import * as React from "react"
 import { verifyRecord, type VerifyReport } from "@/lib/verifyRecord"
 import { SpotImported } from "@/components/ui/graphics/spots"
+import { Icon } from "@/components/ui/icons"
+import { useFileDrop } from "@/hooks/useFileDrop"
 
 type State =
     | { kind: "idle" }
@@ -36,7 +38,6 @@ type State =
 
 export function VerifyRecord() {
     const [state, setState] = React.useState<State>({ kind: "idle" })
-    const [dragging, setDragging] = React.useState(false)
 
     const handleFile = React.useCallback(async (file: File) => {
         setState({ kind: "working" })
@@ -81,30 +82,21 @@ export function VerifyRecord() {
         }
     }, [])
 
-    const onDrop = React.useCallback(
-        (e: React.DragEvent) => {
-            e.preventDefault()
-            setDragging(false)
-            const f = e.dataTransfer.files?.[0]
-            if (f) void handleFile(f)
-        },
-        [handleFile],
-    )
+    // A file over the zone: counted in and out, so crossing the spot and the
+    // words never flickers it (storefront audit V1); the cursor says "copy".
+    const { dragging, bind } = useFileDrop((f) => void handleFile(f))
 
     return (
         <div className="w-full">
             <label
-                onDragOver={(e) => {
-                    e.preventDefault()
-                    setDragging(true)
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={onDrop}
+                {...bind}
                 className={[
                     // The drop zone (site.md V2): a dashed line-3 card at r16 with
-                    // the lake spot for a file coming in; lake under a dragged file.
-                    "hue-lake flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed bg-card px-6 py-12 text-center transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
-                    dragging ? "border-hue bg-hue-tint" : "border-line-3 hover:border-hue",
+                    // the lake spot for a file coming in. Under a dragged file it
+                    // wears the layer's drop look in lake (data-drop), its dashed
+                    // edge drawn where the border was.
+                    "hue-lake flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed px-6 py-12 text-center transition-colors [--ix-ground:rgb(var(--card))] [--ix-tint:rgb(var(--hue))] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring",
+                    dragging ? "border-transparent" : "border-line-3 bg-card hover:border-hue",
                 ].join(" ")}
             >
                 <input
@@ -125,11 +117,7 @@ export function VerifyRecord() {
 
             <p className="mt-3 text-caption text-muted-foreground">
                 No file yet?{" "}
-                <button
-                    type="button"
-                    onClick={() => void tryTheSample()}
-                    className="tap-target underline underline-offset-4 hover:text-foreground"
-                >
+                <button type="button" onClick={() => void tryTheSample()} className="link tap-target">
                     Try it with a record from the public demo
                 </button>
                 .
@@ -140,8 +128,9 @@ export function VerifyRecord() {
             )}
 
             {state.kind === "error" && (
-                <p className="mt-6 rounded-lg border border-danger/40 bg-danger/5 p-4 text-small text-danger-ink">
-                    {state.message}
+                <p role="alert" className="mt-6 flex gap-2.5 rounded-xl border-l-[3px] border-danger bg-card px-4 py-3 text-small text-foreground shadow-e1">
+                    <Icon name="alert" className="mt-0.5 text-danger-ink" />
+                    <span>{state.message}</span>
                 </p>
             )}
 
@@ -152,64 +141,55 @@ export function VerifyRecord() {
 
 function Report({ report, filename }: { report: VerifyReport; filename: string }) {
     const clean = report.mismatched === 0
+    // Depth, not lines (storefront audit V3: the one block on the site drawn
+    // with 1 px boxes and a bordered table). The verdict is a raised card with
+    // its colour as a leading bar and an icon, and the rows sit on one card,
+    // set as the record sets its own rows: the sequence, the action, the result.
     return (
         <div className="mt-6 space-y-6">
-            <div
-                className={[
-                    "rounded-lg border p-5",
-                    clean ? "border-success/40 bg-success/5" : "border-danger/50 bg-danger/5",
-                ].join(" ")}
-            >
-                <p className="text-body font-semibold">
-                    {clean
-                        ? `${report.verified} of ${report.rows.length} rows are exactly as they were written.`
-                        : `${report.mismatched} of ${report.rows.length} rows do not match their own hash.`}
-                </p>
-                <p className="mt-1 text-small text-muted-foreground">
-                    {filename}
-                    {report.subject ? ` · recorded against ${report.subject}` : ""}
-                    {report.redacted > 0
-                        ? ` · ${report.redacted} cleared by retention, so their content cannot be recomputed`
-                        : ""}
-                    {report.unhashed > 0 ? ` · ${report.unhashed} written before the chain existed` : ""}
-                </p>
-                {report.truncated && (
-                    <p className="mt-2 text-small text-muted-foreground">
-                        This file is a recent slice, not the whole record. It says so itself.
+            <div className={`flex gap-3 rounded-2xl border-l-[3px] bg-card p-5 shadow-e1 ${clean ? "border-success" : "border-danger"}`}>
+                <Icon name={clean ? "check" : "alert"} size={20} className={`mt-0.5 ${clean ? "text-success-ink" : "text-danger-ink"}`} />
+                <div className="min-w-0">
+                    <p className="m-0 text-body font-semibold text-foreground">
+                        {clean
+                            ? `${report.verified} of ${report.rows.length} rows are exactly as they were written.`
+                            : `${report.mismatched} of ${report.rows.length} rows do not match their own hash.`}
                     </p>
-                )}
-                {!clean && (
-                    <p className="mt-2 text-small">
-                        A row that does not produce its own hash was changed after it was written, or the file
-                        was edited on its way here.
+                    <p className="m-0 mt-1 text-small text-muted-foreground">
+                        {filename}
+                        {report.subject ? ` · recorded against ${report.subject}` : ""}
+                        {report.redacted > 0
+                            ? ` · ${report.redacted} cleared by retention, so their content cannot be recomputed`
+                            : ""}
+                        {report.unhashed > 0 ? ` · ${report.unhashed} written before the chain existed` : ""}
                     </p>
-                )}
+                    {report.truncated && (
+                        <p className="m-0 mt-2 text-small text-muted-foreground">
+                            This file is a recent slice, not the whole record. It says so itself.
+                        </p>
+                    )}
+                    {!clean && (
+                        <p className="m-0 mt-2 text-small text-foreground">
+                            A row that does not produce its own hash was changed after it was written, or the file
+                            was edited on its way here.
+                        </p>
+                    )}
+                </div>
             </div>
 
-            <div className="overflow-x-auto rounded-lg border">
-                <table className="w-full text-left text-small">
-                    <thead className="border-b bg-muted/40 text-caption text-muted-foreground">
-                        <tr>
-                            <th className="px-3 py-2 font-medium">Seq</th>
-                            <th className="px-3 py-2 font-medium">Action</th>
-                            <th className="px-3 py-2 font-medium">Result</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {report.rows.map((r, i) => (
-                            <tr key={i} className="border-b last:border-0">
-                                <td className="px-3 py-2 tabular-nums text-muted-foreground">
-                                    {r.seq ?? "not recorded"}
-                                </td>
-                                <td className="px-3 py-2 font-mono text-caption">{r.action ?? "not recorded"}</td>
-                                <td className="px-3 py-2">
-                                    <Verdict verdict={r.verdict} />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+            <ol aria-label="Each row, recomputed" className="m-0 list-none divide-y divide-border rounded-2xl bg-card p-0 px-5 shadow-e1">
+                {report.rows.map((r, i) => (
+                    <li key={i} className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 py-3 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto]">
+                        <span className="font-mono text-caption tabular-nums text-muted-foreground">
+                            {r.seq !== undefined && r.seq !== null ? `#${r.seq}` : "not recorded"}
+                        </span>
+                        <span className="min-w-0 break-words font-mono text-caption text-foreground">{r.action ?? "not recorded"}</span>
+                        <span className="col-start-2 sm:col-start-auto sm:text-right">
+                            <Verdict verdict={r.verdict} />
+                        </span>
+                    </li>
+                ))}
+            </ol>
 
             {/* The document's own words. Not ours: if OneCamp ever claims less,
                 this page claims less, and it cannot advertise a guarantee the

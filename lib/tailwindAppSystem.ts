@@ -751,6 +751,14 @@ export function interactionCss(): Record<string, unknown>[] {
         transition: "opacity var(--ix-pop) var(--ix-ease), translate var(--ix-pop) var(--ix-ease)",
       },
       "[data-disabled-reason]:focus-visible::after": { opacity: "1", translate: "-50% 0" },
+      // A DROP TARGET while a file is over it (spec §2.5, the drop kind, a site
+      // addition proposed to its owner): the tint at the drop step and a
+      // dashed edge in it, drawn as an outline, so nothing moves.
+      '[data-drop="valid"]': {
+        backgroundColor: "color-mix(in srgb, var(--ix-tint, rgb(var(--brand))) var(--ix-drop-a), var(--ix-ground, transparent))",
+        outline: "1.5px dashed color-mix(in srgb, var(--ix-tint, rgb(var(--brand))) 55%, transparent)",
+        outlineOffset: "-1.5px",
+      },
       // REDUCED MOTION: no transform anywhere in the layer; colour at once.
       "@media (prefers-reduced-motion: reduce)": {
         "[data-interactive], [data-interactive]::before, .ui-btn, .go-arrow": { scale: "none !important", translate: "none !important", rotate: "none !important" },
