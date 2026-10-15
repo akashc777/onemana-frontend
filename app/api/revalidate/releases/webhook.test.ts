@@ -10,6 +10,7 @@ vi.mock("next/cache", () => ({
 import { POST } from "./route"
 import { signatureValid } from "@/lib/releaseWebhook"
 import { RELEASES_TAG } from "@/lib/releases"
+import { GITHUB_TAG } from "@/lib/github"
 
 /**
  * GitHub's release webhook (RELEASES.md): a published release refreshes the
@@ -45,11 +46,11 @@ describe("the release webhook", () => {
     expect(revalidated).toEqual([])
   })
 
-  it("refreshes the changelog and the home page when the server's repository publishes a release", async () => {
+  it("refreshes the changelog, the home page and the open-source cards when the server's repository publishes a release", async () => {
     process.env.RELEASES_WEBHOOK_SECRET = SECRET
     const res = await post(release, { "x-github-event": "release", "x-hub-signature-256": sign(release) })
     expect(res.status).toBe(200)
-    expect(revalidated).toEqual([`tag ${RELEASES_TAG}`, "path /", "path /changelog", "path /changelog/[slug]"])
+    expect(revalidated).toEqual([`tag ${RELEASES_TAG}`, `tag ${GITHUB_TAG}`, "path /", "path /changelog", "path /changelog/[slug]", "path /open-source"])
   })
 
   it("answers GitHub's ping, and leaves other events and other repositories alone", async () => {

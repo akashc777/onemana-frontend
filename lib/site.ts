@@ -106,6 +106,9 @@ export const footerLinks = {
     { label: "Docs", href: "/docs" },
     { label: "What's new", href: "/changelog" },
     { label: "Blog", href: "/blog" },
+    // What is open and how to run it, then the code itself: the four
+    // repositories live in the organisation.
+    { label: "Open source", href: "/open-source" },
     { label: "GitHub", href: site.githubOrgUrl, external: true },
   ],
   "Made for": [

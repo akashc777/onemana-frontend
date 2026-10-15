@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { RELEASES_TAG } from "@/lib/releases";
+import { GITHUB_TAG } from "@/lib/github";
 import { eventRepository, signatureValid } from "@/lib/releaseWebhook";
 import { site } from "@/lib/site";
 
@@ -13,7 +14,8 @@ const MAX_BODY = 1024 * 1024;
  * GitHub's release webhook (RELEASES.md): a release published, edited or
  * deleted on the public repository refreshes the changelog and the home
  * page's pill and count now, rather than within the hour the read of the
- * releases is kept for.
+ * releases is kept for, and the open-source cards' newest release with them
+ * (lib/github.ts).
  *
  * Off until RELEASES_WEBHOOK_SECRET is set (it answers 404 until then). A
  * delivery is acted on only with GitHub's signature over its body under that
@@ -35,8 +37,10 @@ export async function POST(req: Request): Promise<Response> {
   if (eventRepository(body).toLowerCase() !== repo.toLowerCase()) return Response.json({ ok: true, ignored: "another repository" });
 
   revalidateTag(RELEASES_TAG);
+  revalidateTag(GITHUB_TAG);
   revalidatePath("/");
   revalidatePath("/changelog");
   revalidatePath("/changelog/[slug]", "page");
+  revalidatePath("/open-source");
   return Response.json({ ok: true, revalidated: true });
 }

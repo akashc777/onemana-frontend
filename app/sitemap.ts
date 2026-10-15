@@ -17,6 +17,7 @@ const STATIC_ROUTES = [
   "/tour",
   "/pricing",
   "/compare",
+  "/open-source",
   "/verify",
   "/docs",
   "/blog",
