@@ -32,6 +32,11 @@ const GROUPS: { group: string; fields: FieldDef[] }[] = [
       { key: "resend_admin_key", label: "Resend admin key (for workspaces)", type: "password", hint: "A FULL-ACCESS Resend key used only to make and delete each Cloud workspace's own send-only key. Never used to send; keep the key above send-only. Empty: workspaces are not lent email." },
       { key: "workspace_email_domain", label: "Domain Cloud workspaces send from", hint: "Each live Cloud workspace gets its own send-only key for this domain: invitations and password resets only, at most 20 a day, so the free Resend allowance stays shared fairly. The free plan allows one domain, so this can be the store's own; that is safe only because workspaces send essentials alone, within the cap. Empty: the domain of the announcement sender. It must be verified in Resend, and the Resend key above must be full access to make keys; Workspaces shows whether both hold." },
       { key: "brevo_api_key", label: "Brevo API Key", type: "password" },
+      // Each kind of mail nobody is waiting on has a share of the day
+      // (onemana-backend business/onecamp/mailShare.go).
+      { key: "free_license_daily_emails", label: "Free licence emails a day", type: "number", hint: "Default 30. Keys the public free form may email in any 24 hours. Past it, the form offers the instant install, which sends nothing." },
+      { key: "announcement_daily_emails", label: "Announcement emails a day", type: "number", hint: "Default 20. An announcement sends this many in any 24 hours, and the rest of its list over the following days. Resend's free plan allows 100 emails a day for everything, licence keys, receipts and sign-in codes included, so raise these three only on a plan that allows more." },
+      { key: "free_install_nudge_daily_emails", label: "Install reminders a day", type: "number", hint: "Default 10. The one reminder to a free team that has not installed. Past it, the rest go with a later sweep." },
     ],
   },
   {

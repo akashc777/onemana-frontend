@@ -139,6 +139,19 @@ vi.mock("@/hooks/useAsync", () => ({
   useAsync: () => ({ data: {}, error: null, status: "success", loading: false, reload: () => {} }),
 }))
 
+describe("the day's mail", () => {
+  // The backend gives each kind of mail nobody waits on a share of the day
+  // (mailShare.go), and tells the admin to raise it; the form is where.
+  it("can set each kind's share, as a number, saying what it is for", async () => {
+    const { SettingsForm } = await import("./SettingsForm")
+    const html = renderToString(<SettingsForm />)
+    for (const key of ["free_license_daily_emails", "announcement_daily_emails", "free_install_nudge_daily_emails"]) {
+      expect(html, key).toMatch(new RegExp(`<input[^>]*id="${key}"[^>]*type="number"|<input[^>]*type="number"[^>]*id="${key}"`))
+    }
+    expect(html).toContain("Resend&#x27;s free plan allows 100 emails a day")
+  })
+})
+
 describe("settings on a phone", () => {
   it("a hint with a long JSON example wraps instead of widening the page", async () => {
     const { SettingsForm } = await import("./SettingsForm")
