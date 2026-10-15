@@ -240,6 +240,40 @@ export function hexToTriple(hex: string): [number, number, number] {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
 }
 
+/**
+ * THE INTERACTION LAYER (INTERACTION_SPEC.md §2, approved as canonical on
+ * 14 Oct 2026): how everything answers a pointer, a finger and a key, the
+ * same numbers as the app's --ix-* tokens (onecamp-fe app/interaction.css).
+ * lib/tailwindAppSystem.ts writes them as --ix-* on :root and .dark and builds
+ * the state rules from them (interactionCss); app/sharedTokens.test.ts pins
+ * every value, as the app's own sharedTokens test pins its side.
+ *
+ * - ms: colour 120 (hover in and out), press 90, a card's lift 160, the settle
+ *   after a press 200, a popover 180, a panel 240 (the ceiling for any
+ *   interaction motion), and the 400 ms a tip waits for a pointer;
+ * - alpha: a tint is the accent (or the object's hue) at a low alpha over
+ *   whatever it sits on, light and dark, in percent: hover, the quiet hover of
+ *   a large row, press (also the keyboard's highlight in a list), selected, a
+ *   selected thing under the pointer, a drop target, and a field's focus halo
+ *   (spec D5, which clears 3:1 where the old 12 % halo did not);
+ * - scale: a press (.98 for a pointer, .96 for a finger, .92 for an icon
+ *   button, .99 and .985 for a card) and a dragged thing's lift (1.02);
+ * - ring: the focus ring's 2 px and its 2 px offset, and a selected row's 2 px
+ *   bar.
+ */
+export const INTERACTION = {
+  ease: "cubic-bezier(0.22, 1, 0.36, 1)",
+  spring: "cubic-bezier(0.3, 1.35, 0.5, 1)",
+  ms: { colour: 120, press: 90, lift: 160, settle: 200, pop: 180, panel: 240, tipDelay: 400 },
+  alpha: {
+    light: { hover: 6, hoverQuiet: 4, press: 10, sel: 12, selHover: 15, drop: 8, halo: 18 },
+    dark: { hover: 7, hoverQuiet: 5, press: 11, sel: 14, selHover: 17, drop: 10, halo: 22 },
+  },
+  scale: { press: 0.98, pressTouch: 0.96, icon: 0.92, card: 0.99, cardTouch: 0.985, lift: 1.02 },
+  ring: { width: 2, offset: 2, bar: 2 },
+  disabledOpacity: 0.5,
+} as const
+
 export const APP = {
   /**
    * onecamp-fe app/globals.css, @theme: --radius is 0.5rem; xs 4, sm 6, md 8,
@@ -378,14 +412,22 @@ export const APP = {
   /** DESIGN_V3 §3.10 Checkbox: 16px r5 with an inset 1.5px line-3 ring; moss with a white tick when checked. */
   check: { size: 16, radius: 5, ring: 1.5 },
 
-  /** onecamp-fe app/globals.css @theme MOTION: press 90, hover 140, pop 180, panel 240, spring 220, page 320. */
+  /**
+   * onecamp-fe app/globals.css @theme MOTION: press 90, pop 180, panel 240,
+   * spring 220, page 320. A colour change ("hover") and the curve are the
+   * interaction layer's (INTERACTION_SPEC.md §2.1: 120 ms, which overrides
+   * DESIGN_V3's 140, and one curve), read from INTERACTION, never retyped.
+   */
   motion: {
-    duration: 140,
-    ease: "cubic-bezier(0.22, 1, 0.36, 1)",
+    duration: INTERACTION.ms.colour,
+    ease: INTERACTION.ease,
     easeInOut: "cubic-bezier(0.65, 0, 0.35, 1)",
-    spring: "cubic-bezier(0.3, 1.35, 0.5, 1)",
-    durations: { press: 90, hover: 140, pop: 180, panel: 240, spring: 220, page: 320 },
+    spring: INTERACTION.spring,
+    durations: { press: INTERACTION.ms.press, hover: INTERACTION.ms.colour, pop: 180, panel: 240, spring: 220, page: 320 },
   },
+
+  /** How everything answers a pointer, a finger and a key (INTERACTION, above APP). */
+  interaction: INTERACTION,
 
   /** onecamp-fe public/logo.svg: a bare ring, no tile, one literal colour in both themes. */
   logo: { viewBox: 512, r: 176, stroke: 56, colour: "#c84f00" },

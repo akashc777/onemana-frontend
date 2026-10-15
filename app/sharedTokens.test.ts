@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-import { CAMP, SHARED, hexToTriple } from "@/lib/appSystem"
-import { colourTokens } from "@/lib/tailwindAppSystem"
+import { APP, CAMP, INTERACTION, SHARED, hexToTriple } from "@/lib/appSystem"
+import { colourTokens, interactionTokens, nightTokens } from "@/lib/tailwindAppSystem"
 
 /**
  * The site's colours are the app's. They are written once, in the shared
@@ -55,5 +55,83 @@ describe("shared tokens", () => {
     for (const name of names) {
       expect(css, `--${name} is set in globals.css; it belongs in lib/appSystem.ts`).not.toMatch(new RegExp(`--${name}:`))
     }
+  })
+})
+
+/**
+ * The interaction layer is the app's too (INTERACTION_SPEC.md §2, approved as
+ * canonical on 14 Oct 2026): the same --ix-* names and numbers, written once
+ * in lib/appSystem.ts (INTERACTION) and pinned here literally, as the colours
+ * are above. The app's interaction.css carries the same values; change both
+ * or neither.
+ */
+describe("shared interaction tokens", () => {
+  it("are the spec's §2, exactly", () => {
+    expect(INTERACTION.ease).toBe("cubic-bezier(0.22, 1, 0.36, 1)")
+    expect(INTERACTION.spring).toBe("cubic-bezier(0.3, 1.35, 0.5, 1)")
+    expect(INTERACTION.ms).toEqual({ colour: 120, press: 90, lift: 160, settle: 200, pop: 180, panel: 240, tipDelay: 400 })
+    expect(INTERACTION.alpha.light).toEqual({ hover: 6, hoverQuiet: 4, press: 10, sel: 12, selHover: 15, drop: 8, halo: 18 })
+    expect(INTERACTION.alpha.dark).toEqual({ hover: 7, hoverQuiet: 5, press: 11, sel: 14, selHover: 17, drop: 10, halo: 22 })
+    expect(INTERACTION.scale).toEqual({ press: 0.98, pressTouch: 0.96, icon: 0.92, card: 0.99, cardTouch: 0.985, lift: 1.02 })
+    expect(INTERACTION.ring).toEqual({ width: 2, offset: 2, bar: 2 })
+    expect(INTERACTION.disabledOpacity).toBe(0.5)
+  })
+
+  it(":root carries every token under the app's names; .dark only its tints", () => {
+    const root = interactionTokens("light")
+    expect(root).toMatchObject({
+      "--ix-ease": "cubic-bezier(0.22, 1, 0.36, 1)",
+      "--ix-spring": "cubic-bezier(0.3, 1.35, 0.5, 1)",
+      "--ix-colour": "120ms",
+      "--ix-press": "90ms",
+      "--ix-lift": "160ms",
+      "--ix-settle": "200ms",
+      "--ix-pop": "180ms",
+      "--ix-panel": "240ms",
+      "--ix-tip-delay": "400ms",
+      "--ix-hover-a": "6%",
+      "--ix-hover-quiet-a": "4%",
+      "--ix-press-a": "10%",
+      "--ix-sel-a": "12%",
+      "--ix-sel-hover-a": "15%",
+      "--ix-drop-a": "8%",
+      "--ix-halo-a": "18%",
+      "--ix-press-scale": "0.98",
+      "--ix-press-scale-touch": "0.96",
+      "--ix-press-scale-icon": "0.92",
+      "--ix-press-scale-card": "0.99",
+      "--ix-press-scale-card-touch": "0.985",
+      "--ix-lift-scale": "1.02",
+      "--ix-ring": "2px",
+      "--ix-ring-offset": "2px",
+      "--ix-bar": "2px",
+      "--ix-disabled": "0.5",
+    })
+    expect(interactionTokens("dark")).toEqual({
+      "--ix-hover-a": "7%",
+      "--ix-hover-quiet-a": "5%",
+      "--ix-press-a": "11%",
+      "--ix-sel-a": "14%",
+      "--ix-sel-hover-a": "17%",
+      "--ix-drop-a": "10%",
+      "--ix-halo-a": "22%",
+    })
+  })
+
+  it("the night ground, dark in either theme, takes the dark tints", () => {
+    for (const theme of ["light", "dark"] as const) expect(nightTokens(theme)).toMatchObject(interactionTokens("dark"))
+  })
+
+  it("the colour step and the curve are the layer's, never typed twice", () => {
+    expect(APP.motion.duration).toBe(INTERACTION.ms.colour)
+    expect(APP.motion.durations.hover).toBe(INTERACTION.ms.colour)
+    expect(APP.motion.durations.press).toBe(INTERACTION.ms.press)
+    expect(APP.motion.ease).toBe(INTERACTION.ease)
+    expect(APP.motion.spring).toBe(INTERACTION.spring)
+  })
+
+  it("globals.css writes no --ix- token of its own", () => {
+    const css = readFileSync(resolve(__dirname, "globals.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+    expect(css).not.toMatch(/--ix-[\w-]+\s*:/)
   })
 })

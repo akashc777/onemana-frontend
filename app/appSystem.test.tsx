@@ -129,7 +129,8 @@ describe("the components are the app's shapes", () => {
     expect(c.fontWeight).toBe("510")
     expect(c["&:active"]).toEqual({ transform: "translateY(0.5px)", transitionDuration: "90ms" })
     expect((c["&:disabled, &[aria-disabled='true']"] as Record<string, string>).opacity).toBe(String(APP.button.disabledOpacity))
-    expect(c.transitionDuration).toBe("140ms")
+    // A colour change takes the interaction layer's 120 ms (INTERACTION_SPEC.md §2.1).
+    expect(c.transitionDuration).toBe("120ms")
     expect(c["&:focus-visible"]).toEqual({ outline: "2px solid rgb(var(--ring))", outlineOffset: "2px" })
   })
 

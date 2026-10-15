@@ -60,6 +60,44 @@ export function colourTokens(theme: "light" | "dark"): Record<string, string> {
   return out
 }
 
+/** "tipDelay" as "tip-delay": the table's keys under the spec's custom property names. */
+const kebab = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
+
+/**
+ * The interaction layer's tints for a theme (APP.interaction.alpha):
+ * --ix-hover-a, --ix-press-a, --ix-sel-a and the rest, as percentages for
+ * color-mix().
+ */
+export function interactionAlphas(theme: "light" | "dark"): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const [name, pct] of Object.entries(APP.interaction.alpha[theme])) out[`--ix-${kebab(name)}-a`] = `${pct}%`
+  return out
+}
+
+/**
+ * The interaction layer's tokens (INTERACTION_SPEC.md §2) under the app's
+ * --ix-* names: on :root the curve, the durations, the scales and the ring
+ * with the light tints; on .dark only the tints change.
+ */
+export function interactionTokens(theme: "light" | "dark"): Record<string, string> {
+  if (theme === "dark") return interactionAlphas("dark")
+  const ix = APP.interaction
+  const out: Record<string, string> = { "--ix-ease": ix.ease, "--ix-spring": ix.spring }
+  for (const [name, ms] of Object.entries(ix.ms)) out[`--ix-${kebab(name)}`] = `${ms}ms`
+  Object.assign(out, interactionAlphas("light"))
+  out["--ix-press-scale"] = String(ix.scale.press)
+  out["--ix-press-scale-touch"] = String(ix.scale.pressTouch)
+  out["--ix-press-scale-icon"] = String(ix.scale.icon)
+  out["--ix-press-scale-card"] = String(ix.scale.card)
+  out["--ix-press-scale-card-touch"] = String(ix.scale.cardTouch)
+  out["--ix-lift-scale"] = String(ix.scale.lift)
+  out["--ix-ring"] = `${ix.ring.width}px`
+  out["--ix-ring-offset"] = `${ix.ring.offset}px`
+  out["--ix-bar"] = `${ix.ring.bar}px`
+  out["--ix-disabled"] = String(ix.disabledOpacity)
+  return out
+}
+
 /** The night section's tokens (NIGHT): the dark page's ink and surfaces, and the dark camp cuts, in either theme. */
 export function nightTokens(theme: "light" | "dark"): Record<string, string> {
   const out: Record<string, string> = { "--background": NIGHT.ground[theme].join(" ") }
@@ -68,6 +106,8 @@ export function nightTokens(theme: "light" | "dark"): Record<string, string> {
   out["--line"] = "255 255 255"
   out["--line-a"] = String(NIGHT.line)
   out["--line-c"] = `rgb(255 255 255 / ${NIGHT.line})`
+  // A night ground is dark in either theme, so its tints are the dark ones.
+  Object.assign(out, interactionAlphas("dark"))
   return out
 }
 
@@ -323,7 +363,9 @@ export function motionCss(): Record<string, unknown> {
   const classes: Record<string, unknown> = {
     ":root": {
       "--d-press": ms(MS.durations.press),
-      "--d-hover": ms(MS.durations.hover),
+      // The colour step is the interaction layer's (--ix-colour, 120 ms);
+      // --d-hover stays one release as its alias for anything still using it.
+      "--d-hover": "var(--ix-colour)",
       "--d-pop": ms(MS.durations.pop),
       "--d-panel": ms(MS.durations.panel),
       "--d-spring": ms(MS.durations.spring),
@@ -408,7 +450,7 @@ export function motionCss(): Record<string, unknown> {
 }
 
 export default plugin(({ addBase, addComponents, addUtilities }) => {
-  addBase({ ":root": colourTokens("light"), ".dark": colourTokens("dark") })
+  addBase({ ":root": { ...colourTokens("light"), ...interactionTokens("light") }, ".dark": { ...colourTokens("dark"), ...interactionTokens("dark") } })
   addBase({ ".night": nightTokens("light"), ".dark .night": nightTokens("dark") })
   addBase(motionCss() as CSSRuleObject)
   addComponents(appComponents() as CSSRuleObject)
