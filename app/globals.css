@@ -202,21 +202,14 @@ body {
       display: none !important;
     }
   }
-  /* The current page: ink at 510 with a 2 x 16px brand mark under it. */
+  /* A link in the nav bar: the underline tab kind of the interaction layer
+     (lib/tailwindAppSystem.ts), which draws its hover (the accent's tint and
+     ink, only where a pointer hovers) and its press. The current page: ink at
+     510 with a 2 x 16px brand mark under it; its label reserves the 510 width
+     (data-label), so the bar never moves when the page changes. */
   .nav-link {
     position: relative;
     color: rgb(var(--muted-foreground));
-    transition: color var(--d-hover) var(--ease-out), background-color var(--d-hover) var(--ease-out);
-  }
-  /* Hover only where a pointer hovers: on a touch screen a :hover style
-     stays on after the tap and reads as a selection (storefront audit G19).
-     Every :hover on the site sits in (hover: hover); app/interaction.test.ts
-     reads the compiled CSS to keep it so. */
-  @media (hover: hover) {
-    .nav-link:hover {
-      background: var(--hover-c);
-      color: rgb(var(--foreground));
-    }
   }
   .nav-link[aria-current="page"] {
     color: rgb(var(--foreground));

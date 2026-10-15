@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icons";
+import { ix } from "@/lib/interactive";
 
 /**
  * The two parts of the nav that need the browser: which page is current, and
@@ -12,24 +13,22 @@ import { Icon } from "@/components/ui/icons";
  */
 
 const LOOKS = {
-  /** A link in the desktop bar: ink-2, the hover overlay, and the current page in ink with a brand mark under it (globals.css .nav-link). */
-  bar: {
-    base: "nav-link rounded-md px-2.5 py-1.5 text-small",
-    current: "",
-    other: "",
-  },
-  /** A 48px row in the phone menu, 16/510. */
-  menu: {
-    base: "flex min-h-12 items-center border-b border-border text-body font-[510] transition-colors",
-    current: "text-foreground",
-    other: "text-foreground/90 hover:text-foreground",
-  },
+  /**
+   * A link in the desktop bar, the underline tab kind: ink-2, the accent's
+   * tint under the pointer, and the current page in ink at 510 with a brand
+   * mark under it (globals.css .nav-link); its width is held at 510, so the
+   * bar never moves when the page changes. 44 px tall under a finger (a
+   * tablet on its side shows this bar).
+   */
+  bar: { kind: "tab", base: "nav-link inline-flex items-center rounded-md px-2.5 py-1.5 text-small [@media(pointer:coarse)]:min-h-11" },
+  /**
+   * A 48px row in the phone menu, 16/510, the nav kind: the current page is
+   * the raised chip, the sidebar's form (storefront audit G10: it was ink at
+   * 100% against 90%, which nobody could see).
+   */
+  menu: { kind: "nav", base: "-mx-2 flex min-h-12 items-center rounded-lg px-2 text-body font-[510] text-foreground/90" },
   /** Pricing, beside the menu button on a phone. */
-  compact: {
-    base: "nav-link inline-flex min-h-11 items-center rounded-md px-2.5 text-small",
-    current: "",
-    other: "",
-  },
+  compact: { kind: "tab", base: "nav-link inline-flex min-h-11 items-center rounded-md px-2.5 text-small" },
 } as const;
 
 /**
@@ -57,13 +56,14 @@ export function NavBar({ children }: { children: ReactNode }) {
  * current on that page and its children; a link to a home-page section never
  * is. Current is said in weight as well as colour, not colour alone.
  */
-export function NavLink({ href, look = "bar", children }: { href: string; look?: keyof typeof LOOKS; children: ReactNode }) {
+export function NavLink({ href, look = "bar", children }: { href: string; look?: keyof typeof LOOKS; children: string }) {
   const pathname = usePathname() ?? "";
   const current = !href.includes("#") && (pathname === href || pathname.startsWith(`${href}/`));
   const l = LOOKS[look];
   return (
-    <Link href={href} aria-current={current ? "page" : undefined} className={`${l.base} ${current ? l.current : l.other}`}>
-      {children}
+    <Link href={href} aria-current={current ? "page" : undefined} {...ix(l.kind)} className={l.base}>
+      {/* The bar's current page turns 510; the label keeps that width at 400. */}
+      {l.kind === "tab" ? <span data-label={children}>{children}</span> : children}
     </Link>
   );
 }
@@ -126,7 +126,8 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="mobile-menu"
-        className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-hover hover:text-foreground"
+        {...ix("icon")}
+        className="-mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground"
         onClick={() => setOpen((v) => !v)}
       >
         <Icon name={open ? "close" : "menu"} size={20} />

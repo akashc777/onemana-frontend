@@ -66,7 +66,7 @@ describe("a phone's targets", () => {
     const menuStart = html.indexOf('id="mobile-menu"')
     const phoneBar = html.slice(html.lastIndexOf('lg:hidden"', menuStart), menuStart)
     expectTall(classesOf(html, /<a[^>]*href="\/"[^>]*>/g), "logo")
-    expectTall(classesOf(phoneBar, /<a[^>]*href="\/pricing"[^>]*>(?=Pricing)/g), "Pricing")
+    expectTall(classesOf(phoneBar, /<a[^>]*href="\/pricing"[^>]*>(?=(<span[^>]*>)?Pricing)/g), "Pricing")
     expectTall(classesOf(html, /<button[^>]*aria-controls="mobile-menu"[^>]*>/g), "menu button")
     expectTall(classesOf(html, /<button[^>]*type="button"[^>]*class="[^"]*rounded-md text-muted-foreground[^"]*"[^>]*>/g), "theme switch")
   })

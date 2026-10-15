@@ -4,6 +4,8 @@ import { ButtonLink } from "@/components/ui/Button";
 import { LogoRing } from "@/components/ui/v3";
 import { ThemeToggle, ThemeSegments } from "@/components/site/ThemeToggle";
 import { MobileMenu, NavBar, NavLink } from "@/components/site/NavParts";
+import { NewTabMark } from "@/components/ui/icons";
+import { ix } from "@/lib/interactive";
 
 /**
  * The nav (design v3, site.md S1): 64px, transparent at the top and the page
@@ -39,8 +41,10 @@ export function Nav() {
           <ThemeToggle />
           {/* Marked as the page you are on, on /account, as it is in the phone menu. */}
           <NavLink href="/account">Sign in</NavLink>
-          <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="nav-link rounded-md px-2.5 py-1.5 text-small">
+          {/* It leaves the site in a new tab, and says so (storefront audit G4). */}
+          <a href={site.demoStartUrl} target="_blank" rel="noreferrer" {...ix("tab")} className="nav-link inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-small [@media(pointer:coarse)]:min-h-11">
             Live demo
+            <NewTabMark />
           </a>
           <ButtonLink href="/free" size="md" variant="ghost" className="ml-2">
             Install free
@@ -52,7 +56,9 @@ export function Nav() {
             Pricing
           </NavLink>
           <MobileMenu>
-            <div className="container-x flex flex-col pb-5 pt-1">
+            {/* Nav rows, the current page on the raised chip, then the theme
+                under a hairline, then the two ways in. */}
+            <div className="container-x flex flex-col gap-0.5 pb-5 pt-2">
               {navLinks.map((l) => (
                 <NavLink key={l.href} href={l.href} look="menu">
                   {l.label}
@@ -61,7 +67,7 @@ export function Nav() {
               <NavLink href="/account" look="menu">
                 Sign in
               </NavLink>
-              <div className="flex min-h-12 items-center justify-between border-b border-border">
+              <div className="mt-2 flex min-h-14 items-center justify-between border-t border-border pt-2">
                 <span className="text-body font-[510] text-foreground">Theme</span>
                 <ThemeSegments />
               </div>

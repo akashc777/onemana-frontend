@@ -15,7 +15,8 @@ describe("the nav on a phone", () => {
         // On a phone every link was inside the closed menu: pricing, and so
         // the buy path, was two taps from any page.
         const phoneBar = html.slice(html.lastIndexOf('lg:hidden"', menuStart), menuStart)
-        expect(phoneBar).toMatch(/<a[^>]*href="\/pricing"[^>]*>Pricing<\/a>/)
+        // The label sits in a span that holds its 510 width (data-label).
+        expect(phoneBar).toMatch(/<a[^>]*href="\/pricing"[^>]*><span data-label="Pricing">Pricing<\/span><\/a>/)
     })
 
     it("draws the menu on the server, closed, as a panel the button controls", () => {

@@ -411,7 +411,7 @@ const MS = APP.motion
 const ms = (n: number) => `${n}ms`
 /** The stagger steps a class can wait for: 60ms apart, plus the hero's own beats. */
 export const MOTION_DELAYS = [60, 120, 180, 240, 300, 340, 380, 420, 480, 540, 600, 700, 900, 1100, 1400, 2200] as const
-export const MOTION_TIMES = { lift: 520, rise: 700, chip: 420, pop: 220, draw: 700, ping: 1400, stamp: 360, shake: 180, fade: 160, bob: 1200, ambientFast: 40000, ambient: 60000, ambientSlow: 90000, moment: 280 } as const
+export const MOTION_TIMES = { lift: 520, rise: 700, chip: 420, pop: 220, draw: 700, ping: 1400, stamp: 360, shake: 180, fade: 160, bob: 1200, ambientFast: 40000, ambient: 60000, ambientSlow: 90000, moment: APP.interaction.ms.panel } as const
 
 export function motionCss(): Record<string, unknown> {
   const t = MOTION_TIMES

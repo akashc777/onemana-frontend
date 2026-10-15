@@ -40,6 +40,8 @@ type Shape =
 const ICONS = {
   "arrow-right": [["path", "M5 12h14M13 6l6 6-6 6"]],
   "arrow-left": [["path", "M19 12H5M11 6l-6 6 6 6"]],
+  // Lucide's arrow-up-right: a link that leaves the site, in a new tab.
+  "arrow-up-right": [["path", "M7 7h10v10M7 17 17 7"]],
   "chevron-right": [["path", "M9 6l6 6-6 6"]],
   "chevron-down": [["path", "M6 9l6 6 6-6"]],
   check: [["path", "M5 12.5l4.5 4.5L19 7.5"]],
@@ -229,4 +231,18 @@ export function Icon({ name, d, size = 16, title, className, ...rest }: IconProp
  */
 export function Arrow({ size = 16 }: { size?: 14 | 16 }) {
   return <Icon name="arrow-right" size={size} className="go-arrow" />
+}
+
+/**
+ * The mark after a link that leaves the site in a new tab (storefront audit
+ * G4, G14): the up-right arrow at 14px for the eye, and the same said to a
+ * screen reader.
+ */
+export function NewTabMark() {
+  return (
+    <>
+      <Icon name="arrow-up-right" size={14} className="opacity-70" />
+      <span className="sr-only"> (opens in a new tab)</span>
+    </>
+  )
 }
