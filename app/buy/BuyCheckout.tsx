@@ -496,8 +496,8 @@ export function BuyCheckout({
             {/* 13 px, with the site's link: it was 12 px with a third link look (K9). */}
             <p className="text-caption text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
-              <a href="/terms-of-service" className="link">Terms</a> and{" "}
-              <a href="/refund-policy" className="link">Refund policy</a>.
+              <a href="/terms-of-service" className="link">terms of service</a> and{" "}
+              <a href="/refund-policy" className="link">refund policy</a>.
             </p>
           </form>
 

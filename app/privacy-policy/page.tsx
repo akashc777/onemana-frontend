@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { LegalPageView } from "@/components/site/LegalPageView";
+import { legalMetadata } from "@/lib/legalPages";
 
-export const metadata: Metadata = { title: "Privacy policy", alternates: { canonical: "/privacy-policy" } };
+export const metadata = legalMetadata("privacy-policy");
 
 export default function Page() {
   return <LegalPageView slug="privacy-policy" />;

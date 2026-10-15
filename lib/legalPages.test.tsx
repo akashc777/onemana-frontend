@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -22,7 +22,7 @@ import { LegalPageView } from "@/components/site/LegalPageView";
 const PINS: Record<string, { updated: string; words: string }> = {
   "privacy-policy": { updated: "2026-10-01", words: "380342bfd4d7" },
   "refund-policy": { updated: "2026-06-10", words: "ba704d7017ce" },
-  "terms-of-service": { updated: "2026-10-15", words: "7bf84c069f7f" },
+  "terms-of-service": { updated: "2026-10-15", words: "cfb552176801" },
   "taxes-on-services": { updated: "2026-10-15", words: "3ae2e71c30b3" },
   "account-ownership-policy": { updated: "2026-06-10", words: "1bfe451740aa" },
 };
@@ -50,6 +50,44 @@ const fingerprint = (slug: string) => {
 const texts = (html: string, tag: string) => [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)</${tag}>`, "g"))].map((m) => m[1]!.replace(/<[^>]+>/g, ""));
 
 const LEGAL = join(process.cwd(), "content", "legal");
+
+/** The site's own source files: code under app, components, lib and hooks, and the policies' Markdown. */
+function siteSources(): string[] {
+  const walk = (dir: string, out: string[] = []): string[] => {
+    for (const e of readdirSync(dir)) {
+      const p = join(dir, e);
+      if (statSync(p).isDirectory()) walk(p, out);
+      else if (/\.tsx?$/.test(p) && !/\.test\.tsx?$/.test(p)) out.push(p);
+    }
+    return out;
+  };
+  return [
+    ...["app", "components", "lib", "hooks"].flatMap((d) => walk(join(process.cwd(), d))),
+    ...readdirSync(LEGAL).map((name) => join(LEGAL, name)),
+  ];
+}
+
+/**
+ * Every link to a legal page in the site's sources, with the words it shows:
+ * an <a> or <Link> to the page's address, a { label, href } entry (the footer,
+ * the audience pages) and a Markdown link (the policies).
+ */
+function legalLinks(): { at: string; slug: string; text: string }[] {
+  const found: { at: string; slug: string; text: string }[] = [];
+  const add = (at: string, slug: string, text: string) => {
+    if (!legalPages[slug]) return;
+    found.push({ at, slug, text: text.replace(/\{" "\}/g, " ").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() });
+  };
+  for (const file of siteSources()) {
+    const at = file.slice(process.cwd().length + 1);
+    const src = readFileSync(file, "utf8");
+    for (const m of src.matchAll(/<(a|Link)\b[^>]*?\bhref=\{?"\/([a-z-]+)(?:#[^"]*)?"\}?[^>]*>([\s\S]*?)<\/\1>/g)) add(at, m[2]!, m[3]!);
+    for (const m of src.matchAll(/label:\s*"([^"]+)",\s*href:\s*"\/([a-z-]+)"/g)) add(at, m[2]!, m[1]!);
+    for (const m of src.matchAll(/href:\s*"\/([a-z-]+)",\s*label:\s*"([^"]+)"/g)) add(at, m[1]!, m[2]!);
+    for (const m of src.matchAll(/\[([^\]]+)\]\(\/([a-z-]+)(?:#[^)]*)?\)/g)) add(at, m[2]!, m[1]!);
+  }
+  return found;
+}
 
 describe("legal pages", () => {
   it("are the pages the site links to, and no others", () => {
@@ -79,14 +117,36 @@ describe("legal pages", () => {
   });
 
   // The footer said "Privacy policy" and the page "Privacy Policy".
-  it("are named in the site's sentence case, as the footer and the tab name them", () => {
+  it("are named in the site's sentence case", () => {
     for (const [slug, p] of Object.entries(legalPages)) {
       const [first, ...rest] = p.title.split(" ");
       expect(first![0], slug).toBe(first![0]!.toUpperCase());
       for (const word of rest) expect(word, `${slug}: "${p.title}"`).toBe(word.toLowerCase());
-      const page = readFileSync(join(process.cwd(), "app", slug, "page.tsx"), "utf8");
-      expect(page, slug).toContain(`title: "${p.title}"`);
     }
+  });
+
+  // Storefront audit P3 #17, one name per page. The taxes page was "Taxes on
+  // services" in its H1, "Tax and invoices" in the footer, "Taxes on our
+  // services" on the India page and "Taxes Policy" in the terms; the checkout
+  // linked the terms as "Terms", and the footer the ownership policy as
+  // "Account ownership".
+  it.each(Object.keys(PINS))("%s: has one name, in its H1, its tab and every link to it", async (slug) => {
+    const { title } = legalPages[slug]!;
+    expect(renderToString(<LegalPageView slug={slug} />)).toMatch(new RegExp(`<h1[^>]*>${title}</h1>`));
+    const route = (await import(`@/app/${slug}/page`)) as { metadata: { title?: unknown } };
+    expect(route.metadata.title, `the tab of /${slug}`).toBe(title);
+    const links = legalLinks().filter((l) => l.slug === slug);
+    expect(links.some((l) => l.at === "lib/site.ts"), `the footer links /${slug}`).toBe(true);
+    for (const link of links) expect(link.text.toLowerCase(), `${link.at} links /${slug}`).toBe(title.toLowerCase());
+  });
+
+  it("find every link to a legal page that the site has", () => {
+    const links = legalLinks();
+    // The footer's five, the India page's, the checkout's two, /free's and the terms' three.
+    expect(links.length).toBeGreaterThanOrEqual(12);
+    expect(new Set(links.map((l) => l.at))).toEqual(
+      new Set(["lib/site.ts", "lib/audiences.ts", "app/buy/BuyCheckout.tsx", "app/free/FreeInstall.tsx", "content/legal/terms-of-service.md"]),
+    );
   });
 
   // Storefront audit P3 #17: the terms' headings were in title case ("Account
@@ -111,21 +171,6 @@ describe("legal pages", () => {
       const words = p.bodyHtml.replace(/<[^>]+>/g, " ").replace(/&quot;/g, '"').replace(/&#39;|&#x27;/g, "'");
       expect(words, slug).not.toMatch(/["']/);
     }
-  });
-
-  // Storefront audit P3 #17: the terms linked "Taxes Policy" for the page
-  // called "Taxes on services". One page, one name.
-  it("call a legal page by its own name when they link to it", () => {
-    let links = 0;
-    for (const p of Object.values(legalPages)) {
-      for (const [, href, text] of p.bodyHtml.matchAll(/<a href="\/([^"#]+)"[^>]*>([^<]+)<\/a>/g)) {
-        const target = legalPages[href!];
-        if (!target) continue;
-        links++;
-        expect(text!.toLowerCase(), href).toBe(target.title.toLowerCase());
-      }
-    }
-    expect(links).toBe(3);
   });
 
   it("carry no inline styles: the note's link was blue, off the palette", () => {

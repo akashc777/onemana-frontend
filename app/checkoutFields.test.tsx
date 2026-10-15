@@ -54,9 +54,10 @@ describe("the checkout's fields", () => {
 
   // K9: 12 px terms links, in a third link look.
   it("the terms links are the site's links, at 13 px", () => {
-    const terms = cloud.slice(cloud.indexOf("you agree to our") - 200, cloud.indexOf("Refund policy</a>") + 20)
+    const terms = cloud.slice(cloud.indexOf("you agree to our") - 200, cloud.indexOf("refund policy</a>") + 20)
     expect(terms).toContain('<p class="text-caption text-muted-foreground">')
-    expect(terms).toContain('<a href="/terms-of-service" class="link">Terms</a>')
-    expect(terms).toContain('<a href="/refund-policy" class="link">Refund policy</a>')
+    // Each named as its page is (lib/legalPages.test.tsx, one name per page).
+    expect(terms).toContain('<a href="/terms-of-service" class="link">terms of service</a>')
+    expect(terms).toContain('<a href="/refund-policy" class="link">refund policy</a>')
   })
 })

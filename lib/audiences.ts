@@ -184,7 +184,7 @@ export const audiences: Audience[] = [
         a: "On the server you install it on. With Cloud, on a server we run for you; ask us where before you buy if it matters to you.",
       },
     ],
-    proof: { label: "Taxes on our services", href: "/taxes-on-services" },
+    proof: { label: "Tax and invoices", href: "/taxes-on-services" },
   },
   {
     slug: "compliance",

@@ -126,7 +126,7 @@ export const footerLinks = {
     { label: "Terms of service", href: "/terms-of-service" },
     { label: "Privacy policy", href: "/privacy-policy" },
     { label: "Refund policy", href: "/refund-policy" },
-    { label: "Account ownership", href: "/account-ownership-policy" },
+    { label: "Account ownership policy", href: "/account-ownership-policy" },
     { label: "Tax and invoices", href: "/taxes-on-services" },
   ],
 };

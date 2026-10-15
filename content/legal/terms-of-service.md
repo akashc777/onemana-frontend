@@ -16,7 +16,7 @@ Finally, “you” or “your” refers to the people or organizations that own 
 1. If you are using a free version of one of our Services, it is really free: we do not ask you for your credit card or sell your data.
 2. Paid Services are paid in advance, for the period you choose when you buy.
 3. If you are upgrading from a free plan to a paid plan, we will charge your card immediately and your billing cycle starts on the day of upgrade.
-4. Prices include GST, which your invoice shows separately. See [taxes on services](/taxes-on-services) for more details.
+4. Prices include GST, which your invoice shows separately. Our [tax and invoices](/taxes-on-services) page has the details.
 5. We process refunds according to our [refund policy](/refund-policy).
 
 ### Liability
