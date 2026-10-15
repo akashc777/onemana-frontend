@@ -12,12 +12,9 @@ vi.mock("next/navigation", () => ({
 
 import { BuyCheckout } from "@/app/buy/BuyCheckout"
 import { DocsPager } from "@/components/docs/DocsShell"
-import { CloudPlanCard } from "@/components/site/CloudPlanCard"
 import { CompareView } from "@/components/site/CompareView"
 import { GuaranteeList } from "@/components/site/GuaranteeList"
-import { LicencePlanCard } from "@/components/site/LicencePlanCard"
 import { QuestionList } from "@/components/site/marketing"
-import { PLAN_CARD_PARTS } from "@/components/site/PlanCard"
 import { governance } from "@/lib/content"
 import { defaultPricing } from "@/lib/pricing"
 
@@ -80,22 +77,6 @@ describe("things side by side line up", () => {
     const src = readFileSync(join(__dirname, "verify/page.tsx"), "utf8")
     expect(src).toContain('<dl className="grid gap-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-0">')
     expect(src.match(/<div className="sm:row-span-2 sm:grid sm:grid-rows-subgrid">/g)).toHaveLength(2)
-  })
-
-  it("the licence and Cloud cards lay the same six parts on the row's subgrid", () => {
-    for (const html of [
-      renderToString(<LicencePlanCard pricing={defaultPricing} aligned />),
-      renderToString(<CloudPlanCard pricing={{ ...defaultPricing, cloud_yearly_configured: true, business_configured: true }} aligned />),
-    ]) {
-      expect(html).toMatch(/^<div class="hue-[a-z]+ [^"]*lg:row-span-7 lg:grid lg:grid-rows-subgrid lg:gap-y-0/)
-      const body = html.indexOf('<div class="flex flex-1 flex-col px-6 pb-6 pt-5 lg:row-span-6 lg:grid lg:grid-rows-subgrid lg:gap-y-0')
-      expect(body).toBeGreaterThan(0)
-      // Price, estimate, who it is for, the list, the button, the note.
-      expect(childTags(html, body)).toEqual(["p", "p", expect.stringMatching(/^(p|div)$/), "ul", "div", "p"])
-      expect(childTags(html, body)).toHaveLength(PLAN_CARD_PARTS)
-    }
-    // Not aligned, a card is a plain column, as on a phone.
-    expect(renderToString(<LicencePlanCard pricing={defaultPricing} />)).not.toContain("subgrid")
   })
 
   it("a docs pager card and /buy's AI choices start at the top, not the middle", () => {

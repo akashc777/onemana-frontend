@@ -2,8 +2,6 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
 import CostCalculator from "@/components/site/CostCalculator"
-import { CloudPlanCard } from "@/components/site/CloudPlanCard"
-import { LicencePlanCard } from "@/components/site/LicencePlanCard"
 import { PlanColumns } from "@/components/site/PlanColumns"
 import { TemplateView } from "@/components/site/TemplateView"
 import { defaultPricing } from "@/lib/pricing"
@@ -47,8 +45,6 @@ describe("no card in a card", () => {
   it("holds for the plan cards and a template's page", () => {
     for (const html of [
       renderToString(<PlanColumns pricing={defaultPricing} />),
-      renderToString(<LicencePlanCard pricing={defaultPricing} aligned />),
-      renderToString(<CloudPlanCard pricing={defaultPricing} aligned />),
       renderToString(<TemplateView t={templates[0]!} />),
     ]) {
       expect(nestedCards(html)).toEqual([])

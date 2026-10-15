@@ -1,7 +1,6 @@
 import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
-import { CloudPlanCard } from "@/components/site/CloudPlanCard"
 import { FREE_PILL, PlanColumns } from "@/components/site/PlanColumns"
 import { PlanComparison } from "@/components/site/PlanComparison"
 import { PLAN_HUE } from "@/components/site/planHues"
@@ -65,11 +64,9 @@ describe("the plan cards", () => {
  */
 
 describe("a plan's colour follows it", () => {
-    it("draws the Cloud card as Cloud's plan card", () => {
-        const html = renderToString(<CloudPlanCard pricing={defaultPricing} />)
-        expect(html).toMatch(new RegExp(`^<div class="hue-${PLAN_HUE.cloud} flex flex-col`))
-        // The estimate and the seats are lines of their own, not middle dots.
-        expect(html).not.toContain(" · ")
+    it("draws the Cloud column in Cloud's hue", () => {
+        const html = renderToString(<PlanColumns pricing={defaultPricing} />)
+        expect(html).toMatch(new RegExp(`<div data-plan="cloud" class="hue-${PLAN_HUE.cloud} `))
     })
 
     it("marks each option in the plan table with its plan's hue", () => {
