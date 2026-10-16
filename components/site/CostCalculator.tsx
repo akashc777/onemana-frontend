@@ -136,7 +136,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl bg-card p-6 shadow-e1">
-                    <div className="text-small font-[510] text-muted-foreground">Slack + Notion + Zoom</div>
+                    <div className="text-small font-[510] text-muted-foreground">Slack + Notion</div>
                     <div key={`s${saasYear}`} className="fx-fade mt-1 font-display text-price tabular-nums">{fmt(saasYear)}</div>
                     <div className="text-caption text-muted-foreground">per year, and it grows with the team</div>
                     <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">

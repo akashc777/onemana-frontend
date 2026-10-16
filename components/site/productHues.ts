@@ -31,7 +31,7 @@ export const PRODUCT_SERIES: readonly (readonly string[])[] = [
  * Neighbours never match, and any six in a row are six hues. Hashing the
  * name, as the app does for people and channels, put Slack, Notion, ClickUp,
  * Asana and Toggl Track all on lake, and the table's first two rows, Huly and
- * Nextcloud, both on sun. A name in neither list (the "Slack + Notion + Zoom"
+ * Nextcloud, both on sun. A name in neither list (the "Slack + Notion"
  * stack on the home page) keeps its hash.
  */
 const PRODUCT_HUE: ReadonlyMap<string, CampHue> = new Map(

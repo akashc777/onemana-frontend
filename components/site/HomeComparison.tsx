@@ -35,7 +35,9 @@ const LIFT = RAISED_COLUMN;
 function LoseChip() {
   return <span className="hue-berry mt-1 inline-flex h-[22px] items-center rounded-md bg-hue-tint px-2 text-[12px] font-[510] text-hue-ink sm:flex sm:w-fit">We lose this one</span>;
 }
-const COLUMNS = ["OneCamp", "Slack + Notion + Zoom", "Mattermost", "Huly"] as const;
+// The stack is what a buyer stops paying for (lib/teamCost SEAT_COSTS): Zoom
+// left it on 16 Oct 2026, with Zoom's place in /compare's cancels list.
+const COLUMNS = ["OneCamp", "Slack + Notion", "Mattermost", "Huly"] as const;
 
 type Row = { label: string; cells: [ReactNode, ReactNode, ReactNode, ReactNode]; loses?: boolean };
 
@@ -66,10 +68,11 @@ function rows(p: Pricing): Row[] {
     },
     {
       label: "Record of what agents did",
-      cells: ["Every agent run, with what it did and what it was refused, in a hash-chained log", "Audit logs on top-tier plans (Zoom from Pro)", "Audit logs on Enterprise editions", "Not published"],
+      cells: ["Every agent run, with what it did and what it was refused, in a hash-chained log", "Audit logs on top-tier plans", "Audit logs on Enterprise editions", "Not published"],
     },
     { label: "Guests in a channel", cells: ["Yes", "Yes, on paid plans", "Yes, on Professional and up", "Not published"] },
-    { label: "Video calls", cells: ["Yes, on your server", "Yes, in Zoom", "Yes; group calls on paid editions", "Yes"] },
+    // Slack Pro includes huddles: audio and video, with screen sharing (slack.com/pricing, read 16 Oct 2026).
+    { label: "Video calls", cells: ["Yes, on your server", "Yes, in Slack huddles", "Yes; group calls on paid editions", "Yes"] },
     {
       label: "Ready-made integrations",
       cells: ["A few: Slack, Gmail, Google Calendar, MCP, webhooks", "Thousands", "A plugin marketplace", "GitHub sync and a few more"],
@@ -92,7 +95,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
           raised surface in a hairline frame, standing 8px above and below
           the table, under a 2px brand rule, its header carrying the ring. */}
       <table className="reveal hidden w-full border-collapse text-left text-small sm:table">
-        <caption className="sr-only">OneCamp compared with Slack, Notion and Zoom together, Mattermost and Huly</caption>
+        <caption className="sr-only">OneCamp compared with Slack and Notion together, Mattermost and Huly</caption>
         <thead>
           <tr>
             <th scope="col" className="w-[22%] pb-3 pr-4 pt-5 font-[510] text-muted-foreground">
@@ -165,7 +168,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
             {i < sources.length - 1 ? ", " : ""}
           </span>
         ))}
-        . The stack is Slack Pro, Notion Plus and Zoom Pro <StackBasis />.{" "}
+        . The stack is Slack Pro and Notion Plus <StackBasis />.{" "}
         <Link href="/compare" className="link">
           The longer comparison
         </Link>

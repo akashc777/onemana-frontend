@@ -115,13 +115,13 @@ describe("a buyer outside India", () => {
 
   it("is shown the rivals' stack in dollars in the US and at the day's rate elsewhere", () => {
     const us = words(as(regionFor("US"), <HomeComparison pricing={live} />))
-    // 40 people on Slack Pro, Notion Plus and Zoom Pro: $31.41 a seat-month, from lib/teamCost.
-    expect(us).toContain("About $15,100")
+    // 40 people on Slack Pro and Notion Plus: $17.25 a seat-month, $8,280 a year, from lib/teamCost.
+    expect(us).toContain("About $8,300")
     expect(us).toContain("at their US-dollar list prices")
     const de = words(as(regionFor("DE", "de-DE"), <HomeComparison pricing={live} />))
-    expect(de).toMatch(/About 13\.000 €/)
+    expect(de).toMatch(/About 7\.100 €/)
     const sg = words(as(regionFor("SG", "en-SG"), <HomeComparison pricing={live} />))
-    expect(sg).toContain("About S$19,600")
+    expect(sg).toContain("About S$10,800")
   })
 
   it("sees the free plan as Free, never ₹0", () => {

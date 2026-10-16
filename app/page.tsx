@@ -270,7 +270,7 @@ export default async function HomePage() {
       {/* 7. How it compares, including where it loses (H8). */}
       <Section id="compare">
         <SectionHeading
-          title="Against a Slack, Notion and Zoom stack, Mattermost and Huly"
+          title="Against a Slack and Notion stack, Mattermost and Huly"
           subtitle="The last row is the one OneCamp loses."
           className="mb-10"
         />

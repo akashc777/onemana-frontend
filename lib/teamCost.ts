@@ -54,14 +54,20 @@ export function teamCost(
  * Every line is a plan someone can buy today. AI is not an add-on any more:
  * Notion AI comes only with Notion Business, so wanting AI swaps Notion Plus
  * ($10) for Business ($20) rather than adding a retired $10 add-on (buyer
- * review, 4 Oct 2026). Zoom Pro is $14.16 a user a month billed annually,
- * as zoom.us/pricing lists it (read 10 Oct 2026; it moved twice in 2026).
+ * review, 4 Oct 2026).
+ *
+ * ONLY WHAT A BUYER STOPS PAYING FOR. Each line is a tool on /compare's list
+ * of subscriptions a buyer cancels (lib/compare `cancels`), and
+ * rivalClaims.test.tsx holds the two lists together. Zoom Pro ($14.16 a user
+ * a month billed annually, zoom.us/pricing, read 10 Oct 2026) was counted
+ * until 16 Oct 2026, when Zoom came off that list: a team that runs webinars
+ * or needs a waiting room and host controls keeps paying for it. It comes
+ * back with Zoom.
  */
 export const SEAT_COSTS: readonly SeatCost[] = [
     { name: "Slack Pro", usd: 7.25, when: "always" },
     { name: "Notion Plus", usd: 10, when: "noAi" },
     { name: "Notion Business, which includes Notion AI", usd: 20, when: "ai" },
-    { name: "Zoom Pro", usd: 14.16, when: "always" },
 ]
 
 export const PRICES_CHECKED = "October 2026"
@@ -70,7 +76,6 @@ export const PRICES_CHECKED = "October 2026"
 export const SEAT_COST_SOURCES = [
     { name: "Slack", href: "https://slack.com/pricing" },
     { name: "Notion", href: "https://www.notion.com/pricing" },
-    { name: "Zoom", href: "https://zoom.us/pricing" },
 ] as const
 
 /** A VPS that comfortably runs a team of this size, from the hardware FAQ. */

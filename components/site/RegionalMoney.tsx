@@ -128,7 +128,7 @@ export function TaxQuestion({ part }: { part: "q" | "a" }) {
 }
 
 /**
- * The Slack + Notion + Zoom stack's first year for a team, in the reader's
+ * The Slack + Notion stack's first year for a team, in the reader's
  * money: the rivals' US-dollar list prices as they are for a dollar reader,
  * converted at the day's rate for a euro, pound or other reader, and rupees
  * for India. Never lakh grouping outside India (plan A4).

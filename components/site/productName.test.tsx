@@ -23,8 +23,11 @@ describe("names in the comparison table", () => {
         // The one logo: the ring in the campfire gradient, as in the nav.
         expect(head).toMatch(/<linearGradient id="ring[^"]*"/)
         expect(head).not.toContain('stroke="#c84f00"')
-        for (const rival of ["Slack + Notion + Zoom", "Mattermost", "Huly"]) {
-            expect(head).toContain(`data-hue="${productHue(rival)}"`)
+        // By the name after each mark: the stack and Huly share a hue, so a
+        // hue alone would pass with the stack's square missing.
+        const named = marks(head)
+        for (const rival of ["Slack + Notion", "Mattermost", "Huly"]) {
+            expect(named.get(rival), rival).toBe(productHue(rival))
         }
     })
 
@@ -113,6 +116,6 @@ describe("product hues", () => {
     })
 
     it("leaves a name in neither list on its hash", () => {
-        expect(productHue("Slack + Notion + Zoom")).toBe(hueFor("Slack + Notion + Zoom"))
+        expect(productHue("Slack + Notion")).toBe(hueFor("Slack + Notion"))
     })
 })
