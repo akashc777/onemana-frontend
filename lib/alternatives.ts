@@ -27,7 +27,7 @@ export const alternatives: Audience[] = [
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Slack: channels, threads, calls and search, with tasks, docs and calendar built in. Import your Slack history or bridge channels both ways.",
     points: [
-      { icon: "chat", title: "Everything you use in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, voice, video and screen clips, calls with screen sharing, check-ins that ask a channel a question on a schedule, and search across all of it. Plus read receipts in DMs, which Slack never added." },
+      { icon: "chat", title: "Most of what a team uses in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, voice, video and screen clips, calls with screen sharing, check-ins that ask a channel a question on a schedule, and search across all of it. Plus read receipts in DMs, which Slack doesn't have." },
       { icon: "lock", title: "Your history stays yours", body: "Messages live on your server with no age limit, and nothing leaves it unless you connect something that sends it." },
       { icon: "tasks", title: "Work next to the talk", body: "Turn a message into a task, keep docs and whiteboards beside the channel, and see the calendar in the same app." },
       { icon: "teams", title: "No per-seat bill", body: "Free for up to 25 people. Past that, one licence covers everyone on your server, and AI agents never take a seat." },
@@ -45,8 +45,15 @@ export const alternatives: Audience[] = [
     rival: {
       name: "Slack",
       billing: "Per active user, per month. The free plan hides messages older than 90 days.",
+      // What a team leaving Slack misses first (code audit, 16 Oct 2026).
+      // A line leaves this list only when OneCamp has the thing it names.
       theyWin: [
         "Thousands of ready-made integrations and a huge app directory.",
+        "A Threads view, and following a thread to hear about new replies.",
+        "Mentions for a whole channel at once: @channel, @here and @everyone.",
+        "User groups you can mention as one, and alerts for keywords you choose.",
+        "More than one reaction from each person, pinned messages, custom emoji and link previews.",
+        "Search you can narrow by channel, person and date.",
         "Slack Connect with other companies that already use Slack.",
         "Nothing to run yourself: no server to keep updated.",
       ],
@@ -141,7 +148,9 @@ export const alternatives: Audience[] = [
       theyWin: [
         "A deeper page builder: nested pages, and databases with more views, such as gallery and timeline.",
         "A huge template gallery and a large community.",
-        "Hosted for you, with offline apps on every platform.",
+        // Not "on every platform": Notion has no Linux app, and its offline
+        // pages are in its apps only, never the web.
+        "Offline pages in its Mac, Windows and phone apps.",
       ],
       source: "https://www.notion.com/pricing",
     },
