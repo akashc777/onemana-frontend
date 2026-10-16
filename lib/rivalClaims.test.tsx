@@ -148,3 +148,20 @@ describe("how the site offers the Slack importer and the bridge", () => {
         expect(all).not.toMatch(/not at this time|can(?:no|')t import|no Slack import|no (?:Slack )?bridge/i)
     })
 })
+
+/**
+ * /compare's "subscriptions this usually cancels" lists only tools a team can
+ * really stop paying for. Zoom and Google Calendar came off it on 16 October
+ * 2026: Zoom wins on webinars, a waiting room and host controls, and Google
+ * Calendar on repeating events, RSVP and reminders. Take one off NOT_YET only
+ * when OneCamp has those.
+ */
+const NOT_YET = ["Zoom", "Google Calendar"]
+
+describe("the subscriptions a buyer is told they can cancel", () => {
+    it("hold no tool OneCamp doesn't match yet", () => {
+        for (const c of cancels) {
+            for (const tool of NOT_YET) expect(`${c.tool} ${c.surface}`, c.tool).not.toContain(tool)
+        }
+    })
+})

@@ -252,15 +252,23 @@ export const recordKeeping: RecordKeepingRow[] = [
     },
 ]
 
-/** The subscriptions a buyer is usually cancelling, kept for the search that brings them here. */
+/**
+ * The subscriptions a buyer is usually cancelling, kept for the search that
+ * brings them here.
+ *
+ * ONLY TOOLS A TEAM CAN REALLY STOP PAYING FOR. Zoom and Google Calendar came
+ * off on 16 October 2026, when the product was checked against both in the
+ * code: a team can't drop Zoom while OneCamp has no webinars, no waiting room
+ * and no host controls beyond Remove, nor Google Calendar while its events
+ * don't repeat and have no RSVP or reminders. Each comes back when those
+ * ship.
+ */
 export const cancels = [
     { tool: "Slack", surface: "Channels, DMs and threads, with an importer for Slack exports and a bridge to Slack channels" },
     { tool: "Notion", surface: "Docs, wikis, and collaborative editing" },
     { tool: "Asana or Trello", surface: "Tasks, boards, and sprints" },
-    { tool: "Zoom", surface: "Calls and recordings, on your own LiveKit" },
     { tool: "Airtable", surface: "Tables with typed columns, formulas, linked records, rollups and views" },
     { tool: "Miro", surface: "Whiteboards" },
-    { tool: "Google Calendar", surface: "Scheduling, tied to the same accounts" },
     { tool: "Otter or a per-minute transcriber", surface: "Meeting transcription, on your server" },
 ]
 
