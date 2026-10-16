@@ -1,8 +1,14 @@
+import { readFileSync } from "node:fs"
+import { resolve } from "node:path"
+
+import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
+import { BOX } from "@/components/site/AlsoInTheBox"
+import { RunSpec } from "@/components/site/RunSpec"
 import type { Audience } from "@/lib/audiences"
 import { alternativeBySlug, alternatives } from "@/lib/alternatives"
-import { rivals } from "@/lib/compare"
+import { cancels, rivals } from "@/lib/compare"
 
 /**
  * What the site says OneCamp matches, held to what the code does.
@@ -82,5 +88,63 @@ describe("what the alternatives pages say OneCamp matches", () => {
         expect(theyWin).toContain("Offline pages in its Mac, Windows and phone apps.")
         // Notion has no Linux app, and none of its apps is "every platform".
         expect(theyWin.join(" ")).not.toMatch(/every platform|linux/i)
+    })
+})
+
+/**
+ * The Slack importer and the Slack bridge exist, and the site says so. A
+ * sentence about either says that it exists and what it is for, never how a
+ * move goes: what comes across, that nothing is missed, one conversation
+ * carried both ways, or an undo afterwards.
+ *
+ * This also keeps the importer from being denied, as it once was. The FAQ
+ * answered "Can we import Slack data? Not at this time" while the backend held
+ * a whole Slack import (lib/featureClaims.test.ts guarded that, in a page
+ * export no route renders).
+ */
+describe("how the site offers the Slack importer and the bridge", () => {
+    const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/&#x27;|&#39;/g, "'").replace(/\s+/g, " ")
+    const runSpec = text(renderToString(<RunSpec />))
+    const docsIndex = readFileSync(resolve(__dirname, "..", "app", "docs", "page.tsx"), "utf8")
+    const slack = page("slack")
+    const lines: [string, string][] = [
+        // The page's questions may ask what a buyer asks; its answers are held.
+        ...shown(slack)
+            .filter((s) => !s.endsWith("?"))
+            .map((s): [string, string] => ["/alternatives/slack", s]),
+        ["/compare, the cancels list", cancels.find((c) => c.tool === "Slack")?.surface ?? ""],
+        ["the home page's also-in-the-box", BOX.find((b) => b.slug === "slack-bridge")?.line ?? ""],
+        ["the home page's run spec", runSpec.slice(runSpec.indexOf("Moving from Slack"), runSpec.indexOf("Who runs it"))],
+        ["the docs index", docsIndex.split("\n").find((l) => l.includes('slug: "slack-bridge"')) ?? ""],
+    ]
+
+    it("finds every place that offers them", () => {
+        for (const [where, line] of lines.slice(-4)) expect(line, where).toMatch(/Slack/)
+    })
+
+    it("promises nothing about how a move goes", () => {
+        const promises = [
+            /nothing is missed/i,
+            /one conversation/i,
+            /both ways/i,
+            /\bcomes? across\b/i,
+            /who said what/i,
+            /side by side/i,
+            /carried in/i,
+            /keep both running/i,
+            /\bbring (?:your|our) (?:Slack )?history\b/i,
+            /\broll(?:ed)? ?back\b|\brollback\b/i,
+            /\buntested\b/i,
+        ]
+        const found = lines.flatMap(([where, line]) => promises.filter((p) => p.test(line)).map((p) => `${where}: ${p} in "${line.trim()}"`))
+        expect(found).toEqual([])
+    })
+
+    it("still says the importer and the bridge are there, and never denies either", () => {
+        const answer = slack.faqs.find((f) => /Slack history/.test(f.q))?.a ?? ""
+        expect(answer).toMatch(/importer for Slack exports/)
+        expect(lines.some(([, line]) => /\bbridge\b/.test(line))).toBe(true)
+        const all = lines.map(([, line]) => line).join(" ")
+        expect(all).not.toMatch(/not at this time|can(?:no|')t import|no Slack import|no (?:Slack )?bridge/i)
     })
 })

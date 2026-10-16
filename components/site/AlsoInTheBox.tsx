@@ -18,7 +18,7 @@ export const BOX: { name: string; line: string; slug: string; d: string }[] = [
   { name: "Intake forms", line: "A form for anyone; each answer becomes a task.", slug: "intake-forms", d: "M6 3h9l4 4v14H6zM9 11h7M9 15h7M9 7h3" },
   { name: "Imports with fields", line: "Asana, monday.com, ClickUp and more, fields included.", slug: "import-from-other-tools", d: "M12 3v12M7 10l5 5 5-5M4 20h16" },
   { name: "Desktop app", line: "Windows, macOS and Linux, with on-device dictation.", slug: "desktop-app", d: "M3 5h18v11H3zM8 20h8M12 16v4" },
-  { name: "Slack bridge", line: "One conversation, carried in Slack and OneCamp.", slug: "slack-bridge", d: "M7 8h10a3 3 0 0 1 0 6H7M10 5 7 8l3 3M14 17l3-3" },
+  { name: "Slack bridge", line: "Links a Slack channel to a OneCamp channel.", slug: "slack-bridge", d: "M7 8h10a3 3 0 0 1 0 6H7M10 5 7 8l3 3M14 17l3-3" },
   { name: "Templates", line: "Start a project from a plan that already works.", slug: "project-templates", d: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 16.5h7M16.5 13v7" },
   { name: "Tables and formulas", line: "Typed columns, linked rows and Airtable-style formulas.", slug: "formulas", d: "M3 5h18v14H3zM3 10h18M9 5v14" },
   { name: "Polls", line: "One-click votes in a channel, with live results.", slug: "polls", d: "M5 20V12M12 20V5M19 20v-5" },

@@ -21,8 +21,9 @@ const ICON: Record<string, { hue: CampHue; d: string }> = {
  *
  * Each line is held to the product: the install floor and what the installer
  * does match lib/content's selfHostNeeds and steps (installExpectation.test.ts),
- * the import lists match the Slack importer, and the company controls are the
- * ones a licence turns on.
+ * the Slack line says that an importer and a bridge exist and what stays
+ * behind, and promises nothing about how a move goes (rivalClaims.test.tsx),
+ * and the company controls are the ones a licence turns on.
  */
 const SPEC: { term: string; detail: string; href?: string; link?: string }[] = [
   {
@@ -45,7 +46,7 @@ const SPEC: { term: string; detail: string; href?: string; link?: string }[] = [
   },
   {
     term: "Moving from Slack",
-    detail: "Channels, threads, direct messages, files and reactions come across, with a plan shown first and a rollback after. Slack apps, workflows and huddles do not.",
+    detail: "There's an importer for Slack exports, and a bridge that links a Slack channel to a OneCamp channel while people move. Slack apps, workflows and huddles stay behind.",
   },
   {
     term: "Who runs it",

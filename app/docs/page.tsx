@@ -37,7 +37,7 @@ export const dynamic = "force-dynamic";
 const START_HERE = [
   { slug: "installation", title: "Installation", line: "One command on a 4 GB server, 10 to 20 minutes.", hue: "sun", d: "M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4" },
   { slug: "scale-self-hosted", title: "Scaling", line: "What one machine runs, and when to grow it.", hue: "lake", d: "M4 20V10M10 20V4M16 20v-7M22 20H2" },
-  { slug: "slack-bridge", title: "Moving from Slack", line: "Run both in one conversation while people move.", hue: "berry", d: "M7 8h10a3 3 0 0 1 0 6H7M10 5 7 8l3 3M14 17l3-3" },
+  { slug: "slack-bridge", title: "Moving from Slack", line: "An importer for Slack exports, and a bridge to Slack channels.", hue: "berry", d: "M7 8h10a3 3 0 0 1 0 6H7M10 5 7 8l3 3M14 17l3-3" },
 ] as const;
 
 export default async function DocsIndexPage() {

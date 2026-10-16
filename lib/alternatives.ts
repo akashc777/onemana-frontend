@@ -22,10 +22,10 @@ export const alternatives: Audience[] = [
     eyebrow: "A self-hosted alternative to Slack",
     title: "Your team's chat, on a server you own",
     subtitle:
-      "Channels, threads, DMs, calls and search, plus tasks, docs and a calendar in the same place. Bring your Slack history, or keep both running while people move.",
+      "Channels, threads, DMs, calls and search, plus tasks, docs and a calendar in the same place, with an importer for Slack exports and a bridge to Slack channels.",
     seoTitle: "Self-hosted Slack alternative: OneCamp, open source and free for 25 people",
     seoDescription:
-      "OneCamp is an open-source, self-hosted alternative to Slack: channels, threads, calls and search, with tasks, docs and calendar built in. Import your Slack history or bridge channels both ways.",
+      "OneCamp is an open-source, self-hosted alternative to Slack: channels, threads, calls and search, with tasks, docs and calendar built in. It has an importer for Slack exports and a bridge to Slack channels.",
     points: [
       { icon: "chat", title: "Most of what a team uses in Slack", body: "Channels, threads, DMs, mentions, reactions, scheduled messages, voice, video and screen clips, calls with screen sharing, check-ins that ask a channel a question on a schedule, and search across all of it. Plus read receipts in DMs, which Slack doesn't have." },
       { icon: "lock", title: "Your history stays yours", body: "Messages live on your server with no age limit, and nothing leaves it unless you connect something that sends it." },
@@ -36,9 +36,11 @@ export const alternatives: Audience[] = [
     ],
     prices: "dual",
     priceNote: "Free for up to 25 people. A licence is paid once, not every month per person.",
+    // The importer and the bridge are said to exist, and no more: how a move
+    // goes (what comes across, what is missed) is never promised here.
     faqs: [
-      { q: "Can we bring our Slack history?", a: "Yes. Import a Slack export (channels, threads, files and who said what) from Admin → Import. It can be rolled back if you change your mind." },
-      { q: "Do we have to switch everyone at once?", a: "No. The Slack bridge links a Slack channel and a OneCamp channel so both carry one conversation, both ways, while people move over." },
+      { q: "Can we bring our Slack history?", a: "OneCamp has an importer for Slack exports, under Admin → Import." },
+      { q: "Do we have to switch everyone at once?", a: "No. People can move over a few at a time, and there's a bridge that links a Slack channel to a OneCamp channel." },
       { q: "Is there an app for phones and desktops?", a: "Yes: the web app installs on phones, and there's a desktop app for macOS, Windows and Linux." },
     ],
     proof: { label: "Installation guide", href: "/docs/installation" },
@@ -64,7 +66,7 @@ export const alternatives: Audience[] = [
       steps: [
         "Install OneCamp on a server (one command; onemana.dev/free gives it to you).",
         "In Slack, export your workspace; in OneCamp, upload it under Admin → Import.",
-        "Link the channels people still use with the Slack bridge, so nothing is missed during the move.",
+        "Link the channels people still use with the Slack bridge.",
         "Invite your team, then turn the bridge off when the last person has moved.",
       ],
     },

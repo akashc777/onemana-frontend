@@ -254,7 +254,7 @@ export const recordKeeping: RecordKeepingRow[] = [
 
 /** The subscriptions a buyer is usually cancelling, kept for the search that brings them here. */
 export const cancels = [
-    { tool: "Slack", surface: "Channels, DMs and threads. Import your Slack export, or run both side by side through a live bridge while you move" },
+    { tool: "Slack", surface: "Channels, DMs and threads, with an importer for Slack exports and a bridge to Slack channels" },
     { tool: "Notion", surface: "Docs, wikis, and collaborative editing" },
     { tool: "Asana or Trello", surface: "Tasks, boards, and sprints" },
     { tool: "Zoom", surface: "Calls and recordings, on your own LiveKit" },
