@@ -15,13 +15,16 @@ import { site } from "./site"
  * read. The structured data is now derived from the same source. Prose cannot
  * be, so it is pinned here instead.
  *
- * This is the same failure as the Slack import FAQ, which is guarded next door:
- * something true was written down once and quietly stopped being true. A price
- * is the worst possible instance of it, because a visitor who reads one number
- * and is charged another does not file a bug, they leave.
+ * This is the same failure as the Slack import FAQ, which rivalClaims.test.tsx
+ * guards: something true was written down once and quietly stopped being true.
+ * A price is the worst possible instance of it, because a visitor who reads one
+ * number and is charged another does not file a bug, they leave.
+ *
+ * content/onecamp.md was read here too until 16 Oct 2026, when it was deleted:
+ * a page export from the old site that no route rendered. The prices buyers do
+ * read are rendered from the pricing module (globalBuyer.test.tsx).
  */
 const files = {
-  "content/onecamp.md": resolve(__dirname, "..", "content", "onecamp.md"),
   "lib/content.ts": resolve(__dirname, "content.ts"),
 }
 
@@ -83,11 +86,6 @@ describe("the price on the page is the price in the module", () => {
       expect(stale).toEqual([])
     })
   }
-
-  it("states the licence price somewhere a buyer will read it", () => {
-    const body = readFileSync(files["content/onecamp.md"], "utf8")
-    expect(body).toContain(`₹${lifetime_inr.toLocaleString("en-IN")}`)
-  })
 
   // Dollars are the rupee price at the day's rate, worked out by the backend.
   // A dollar price typed anywhere is wrong the next day: the $299 and $99 that

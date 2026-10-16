@@ -254,8 +254,6 @@ export const requirements = [
   },
 ];
 
-export const replaces = ["Slack", "Notion", "Asana", "Zoom", "Google Calendar", "Trello", "Miro", "Airtable", "Confluence"];
-
 /**
  * Headline numbers.
  *
@@ -332,32 +330,6 @@ export const trustPoints: { icon: TrustIconKey; label: string; detail: string }[
   { icon: "server", label: "Data stays yours", detail: "Runs on your server" },
   { icon: "identity", label: "SSO, SCIM, MFA", detail: "No enterprise tier" },
 ];
-
-/** Side-by-side billing comparison - static, no animation. Shown once in #pricing. */
-export const pricingComparison = {
-  typical: {
-    eyebrow: "What teams pay today",
-    title: "Five separate subscriptions",
-    rows: [
-      { label: "Stack", value: "Slack, Notion, Asana, Zoom, calendar" },
-      { label: "Annual spend", value: "Per seat, per tool, growing with headcount" },
-      { label: "AI", value: "Per-seat add-on, in someone else's cloud" },
-      { label: "Meetings", value: "Transcribed by a vendor, billed per minute" },
-      { label: "Billing", value: "Per seat, per tool, every year" },
-    ],
-  },
-  onecamp: {
-    eyebrow: "With OneCamp",
-    title: "One workspace, flat pricing",
-    rows: [
-      { label: "Stack", value: "Chat, docs, tasks, tables, video, calendar, AI" },
-      { label: "AI", value: "Included, governed, runs on your hardware" },
-      { label: "Meetings", value: "Transcribed on your server, no per-minute bill" },
-      { label: "Billing", value: "Unlimited users, no per-seat fees" },
-      { label: "Choice", value: "Lifetime self-host or managed cloud" },
-    ],
-  },
-};
 
 export const cloudBenefits = [
   // "your own subdomain" read as though the customer had to supply one, and the

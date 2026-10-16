@@ -112,8 +112,9 @@ describe("what the alternatives pages say OneCamp matches", () => {
  *
  * This also keeps the importer from being denied, as it once was. The FAQ
  * answered "Can we import Slack data? Not at this time" while the backend held
- * a whole Slack import (lib/featureClaims.test.ts guarded that, in a page
- * export no route renders).
+ * a whole Slack import. lib/featureClaims.test.ts guarded that, but only in
+ * content/onecamp.md, a page export no route rendered; both were deleted on
+ * 16 Oct 2026, and the guard lives here, on the pages people read.
  */
 describe("how the site offers the Slack importer and the bridge", () => {
     const runSpec = text(renderToString(<RunSpec />))
