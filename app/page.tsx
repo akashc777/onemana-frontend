@@ -13,6 +13,7 @@ import { HeroScene } from "@/components/site/showcase/HeroScene";
 import { ProductTabs } from "@/components/site/ProductTabs";
 import { firstTourScene } from "@/components/site/showcase/tour";
 import { FactsStrip } from "@/components/site/FactsStrip";
+import { AreaLegend } from "@/components/site/Areas";
 import { RunSpec } from "@/components/site/RunSpec";
 import { HomeComparison } from "@/components/site/HomeComparison";
 import { PlanColumns } from "@/components/site/PlanColumns";
@@ -20,7 +21,6 @@ import { QuestionGroups } from "@/components/site/marketing";
 import { RecordRows } from "@/components/site/RecordRows";
 import { AlsoInTheBox } from "@/components/site/AlsoInTheBox";
 import { CloseSpot } from "@/components/site/CloseSpot";
-import { Tile } from "@/components/ui/graphics/Tile";
 import { Arrow } from "@/components/ui/v3";
 import { Icon } from "@/components/ui/icons";
 import { SunStroke } from "@/components/ui/graphics/v3marks";
@@ -51,12 +51,6 @@ export const revalidate = 300;
  * screen; each section's heading rises 8px as it enters, never from hidden.
  */
 
-const FACTS = [
-  { hue: "moss", bold: "Open source", rest: ", AGPL-3.0", d: "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9" },
-  { hue: "sky", bold: "One command", rest: " on a 4 GB server", d: "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01" },
-  { hue: "dusk", bold: "Agents on the record", rest: ", every attempt", d: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4" },
-] as const;
-
 /**
  * The release pill (site.md H1): the newest feature release's own headline,
  * read from GitHub, with no version number (owner rule: no version labels in
@@ -74,7 +68,7 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
       {...ix("card")}
       className="tap-target in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1"
     >
-      <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>
+      <span className="rounded-full bg-muted px-2 text-[12px] font-[510] leading-5 text-foreground shadow-[inset_0_0_0_1px_var(--line-c)]">New</span>
       <span className="truncate">{release.pill.headline}</span>
       <Icon name="chevron-right" size={14} className="go-arrow" />
     </Link>
@@ -152,20 +146,10 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* The facts column: three rows on hairlines (on a phone the strip under the canvas carries them). */}
-            <ul className="m-0 hidden list-none border-t border-border p-0 lg:col-span-4 lg:block">
-              {FACTS.map((f) => (
-                <li key={f.bold} className="flex h-[52px] items-center gap-3 border-b border-border text-small text-muted-foreground">
-                  <Tile hue={f.hue} size="sm">
-                    <Icon d={f.d} />
-                  </Tile>
-                  <span>
-                    <b className="font-[510] text-foreground">{f.bold}</b>
-                    {f.rest}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {/* The key to the colours (v3.1): the seven areas, each in the hue it
+                wears down the page. The facts it replaced are the strip's,
+                under the product, so the first screen no longer says them twice. */}
+            <AreaLegend className="hidden lg:col-span-4 lg:grid" />
           </div>
 
           <div className="mt-10 sm:mt-14 lg:pb-[104px]">
@@ -173,7 +157,7 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-14">
-            <FactsStrip release={release} />
+            <FactsStrip release={release} pricing={pricing} />
           </div>
         </div>
       </section>
@@ -185,7 +169,7 @@ export default async function HomePage() {
         <SectionHeading
           layout="split"
           eyebrow="One app"
-          title="Chat, docs, tasks, calendar and agents in one app"
+          title="Chat, docs, projects, calendar and agents in one app"
           subtitle="Every screen here shows the live demo's own data. Open any of them without an account."
           className="mb-8 lg:mb-10"
         />
@@ -293,8 +277,8 @@ export default async function HomePage() {
         <SectionHeading title="Before you pay" className="mb-10" />
         <QuestionGroups
           groups={[
-            { label: "Paying", dot: "bg-camp-sun", items: [whyRupees, byQ("I pay once. What is included?")] },
-            { label: "Running it", dot: "bg-camp-lake", items: [byQ("What if OneMana shuts down?"), byQ("Do you support SSO and SCIM?")] },
+            { label: "Paying", dot: "bg-ink-4", items: [whyRupees, byQ("I pay once. What is included?")] },
+            { label: "Running it", dot: "bg-ink-4", items: [byQ("What if OneMana shuts down?"), byQ("Do you support SSO and SCIM?")] },
             { label: "AI and data", dot: "bg-agent", items: [byQ("Where does the model run?"), byQ("Can the assistant I already use work in OneCamp?")] },
           ]}
         />
@@ -303,7 +287,7 @@ export default async function HomePage() {
       {/* The close (H11): the page's one band, the welcome spot with the six
           hues turning round the ring, the claim, both ways in, and a quieter
           way to keep in touch. The footer's camp flag follows straight on. */}
-      <Section id="start" band="sky">
+      <Section id="start" tone="muted">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-x-8">
           <div className="lg:col-span-4">
             <CloseSpot />
@@ -320,7 +304,7 @@ export default async function HomePage() {
               {/* Try the live demo, Install free: the two ways in. */}
               <WaysIn />
             </div>
-            <div className="mt-10 max-w-[560px] border-t border-camp-sky/20 pt-6">
+            <div className="mt-10 max-w-[560px] border-t border-border pt-6">
               <h3 className="font-sans text-caption font-[590] tracking-normal text-foreground">Release notes by email</h3>
               <div className="mt-3">
                 <SubscribeForm

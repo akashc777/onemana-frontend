@@ -132,6 +132,8 @@ const ICONS = {
     ["path", "M3.5 9.5h17M3.5 14.5h17M9.5 4.5v15"],
   ],
   bolt: [["path", "M13 3.5L5.5 13.5H11l-1 7 7.5-10H12z"]],
+  // A microphone, for a call's mute button (components/site/AreaMoments).
+  mic: [["path", "M12 3.5a3 3 0 0 0-3 3V12a3 3 0 0 0 6 0V6.5a3 3 0 0 0-3-3zM5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"]],
   video: [
     ["rect", 3.5, 6.5, 12, 11, 2],
     ["path", "M15.5 10.5l5-3v9l-5-3"],

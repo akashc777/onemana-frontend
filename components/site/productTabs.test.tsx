@@ -13,19 +13,25 @@ import { chatDesktop, chatPhone } from "@/components/site/showcase/scenes/chat"
 import { paletteDesktop, palettePhone } from "@/components/site/showcase/scenes/palette"
 
 /**
- * Each surface wears its hue from its chip to its stage (site.md H4, G7):
- * Docs dusk, Tasks moss, Calendar sun, Agents the agent's indigo (never
- * dusk), Ask lake, Chat sky. The tabs never move on their own, only the chosen panel
- * renders, and the surface is OneCamp drawn by its own components
- * (components/site/showcase), never a screenshot.
+ * Each surface wears its area's hue from its tab to its stage (site.md H4,
+ * design v3.1, lib/areas.ts), in the areas' order: Docs dusk, Projects moss,
+ * Calendar sun, Chat sky, then Agents and Ask in the agent's indigo (never
+ * dusk; Ask is OneCamp AI answering), side by side as one area. The tabs never
+ * move on their own, only the chosen panel renders, and the surface is
+ * OneCamp drawn by its own components (components/site/showcase), never a
+ * screenshot.
  */
 describe("the product tabs", () => {
     const html = renderToString(<ProductTabs first={firstTourScene()} />)
     const panel = html.slice(html.indexOf('role="tabpanel"'))
 
-    it("gives every chip a dot in its own hue, in the tour's order", () => {
+    it("gives every tab its area's hue and tile, in the areas' order, the agents' two side by side at the end", () => {
         const tabs = [...html.matchAll(/<button[^>]*role="tab"[^>]*class="([^"]*)"/g)].map((m) => m[1]!.split(" ")[0])
-        expect(tabs).toEqual(["hue-dusk", "hue-moss", "hue-sun", "[--hue:var(--agent)]", "hue-lake", "hue-sky"])
+        expect(tabs).toEqual(["hue-dusk", "hue-moss", "hue-sun", "hue-sky", "[--hue:var(--agent)]", "[--hue:var(--agent)]"])
+        const labels = [...html.matchAll(/<button[^>]*role="tab"[^>]*>([\s\S]*?)<\/button>/g)].map((m) => m[1]!.replace(/<[^>]+>/g, ""))
+        expect(labels).toEqual(["Docs", "Projects", "Calendar", "Chat", "Agents", "Ask"])
+        // Each tab's tile is drawn in its hue (Tile), never a bare dot.
+        expect(html.match(/<button[^>]*role="tab"[^>]*>\s*<span aria-hidden="true" class="[^"]*bg-hue-tint text-hue/g)).toHaveLength(6)
     })
 
     it("sets the chosen surface on that hue's stage", () => {

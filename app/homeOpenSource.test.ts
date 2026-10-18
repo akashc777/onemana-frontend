@@ -39,8 +39,8 @@ describe("the band", () => {
     expect(page).toMatch(/Promise\.all\(\[getPricing\(\), getReleaseFacts\(\), getOpenSource\(\)\]\)/)
   })
 
-  it("is not a band in the design's sense: the page keeps its one band and its one night", () => {
-    expect(page.match(/band="/g)).toHaveLength(1)
+  it("is not a band in the design's sense: the page has no tinted band (the close is neutral since v3.1) and its one night", () => {
+    expect(page.match(/band="/g)).toBeNull()
     expect(page.match(/<Section [^>]*\bnight\b/g)).toHaveLength(1)
   })
 })

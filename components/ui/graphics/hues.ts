@@ -33,9 +33,16 @@ export const AGENT_HUE_CLASS = "[--hue:var(--agent)] [--hue-tint:var(--agent-mut
  */
 export const BRAND_HUE_CLASS = "[--hue:var(--brand)] [--hue-tint:var(--brand-soft)] [--hue-ink:var(--brand-ink)]"
 
-/** The class for a camp hue, the agent's indigo, or the brand. */
-export function hueOrAgent(hue: CampHue | "agent" | "brand"): string {
-  return hue === "agent" ? AGENT_HUE_CLASS : hue === "brand" ? BRAND_HUE_CLASS : HUE_CLASS[hue]
+/**
+ * Neutral ink as the current hue (design v3.1): for a tile that names no
+ * area of the product (installing, updating, backups, sign-in), whose glyph
+ * draws in ink-2 on the sunken surface. Colour names an area; this names none.
+ */
+export const INK_HUE_CLASS = "[--hue:var(--muted-foreground)] [--hue-tint:var(--muted)] [--hue-ink:var(--foreground)]"
+
+/** The class for a camp hue, the agent's indigo, the brand, or neutral ink. */
+export function hueOrAgent(hue: CampHue | "agent" | "brand" | "ink"): string {
+  return hue === "agent" ? AGENT_HUE_CLASS : hue === "brand" ? BRAND_HUE_CLASS : hue === "ink" ? INK_HUE_CLASS : HUE_CLASS[hue]
 }
 
 /**

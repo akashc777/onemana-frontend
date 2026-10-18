@@ -105,7 +105,7 @@ describe("the tabs and the Cloud size", () => {
   // H9 and B2: a grey hover, never the tab's own hue.
   it("the product tabs and the blog's topics hover in their own hue", () => {
     const tabs = tags(renderToString(<ProductTabs first={firstTourScene()} />), /<button[^>]*role="tab"[^>]*>/g)
-    expect(tabs.map((t) => /data-hue="(\w+)"/.exec(t)?.[1])).toEqual(["dusk", "moss", "sun", "agent", "lake", "sky"])
+    expect(tabs.map((t) => /data-hue="(\w+)"/.exec(t)?.[1])).toEqual(["dusk", "moss", "sun", "sky", "agent", "agent"])
     const topics = tags(renderToString(<TopicFilter target="x" />), /<button[^>]*aria-pressed[^>]*>/g)
     expect(topics.length).toBeGreaterThan(3)
     for (const t of [...tabs, ...topics]) {

@@ -22,9 +22,19 @@ export const TILE_SIZES = {
 export type TileSize = keyof typeof TILE_SIZES
 
 export interface TileProps extends HTMLAttributes<HTMLSpanElement> {
-  /** A camp hue, the agent's indigo (agents are indigo, never dusk), or the brand for the product itself. */
-  hue: CampHue | "agent" | "brand"
+  /**
+   * A camp hue, the agent's indigo (agents are indigo, never dusk), the brand
+   * for the product itself, or neutral ink for what names no area (v3.1),
+   * which draws a hairline round its sunken ground so it holds its shape.
+   */
+  hue: CampHue | "agent" | "brand" | "ink"
   size?: TileSize
+  /**
+   * The ground: the hue's tint (the default), or the raised surface at e1
+   * for a tile that stands on its own hue's tint already (an area panel's
+   * stage), where a tint on the same tint would vanish.
+   */
+  surface?: "tint" | "raised"
   children?: ReactNode
 }
 
@@ -36,12 +46,20 @@ export interface TileProps extends HTMLAttributes<HTMLSpanElement> {
  *
  *   <Tile hue="moss"><Icon name="check" /></Tile>
  */
-export function Tile({ hue, size = "md", className, children, ...rest }: TileProps) {
+export function Tile({ hue, size = "md", surface = "tint", className, children, ...rest }: TileProps) {
   return (
     <span
       aria-hidden="true"
       {...rest}
-      className={cx(hueOrAgent(hue), "inline-flex shrink-0 items-center justify-center bg-hue-tint text-hue", TILE_SIZES[size], className)}
+      className={cx(
+        hueOrAgent(hue),
+        "inline-flex shrink-0 items-center justify-center",
+        surface === "raised" ? "bg-card shadow-e1" : "bg-hue-tint",
+        "text-hue",
+        hue === "ink" && surface === "tint" && "ring-1 ring-inset ring-line-2",
+        TILE_SIZES[size],
+        className,
+      )}
     >
       {children}
     </span>

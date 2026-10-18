@@ -23,13 +23,13 @@ const opening = (html: string, re: RegExp) => html.match(re) ?? []
 const ROW = /data-interactive="row"/
 
 describe("the rows", () => {
-  it("Also in the box: every row is a quiet row, its words on their line", () => {
-    const rows = opening(renderToString(<AlsoInTheBox />), /<a[^>]*href="\/docs\/[^"]*"[^>]*>/g)
-    expect(rows.length).toBe(12)
-    for (const r of rows) {
-      expect(r).toMatch(ROW)
-      expect(r).toContain("data-quiet")
-      expect(r).toMatch(/-mx-3 .*px-3/)
+  it("Also in the box: every feature is a chip of the layer in its area's hue, 44 px under a finger", () => {
+    const html = renderToString(<AlsoInTheBox />)
+    const chips = opening(html, /<a[^>]*data-interactive="chip"[^>]*>/g)
+    expect(chips.length).toBe(16)
+    for (const c of chips) {
+      expect(c).toMatch(/data-hue="(sky|berry|dusk|moss|sun|lake)"/)
+      expect(c).toContain("min-h-11")
     }
   })
 

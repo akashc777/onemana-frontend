@@ -20,7 +20,7 @@ describe("the home comparison's columns", () => {
     expect(rows.length).toBe(9)
     for (const row of rows) {
       const cells = [...row.matchAll(/<t[hd][^>]*class="([^"]*)"/g)].map((m) => m[1]!)
-      const lifted = cells.findIndex((c) => /\bbg-hue-tint\b/.test(c))
+      const lifted = cells.findIndex((c) => /\bbg-press\b/.test(c))
       expect(lifted).toBe(1)
       expect(cells[lifted]).toMatch(/(^|\s)pl-4(\s|$)/)
       expect(cells[lifted + 1]).toMatch(/(^|\s)pl-4(\s|$)/)

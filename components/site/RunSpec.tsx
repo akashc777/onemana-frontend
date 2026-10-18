@@ -1,16 +1,20 @@
 import Link from "next/link";
-import type { CampHue } from "@/lib/campHue";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { Icon } from "@/components/ui/icons";
 
-/** Each block's tile (site.md H7): a hue and a 1.25px line drawing on a 24 grid. */
-const ICON: Record<string, { hue: CampHue; d: string }> = {
-  Install: { hue: "sun", d: "M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4" },
-  Updates: { hue: "sky", d: "M12 3q1.4 7.6 9 9-7.6 1.4-9 9-1.4-7.6-9-9 7.6-1.4 9-9z" },
-  Backups: { hue: "lake", d: "M12 4a8 8 0 1 0 8 8M12 8a4 4 0 1 0 4 4M20 4v4h-4" },
-  "Company sign-in": { hue: "dusk", d: "M14.5 9.5a4 4 0 1 1-1.2-2.8M13.3 10.7 21 18.4V21h-2.6l-.9-.9v-1.6h-1.6l-1.2-1.2v-1.6h-1.6" },
-  "Moving from Slack": { hue: "berry", d: "M4 12h14M13 6l6 6-6 6" },
-  "Who runs it": { hue: "moss", d: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0" },
+/**
+ * Each block's tile (site.md H7): a 1.25px line drawing on a 24 grid, in
+ * neutral ink. Running a server is no area of the product, so it wears no
+ * area's colour (design v3.1); the six tints it had cycled through the
+ * palette and named nothing.
+ */
+const ICON: Record<string, string> = {
+  Install: "M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4",
+  Updates: "M12 3q1.4 7.6 9 9-7.6 1.4-9 9-1.4-7.6-9-9 7.6-1.4 9-9z",
+  Backups: "M12 4a8 8 0 1 0 8 8M12 8a4 4 0 1 0 4 4M20 4v4h-4",
+  "Company sign-in": "M14.5 9.5a4 4 0 1 1-1.2-2.8M13.3 10.7 21 18.4V21h-2.6l-.9-.9v-1.6h-1.6l-1.2-1.2v-1.6h-1.6",
+  "Moving from Slack": "M4 12h14M13 6l6 6-6 6",
+  "Who runs it": "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0",
 };
 
 /**
@@ -62,8 +66,8 @@ export function RunSpec() {
       {SPEC.map((s) => (
         <div key={s.term} className="reveal">
           <dt className="flex items-center gap-3 text-body font-[590] text-foreground">
-          <Tile hue={ICON[s.term]!.hue} size="sm">
-            <Icon d={ICON[s.term]!.d} />
+          <Tile hue="ink" size="sm">
+            <Icon d={ICON[s.term]!} />
           </Tile>
           {s.term}
           </dt>

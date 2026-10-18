@@ -126,7 +126,7 @@ describe("how the site offers the Slack importer and the bridge", () => {
             .filter((s) => !s.endsWith("?"))
             .map((s): [string, string] => ["/alternatives/slack", s]),
         ["/compare, the cancels list", cancels.find((c) => c.tool === "Slack")?.surface ?? ""],
-        ["the home page's also-in-the-box", BOX.find((b) => b.slug === "slack-bridge")?.line ?? ""],
+        ["the home page's also-in-the-box", BOX.find((b) => b.href === "/docs/slack-bridge")?.name ?? ""],
         ["the home page's run spec", runSpec.slice(runSpec.indexOf("Moving from Slack"), runSpec.indexOf("Who runs it"))],
         ["the docs index", docsIndex.split("\n").find((l) => l.includes('slug: "slack-bridge"')) ?? ""],
     ]

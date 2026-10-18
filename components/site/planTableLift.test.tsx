@@ -5,25 +5,32 @@ import { describe, expect, it } from "vitest"
 
 import { HomeComparison } from "@/components/site/HomeComparison"
 import { PlanComparison } from "@/components/site/PlanComparison"
-import { PLAN_HUE, RAISED_ROW } from "@/components/site/planHues"
-import { HUE_CLASS } from "@/components/ui/graphics/hues"
+import { RAISED_ROW } from "@/components/site/planHues"
 import { PLAN_ROWS } from "@/lib/plans"
-import { CAMP, SHARED, hexToTriple } from "@/lib/palette"
+import { SHARED } from "@/lib/palette"
+import { ALPHA } from "@/lib/appSystem"
 import { defaultPricing } from "@/lib/pricing"
 
 /**
  * The plan table's raised licence column (storefront audit §5.2 and P3). In
  * light mode it was a card on a page of the same white, held up only by two
- * hairlines. It takes its plan's hue tint now (sun, the colour of the
- * licence's dot), from the tokens and never a raw colour, so the column is a
- * ground of its own in both themes. In dark, where the card already read, the
- * tint is lighter than the page too.
+ * hairlines. It stands on the press step now (ink at 7 %, white at 7 % in
+ * dark), from the tokens and never a raw colour, so the column is a ground of
+ * its own in both themes. Neutral since v3.1: a plan is not an area of the
+ * product, so it wears no area's hue (the licence's sun tint went).
  *
  * The home page's comparison raises OneCamp on the same tint (planHues.ts
  * RAISED_TINT): its column from sm, and its line in each card on a phone.
  */
 
 type RGB = [number, number, number]
+
+/** The press step laid over a ground: what the raised column looks like. */
+function pressOver(theme: "light" | "dark", ground: RGB): RGB {
+  const [ink, a] = ALPHA[theme].press
+  return ground.map((g, i) => Math.round(g * (1 - a) + ink[i]! * a)) as RGB
+}
+const NEUTRAL = "bg-press"
 
 function luminance([r, g, b]: RGB): number {
   const lin = (c: number) => {
@@ -52,10 +59,10 @@ describe("the home comparison's raised column", () => {
     expect(cells.length).toBeGreaterThanOrEqual(6)
   })
 
-  it("stands on the same tint as the plan table's, never the card's white", () => {
+  it("stands on the same neutral ground as the plan table's, never the card's white", () => {
     for (const c of cells) {
-      expect(c.split(/\s+/), c).toContain(HUE_CLASS[PLAN_HUE.lifetime])
-      expect(c.split(/\s+/), c).toContain("bg-hue-tint")
+      expect(c.split(/\s+/), c).toContain(NEUTRAL)
+      expect(c, c).not.toMatch(/(^|\s)(hue-[a-z]+|bg-hue-tint)(\s|$)/)
       expect(c, c).not.toMatch(/(^|\s)bg-(card|white|background)(\s|$)/)
     }
   })
@@ -73,16 +80,15 @@ describe("the home comparison's raised line on a phone", () => {
   it("is OneCamp's answer in every card, on the same tint as the columns", () => {
     expect(raised).toHaveLength(8)
     for (const c of raised) {
-      expect(c).toContain(HUE_CLASS[PLAN_HUE.lifetime])
-      expect(c).toContain("bg-hue-tint")
+      expect(c).toContain(NEUTRAL)
       expect(c.join(" ")).not.toMatch(/(^|\s)bg-(card|white|background|muted)(\s|$)/)
     }
     expect(cards).not.toMatch(/class="[^"]*\bbg-muted\b/)
   })
 
   for (const theme of ["light", "dark"] as const) {
-    const tint = hexToTriple(CAMP[theme][`camp-${PLAN_HUE.lifetime}-tint`])
     const card = SHARED[theme].card
+    const tint = pressOver(theme, card)
 
     it(`${theme}: is a ground of its own inside the card, and its words read on it`, () => {
       expect(contrast(tint, card), `the tint in the card is ${contrast(tint, card).toFixed(3)}:1`).toBeGreaterThanOrEqual(1.05)
@@ -117,17 +123,17 @@ describe("the plan table's raised licence column", () => {
     expect(cells).toHaveLength(PLAN_ROWS.length + 2)
   })
 
-  it("stands on its plan's hue tint, from the tokens, never a raw colour", () => {
+  it("stands on the neutral press step, from the tokens, never a hue or a raw colour", () => {
     for (const c of cells) {
-      expect(c.split(/\s+/), c).toContain(HUE_CLASS[PLAN_HUE.lifetime])
-      expect(c.split(/\s+/), c).toContain("bg-hue-tint")
+      expect(c.split(/\s+/), c).toContain(NEUTRAL)
+      expect(c, c).not.toMatch(/(^|\s)(hue-[a-z]+|bg-hue-tint)(\s|$)/)
       expect(c, c).not.toMatch(/(^|\s)bg-(card|white|background)(\s|$)|bg-\[#|bg-\[rgb/)
     }
   })
 
   for (const theme of ["light", "dark"] as const) {
-    const tint = hexToTriple(CAMP[theme][`camp-${PLAN_HUE.lifetime}-tint`])
     const page = SHARED[theme].background
+    const tint = pressOver(theme, page)
 
     it(`${theme}: is a ground of its own, apart from the page`, () => {
       expect(contrast(tint, page), `the tint on the page is ${contrast(tint, page).toFixed(3)}:1`).toBeGreaterThanOrEqual(1.05)

@@ -1,59 +1,147 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { CAMP_HUES } from "@/lib/campHue";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
-import { Icon } from "@/components/ui/icons";
+import { AREA } from "@/lib/areas";
+import { hueOrAgent } from "@/components/ui/graphics/hues";
+import { AreaTile } from "@/components/site/Areas";
+import { MOMENT, type BoxArea } from "@/components/site/AreaMoments";
 import { ix } from "@/lib/interactive";
 
 /**
- * "Also in the box" (site.md H5): the breadth that lived only in the docs,
- * each a name and one line, linking to its doc. Every item has shipped; each
- * slug is a live doc. Hues cycle in chart order.
+ * "Also in the box" (site.md H5, design v3.1): the breadth of the product,
+ * by area. Each area is a panel: its tile and name on its own tint, one
+ * moment of the product as it works today peeking up from the foot
+ * (components/site/AreaMoments), and its features under it as links to
+ * where each is explained. Every feature has shipped and every link is a
+ * live page: a guide, or the release entry and the post that showed it.
+ *
+ * It was twelve rows of text, each icon in the next colour of the chart
+ * order: twelve colours that named nothing. Now each colour is its area's
+ * (lib/areas.ts), the same as the tour's tab above and the footer's flag
+ * below, so the colour says where a feature lives.
+ *
+ * Three across from lg, two on a tablet. On a phone the panels are a row
+ * that snaps one panel at a time, the next one showing at the edge so the
+ * row says it goes on: the section is one panel tall, where the list was a
+ * screen and a half. Nothing in it moves on its own.
+ *
+ * The panels are not links, so they do not lift; their links are chips in
+ * the area's hue, the layer's chip kind: the hue's tint under the pointer,
+ * a press under a finger, 44 px tall on a phone.
  */
-export const BOX: { name: string; line: string; slug: string; d: string }[] = [
-  { name: "Guests in a channel", line: "Clients join one channel, never your workspace.", slug: "channel-guests", d: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 8v6M14 11h6" },
-  { name: "Booking pages", line: "A link anyone can book your free time from.", slug: "booking-pages", d: "M5 6h14v14H5zM5 10h14M9 3v4M15 3v4M10 15l2 2 3-4" },
-  { name: "Time and invoices", line: "Timers on tasks, billable hours, invoices that add up.", slug: "time-tracking", d: "M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 9v4l2.5 2M10 2h4" },
-  { name: "Goals", line: "Outcomes whose progress fills in from the work.", slug: "goals", d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01" },
-  { name: "Reports", line: "What got done and what came in, every week.", slug: "reports", d: "M4 20V10M10 20V4M16 20v-7M22 20H2" },
-  { name: "Intake forms", line: "A form for anyone; each answer becomes a task.", slug: "intake-forms", d: "M6 3h9l4 4v14H6zM9 11h7M9 15h7M9 7h3" },
-  { name: "Imports with fields", line: "Asana, monday.com, ClickUp and more, fields included.", slug: "import-from-other-tools", d: "M12 3v12M7 10l5 5 5-5M4 20h16" },
-  { name: "Desktop app", line: "Windows, macOS and Linux, with on-device dictation.", slug: "desktop-app", d: "M3 5h18v11H3zM8 20h8M12 16v4" },
-  { name: "Slack bridge", line: "Links a Slack channel to a OneCamp channel.", slug: "slack-bridge", d: "M7 8h10a3 3 0 0 1 0 6H7M10 5 7 8l3 3M14 17l3-3" },
-  { name: "Templates", line: "Start a project from a plan that already works.", slug: "project-templates", d: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 16.5h7M16.5 13v7" },
-  { name: "Tables and formulas", line: "Typed columns, linked rows and Airtable-style formulas.", slug: "formulas", d: "M3 5h18v14H3zM3 10h18M9 5v14" },
-  { name: "Polls", line: "One-click votes in a channel, with live results.", slug: "polls", d: "M5 20V12M12 20V5M19 20v-5" },
+export type BoxFeature = { name: string; href: string };
+
+export const BOX_AREAS: { area: BoxArea; features: BoxFeature[] }[] = [
+  {
+    area: "chat",
+    features: [
+      { name: "Polls", href: "/docs/polls" },
+      { name: "Guests in a channel", href: "/docs/channel-guests" },
+      { name: "Slack bridge", href: "/docs/slack-bridge" },
+    ],
+  },
+  {
+    area: "calls",
+    features: [
+      { name: "Calls beside the chat", href: "/docs/side-by-side" },
+      { name: "Voice, video and screen clips", href: "/docs/clips" },
+    ],
+  },
+  {
+    area: "docs",
+    features: [
+      { name: "Pages, comments and versions", href: "/changelog/2026-10-17-docs-with-room-for-the-whole-team" },
+      { name: "Toggles, tables and equations", href: "/blog/docs-on-the-demo-now-toggles-tables-equations-find-and-replace" },
+    ],
+  },
+  {
+    area: "projects",
+    features: [
+      { name: "Goals", href: "/docs/goals" },
+      { name: "Time and invoices", href: "/docs/time-tracking" },
+      { name: "Intake forms", href: "/docs/intake-forms" },
+      { name: "Templates", href: "/docs/project-templates" },
+      { name: "Reports", href: "/docs/reports" },
+    ],
+  },
+  {
+    area: "calendar",
+    features: [
+      { name: "Booking pages", href: "/docs/booking-pages" },
+      { name: "Focus time", href: "/docs/pause-notifications" },
+    ],
+  },
+  {
+    area: "tables",
+    features: [
+      { name: "Formulas", href: "/docs/formulas" },
+      { name: "Linked tables and rollups", href: "/docs/linked-tables" },
+    ],
+  },
 ];
 
-/**
- * An index, not a wall of cards: twelve rows in three columns (two on a
- * tablet, one on a phone), each under its own hairline, with its glyph in
- * the item's hue, a name and one line, the whole row the link to its doc.
- * It was twelve identical cards with an icon tile each, the grid DESIGN.md
- * names as the most recognisable shape of a template site; an enumeration
- * that answers "does it have X" reads best as a list you scan. Under the
- * pointer the name takes the ink of a link and the arrow arrives; nothing
- * moves the row.
- */
+/** What belongs to no one area: how a team arrives, and where it works from. Named as the sentence under the panels says them. */
+export const BOX_ALSO: BoxFeature[] = [
+  { name: "imports from Asana, monday.com and ClickUp", href: "/docs/import-from-other-tools" },
+  { name: "the desktop app for Windows, macOS and Linux", href: "/docs/desktop-app" },
+];
+
+/** Every feature the box names, in order. */
+export const BOX: BoxFeature[] = [...BOX_AREAS.flatMap((a) => a.features), ...BOX_ALSO];
+
+/** The stage's light: the area's strong cut from the top right over its tint, as the tour's stage has it. */
+const STAGE: CSSProperties = { backgroundImage: "radial-gradient(90% 100% at 100% 0%, rgb(var(--hue) / 0.22), transparent 70%)" };
+
 export function AlsoInTheBox() {
   return (
-    <ul className="reveal m-0 grid list-none gap-x-8 p-0 sm:grid-cols-2 lg:grid-cols-3">
-      {BOX.map((b, i) => (
-        <li key={b.slug} className="border-t border-border">
-          {/* .box-row and .box-name (globals.css): the name's ink and its arrow under the pointer. */}
-          {/* A row of the interaction layer: the quiet tint under the pointer
-              and the press tint under a finger (storefront audit H11), past
-              the text by 12 px so the words keep their line. */}
-          <Link href={`/docs/${b.slug}`} {...ix("row", { quiet: true })} className="box-row -mx-3 flex h-full min-h-11 gap-3.5 rounded-lg px-3 py-4 sm:py-5">
-            <span aria-hidden="true" className={`${HUE_CLASS[CAMP_HUES[i % CAMP_HUES.length]!]} mt-[3px] text-hue`}>
-              <Icon d={b.d} size={20} />
-            </span>
-            <span className="block min-w-0 flex-1">
-              <span className="box-name text-body font-[590] text-foreground">{b.name}</span>
-              <span className="mt-1 block text-balance text-small text-muted-foreground">{b.line}</span>
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <div className="reveal">
+      <ul
+        aria-label="OneCamp's areas and what each one holds"
+        className="fade-x -mx-4 flex list-none snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 pt-1 [scroll-padding-inline:1rem] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-0 sm:[mask-image:none] lg:grid-cols-3"
+      >
+        {BOX_AREAS.map(({ area, features }) => {
+          const hue = AREA[area].hue;
+          const Moment = MOMENT[area];
+          return (
+            <li
+              key={area}
+              id={`box-${area}`}
+              className={`${hueOrAgent(hue)} group/area relative flex w-[82%] max-w-[340px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl bg-card shadow-e1 sm:w-auto sm:max-w-none`}
+            >
+              <div className="relative h-[196px] overflow-hidden bg-hue-tint" style={STAGE}>
+                <h3 className="absolute left-4 top-4 m-0 flex items-center gap-2.5 font-sans text-body font-[590] text-foreground sm:left-5">
+                  <AreaTile area={area} raised />
+                  {AREA[area].label}
+                </h3>
+                <Moment />
+              </div>
+              <ul className="m-0 flex list-none flex-wrap content-start gap-1.5 p-4 sm:p-5" aria-label={`${AREA[area].label}: what it holds`}>
+                {features.map((f) => (
+                  <li key={f.href}>
+                    <Link
+                      href={f.href}
+                      {...ix("chip", { hue })}
+                      className="inline-flex min-h-11 items-center rounded-md px-2.5 text-caption font-[510] text-foreground ring-1 ring-inset ring-line-2 sm:min-h-8"
+                    >
+                      {f.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-6 text-small text-muted-foreground">
+        Plus{" "}
+        <Link href={BOX_ALSO[0]!.href} className="link-quiet">
+          {BOX_ALSO[0]!.name}
+        </Link>
+        , and{" "}
+        <Link href={BOX_ALSO[1]!.href} className="link-quiet">
+          {BOX_ALSO[1]!.name}
+        </Link>
+        .
+      </p>
+    </div>
   );
 }

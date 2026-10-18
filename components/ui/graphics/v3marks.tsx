@@ -162,7 +162,7 @@ export function StackedCards() {
 export function SunStroke() {
   return (
     <svg aria-hidden="true" viewBox="0 0 120 14" preserveAspectRatio="none" className="pointer-events-none absolute -bottom-[10px] left-[-2%] h-[12px] w-[104%] overflow-visible" fill="none">
-      <path d="M3 9.5C30 4.5 72 3.5 117 7.5" pathLength="240" className="in-draw at-380 stroke-camp-sun" strokeWidth="5" strokeLinecap="round" />
+      <path d="M3 9.5C30 4.5 72 3.5 117 7.5" pathLength="240" className="in-draw at-380 stroke-foreground/80" strokeWidth="5" strokeLinecap="round" />
     </svg>
   )
 }

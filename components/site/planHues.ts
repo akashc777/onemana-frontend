@@ -19,19 +19,18 @@ export const PLAN_HUE = {
 } as const satisfies Record<string, CampHue>;
 
 /**
- * The one raised ground of a comparison (site.md S12): the licence's hue
- * tint, the colour of the licence's dot. It raises the licence in the plan
- * table (PlanComparison), and OneCamp in the home page's comparison
- * (HomeComparison), whose OneCamp answers quote the licence: its column from
- * sm, and its line in each card on a phone.
+ * The one raised ground of a comparison (site.md S12): it raises the licence
+ * in the plan table (PlanComparison), and OneCamp in the home page's
+ * comparison (HomeComparison): its column from sm, and its line in each card
+ * on a phone.
  *
- * Each was white on white in light mode: the columns stood on the card's
- * surface, which is the page's own white (storefront audit §5.2), and the
- * phone's line on the sunken surface, #F8F9FA inside a white card. The tint is
- * a ground of its own in both themes, and under .dark it takes the dark cut,
- * lighter than the page and the card as the card was (planTableLift.test.tsx).
+ * Neutral since design v3.1 (18 Oct 2026): colour names an area of the
+ * product, and a plan or a column is none, so the licence's sun tint it wore
+ * went. The ground is the press step, ink at 7 % (white at 7 % in dark), a
+ * ground of its own on the page and on a card in both themes, so the column
+ * never stands white on white (storefront audit §5.2; planTableLift.test.tsx).
  */
-export const RAISED_TINT = `${HUE_CLASS[PLAN_HUE.lifetime]} bg-hue-tint`;
+export const RAISED_TINT = "bg-press";
 
 /** A raised column's cells: the raised tint between two hairlines. */
 export const RAISED_COLUMN = `${RAISED_TINT} shadow-[inset_1px_0_0_var(--line-2-c),inset_-1px_0_0_var(--line-2-c)]`;

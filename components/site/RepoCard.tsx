@@ -38,7 +38,7 @@ function Head({ copy, licence }: { copy: RepoCopy; licence: string }) {
   return (
     <div className="flex items-start justify-between gap-3">
       <h3 className="flex min-w-0 items-center gap-2 text-body text-foreground">
-        <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-hue" />
+        <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-ink-4" />
         {copy.role}
       </h3>
       <span className="ui-chip shrink-0">

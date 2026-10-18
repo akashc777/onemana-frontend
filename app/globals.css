@@ -272,7 +272,7 @@ body {
     height: 7px;
     flex: none;
     border-radius: 9999px;
-    background: var(--eyebrow-dot, rgb(var(--brand)));
+    background: var(--eyebrow-dot, rgb(var(--ink-4)));
   }
 
   /* A link (site.md S3): the brand text with a 1px underline 3px off at 40%,

@@ -2,11 +2,17 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { footerLinks, site } from "@/lib/site";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { AREA, AREAS, type Area } from "@/lib/areas";
+import type { CampHue } from "@/lib/campHue";
 import { LogoRing } from "@/components/ui/v3";
 import { Icon } from "@/components/ui/icons";
 
-/** The camp flag's six segments, in chart order (site.md S16). */
-export const FLAG = ["sky", "berry", "sun", "lake", "dusk", "moss"] as const;
+/**
+ * The camp flag's six segments (site.md S16): the six areas' hues, in the
+ * areas' order (lib/areas.ts), so the flag is the key the hero opens with:
+ * chat, calls, docs, projects, calendar, tables.
+ */
+export const FLAG = AREAS.filter((a): a is Exclude<Area, "agents"> => a !== "agents").map((a) => AREA[a].hue as CampHue);
 
 type FooterLink = { label: string; href: string; external?: boolean };
 

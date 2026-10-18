@@ -4,6 +4,7 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
 import { FactsStrip } from "@/components/site/FactsStrip"
+import { defaultPricing } from "@/lib/pricing"
 import { CloseOrbit } from "@/components/ui/graphics/v3marks"
 
 /**
@@ -34,6 +35,6 @@ describe("the home page's calm", () => {
   it("nothing in the hero pops or pings on load", () => {
     const page = read("app/page.tsx")
     expect(page).not.toMatch(/\bin-pop\b/)
-    expect(renderToString(<FactsStrip release={null} />)).not.toMatch(/\bin-ping\b/)
+    expect(renderToString(<FactsStrip release={null} pricing={defaultPricing} />)).not.toMatch(/\bin-ping\b/)
   })
 })

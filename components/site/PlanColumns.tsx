@@ -142,7 +142,7 @@ export function PlanColumns({
               <>
                 <div className="flex items-center justify-between gap-3 self-start">
                   <CardName H={H} hue={c.hue} name={c.name} />
-                  {c.pill && <span className="rounded-full bg-camp-moss-tint px-2 text-[12px] font-[510] leading-[22px] text-camp-moss-ink">{c.pill}</span>}
+                  {c.pill && <span className="rounded-full bg-muted px-2 text-[12px] font-[510] leading-[22px] text-muted-foreground shadow-[inset_0_0_0_1px_var(--line-c)]">{c.pill}</span>}
                 </div>
                 <div className="mt-5">{c.price}</div>
                 <div className="mt-1.5">{c.lines}</div>
@@ -195,7 +195,8 @@ interface Card {
 function CardName({ H, hue, name }: { H: "h2" | "h3"; hue: CampHue; name: string }) {
   return (
     <H className="flex items-center gap-2 font-sans text-body font-[590] text-foreground">
-      <Dot hue={hue} />
+      {/* A plan is not an area of the product, so its dot is neutral ink (v3.1). */}
+      <Dot hue="ink" />
       {name}
     </H>
   );

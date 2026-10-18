@@ -24,8 +24,8 @@ describe("the close of the home page", () => {
         expect(page).not.toMatch(/justify-center/)
     })
 
-    it("sits on a band with the 280px welcome spot: the ring, its people turning round it", () => {
-        expect(page).toMatch(/<Section id="start" band="[a-z]+">/)
+    it("sits on the neutral muted ground (v3.1: no area's hue) with the 280px welcome spot", () => {
+        expect(page).toMatch(/<Section id="start" tone="muted">/)
         expect(close.indexOf("<CloseSpot")).toBeGreaterThan(-1)
         expect(close.indexOf("<CloseSpot")).toBeLessThan(close.indexOf("this is for you."))
     })

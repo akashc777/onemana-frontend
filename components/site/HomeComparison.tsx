@@ -33,7 +33,7 @@ const LIFT = RAISED_COLUMN;
 
 /** The row OneCamp loses, said with a berry chip. */
 function LoseChip() {
-  return <span className="hue-berry mt-1 inline-flex h-[22px] items-center rounded-md bg-hue-tint px-2 text-[12px] font-[510] text-hue-ink sm:flex sm:w-fit">We lose this one</span>;
+  return <span className="mt-1 inline-flex h-[22px] items-center rounded-md bg-hover px-2 text-[12px] font-[510] text-muted-foreground shadow-[inset_0_0_0_1px_var(--line-c)] sm:flex sm:w-fit">We lose this one</span>;
 }
 // The stack is what a buyer stops paying for (lib/teamCost SEAT_COSTS): Zoom
 // left it on 16 Oct 2026, with Zoom's place in /compare's cancels list.

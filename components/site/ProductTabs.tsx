@@ -5,7 +5,10 @@ import { rovingIndex } from "@/lib/roving";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Arrow } from "@/components/ui/v3";
 import { hueOrAgent } from "@/components/ui/graphics/hues";
-import type { CampHue } from "@/lib/campHue";
+import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon } from "@/components/ui/icons";
+import { AREA, type Area, type AreaHue } from "@/lib/areas";
+import { AREA_GLYPH } from "@/components/site/Areas";
 import { site } from "@/lib/site";
 import type { LaterTourId, TourId } from "@/components/site/showcase/tour";
 import { TourScene } from "@/components/site/showcase/TourScene";
@@ -19,15 +22,18 @@ import "@/components/site/showcase/calendar.css";
 import "@/components/site/showcase/palette.css";
 
 /**
- * The product, one surface at a time (site.md H4): a row of hued chips, the
- * surface's own title and one sentence, and the surface itself on a stage in
- * its hue: OneCamp drawn by its own components (components/site/showcase),
- * playing one moment when it is chosen and seen.
+ * The product, one area at a time (site.md H4, design v3.1): a row of tabs,
+ * each the area's tile and name, the surface's own title and one sentence,
+ * and the surface itself on a stage in its area's hue: OneCamp drawn by its
+ * own components (components/site/showcase), playing one moment when it is
+ * chosen and seen.
  *
- * Each surface wears its hue from the chip's dot to the stage (G7: Docs dusk,
- * Tasks moss, Calendar sun, Agents the agent's indigo, Ask lake, Chat sky, as
- * #engineering is in the hero). Chat is last because the hero is already a
- * channel.
+ * Each surface wears its area's hue from the tab's tile to the stage, the
+ * hue lib/areas.ts gives that area everywhere, in the areas' order (Docs
+ * dusk, Projects moss, Calendar sun, Chat sky, then the agent's indigo for
+ * Agents and for Ask, which is OneCamp AI answering, side by side at the end
+ * as one area). Docs leads rather than Chat because the hero is already a
+ * channel, and the first surface is the one drawn with the page.
  *
  * Two rules carried over from the showcase this replaced, and
  * app/landingDiet.test.ts holds them: it never advances on its own (a
@@ -39,70 +45,76 @@ import "@/components/site/showcase/palette.css";
  *
  * Only the first surface comes with the page, drawn on the server (`first`).
  * The others are fetched once the tour is near the screen and the browser is
- * idle, or as soon as a reader points at or focuses a chip (tourLater.ts).
+ * idle, or as soon as a reader points at or focuses a tab (tourLater.ts).
  * A surface chosen before it has arrived takes the stage when it does; until
  * then the stage keeps the scene it has, so nothing on the page moves.
  */
 type Tab = {
   id: TourId;
+  /** The area the surface belongs to: its hue and, unless `glyph` says otherwise, its tile's glyph. */
+  area: Area;
   label: string;
-  /** The camp hue, or the agent's indigo. */
-  hue: CampHue | "agent";
+  /** A glyph of its own, where the tab is one part of its area (Ask, in the agents' indigo). */
+  glyph?: "search";
   title: string;
   text: string;
   place: string;
 };
 
-const TABS: Tab[] = [
+export const TABS: Tab[] = [
   {
     id: "docs",
+    area: "docs",
     label: "Docs",
-    hue: "dusk",
     title: "Write together",
     text: "Everyone's cursor on the page. Tasks and channels link straight to the doc.",
     place: "docs",
   },
   {
     id: "tasks",
-    label: "Tasks",
-    hue: "moss",
+    area: "projects",
+    label: "Projects",
     title: "Boards, lists and timelines",
     text: "Every project's work in one place, beside the conversation about it.",
     place: "board",
   },
   {
     id: "calendar",
+    area: "calendar",
     label: "Calendar",
-    hue: "sun",
     title: "One calendar for the work",
     text: "Due dates and events together, two-way Google sync, and booking pages for people outside.",
     place: "1",
   },
   {
+    id: "chat",
+    area: "chat",
+    label: "Chat",
+    title: "Channels, threads and calls",
+    text: "Direct messages, mentions, files and check-ins, and a video call from any channel on your own server.",
+    place: "engineering",
+  },
+  {
     id: "agents",
+    area: "agents",
     label: "Agents",
-    hue: "agent",
     title: "Agents on the record",
     text: "An agent can do only what its person can. Every action, and every refusal, is written down.",
     place: "drill",
   },
   {
     id: "ask",
+    area: "agents",
     label: "Ask",
-    hue: "lake",
+    glyph: "search",
     title: "Search, or ask",
     text: "One box for every message, doc and task. Ask, and OneCamp AI answers only from what you can open.",
     place: "engineering",
   },
-  {
-    id: "chat",
-    label: "Chat",
-    hue: "sky",
-    title: "Channels, threads and calls",
-    text: "Direct messages, mentions, files and check-ins, and a video call from any channel on your own server.",
-    place: "engineering",
-  },
 ];
+
+/** A tab's hue: always its area's. */
+const hueOf = (t: Tab): AreaHue => AREA[t.area].hue;
 
 const hueClass = hueOrAgent;
 
@@ -120,7 +132,7 @@ function fetchScene(id: LaterTourId): Promise<ScenePair> {
 }
 
 /** The tour's ground: the hue's tint with a 22% radial of its strong cut from the top right. Its tint changes over 240ms. */
-function Stage({ children, hue }: { children: ReactNode; hue: CampHue | "agent" }) {
+function Stage({ children, hue }: { children: ReactNode; hue: AreaHue }) {
   return (
     <div
       className={`${hueClass(hue)} relative isolate overflow-hidden rounded-3xl bg-hue-tint p-2 transition-colors duration-panel ease-out sm:p-8`}
@@ -129,6 +141,12 @@ function Stage({ children, hue }: { children: ReactNode; hue: CampHue | "agent" 
       {children}
     </div>
   );
+}
+
+/** A tab's tile: its area's glyph (or its own) in the area's strong cut on its tint, 28px. */
+function TabTile({ tab }: { tab: Tab }) {
+  const Glyph = AREA_GLYPH[tab.area];
+  return <Tile hue={hueOf(tab)} size="sm">{tab.glyph ? <Icon name={tab.glyph} /> : <Glyph />}</Tile>;
 }
 
 export function ProductTabs({ first }: { first: ReactNode }) {
@@ -214,7 +232,7 @@ export function ProductTabs({ first }: { first: ReactNode }) {
         role="tablist"
         aria-label="Parts of OneCamp"
         onKeyDown={onKeyDown}
-        className="fade-x -mx-4 flex snap-x gap-1 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 sm:[mask-image:none]"
+        className="fade-x -mx-4 flex snap-x gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 sm:[mask-image:none]"
       >
         {TABS.map((t, i) => (
           <button
@@ -231,13 +249,13 @@ export function ProductTabs({ first }: { first: ReactNode }) {
             onClick={() => choose(i)}
             onPointerEnter={() => want(t.id)}
             onFocus={() => want(t.id)}
-            // A tab of the layer in its own hue (storefront audit H9: the
+            // A tab of the layer in its area's hue (storefront audit H9: the
             // hover was grey): its tint under the pointer, the raised knob
             // at e2 when chosen.
-            {...ix("tab", { hue: t.hue })}
-            className={`${hueClass(t.hue)} flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-md px-3 text-caption font-[510] text-muted-foreground [--ix-knob:var(--e-e2)] sm:min-h-8`}
+            {...ix("tab", { hue: hueOf(t) })}
+            className={`${hueClass(hueOf(t))} flex min-h-11 shrink-0 snap-start items-center gap-2.5 rounded-lg pl-1.5 pr-3.5 text-small font-[510] text-muted-foreground [--ix-knob:var(--e-e2)] sm:min-h-10`}
           >
-            <span aria-hidden="true" className="size-[7px] rounded-full bg-hue" />
+            <TabTile tab={t} />
             {t.label}
           </button>
         ))}
@@ -257,13 +275,13 @@ export function ProductTabs({ first }: { first: ReactNode }) {
           <a href={site.demoUrlTo(tab.place)} target="_blank" rel="noreferrer" className="go tap-target mt-4">
             Open it in the live demo <Arrow size={14} />
           </a>
-          <p className={`${hueClass(tab.hue)} mt-6 hidden items-center gap-2 border-y border-border py-3 text-caption text-muted-foreground lg:flex`}>
+          <p className={`${hueClass(hueOf(tab))} mt-6 hidden items-center gap-2 border-y border-border py-3 text-caption text-muted-foreground lg:flex`}>
             <span aria-hidden="true" className="size-[7px] rounded-full bg-hue" />
             The live demo&apos;s data, in the app&apos;s own design
           </p>
         </div>
 
-        <Stage hue={onStage.hue}>
+        <Stage hue={hueOf(onStage)}>
           {/* Keyed by the surface: a new tab's scene cross-fades in, its parts in a stagger. */}
           <div key={onStage.id} className="sc-swap" data-sc-entering={chosen ? "" : undefined}>
             {scene ? <TourScene desktop={scene.desktop} phone={scene.phone} /> : first}
