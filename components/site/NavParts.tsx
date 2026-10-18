@@ -26,7 +26,7 @@ const LOOKS = {
    * the raised chip, the sidebar's form (storefront audit G10: it was ink at
    * 100% against 90%, which nobody could see).
    */
-  menu: { kind: "nav", base: "-mx-2 flex min-h-12 items-center rounded-lg px-2 text-body font-[510] text-foreground/90" },
+  menu: { kind: "nav", base: "-mx-2 flex min-h-12 items-center gap-3 rounded-lg px-2 text-body font-[510] text-foreground/90" },
   /** Pricing, beside the menu button on a phone. */
   compact: { kind: "tab", base: "nav-link inline-flex min-h-11 items-center rounded-md px-2.5 text-small" },
 } as const;
@@ -56,14 +56,21 @@ export function NavBar({ children }: { children: ReactNode }) {
  * current on that page and its children; a link to a home-page section never
  * is. Current is said in weight as well as colour, not colour alone.
  */
-export function NavLink({ href, look = "bar", children }: { href: string; look?: keyof typeof LOOKS; children: string }) {
+export function NavLink({ href, look = "bar", icon, children }: { href: string; look?: keyof typeof LOOKS; icon?: ReactNode; children: string }) {
   const pathname = usePathname() ?? "";
   const current = !href.includes("#") && (pathname === href || pathname.startsWith(`${href}/`));
   const l = LOOKS[look];
   return (
     <Link href={href} aria-current={current ? "page" : undefined} {...ix(l.kind)} className={l.base}>
       {/* The bar's current page turns 510; the label keeps that width at 400. */}
-      {l.kind === "tab" ? <span data-label={children}>{children}</span> : children}
+      {l.kind === "tab" ? (
+        <span data-label={children}>{children}</span>
+      ) : (
+        <>
+          {icon}
+          {children}
+        </>
+      )}
     </Link>
   );
 }

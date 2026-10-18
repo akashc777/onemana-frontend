@@ -5,8 +5,31 @@ import { LogoRing } from "@/components/ui/v3";
 import { ThemeToggle, ThemeSegments } from "@/components/site/ThemeToggle";
 import { MobileMenu, NavBar, NavLink } from "@/components/site/NavParts";
 import { GitHubLink } from "@/components/site/GitHubLink";
-import { NewTabMark } from "@/components/ui/icons";
 import { ix } from "@/lib/interactive";
+import { Tile } from "@/components/ui/graphics/Tile";
+import { Icon, NewTabMark, type IconName } from "@/components/ui/icons";
+
+/**
+ * The phone menu's rows each lead with a 28px tile (v3.1): neutral ink for
+ * the site's own pages, and the agents' indigo for Safe AI, the one row that
+ * names an area of the product. A page of words became a menu you can scan.
+ */
+const MENU_GLYPH: Record<string, { icon: IconName; hue: "ink" | "agent" }> = {
+  "/#product": { icon: "home", hue: "ink" },
+  "/#governance": { icon: "agent", hue: "agent" },
+  "/pricing": { icon: "receipt", hue: "ink" },
+  "/compare": { icon: "chart", hue: "ink" },
+  "/docs": { icon: "doc", hue: "ink" },
+  "/account": { icon: "user", hue: "ink" },
+};
+function MenuTile({ href }: { href: string }) {
+  const g = MENU_GLYPH[href] ?? { icon: "arrow-right" as IconName, hue: "ink" as const };
+  return (
+    <Tile hue={g.hue} size="sm">
+      <Icon name={g.icon} />
+    </Tile>
+  );
+}
 
 /**
  * The nav (design v3, site.md S1): 64px, transparent at the top and the page
@@ -66,11 +89,11 @@ export function Nav({ stars = null }: { stars?: number | null }) {
                 stars, then the theme under a hairline, then the two ways in. */}
             <div className="container-x flex flex-col gap-0.5 pb-5 pt-2">
               {navLinks.map((l) => (
-                <NavLink key={l.href} href={l.href} look="menu">
+                <NavLink key={l.href} href={l.href} look="menu" icon={<MenuTile href={l.href} />}>
                   {l.label}
                 </NavLink>
               ))}
-              <NavLink href="/account" look="menu">
+              <NavLink href="/account" look="menu" icon={<MenuTile href="/account" />}>
                 Sign in
               </NavLink>
               <GitHubLink stars={stars} look="menu" />

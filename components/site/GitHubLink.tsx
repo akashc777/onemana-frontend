@@ -1,6 +1,7 @@
 import { formatStars, starsInWords } from "@/lib/github";
 import { site } from "@/lib/site";
 import { ix } from "@/lib/interactive";
+import { Tile } from "@/components/ui/graphics/Tile";
 import { Icon } from "@/components/ui/icons";
 
 /**
@@ -32,9 +33,12 @@ export function GitHubLink({ stars, look = "bar" }: { stars: number | null; look
         rel="noreferrer"
         aria-label={githubLabel(stars)}
         {...ix("nav")}
-        className="-mx-2 flex min-h-12 items-center gap-2.5 rounded-lg px-2 text-body font-[510] text-foreground/90"
+        className="-mx-2 flex min-h-12 items-center gap-3 rounded-lg px-2 text-body font-[510] text-foreground/90"
       >
-        <Icon name="github" size={18} />
+        {/* A neutral tile, as the menu's other rows lead with. */}
+        <Tile hue="ink" size="sm">
+          <Icon name="github" />
+        </Tile>
         GitHub
         <span className="ml-auto inline-flex items-center gap-1.5 text-small font-normal tabular-nums text-muted-foreground">
           {count !== null && (
