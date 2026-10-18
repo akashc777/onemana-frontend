@@ -1,4 +1,4 @@
-import { getDoc, listPublishedDocs, type DocPage } from "@/lib/docs";
+import { publishedDocsWithContent, type DocPage } from "@/lib/docs";
 import { renderMarkdown } from "@/lib/markdown";
 import { articleSections, enhanceArticle } from "@/lib/article";
 import type { SearchIndex } from "@/lib/docsSearch";
@@ -11,16 +11,16 @@ import type { SearchIndex } from "@/lib/docsSearch";
 export const revalidate = 300;
 
 export async function GET() {
-  let docs: DocPage[] = [];
+  // Every guide with its body in one request, not a request per guide.
+  let full: DocPage[] = [];
   try {
-    docs = await listPublishedDocs();
+    full = await publishedDocsWithContent();
   } catch {
-    docs = [];
+    full = [];
   }
-  const full = await Promise.all(docs.map((d) => getDoc(d.slug)));
   const index: SearchIndex = {
     docs: full
-      .filter((d): d is DocPage => d !== null)
+      .filter((d) => d.content)
       .map((doc) => ({
         s: doc.slug,
         t: doc.title,

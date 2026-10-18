@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { adminApi, type Subscription, type Customer } from "@/lib/adminApi";
+import { adminApi, type Subscription } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { formatDateTime, formatDate } from "@/lib/format";
 import { AsyncState, DataTable, StatusPill, Td, Tr } from "./ui";
@@ -14,9 +14,9 @@ interface Loaded {
 
 export function SubscriptionsTable() {
   const { data, loading, error, reload } = useAsync<Loaded>(() =>
-    Promise.all([adminApi.subscriptions(), adminApi.customers()]).then(([subs, custs]) => ({
+    adminApi.subscriptionsWithEmails().then((subs) => ({
       subs,
-      emailById: Object.fromEntries(custs.map((c: Customer) => [c.id, c.email])),
+      emailById: Object.fromEntries(subs.map((s) => [s.customer_id, s.customer_email ?? ""])),
     })),
   );
   const [filter, setFilter] = useState<RangeFilter>(emptyFilter);

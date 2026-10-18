@@ -1,6 +1,6 @@
 // Typed client for the self-hosted docs CMS (onemana-backend).
 
-import { site } from "./site";
+import { backendJSON } from "./backend";
 
 export interface DocPage {
   id: string;
@@ -28,15 +28,6 @@ export interface DocNavGroup {
   items: DocNavItem[];
 }
 
-async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: boolean } = {}): Promise<T> {
-  const init: RequestInit & { next?: { revalidate: number } } = opts.noStore
-    ? { cache: "no-store" }
-    : { next: { revalidate: opts.revalidate ?? 300 } };
-  const res = await fetch(`${site.backendUrl}${path}`, init);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((data as { msg?: string })?.msg || `Request failed (${res.status})`);
-  return (data as { data: T }).data;
-}
 
 /** Published docs in sidebar order (content omitted by the API).
  *
@@ -45,13 +36,21 @@ async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: b
  *  a no-store read inside a page that regenerates on a timer makes Next throw
  *  DYNAMIC_SERVER_USAGE, and every doc page answered 500 for that reason. */
 export async function listPublishedDocs(opts: { fresh?: boolean } = {}): Promise<DocPage[]> {
-  return (await getJSON<DocPage[] | null>("/onecamp/docs", opts.fresh ? { noStore: true } : { revalidate: 120 })) ?? [];
+  return (await backendJSON<DocPage[] | null>("/onecamp/docs", opts.fresh ? { noStore: true } : { revalidate: 120 })) ?? [];
+}
+
+/** Every published guide with its body, in one request (the docs search
+ *  index). A guide an older backend sent without its body is read by itself,
+ *  so the index is whole whichever backend answers. */
+export async function publishedDocsWithContent(): Promise<DocPage[]> {
+  const docs = (await backendJSON<DocPage[] | null>("/onecamp/docs?include=content", { revalidate: 300 })) ?? [];
+  return Promise.all(docs.map(async (d) => (d.content ? d : ((await getDoc(d.slug)) ?? d))));
 }
 
 /** A single published doc by slug. Returns null on 404. */
 export async function getDoc(slug: string): Promise<DocPage | null> {
   try {
-    return await getJSON<DocPage>(`/onecamp/docs/${encodeURIComponent(slug)}`, { revalidate: 120 });
+    return await backendJSON<DocPage>(`/onecamp/docs/${encodeURIComponent(slug)}`, { revalidate: 120 });
   } catch {
     return null;
   }

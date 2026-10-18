@@ -218,6 +218,8 @@ export interface Subscription {
   current_period_end: string | null;
   cancel_at_period_end: boolean;
   license_id?: string | null;
+  /** The customer's email, carried by the admin list. */
+  customer_email?: string;
   created_at: string;
   updated_at: string;
 }
@@ -929,11 +931,26 @@ export const adminApi = {
     if (!res.ok) throw new Error(data?.msg || "Step failed");
   },
 
+  // The token check asks /admin/whoami, which reads nothing. A backend from
+  // before it answers 404, and is asked the old way (/admin/config).
   async verify(token: string): Promise<boolean> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
+    const res = await fetch(`${site.backendUrl}/onecamp/admin/whoami`, {
       headers: { "X-Admin-Token": token },
     });
-    return res.ok;
+    if (res.status !== 404) return res.ok;
+    const old = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
+      headers: { "X-Admin-Token": token },
+    });
+    return old.ok;
+  },
+  // Subscriptions with each customer's email, which the list carries; a
+  // backend that does not send it has its customers looked up, as before.
+  async subscriptionsWithEmails(): Promise<Subscription[]> {
+    const subs = await adminGet<{ data: Subscription[] }>("/onecamp/admin/subscriptions").then((d) => d.data ?? []);
+    if (subs.every((s) => s.customer_email)) return subs;
+    const custs = await adminGet<{ data: Customer[] }>("/onecamp/admin/customers").then((d) => d.data ?? []);
+    const emailById = new Map(custs.map((c) => [c.id, c.email]));
+    return subs.map((s) => ({ ...s, customer_email: s.customer_email || emailById.get(s.customer_id) || "" }));
   },
   orders: () => adminGet<{ data: Order[] }>("/onecamp/admin/orders").then((d) => d.data ?? []),
   customers: () => adminGet<{ data: Customer[] }>("/onecamp/admin/customers").then((d) => d.data ?? []),

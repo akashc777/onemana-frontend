@@ -1,5 +1,6 @@
 // Typed client for the self-hosted blog (onemana-backend).
 
+import { backendJSON } from "./backend";
 import { site } from "./site";
 
 export interface BlogPost {
@@ -26,15 +27,6 @@ export function mediaUrl(url: string): string {
   return `${site.backendUrl}${url.startsWith("/") ? "" : "/"}${url}`;
 }
 
-async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: boolean } = {}): Promise<T> {
-  const init: RequestInit & { next?: { revalidate: number } } = opts.noStore
-    ? { cache: "no-store" }
-    : { next: { revalidate: opts.revalidate ?? 300 } };
-  const res = await fetch(`${site.backendUrl}${path}`, init);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((data as { msg?: string })?.msg || `Request failed (${res.status})`);
-  return (data as { data: T }).data;
-}
 
 /** Published posts (content omitted by the API), newest first.
  *
@@ -43,13 +35,13 @@ async function getJSON<T>(path: string, opts: { revalidate?: number; noStore?: b
  *  regenerates on a timer must (a post's "more from the blog"): a no-store
  *  read there makes Next throw DYNAMIC_SERVER_USAGE (lib/docsRendering.test.ts). */
 export async function listPublishedPosts(opts: { cached?: boolean } = {}): Promise<BlogPost[]> {
-  return (await getJSON<BlogPost[] | null>("/onecamp/blog", opts.cached ? { revalidate: 120 } : { noStore: true })) ?? [];
+  return (await backendJSON<BlogPost[] | null>("/onecamp/blog", opts.cached ? { revalidate: 120 } : { noStore: true })) ?? [];
 }
 
 /** A single published post by slug. Returns null on 404. */
 export async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    return await getJSON<BlogPost>(`/onecamp/blog/${encodeURIComponent(slug)}`, { revalidate: 120 });
+    return await backendJSON<BlogPost>(`/onecamp/blog/${encodeURIComponent(slug)}`, { revalidate: 120 });
   } catch {
     return null;
   }
