@@ -14,7 +14,55 @@ export function setToken(t: string) {
   window.sessionStorage.setItem(TOKEN_KEY, t);
 }
 export function clearToken() {
+  if (typeof window === "undefined") return;
   window.sessionStorage.removeItem(TOKEN_KEY);
+}
+
+/** AdminAuthError: the admin token was refused (401). The admin is signed out. */
+export class AdminAuthError extends Error {
+  constructor() {
+    super("unauthorized");
+    this.name = "AdminAuthError";
+  }
+}
+
+const signedOutListeners = new Set<() => void>();
+
+/** onAdminSignedOut calls fn when a request finds the token refused; returns
+ *  the unsubscribe. useAdminAuth uses it to show the sign-in again. */
+export function onAdminSignedOut(fn: () => void): () => void {
+  signedOutListeners.add(fn);
+  return () => {
+    signedOutListeners.delete(fn);
+  };
+}
+
+/** adminFetch is every admin request: the token added, `json` sent as a JSON
+ *  body, and a 401 handled here (the token cleared, the page told) for reads
+ *  and changes alike. The caller reads the answer as it always did. */
+async function adminFetch(path: string, init: { method?: string; json?: unknown; body?: BodyInit } = {}): Promise<Response> {
+  const headers: Record<string, string> = { "X-Admin-Token": getToken() };
+  let body = init.body;
+  if (init.json !== undefined) {
+    headers["Content-Type"] = "application/json";
+    body = JSON.stringify(init.json);
+  }
+  const res = await fetch(`${site.backendUrl}${path}`, { method: init.method ?? "GET", headers, body });
+  if (res.status === 401) {
+    clearToken();
+    signedOutListeners.forEach((fn) => fn());
+    throw new AdminAuthError();
+  }
+  return res;
+}
+
+/** adminReq is adminFetch reading the envelope: `data` back, or the backend's
+ *  reason (`msg`) thrown. For new code. */
+export async function adminReq<T>(path: string, init: { method?: string; json?: unknown; body?: BodyInit } = {}): Promise<T> {
+  const res = await adminFetch(path, init);
+  const data = (await res.json().catch(() => ({}))) as { data?: T; msg?: string };
+  if (!res.ok) throw new Error(data?.msg || `Request failed (${res.status})`);
+  return data.data as T;
 }
 
 /** Builds a ?from=&to= query string from optional YYYY-MM-DD dates. */
@@ -170,10 +218,7 @@ export interface ServerOrderRow {
 }
 
 async function adminGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${site.backendUrl}${path}`, {
-    headers: { "X-Admin-Token": getToken() },
-  });
-  if (res.status === 401) throw new Error("unauthorized");
+  const res = await adminFetch(path);
   if (!res.ok) throw new Error(`Request failed (${res.status})`);
   return (await res.json()) as T;
 }
@@ -778,10 +823,7 @@ export const adminApi = {
    * were. Runs on a timer too; this is for when a customer is asking now.
    */
   async reconcilePayments(): Promise<PaymentReconciliation> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/payments/reconcile`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/payments/reconcile`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PaymentReconciliation };
     if (!res.ok) throw new Error(data?.msg || "Could not reconcile payments");
     if (!data?.data) throw new Error("Reconciliation ran but returned nothing to show");
@@ -796,7 +838,7 @@ export const adminApi = {
    */
   /** Ask OVH for a key that also covers Public Cloud; returns the link to approve at OVH. */
   async requestCloudAccess(): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/ovh/cloud-access`, { method: "POST", headers: { "X-Admin-Token": getToken() } });
+    const res = await adminFetch(`/onecamp/admin/ovh/cloud-access`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { validation_url?: string } };
     if (!res.ok || !data?.data?.validation_url) throw new Error(data?.msg || "Could not ask OVH for access");
     return data.data.validation_url;
@@ -804,7 +846,7 @@ export const adminApi = {
 
   /** Whether the OVH token can reach the Public Cloud project that holds extra-storage buckets. */
   async checkStorage(): Promise<StorageCheck> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/storage/check`, { headers: { "X-Admin-Token": getToken() } });
+    const res = await adminFetch(`/onecamp/admin/storage/check`);
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: StorageCheck };
     if (!res.ok || !data?.data) throw new Error(data?.msg || "Could not check");
     return data.data;
@@ -838,10 +880,7 @@ export const adminApi = {
 
   /** Look for a delivered machine for whoever is waiting. */
   async sweepServers(): Promise<Record<string, unknown>> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/sweep`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/instances/sweep`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: Record<string, unknown> };
     if (!res.ok) throw new Error(data?.msg || "Sweep failed");
     return data?.data ?? {};
@@ -856,10 +895,7 @@ export const adminApi = {
    * line meets a bad build before customers who chose nothing.
    */
   async updateWorkspaces(): Promise<InstanceUpdateResult> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/update`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/instances/update`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: InstanceUpdateResult };
     if (!res.ok) throw new Error(data?.msg || "Update pass failed");
     return data?.data ?? { considered: 0 };
@@ -873,10 +909,7 @@ export const adminApi = {
    * customer's own machine and mails it to the address that pays for it.
    */
   async resetWorkspacePassword(id: string): Promise<WorkspaceResetResult> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/reset-password`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/instance/${id}/reset-password`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: WorkspaceResetResult };
     if (!res.ok) throw new Error(data?.msg || "Could not issue a reset link");
     if (!data?.data) throw new Error("The reset succeeded but returned nothing to show");
@@ -890,10 +923,7 @@ export const adminApi = {
    * every password recovery a full account takeover for anyone who could ask for one.
    */
   async clearWorkspace2FA(id: string): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/clear-2fa`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/instance/${id}/clear-2fa`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not clear two-factor");
     return data?.msg || "Two-factor cleared";
@@ -901,32 +931,21 @@ export const adminApi = {
 
   /** Move a workspace to another machine: same size (off a failing machine) or another size. */
   async startMove(id: string, size: string, reason: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/${id}/move`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken(), "Content-Type": "application/json" },
-      body: JSON.stringify({ size, reason }),
-    });
+    const res = await adminFetch(`/onecamp/admin/instances/${id}/move`, { method: "POST", json: { size, reason } });
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not start the move");
   },
 
   /** The operator's mark on a workspace's extra storage: "attached", or "" to clear an ended add-on. */
   async setStorageAddon(id: string, state: "attached" | ""): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instances/${id}/storage`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken(), "Content-Type": "application/json" },
-      body: JSON.stringify({ state }),
-    });
+    const res = await adminFetch(`/onecamp/admin/instances/${id}/storage`, { method: "POST", json: { state } });
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Could not update the add-on");
   },
 
   /** Move one workspace forward by a step, rather than waiting for the timer. */
   async stepInstance(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/instance/${id}/step`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/instance/${id}/step`, { method: "POST" });
     const data = (await res.json().catch(() => ({}))) as { msg?: string };
     if (!res.ok) throw new Error(data?.msg || "Step failed");
   },
@@ -958,11 +977,7 @@ export const adminApi = {
   invoices: () => adminGet<{ data: Invoice[] }>("/onecamp/admin/invoices").then((d) => d.data ?? []),
   config: () => adminGet<{ data: Record<string, string> }>("/onecamp/admin/config").then((d) => d.data ?? {}),
   async setConfig(key: string, value: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/config`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify({ key, value }),
-    });
+    const res = await adminFetch(`/onecamp/admin/config`, { method: "POST", json: { key, value } });
     if (!res.ok) throw new Error(`Failed to save ${key}`);
   },
   invoiceCsvUrl: () => `${site.backendUrl}/onecamp/admin/invoices.csv`,
@@ -990,20 +1005,13 @@ export const adminApi = {
       `/onecamp/admin/gst-filings${fy ? `?fy=${fy}` : ""}`,
     ).then((d) => ({ fyStart: d.fy_start, months: d.data ?? [] })),
   async markGSTFiled(payload: MarkFiledPayload): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/gst-filings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/gst-filings`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to mark filed");
     return (data as { msg?: string })?.msg || "Marked filed";
   },
   async unmarkGSTFiled(returnType: string, year: number, month: number): Promise<void> {
-    const res = await fetch(
-      `${site.backendUrl}/onecamp/admin/gst-filings?return_type=${encodeURIComponent(returnType)}&year=${year}&month=${month}`,
-      { method: "DELETE", headers: { "X-Admin-Token": getToken() } },
-    );
+    const res = await adminFetch(`/onecamp/admin/gst-filings?return_type=${encodeURIComponent(returnType)}&year=${year}&month=${month}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to unmark filing");
   },
 
@@ -1011,11 +1019,7 @@ export const adminApi = {
   creditNotes: () =>
     adminGet<{ data: CreditNote[] }>("/onecamp/admin/credit-notes").then((d) => d.data ?? []),
   async createCreditNote(payload: CreditNotePayload): Promise<CreditNote> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/credit-note`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/credit-note`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to issue credit note");
     return (data as { data: CreditNote }).data;
@@ -1023,10 +1027,7 @@ export const adminApi = {
 
   // ---- Delete (admin cleanup of test data) ----
   async deleteOrder(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/order/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error(await refusal(res, "Failed to delete order"));
   },
   // Transactional email that has been attempted, with what happened. Answers
@@ -1034,61 +1035,40 @@ export const adminApi = {
   // only be answered by grepping a log.
   async listEmails(status?: OutboxStatus): Promise<{ emails: OutboxEmail[]; counts: Record<string, number> }> {
     const q = status ? `?status=${encodeURIComponent(status)}` : "";
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/emails${q}`, {
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/emails${q}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to load emails");
     const d = (data as { data?: { emails?: OutboxEmail[]; counts?: Record<string, number> } })?.data;
     return { emails: d?.emails || [], counts: d?.counts || {} };
   },
   async resendEmail(id: string): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/emails/${id}/resend`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/emails/${id}/resend`, { method: "POST" });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to queue the resend");
     return (data as { msg?: string })?.msg || "Queued";
   },
   async refundOrder(id: string): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}/refund`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/order/${id}/refund`, { method: "POST" });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to mark refunded");
     return (data as { msg?: string })?.msg || "Marked refunded";
   },
   async revokeOrderLicense(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/order/${id}/revoke-license`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/order/${id}/revoke-license`, { method: "POST" });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to revoke license");
   },
   async cancelSubscription(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/subscription/${id}/cancel`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/subscription/${id}/cancel`, { method: "POST" });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to cancel subscription");
   },
   async deleteCustomer(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/customer/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error(await refusal(res, "Failed to delete customer"));
   },
   async updateCustomerName(id: string, name: string): Promise<Customer> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify({ name }),
-    });
+    const res = await adminFetch(`/onecamp/admin/customer/${id}`, { method: "PUT", json: { name } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update customer");
     return (data as { data: Customer }).data;
@@ -1102,11 +1082,7 @@ export const adminApi = {
    * is the current address typed out, which guards against acting on the wrong row.
    */
   async changeCustomerEmail(id: string, newEmail: string, confirmCurrent: string): Promise<EmailChangeResult> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}/email`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify({ new_email: newEmail, confirm_current: confirmCurrent }),
-    });
+    const res = await adminFetch(`/onecamp/admin/customer/${id}/email`, { method: "PUT", json: { new_email: newEmail, confirm_current: confirmCurrent } });
     const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: EmailChangeResult };
     if (!res.ok) throw new Error(data?.msg || "Could not change the address");
     if (!data?.data) throw new Error("The address changed but the server returned nothing to show");
@@ -1119,19 +1095,12 @@ export const adminApi = {
   /** The operator's own browsers, whose visits every report leaves out. */
   excludedBrowsers: () => adminGet<{ data: ExcludedBrowser[] }>("/onecamp/admin/visits/excluded").then((d) => d.data ?? []),
   excludeBrowser: async (visitorId: string, label: string): Promise<ExcludedBrowser[]> => {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/visits/excluded`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify({ visitor_id: visitorId, label }),
-    });
+    const res = await adminFetch(`/onecamp/admin/visits/excluded`, { method: "POST", json: { visitor_id: visitorId, label } });
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
     return ((await res.json()) as { data: ExcludedBrowser[] }).data ?? [];
   },
   includeBrowser: async (visitorId: string): Promise<ExcludedBrowser[]> => {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/visits/excluded/${encodeURIComponent(visitorId)}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/visits/excluded/${encodeURIComponent(visitorId)}`, { method: "DELETE" });
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
     return ((await res.json()) as { data: ExcludedBrowser[] }).data ?? [];
   },
@@ -1139,20 +1108,13 @@ export const adminApi = {
     adminGet<{ data: EarningsSummary }>(`/onecamp/admin/earnings${rangeQuery(from, to)}`).then((d) => d.data),
   taxPayments: () => adminGet<{ data: TaxPayment[] }>("/onecamp/admin/tax-payments").then((d) => d.data ?? []),
   async createTaxPayment(payload: TaxPaymentPayload): Promise<TaxPayment> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/tax-payments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/tax-payments`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to add payment");
     return (data as { data: TaxPayment }).data;
   },
   async deleteTaxPayment(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/tax-payments/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/tax-payments/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete payment");
   },
 
@@ -1171,51 +1133,32 @@ export const adminApi = {
    * point it somewhere else.
    */
   async blogImportRun(req: BlogImportRequest): Promise<BlogImportResult> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/import`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(req),
-    });
+    const res = await adminFetch(`/onecamp/admin/blog/import`, { method: "POST", json: req });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(json?.msg || "Import failed");
     return { results: json.data ?? [], summary: json.summary ?? {} };
   },
   blogGet: (id: string) => adminGet<{ data: AdminBlogPost }>(`/onecamp/admin/blog/${id}`).then((d) => d.data),
   async blogCreate(payload: BlogPostPayload): Promise<AdminBlogPost> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/blog`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create post");
     return (data as { data: AdminBlogPost }).data;
   },
   async blogUpdate(id: string, payload: BlogPostPayload): Promise<AdminBlogPost> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/blog/${id}`, { method: "PUT", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update post");
     return (data as { data: AdminBlogPost }).data;
   },
   async blogDelete(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/blog/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete post");
   },
   async blogUpload(file: File): Promise<{ url: string }> {
     const form = new FormData();
     form.append("file", file);
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/blog/media`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-      body: form,
-    });
+    const res = await adminFetch(`/onecamp/admin/blog/media`, { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Upload failed");
     return (data as { data: { url: string } }).data;
@@ -1225,89 +1168,56 @@ export const adminApi = {
   docList: () => adminGet<{ data: AdminDoc[] }>("/onecamp/admin/docs").then((d) => d.data ?? []),
   docGet: (id: string) => adminGet<{ data: AdminDoc }>(`/onecamp/admin/docs/${id}`).then((d) => d.data),
   async docCreate(payload: DocPayload): Promise<AdminDoc> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/docs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/docs`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create doc");
     return (data as { data: AdminDoc }).data;
   },
   async docUpdate(id: string, payload: DocPayload): Promise<AdminDoc> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/docs/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/docs/${id}`, { method: "PUT", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update doc");
     return (data as { data: AdminDoc }).data;
   },
   async docDelete(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/docs/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/docs/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete doc");
   },
 
   // ---- Announcements (broadcast) ----
   announcements: () => adminGet<{ data: Announcement[] }>("/onecamp/admin/announcements").then((d) => d.data ?? []),
   async createAnnouncement(payload: { title: string; preheader: string; body: string; media_url: string }): Promise<Announcement> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/announcements`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to create");
     return (data as { data: Announcement }).data;
   },
   async updateAnnouncement(id: string, payload: { title: string; preheader: string; body: string; media_url: string }): Promise<Announcement> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/announcements/${id}`, { method: "PUT", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to update");
     return (data as { data: Announcement }).data;
   },
   async sendAnnouncement(id: string): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}/send`, {
-      method: "POST",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/announcements/${id}/send`, { method: "POST" });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to send");
     return (data as { msg?: string })?.msg || "Broadcast started";
   },
   async testAnnouncement(id: string, email: string): Promise<string> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}/test`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify({ email }),
-    });
+    const res = await adminFetch(`/onecamp/admin/announcements/${id}/test`, { method: "POST", json: { email } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to send test");
     return (data as { msg?: string })?.msg || "Test sent";
   },
   async deleteAnnouncement(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/announcements/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
+    const res = await adminFetch(`/onecamp/admin/announcements/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete");
   },
 
   // ---- Gift (comp a license or Cloud months) ----
   async gift(payload: { email: string; name: string; kind: "license" | "subscription"; months?: number }): Promise<GiftResult> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/gift`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Admin-Token": getToken() },
-      body: JSON.stringify(payload),
-    });
+    const res = await adminFetch(`/onecamp/admin/gift`, { method: "POST", json: payload });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to gift");
     return (data as { data: GiftResult }).data;

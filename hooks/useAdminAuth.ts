@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { adminApi, clearToken, getToken, setToken } from "@/lib/adminApi";
+import { adminApi, clearToken, getToken, onAdminSignedOut, setToken } from "@/lib/adminApi";
 import { rememberOwnBrowser } from "@/lib/ownBrowser";
 
 export type AuthStatus = "checking" | "authed" | "unauthed";
@@ -40,6 +40,11 @@ export function useAdminAuth(): AdminAuth {
       alive = false;
     };
   }, []);
+
+  // A request anywhere on the page that finds the token refused (it expired,
+  // or was rotated) signs the admin out here, instead of leaving a page that
+  // looks signed in and fails every change.
+  useEffect(() => onAdminSignedOut(() => setStatus("unauthed")), []);
 
   const signIn = useCallback(async (token: string) => {
     const ok = await adminApi.verify(token.trim()).catch(() => false);
