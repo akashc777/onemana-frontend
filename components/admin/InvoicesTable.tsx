@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { adminApi, downloadWithToken, type Invoice } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { formatINR, formatDateTime } from "@/lib/format";
-import { AsyncState, DataTable, RowDeleteButton, Td, Tr } from "./ui";
+import { AsyncState, DataTable, Td, Tr } from "./ui";
 import { FilterBar, emptyFilter, matchesQuery, withinRange, type RangeFilter } from "./filtering";
 import { GSTR1Panel } from "./GSTR1Panel";
 import { GSTR3BPanel } from "./GSTR3BPanel";
@@ -15,7 +15,6 @@ export function InvoicesTable() {
   const { data, loading, error, reload } = useAsync<Invoice[]>(() => adminApi.invoices());
   const [exporting, setExporting] = useState(false);
   const [downloadErr, setDownloadErr] = useState("");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<RangeFilter>(emptyFilter);
   const [creditFor, setCreditFor] = useState<Invoice | null>(null);
   const [cnReloadKey, setCnReloadKey] = useState(0);
@@ -27,19 +26,6 @@ export function InvoicesTable() {
       ),
     [data, filter],
   );
-
-  async function remove(inv: Invoice) {
-    if (!window.confirm(`Delete invoice ${inv.invoice_no}? For real sales this breaks your filing sequence. Only do this for test data. This cannot be undone.`)) return;
-    setDeletingId(inv.id);
-    try {
-      await adminApi.deleteInvoice(inv.id);
-      reload();
-    } catch {
-      setDownloadErr("Failed to delete invoice.");
-    } finally {
-      setDeletingId(null);
-    }
-  }
 
   async function exportCsv() {
     setExporting(true);
@@ -97,7 +83,6 @@ export function InvoicesTable() {
                 <div className="flex items-center gap-2">
                   <button onClick={() => downloadPdf(i)} className="text-brand hover:underline">PDF</button>
                   <button onClick={() => setCreditFor(i)} className="text-brand hover:underline">Credit</button>
-                  <RowDeleteButton onClick={() => remove(i)} busy={deletingId === i.id} />
                 </div>
               </Td>
             </Tr>

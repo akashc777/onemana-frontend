@@ -23,13 +23,13 @@ export function OrdersTable() {
   );
 
   async function remove(o: Order) {
-    if (!window.confirm(`Delete order for ${o.email}? This also removes its invoice, cancels any linked subscription, and revokes its license key. This cannot be undone.`)) return;
+    if (!window.confirm(`Delete order for ${o.email}? This cancels any linked subscription and revokes its licence key. An order that was invoiced cannot be deleted: issue a credit note instead. This cannot be undone.`)) return;
     setDeletingId(o.id);
     try {
       await adminApi.deleteOrder(o.id);
       reload();
-    } catch {
-      window.alert("Failed to delete order.");
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Failed to delete order.");
     } finally {
       setDeletingId(null);
     }

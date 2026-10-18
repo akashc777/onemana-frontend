@@ -46,13 +46,13 @@ export function CustomersTable() {
   }
 
   async function remove(c: Customer) {
-    if (!window.confirm(`Delete ${c.email}? This also removes their orders, invoices, and subscriptions. This cannot be undone.`)) return;
+    if (!window.confirm(`Delete ${c.email}? This also removes their orders and subscriptions. A customer with an invoice, or with a running subscription or workspace, cannot be deleted. This cannot be undone.`)) return;
     setDeletingId(c.id);
     try {
       await adminApi.deleteCustomer(c.id);
       reload();
-    } catch {
-      window.alert("Failed to delete customer.");
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Failed to delete customer.");
     } finally {
       setDeletingId(null);
     }

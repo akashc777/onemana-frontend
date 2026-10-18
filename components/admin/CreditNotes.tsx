@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { adminApi, type CreditNote, type Invoice } from "@/lib/adminApi";
 import { useAsync } from "@/hooks/useAsync";
 import { formatINR, formatDateTime } from "@/lib/format";
-import { AsyncState, DataTable, RowDeleteButton, Td, Tr } from "./ui";
+import { AsyncState, DataTable, Td, Tr } from "./ui";
 
 // CreditNoteDialog issues a GST credit/debit note against an invoice (refund,
 // cancellation, or downward price revision). Full credit reverses the whole
@@ -135,23 +135,8 @@ function TypeButton({ active, onClick, children }: { active: boolean; onClick: (
 // when a new note is issued from the invoices table.
 export function CreditNotesTable({ reloadKey = 0 }: { reloadKey?: number }) {
   const { data, loading, error, reload } = useAsync<CreditNote[]>(() => adminApi.creditNotes(), [reloadKey]);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [actionErr, setActionErr] = useState("");
 
   const notes = useMemo(() => data ?? [], [data]);
-
-  async function remove(cn: CreditNote) {
-    if (!window.confirm(`Delete credit note ${cn.credit_note_no}? For real notes this breaks your filing sequence. Only do this for test data.`)) return;
-    setDeletingId(cn.id);
-    try {
-      await adminApi.deleteCreditNote(cn.id);
-      reload();
-    } catch {
-      setActionErr("Failed to delete credit note.");
-    } finally {
-      setDeletingId(null);
-    }
-  }
 
   if (loading || error) return <AsyncState loading={loading} error={error} onRetry={reload} />;
 
@@ -159,15 +144,14 @@ export function CreditNotesTable({ reloadKey = 0 }: { reloadKey?: number }) {
     <div className="mt-8">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-semibold">Credit / debit notes</h3>
-        {actionErr ? <p className="text-sm text-red-600 dark:text-red-400">{actionErr}</p> : null}
       </div>
       <p className="mb-3 text-xs text-muted-foreground">
         Issued on refunds, cancellations, or price revisions. These flow into GSTR-1 (cdnr / cdnur) and net your outward supply. Refunds create one automatically.
       </p>
-      <DataTable head={["Note No", "Date", "Type", "Original Invoice", "Buyer", "Reason", "Taxable", "Tax", "Total", ""]}>
+      <DataTable head={["Note No", "Date", "Type", "Original Invoice", "Buyer", "Reason", "Taxable", "Tax", "Total"]}>
         {notes.length === 0 ? (
           <Tr>
-            <td colSpan={10} className="px-3 py-8 text-center text-sm text-muted-foreground">No credit notes yet.</td>
+            <td colSpan={9} className="px-3 py-8 text-center text-sm text-muted-foreground">No credit notes yet.</td>
           </Tr>
         ) : (
           notes.map((cn) => (
@@ -181,9 +165,6 @@ export function CreditNotesTable({ reloadKey = 0 }: { reloadKey?: number }) {
               <Td>{formatINR(cn.taxable_value)}</Td>
               <Td>{formatINR(cn.cgst_amount + cn.sgst_amount + cn.igst_amount)}</Td>
               <Td>{formatINR(cn.gross_amount)}</Td>
-              <Td>
-                <RowDeleteButton onClick={() => remove(cn)} busy={deletingId === cn.id} />
-              </Td>
             </Tr>
           ))
         )}

@@ -738,6 +738,13 @@ export interface PlanCheck {
   problems: string[];
 }
 
+// refusal is the reason the backend gave for refusing a request (an issued
+// invoice is never deleted, say), or fallback when it gave none.
+async function refusal(res: Response, fallback: string): Promise<string> {
+  const data = (await res.json().catch(() => ({}))) as { msg?: string };
+  return data?.msg || fallback;
+}
+
 export const adminApi = {
   /** Who asked to stop receiving announcements, newest first. */
   async unsubscribed(): Promise<AdminOptOut[]> {
@@ -996,13 +1003,6 @@ export const adminApi = {
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to issue credit note");
     return (data as { data: CreditNote }).data;
   },
-  async deleteCreditNote(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/credit-note/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
-    if (!res.ok) throw new Error("Failed to delete credit note");
-  },
 
   // ---- Delete (admin cleanup of test data) ----
   async deleteOrder(id: string): Promise<void> {
@@ -1010,7 +1010,7 @@ export const adminApi = {
       method: "DELETE",
       headers: { "X-Admin-Token": getToken() },
     });
-    if (!res.ok) throw new Error("Failed to delete order");
+    if (!res.ok) throw new Error(await refusal(res, "Failed to delete order"));
   },
   // Transactional email that has been attempted, with what happened. Answers
   // "did that customer get their licence key", which before the outbox could
@@ -1059,19 +1059,12 @@ export const adminApi = {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data as { msg?: string })?.msg || "Failed to cancel subscription");
   },
-  async deleteInvoice(id: string): Promise<void> {
-    const res = await fetch(`${site.backendUrl}/onecamp/admin/invoice/${id}`, {
-      method: "DELETE",
-      headers: { "X-Admin-Token": getToken() },
-    });
-    if (!res.ok) throw new Error("Failed to delete invoice");
-  },
   async deleteCustomer(id: string): Promise<void> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}`, {
       method: "DELETE",
       headers: { "X-Admin-Token": getToken() },
     });
-    if (!res.ok) throw new Error("Failed to delete customer");
+    if (!res.ok) throw new Error(await refusal(res, "Failed to delete customer"));
   },
   async updateCustomerName(id: string, name: string): Promise<Customer> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/customer/${id}`, {
