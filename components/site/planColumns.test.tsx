@@ -23,8 +23,8 @@ describe("the plan cards", () => {
         expect(html).not.toContain("bg-hue-tint px-6")
     })
 
-    it("lift the licence with e3 and a brand ring, and say nothing about popularity", () => {
-        expect(cards[1]).toMatch(/shadow-e3 ring-1 ring-brand\/45/)
+    it("lift the licence with e3 and a neutral ring (orange is for actions), and say nothing about popularity", () => {
+        expect(cards[1]).toMatch(/shadow-e3 ring-1 ring-line-3/)
         expect(cards[0]).toMatch(/shadow-e1/)
         expect(html).toContain(FREE_PILL)
         expect(html).not.toMatch(/most popular|best value|save \d/i)

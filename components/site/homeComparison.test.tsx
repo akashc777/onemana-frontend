@@ -25,7 +25,7 @@ describe("the home comparison's columns", () => {
       expect(cells[lifted]).toMatch(/(^|\s)pl-4(\s|$)/)
       expect(cells[lifted + 1]).toMatch(/(^|\s)pl-4(\s|$)/)
     }
-    expect(rows[0]).toMatch(/border-t-2 border-brand/)
+    expect(rows[0]).toMatch(/border-t-2 border-foreground\/70/)
   })
 
   it("is one card per row on a phone, and says where OneCamp loses", () => {

@@ -5,21 +5,15 @@ import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
 import { selfHostNeeds } from "@/lib/content";
 import { cloudBuyHref } from "@/lib/paymentTerms";
 import { PlanBenefit } from "@/components/site/PlanCard";
-import { PLAN_HUE } from "@/components/site/planHues";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { AreaRow } from "@/components/site/Areas";
 import { Section } from "@/components/ui/Section";
 import { FreeCommand, FreeEmailKey } from "./FreeInstall";
 import { SpotPlug } from "@/components/ui/graphics/spots";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { Icon, type IconName } from "@/components/ui/icons";
-import type { CampHue } from "@/lib/campHue";
 
 /** Each need's tile (site.md F2): the server, the address, the install. */
-const NEED_MARK: { hue: CampHue; icon: IconName }[] = [
-  { hue: "sun", icon: "server" },
-  { hue: "sky", icon: "globe" },
-  { hue: "moss", icon: "terminal" },
-];
+const NEED_MARK: { icon: IconName }[] = [{ icon: "server" }, { icon: "globe" }, { icon: "terminal" }];
 
 /**
  * The free plan, with the install command on the face of the page.
@@ -33,23 +27,23 @@ export default function FreePage() {
     <>
       <PageHeader
         title={`Install OneCamp free, for up to ${FREE_SEATS} people`}
-        subtitle="Chat, docs, tasks, calls and AI teammates on your own server. Paste one command into it. No email, no card."
-        art={<SpotPlug size={160} />}
+        subtitle="Chat, docs, projects, calls and AI teammates on your own server. Paste one command into it. No email, no card."
+        art={<SpotPlug size={160} hue="ink" />}
       >
         {/* THE COMMAND, ON THE FACE OF THE PAGE. */}
         <FreeCommand />
       </PageHeader>
 
-      {/* What it takes and what you get (F2): two raised cards on the free
-          plan's moss band, the page's one band. */}
-      <Section band={PLAN_HUE.free} className="mt-10 sm:mt-[4.5rem]">
+      {/* What it takes and what you get (F2): two raised cards on the page's
+          one muted ground; a plan is no area, so it wears no hue (v3.1). */}
+      <Section tone="muted" className="mt-10 sm:mt-[4.5rem]">
         <div className="grid gap-4 lg:grid-cols-12 lg:gap-x-6">
           <div className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
             <h2 className="text-h3 text-foreground">What you need</h2>
             <ul className="m-0 mt-5 list-none space-y-4 border-t border-border p-0 pt-5">
               {selfHostNeeds.map((need, i) => (
                 <li key={need} className="flex items-start gap-3 text-small text-foreground">
-                  <Tile hue={NEED_MARK[i % NEED_MARK.length]!.hue} size="sm">
+                  <Tile hue="ink" size="sm">
                     <Icon name={NEED_MARK[i % NEED_MARK.length]!.icon} />
                   </Tile>
                   <span className="pt-1">{need}</span>
@@ -66,8 +60,9 @@ export default function FreePage() {
 
           <div className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
             <h2 className="text-h3 text-foreground">What the free plan includes</h2>
-            {/* The moss check, as on the plan's card on /pricing. */}
-            <ul className={`${HUE_CLASS[PLAN_HUE.free]} m-0 mt-5 list-none space-y-3 border-t border-border p-0 pt-5 text-small text-foreground`}>
+            {/* The plan's checks, as on its card on /pricing, then all of OneCamp in its areas' colours. */}
+            <AreaRow className="mt-5" />
+            <ul className="m-0 mt-5 list-none space-y-3 border-t border-border p-0 pt-5 text-small text-foreground">
               {freeIncludes.map((item) => (
                 <PlanBenefit key={item}>{item}</PlanBenefit>
               ))}

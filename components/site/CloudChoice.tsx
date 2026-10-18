@@ -33,6 +33,7 @@ export function CloudChoice({
   title,
   pricing,
   body,
+  areas,
   list,
   gets,
 }: {
@@ -40,6 +41,8 @@ export function CloudChoice({
   title: ReactNode;
   pricing: Pricing;
   body: string;
+  /** What the plan holds, under its line (AreaRow). */
+  areas?: ReactNode;
   list: ReactNode;
   gets: ReactNode;
 }) {
@@ -98,7 +101,10 @@ export function CloudChoice({
         {control}
       </div>
       <p className="mt-4 text-small font-[510] text-foreground">{o.fits}</p>
-      <p className="mt-1.5 text-small text-muted-foreground">{body}</p>
+      <div className="mt-1.5 flex flex-col">
+        <p className="m-0 text-small text-muted-foreground">{body}</p>
+        {areas}
+      </div>
       {list}
       {gets}
       <div className="pt-5">

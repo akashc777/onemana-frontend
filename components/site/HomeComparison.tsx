@@ -102,7 +102,7 @@ export function HomeComparison({ pricing }: { pricing: Pricing }) {
               <span className="sr-only">Fact</span>
             </th>
             {COLUMNS.map((c, i) => (
-              <th key={c} scope="col" className={`pb-3 pr-4 align-bottom text-caption font-[510] ${i === 0 ? `${LIFT} rounded-t-xl border-t-2 border-brand pl-4 pt-5 text-foreground` : "pt-5 text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
+              <th key={c} scope="col" className={`pb-3 pr-4 align-bottom text-caption font-[510] ${i === 0 ? `${LIFT} rounded-t-xl border-t-2 border-foreground/70 pl-4 pt-5 text-foreground` : "pt-5 text-muted-foreground"} ${i === 1 ? AFTER_TINT : ""}`}>
                 {i === 0 ? (
                   <span className="text-body font-[590]">
                     <ProductName name={c} />

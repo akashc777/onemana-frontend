@@ -5,6 +5,7 @@ import { PLAN_HUE } from "@/components/site/planHues";
 import { PlanBenefit } from "@/components/site/PlanCard";
 import { CloudChoice, type CloudOption } from "@/components/site/CloudChoice";
 import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { AreaRow } from "@/components/site/Areas";
 import { Dot } from "@/components/ui/v3";
 import type { CampHue } from "@/lib/campHue";
 import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
@@ -134,10 +135,10 @@ export function PlanColumns({
           <div
             key={c.key}
             data-plan={c.key}
-            className={`${HUE_CLASS[c.hue]} reveal relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 ${c.lifted ? "shadow-e3 ring-1 ring-brand/45" : "shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
+            className={`${HUE_CLASS[c.hue]} reveal relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 ${c.lifted ? "shadow-e3 ring-1 ring-line-3" : "shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
           >
             {c.key === "cloud" && detailed && cloudOptions.length > 1 ? (
-              <CloudChoice options={cloudOptions} title={<CardName H={H} hue={c.hue} name={c.name} />} pricing={pricing} body={c.body} list={<BenefitList items={c.list} />} gets={<Gets>{c.gets}</Gets>} />
+              <CloudChoice options={cloudOptions} title={<CardName H={H} hue={c.hue} name={c.name} />} pricing={pricing} body={c.body} areas={<AreaRow className="mt-auto pt-4" />} list={<BenefitList items={c.list} />} gets={<Gets>{c.gets}</Gets>} />
             ) : (
               <>
                 <div className="flex items-center justify-between gap-3 self-start">
@@ -147,7 +148,11 @@ export function PlanColumns({
                 <div className="mt-5">{c.price}</div>
                 <div className="mt-1.5">{c.lines}</div>
                 <p className="mt-4 text-small font-[510] text-foreground">{c.fits}</p>
-                <p className="mt-1.5 text-small text-muted-foreground">{c.body}</p>
+                {/* The areas sit at the cell's foot, so the three rows line up whatever the line above wraps to. */}
+                <div className="mt-1.5 flex flex-col">
+                  <p className="m-0 text-small text-muted-foreground">{c.body}</p>
+                  <AreaRow className="mt-auto pt-4" />
+                </div>
                 <BenefitList items={c.list} />
                 <Gets>{c.gets}</Gets>
                 <div className="pt-5">{c.cta}</div>

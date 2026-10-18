@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 
 import type { CampHue } from "@/lib/campHue"
 
-import { HUE_CLASS, cx } from "./hues"
+import { HUE_CLASS, INK_HUE_CLASS, cx } from "./hues"
 
 /**
  * Spot illustrations (the playful layer, "The graphic language"): empty
@@ -25,12 +25,12 @@ import { HUE_CLASS, cx } from "./hues"
 export interface SpotProps {
   /** In px (96 by default). */
   size?: number
-  /** Overrides the illustration's own hue. */
-  hue?: CampHue
+  /** Overrides the illustration's own hue; "ink" for one that names no area (v3.1). */
+  hue?: CampHue | "ink"
   className?: string
 }
 
-function Spot({ size = 96, hue, className, children }: SpotProps & { hue: CampHue; children: ReactNode }) {
+function Spot({ size = 96, hue, className, children }: SpotProps & { hue: CampHue | "ink"; children: ReactNode }) {
   return (
     <svg
       viewBox="0 0 96 96"
@@ -40,7 +40,7 @@ function Spot({ size = 96, hue, className, children }: SpotProps & { hue: CampHu
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={cx(HUE_CLASS[hue], className)}
+      className={cx(hue === "ink" ? INK_HUE_CLASS : HUE_CLASS[hue], className)}
     >
       {children}
     </svg>

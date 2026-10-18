@@ -34,9 +34,9 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
           <tr>
             <th className="w-36" />
             {plans.map((p) => (
-              <th key={p.key} scope="col" className={`px-4 pb-4 pt-5 text-left align-top ${p.key === "lifetime" ? `${LIFT} rounded-t-xl border-t-2 border-brand` : ""}`}>
+              <th key={p.key} scope="col" className={`px-4 pb-4 pt-5 text-left align-top ${p.key === "lifetime" ? `${LIFT} rounded-t-xl border-t-2 border-foreground/70` : ""}`}>
                 <span data-hue={PLAN_HUE[p.key]} className="flex items-center gap-2 text-body font-[590] text-foreground">
-                  <Dot hue={PLAN_HUE[p.key]} />
+                  <Dot hue="ink" />
                   {p.name}
                 </span>
                 <span className="mt-1 block text-caption font-normal text-muted-foreground">{p.summary}</span>
@@ -71,9 +71,9 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
 
       <div className="mt-8 grid gap-4 md:hidden">
         {plans.map((p) => (
-          <div key={p.key} className={`rounded-2xl bg-card p-5 ${p.key === "lifetime" ? "shadow-e3 ring-1 ring-brand/45" : "shadow-e1"}`}>
+          <div key={p.key} className={`rounded-2xl bg-card p-5 ${p.key === "lifetime" ? "shadow-e3 ring-1 ring-line-3" : "shadow-e1"}`}>
             <p data-hue={PLAN_HUE[p.key]} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
-              <Dot hue={PLAN_HUE[p.key]} />
+              <Dot hue="ink" />
               {p.name}
             </p>
             <p className="mt-1 text-small text-muted-foreground">{p.summary}</p>

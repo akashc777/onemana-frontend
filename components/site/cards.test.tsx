@@ -28,7 +28,7 @@ describe("cards that are not links", () => {
       expect(c).not.toContain("data-interactive")
     }
     // The licence is still raised as the plan to buy, at e3 with its ring.
-    expect(cards.find((c) => c.includes('data-plan="lifetime"'))).toMatch(/shadow-e3 ring-1 ring-brand\/45/)
+    expect(cards.find((c) => c.includes('data-plan="lifetime"'))).toMatch(/shadow-e3 ring-1 ring-line-3/)
   })
 
   it("the audience pages' price cards hold still, with md buttons, and a point's tile no longer turns", () => {

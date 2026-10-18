@@ -13,19 +13,22 @@ import { PLAN_HUE } from "@/components/site/planHues"
  */
 describe("hues that follow a thing", () => {
     // Ticks are a 16px moss check everywhere (site.md H9).
-    it("ticks the free plan's list on /free with the moss check, on the free plan's band", () => {
+    // Since v3.1 a plan is no area: its checks take the meaning colour for
+    // "included" (success), its ground is neutral, and the areas it holds
+    // show as one row of tiles in their own colours.
+    it("ticks the free plan's list on /free with the included check, on a neutral ground, under the areas", () => {
         const html = renderToString(<FreePage />)
         const list = html.slice(html.indexOf("What the free plan includes"))
-        // The icon set's check, 16px, in moss.
-        expect(list).toMatch(/<svg viewBox="0 0 24 24" width="16" height="16"[^>]*class="icon shrink-0 mt-0\.5 text-camp-moss"/)
-        // ...and the details sit on the free plan's band.
-        expect(html).toContain(`data-band="${PLAN_HUE.free}"`)
+        expect(list).toMatch(/<svg viewBox="0 0 24 24" width="16" height="16"[^>]*class="icon shrink-0 mt-0\.5 text-success"/)
+        expect(list).toContain("Includes chat, calls, docs, projects, calendar, tables and agents.")
+        expect(html).not.toContain("data-band=")
     })
 
-    it("shows the chosen plan's hue and ticks in the checkout summary", () => {
+    it("shows the areas and the ticks in the checkout summary, with no plan hue", () => {
         // The checkout needs the app router to render, so its source is read.
         const src = readFileSync(join(process.cwd(), "app/buy/BuyCheckout.tsx"), "utf8")
-        expect(src).toContain("HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]")
+        expect(src).not.toContain("PLAN_HUE")
+        expect(src).toContain("<AreaRow")
         expect(src).toContain("<PlanBenefit key={b}>{b}</PlanBenefit>")
         expect(src).not.toContain("✓")
     })

@@ -63,11 +63,11 @@ describe("the checkout's choices", () => {
   const cloud = renderToString(<BuyCheckout initialPlan="cloud" initialBilling="monthly" initialPricing={onSale} initialCountry="US" />)
 
   // K1: two aria-pressed buttons, each its own Tab stop, without arrows.
-  it("the plan switch is a radiogroup, one Tab stop, each plan in its hue", () => {
+  it("the plan switch is a radiogroup, one Tab stop, neutral (a plan is no area, v3.1)", () => {
     const rs = group(cloud, "Licence or Cloud")
     expect(rs).toHaveLength(2)
     oneTabStop(rs)
-    expect(rs.map((r) => /data-hue="(\w+)"/.exec(r)?.[1])).toEqual(["sun", "sky"])
+    for (const r of rs) expect(r).not.toMatch(/data-hue=/)
   })
 
   // K2: role="radio" with no roving tabindex or arrow keys.

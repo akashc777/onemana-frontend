@@ -153,7 +153,7 @@ export function FreeCommand() {
               {/* The key's place stays whole: it broke across two lines as
                   "your-" and "key", its ring in two halves. */}
               <span className="whitespace-nowrap">
-                <span className="inline-block rounded-[4px] border border-dashed border-camp-sun px-1 leading-5 text-camp-sun-ink">your-key</span>)&quot;
+                <span className="inline-block rounded-[4px] border border-dashed border-line-3 px-1 leading-5 text-muted-foreground">your-key</span>)&quot;
               </span>
             </>
           )}

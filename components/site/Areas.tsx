@@ -29,6 +29,23 @@ export function AreaTile({ area, size = "sm", raised = false, className }: { are
 }
 
 /**
+ * Every area, as one row of tiles (v3.1): what a plan holds, in the colours
+ * the rest of the site gives each area. Every plan has all seven (company
+ * controls are the licence's, and are no area), so the row says "all of
+ * OneCamp" without a list. Read as one sentence by a screen reader.
+ */
+export function AreaRow({ className = "" }: { className?: string }) {
+  return (
+    <p className={`m-0 flex flex-wrap items-center gap-1.5 ${className}`}>
+      <span className="sr-only">Includes chat, calls, docs, projects, calendar, tables and agents.</span>
+      {AREAS.map((a) => (
+        <AreaTile key={a} area={a} />
+      ))}
+    </p>
+  );
+}
+
+/**
  * The hero's key to the colours (v3.1): the seven areas, each a tile and a
  * name, two to a row and the agents across both, on the hairlines the facts
  * stood on. It is a key, not a menu, so it answers no pointer: nothing in it

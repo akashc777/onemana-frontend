@@ -28,9 +28,7 @@ import { WorkspaceAddressField } from "@/components/site/WorkspaceAddressField";
 import { EDITION_CHOICES, type EditionChoice, type SlugVerdict } from "@/lib/workspaceAddress";
 import { CloudGlyph, KeyGlyph } from "@/components/site/Glyphs";
 import { PlanBenefit } from "@/components/site/PlanCard";
-import { PLAN_HUE } from "@/components/site/planHues";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
-import { Dot } from "@/components/ui/v3";
+import { AreaRow } from "@/components/site/Areas";
 import { Icon } from "@/components/ui/icons";
 
 export type Plan = "lifetime" | "cloud";
@@ -228,12 +226,10 @@ export function BuyCheckout({
               options={PLANS}
               value={plan}
               onChange={setPlan}
-              hue={(p) => PLAN_HUE[p]}
               className="relative grid grid-cols-2 gap-1 rounded-ctl bg-muted p-1 text-small ring-1 ring-inset ring-border"
               itemClass="min-h-11 rounded-sm px-3 py-2 max-sm:px-1.5 font-[510] text-muted-foreground sm:min-h-8 inline-flex items-center justify-center gap-2"
               option={(p) => (
                 <>
-                  <Dot hue={PLAN_HUE[p]} className="max-sm:hidden" />
                   {p === "lifetime" ? (
                     <span>Licence<span className="sr-only min-[380px]:not-sr-only">, self-hosted</span></span>
                   ) : (
@@ -250,7 +246,7 @@ export function BuyCheckout({
                 same offer used to sit below the form, four screens down on a
                 phone. The licence card below says what paying adds. */}
             {!isCloud && (
-              <p className="mt-4 border-l-2 border-camp-moss/50 pl-4 text-small text-muted-foreground">
+              <p className="mt-4 border-l-2 border-line-3 pl-4 text-small text-muted-foreground">
                 Up to {FREE_SEATS} people? OneCamp is free for you.{" "}
                 <a href="/free" className="link font-medium">
                   Get the install command
@@ -265,11 +261,11 @@ export function BuyCheckout({
                 crossed the figure and read as a stray line, not a drawing
                 (design/site-polish/AUDIT.md, D2). The plan's hue is its dot
                 and its glyph. */}
-            <div className={`${HUE_CLASS[isCloud ? PLAN_HUE.cloud : PLAN_HUE.lifetime]} relative isolate mt-6 overflow-hidden rounded-2xl bg-card shadow-e1`}>
+            <div className="relative isolate mt-6 overflow-hidden rounded-2xl bg-card shadow-e1">
               <div className="p-6">
               <div className="flex items-baseline justify-between gap-4">
                 <span className="flex items-center gap-2 self-center text-body font-[590] text-foreground">
-                  {isCloud ? <CloudGlyph className="size-4 shrink-0 text-hue" /> : <KeyGlyph className="size-4 shrink-0 text-hue" />}
+                  {isCloud ? <CloudGlyph className="size-4 shrink-0 text-muted-foreground" /> : <KeyGlyph className="size-4 shrink-0 text-muted-foreground" />}
                   {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
                 </span>
                 {/* Rupees are the price: they are what is charged. The licence
@@ -326,6 +322,8 @@ export function BuyCheckout({
                   }}
                 />
               )}
+              {/* All of OneCamp, in each area's colour (v3.1). */}
+              <AreaRow className="mt-5" />
               <ul className="mt-5 space-y-2.5 border-t border-border pt-5 text-small text-foreground">
                 {benefits.map((b) => (
                   <PlanBenefit key={b}>{b}</PlanBenefit>

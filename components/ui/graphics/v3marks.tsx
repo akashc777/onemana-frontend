@@ -112,9 +112,13 @@ export function PlanOrbit() {
         <circle cx="120" cy="120" r="36" stroke={`url(#${id})`} strokeWidth="14" />
       </svg>
       <Turning spin="spin-40" size={240}>
-        <circle cx="120" cy="16" r="9" className="hue-moss fill-hue" />
-        <circle cx={120 + 76 * Math.cos(0.5)} cy={120 + 76 * Math.sin(0.5)} r="10" className="hue-sun fill-hue" />
-        <circle cx={120 - 104 * Math.cos(0.9)} cy={120 + 104 * Math.sin(0.9)} r="8" className="hue-sky fill-hue" />
+        {/* What every plan holds: the six areas' hues on the orbits, in the areas' order (v3.1), and the agents' indigo. */}
+        {(["sky", "berry", "dusk", "moss", "sun", "lake"] as const).map((h, i) => {
+          const r = i % 2 ? 76 : 104
+          const t = -Math.PI / 2 + (i * Math.PI) / 3
+          return <circle key={h} cx={120 + r * Math.cos(t)} cy={120 + r * Math.sin(t)} r={i % 2 ? 7 : 8} className={`${HUE_CLASS[h]} fill-hue`} />
+        })}
+        <circle cx={120 + 76 * Math.cos(Math.PI / 6 * 5)} cy={120 + 76 * Math.sin(Math.PI / 6 * 5)} r="6" className="fill-agent" />
       </Turning>
     </div>
   )
