@@ -84,7 +84,19 @@ export function Nav({ stars = null }: { stars?: number | null }) {
           <NavLink href="/pricing" look="compact">
             Pricing
           </NavLink>
-          <MobileMenu>
+          <MobileMenu
+            footer={
+              // Side by side on a phone held sideways, so the list keeps most of a short screen.
+              <div className="grid gap-2 [@media(orientation:landscape)_and_(max-height:540px)]:grid-cols-2">
+                <ButtonLink href={site.demoStartUrl} external variant="brand" size="xl" arrow>
+                  Try the live demo
+                </ButtonLink>
+                <ButtonLink href="/free" variant="ghost" size="xl">
+                  Install free
+                </ButtonLink>
+              </div>
+            }
+          >
             {/* Nav rows, the current page on the raised chip, GitHub with its
                 stars, then the theme under a hairline, then the two ways in. */}
             <div className="container-x flex flex-col gap-0.5 pb-5 pt-2">
@@ -100,14 +112,6 @@ export function Nav({ stars = null }: { stars?: number | null }) {
               <div className="mt-2 flex min-h-14 items-center justify-between border-t border-border pt-2">
                 <span className="text-body font-[510] text-foreground">Theme</span>
                 <ThemeSegments />
-              </div>
-              <div className="mt-5 grid gap-2">
-                <ButtonLink href={site.demoStartUrl} external variant="brand" size="xl" arrow>
-                  Try the live demo
-                </ButtonLink>
-                <ButtonLink href="/free" variant="ghost" size="xl">
-                  Install free
-                </ButtonLink>
               </div>
             </div>
           </MobileMenu>

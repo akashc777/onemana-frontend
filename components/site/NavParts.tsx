@@ -83,7 +83,7 @@ export function NavLink({ href, look = "bar", icon, children }: { href: string; 
  * children. It closes on a link, on another page, on Escape (focus goes back
  * to the button) and on a tap outside the header.
  */
-export function MobileMenu({ children }: { children: ReactNode }) {
+export function MobileMenu({ children, footer }: { children: ReactNode; footer?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
@@ -145,9 +145,17 @@ export function MobileMenu({ children }: { children: ReactNode }) {
         id="mobile-menu"
         hidden={!open}
         onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
-        className="fx-slide absolute inset-x-0 top-full h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain bg-background shadow-[inset_0_1px_0_var(--line-c)] lg:hidden"
+        className="fx-slide absolute inset-x-0 top-full flex h-[calc(100dvh-3.5rem)] flex-col bg-background shadow-[inset_0_1px_0_var(--line-c)] lg:hidden"
       >
-        {children}
+        {/* The links scroll; the ways in sit in a footer that is always in
+            view, clear of the home indicator (the phone rule: actions in a
+            pinned footer, never past a scroll). */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
+        {footer && (
+          <div className="shrink-0 bg-background px-4 pt-3 shadow-[0_-1px_0_var(--line-c)] pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
+            {footer}
+          </div>
+        )}
       </div>
     </>
   );
