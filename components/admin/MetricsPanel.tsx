@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { adminApi, type AdminMetrics, type AdminOptOut } from "@/lib/adminApi";
 import { formatINR } from "@/lib/format";
+import { JourneyCard } from "./JourneyCard";
 
 function Stat({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
   return (
@@ -135,6 +136,7 @@ export function MetricsPanel() {
 
   return (
     <div className="space-y-8">
+      <JourneyCard />
       {picker}
 
       <section>

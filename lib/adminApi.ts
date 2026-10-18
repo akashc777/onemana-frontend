@@ -3,6 +3,7 @@
 // the browser (sessionStorage) for this self-hosted single-admin tool.
 
 import { site } from "./site";
+import type { JourneyReport } from "./adminGaps";
 
 const TOKEN_KEY = "onemana_admin_token";
 
@@ -952,6 +953,17 @@ export const adminApi = {
 
   // The token check asks /admin/whoami, which reads nothing. A backend from
   // before it answers 404, and is asked the old way (/admin/config).
+  // Settles a machine order attempt whose checkout did not answer cleanly:
+  // as the OVH order it placed, or ("") as nothing bought.
+  resolveServerOrder: (id: string, orderId: string) =>
+    adminReq<unknown>(`/onecamp/admin/servers/orders/${encodeURIComponent(id)}/resolve`, { method: "POST", json: { order_id: orderId } }),
+  // Re-enters installs a restart left mid-flight.
+  recoverInstances: () => adminReq<{ recovered: number }>("/onecamp/admin/instances/recover", { method: "POST" }),
+  // The latest walk of the buyer's path, or null.
+  lastJourney: () => adminReq<JourneyReport | null>("/onecamp/admin/journey"),
+  // Erases a workspace now; confirm is its address, which the backend checks.
+  terminateInstance: (id: string, confirm: string) =>
+    adminReq<unknown>(`/onecamp/admin/instance/${encodeURIComponent(id)}/terminate`, { method: "POST", json: { confirm } }),
   async verify(token: string): Promise<boolean> {
     const res = await fetch(`${site.backendUrl}/onecamp/admin/whoami`, {
       headers: { "X-Admin-Token": token },

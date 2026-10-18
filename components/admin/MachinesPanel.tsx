@@ -1,5 +1,8 @@
 "use client";
 
+import { SettleOrder } from "./SettleOrder";
+import { needsSettling } from "@/lib/adminGaps";
+
 import { useCallback, useEffect, useState } from "react";
 import { adminApi, type ServerOrderPreview, type ServerOrderRow, type WorkspaceEmailCheck } from "@/lib/adminApi";
 
@@ -73,7 +76,10 @@ export function MachinesPanel() {
     try {
       const [p, o] = await Promise.all([Promise.all(SIZES.map((s) => adminApi.serverOrderPreview(s))), adminApi.serverOrders()]);
       setPreviews(p);
-      setOrders(o.slice(0, 8));
+      // The newest eight, and every attempt waiting to be settled however old:
+      // until it is, nothing more is bought.
+      const newest = o.slice(0, 8);
+      setOrders([...o.filter((x) => needsSettling(x) && !newest.includes(x)), ...newest]);
       setMail(await adminApi.workspaceEmailCheck().catch(() => null));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not price machines");
@@ -128,7 +134,14 @@ export function MachinesPanel() {
                   <td className="py-1 pr-3 capitalize">{o.size}</td>
                   <td className="py-1 pr-3">{o.server_name || `${o.plan_code} in ${o.datacenter}`}</td>
                   <td className="py-1 pr-3">{o.price_text}</td>
-                  <td className="py-1">{o.state}</td>
+                  <td className="py-1">
+                    {o.state}
+                    {needsSettling(o) && (
+                      <div className="mt-1">
+                        <SettleOrder id={o.id} onDone={() => void load()} />
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,6 +1,7 @@
 "use client";
 
 import { MachinesPanel } from "@/components/admin/MachinesPanel";
+import { TerminateWorkspace } from "@/components/admin/TerminateWorkspace";
 import { useCallback, useEffect, useState } from "react";
 import {
   adminApi,
@@ -55,7 +56,7 @@ export function WorkspacesPanel() {
     setNote("");
     try {
       const out = await fn();
-      setNote(typeof out === "object" && out ? JSON.stringify(out) : `${label} done`);
+      setNote(typeof out === "string" ? out : typeof out === "object" && out ? JSON.stringify(out) : `${label} done`);
       await load();
     } catch (e) {
       setNote(e instanceof Error ? e.message : `${label} failed`);
@@ -91,6 +92,19 @@ export function WorkspacesPanel() {
         </button>
         <button onClick={() => void load()} className="btn-ghost px-3 py-2 text-xs">
           Refresh
+        </button>
+        <button
+          onClick={() =>
+            void run("Recover", async () => {
+              const { recovered } = await adminApi.recoverInstances();
+              return recovered === 1 ? "Resumed 1 stuck install" : `Resumed ${recovered} stuck installs`;
+            })
+          }
+          disabled={busy !== ""}
+          className="btn-ghost px-3 py-2 text-xs disabled:opacity-40"
+          title="Re-enters installs a restart left mid-flight"
+        >
+          {busy === "Recover" ? "…" : "Resume stuck installs"}
         </button>
         <ReconcileButton />
         {note && <span className="text-xs text-muted-foreground">{note}</span>}
@@ -234,6 +248,16 @@ export function WorkspacesPanel() {
                   >
                     {open === r.id ? "Hide history" : "History"}
                   </button>
+                  {r.state !== "terminated" && (
+                    <TerminateWorkspace
+                      id={r.id}
+                      address={r.slug}
+                      onDone={(msg) => {
+                        setNote(msg);
+                        void load();
+                      }}
+                    />
+                  )}
                 </div>
               </div>
 
