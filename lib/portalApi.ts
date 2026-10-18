@@ -143,40 +143,57 @@ export class PortalAuthError extends Error {
   }
 }
 
-async function req<T>(path: string, init?: RequestInit): Promise<T> {
+type Envelope<T> = { data?: T; msg?: string };
+
+/** How a request is sent. `signedOut` marks the calls made before there is a
+ *  session (asking for a code, verifying it, signing out), where a 401 is the
+ *  backend's answer about the code rather than an expired session. */
+type SendOptions = RequestInit & { signedOut?: boolean };
+
+/** The one place a portal request is made. Every request carries the session
+ *  cookie and, with a body, the JSON header; a 401 on a signed-in call signs
+ *  the customer out. */
+async function send(path: string, init: SendOptions = {}): Promise<Response> {
+  const { signedOut, ...rest } = init;
   const res = await fetch(`${base}${path}`, {
     credentials: "include",
-    headers: init?.body ? { "Content-Type": "application/json" } : undefined,
-    ...init,
+    headers: rest.body ? { "Content-Type": "application/json" } : undefined,
+    ...rest,
   });
-  if (res.status === 401) throw new PortalAuthError();
-  const data = (await res.json().catch(() => ({}))) as { data?: T; msg?: string };
-  if (!res.ok) throw new Error(data?.msg || `Request failed (${res.status})`);
-  return data.data as T;
+  if (res.status === 401 && !signedOut) throw new PortalAuthError();
+  return res;
 }
+
+/** send, then the backend's envelope: its message when it refuses, else
+ *  `fallback`, which may name the status. */
+async function call<T>(
+  path: string,
+  init: SendOptions,
+  fallback: string | ((status: number) => string),
+): Promise<Envelope<T>> {
+  const res = await send(path, init);
+  const env = (await res.json().catch(() => ({}))) as Envelope<T>;
+  if (!res.ok) throw new Error(env?.msg || (typeof fallback === "string" ? fallback : fallback(res.status)));
+  return env;
+}
+
+async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const env = await call<T>(path, init ?? {}, (status) => `Request failed (${status})`);
+  return env.data as T;
+}
+
+/** A JSON body for send. */
+const post = (body?: unknown): SendOptions =>
+  body === undefined ? { method: "POST" } : { method: "POST", body: JSON.stringify(body) };
 
 export const portalApi = {
   async requestCode(email: string): Promise<string> {
-    const res = await fetch(`${base}/request-code`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const data = (await res.json().catch(() => ({}))) as { msg?: string };
-    if (!res.ok) throw new Error(data?.msg || "Could not send code");
-    return data?.msg || "Code sent.";
+    const env = await call("/request-code", { ...post({ email }), signedOut: true }, "Could not send code");
+    return env?.msg || "Code sent.";
   },
 
   async verify(email: string, code: string): Promise<void> {
-    const res = await fetch(`${base}/verify`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, code }),
-    });
-    const data = (await res.json().catch(() => ({}))) as { msg?: string };
-    if (!res.ok) throw new Error(data?.msg || "That code is invalid or has expired.");
+    await call("/verify", { ...post({ email, code }), signedOut: true }, "That code is invalid or has expired.");
   },
 
   // The customer moves the account to a new address: a code goes there first.
@@ -189,7 +206,7 @@ export const portalApi = {
   },
 
   async logout(): Promise<void> {
-    await fetch(`${base}/logout`, { method: "POST", credentials: "include" }).catch(() => {});
+    await send("/logout", { ...post(), signedOut: true }).catch(() => {});
   },
 
   me: () => req<PortalOverview>("/me"),
@@ -210,86 +227,58 @@ export const portalApi = {
   /** Name a workspace and choose its edition. The single action that turns a paid
    *  subscription into something being built. */
   async setAddress(id: string, slug: string, edition: string): Promise<string> {
-    const res = await fetch(`${base}/instance/${id}/address`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, edition }),
-    });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string };
-    if (!res.ok) throw new Error(data?.msg || "Could not set that address.");
-    return data?.msg || "Address set.";
+    const env = await call(`/instance/${id}/address`, post({ slug, edition }), "Could not set that address.");
+    return env?.msg || "Address set.";
   },
 
   /** Start buying extra storage for a live workspace; the browser then opens checkout. */
   async addStorage(id: string): Promise<PortalCheckout> {
-    const res = await fetch(`${base}/instance/${id}/storage`, { method: "POST", credentials: "include" });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalCheckout };
-    if (!res.ok || !data?.data?.subscription_id) throw new Error(data?.msg || "The purchase could not be started.");
-    return data.data;
+    const failed = "The purchase could not be started.";
+    const env = await call<PortalCheckout>(`/instance/${id}/storage`, post(), failed);
+    if (!env?.data?.subscription_id) throw new Error(env?.msg || failed);
+    return env.data;
   },
 
   /** Start a move that is ready now, instead of in quiet hours. */
   async moveNow(id: string): Promise<string> {
-    const res = await fetch(`${base}/instance/${id}/move-now`, { method: "POST", credentials: "include" });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string };
-    if (!res.ok) throw new Error(data?.msg || "The move could not be started.");
-    return data?.msg || "Moving now.";
+    const env = await call(`/instance/${id}/move-now`, post(), "The move could not be started.");
+    return env?.msg || "Moving now.";
   },
 
   /** A short-lived download of the newest off-site backup copy. */
   async backupLink(id: string): Promise<PortalBackupLink> {
-    const res = await fetch(`${base}/instance/${id}/backup`, { credentials: "include" });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalBackupLink };
-    if (!res.ok || !data?.data?.url) throw new Error(data?.msg || "The download could not be prepared.");
-    return data.data;
+    const failed = "The download could not be prepared.";
+    const env = await call<PortalBackupLink>(`/instance/${id}/backup`, {}, failed);
+    if (!env?.data?.url) throw new Error(env?.msg || failed);
+    return env.data;
   },
 
   /** Change a subscription's plan; returns what was done, and a checkout when the
    *  customer must confirm a replacement (UPI Autopay, eMandate). */
   async changePlan(id: string, to: string): Promise<{ detail: string; checkout?: PortalCheckout }> {
-    const res = await fetch(`${base}/subscription/${id}/billing`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to }),
-    });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: { detail?: string; checkout?: PortalCheckout } };
-    if (!res.ok) throw new Error(data?.msg || "The change could not be made.");
-    return { detail: data?.data?.detail || "Plan changed.", checkout: data?.data?.checkout };
+    const env = await call<{ detail?: string; checkout?: PortalCheckout }>(
+      `/subscription/${id}/billing`, post({ to }), "The change could not be made.");
+    return { detail: env?.data?.detail || "Plan changed.", checkout: env?.data?.checkout };
   },
 
   /** A payment window for a subscription that takes over this one: "keep"
    *  takes back a cancellation, "card" moves the renewal to a new card. */
   async replacement(id: string, kind: "keep" | "card"): Promise<PortalCheckout> {
-    const res = await fetch(`${base}/subscription/${id}/${kind}`, { method: "POST", credentials: "include" });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string; data?: PortalCheckout };
-    if (!res.ok || !data?.data) throw new Error(data?.msg || "That did not work just now; try again in a minute.");
-    return data.data;
+    const failed = "That did not work just now; try again in a minute.";
+    const env = await call<PortalCheckout>(`/subscription/${id}/${kind}`, post(), failed);
+    if (!env?.data) throw new Error(env?.msg || failed);
+    return env.data;
   },
 
   async cancelSubscription(id: string): Promise<void> {
-    const res = await fetch(`${base}/subscription/${id}/cancel`, {
-      method: "POST",
-      credentials: "include",
-    });
-    if (res.status === 401) throw new PortalAuthError();
-    const data = (await res.json().catch(() => ({}))) as { msg?: string };
-    if (!res.ok) throw new Error(data?.msg || "Failed to cancel subscription");
+    await call(`/subscription/${id}/cancel`, post(), "Failed to cancel subscription");
   },
 
   invoicePdfUrl: (id: string) => `${base}/invoice/${id}/pdf`,
 
   /** Downloads an invoice PDF using the session cookie. */
   async downloadInvoice(id: string, filename: string): Promise<void> {
-    const res = await fetch(`${base}/invoice/${id}/pdf`, { credentials: "include" });
-    if (res.status === 401) throw new PortalAuthError();
+    const res = await send(`/invoice/${id}/pdf`);
     if (!res.ok) throw new Error("Download failed");
     const blob = await res.blob();
     const a = document.createElement("a");
