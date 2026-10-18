@@ -152,7 +152,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     </ul>
                 </div>
 
-                <div className="rounded-2xl bg-card p-6 shadow-e3 ring-1 ring-brand/45">
+                <div className="rounded-2xl bg-card p-6 shadow-e3 ring-1 ring-line-3">
                     <div className="text-small font-[510] text-foreground">OneCamp, self-hosted</div>
                     <div key={`o${oneCampYear}`} className="fx-fade mt-1 font-display text-price tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>

@@ -9,7 +9,7 @@ export const FREE_PLAN_CODE = "free_selfhost";
 
 export const freeIncludes = [
   `Up to ${FREE_SEATS} people`,
-  "Chat, docs, tasks, calls and AI teammates",
+  "Chat, docs, projects, calls and AI teammates",
   "AI teammates never take one of the places",
   "Your server, your data, one-command install",
   "Updates within your major version",

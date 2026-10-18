@@ -378,7 +378,7 @@ export const lifetimeBenefits = [
  * /pricing shows the full lists. Facts only, each shipped.
  */
 export const planHighlights = {
-  free: ["Chat, docs, tasks, calls and agents", "Your server, one command", "Updates within your major version"],
+  free: ["Chat, docs, projects, calls and agents", "Your server, one command", "Updates within your major version"],
   lifetime: ["Unlimited people, no per-seat fees", "SSO, LDAP, SCIM and audit export", "Commercial licence, no AGPL duties", "Email support from the person who builds it"],
   cloud: ["Your own machine, no shared database", "SSL, monitoring and backups handled", "A model on your server, no key needed"],
 } as const;

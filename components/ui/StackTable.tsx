@@ -87,7 +87,7 @@ export function StackTable<R>({
           return (
             <li
               key={rowKey(r)}
-              className={`rounded-xl bg-card p-4 ${lifted ? "shadow-e2 ring-1 ring-brand/45" : "shadow-e1"}`}
+              className={`rounded-xl bg-card p-4 ${lifted ? "shadow-e2 ring-1 ring-line-3" : "shadow-e1"}`}
             >
               {first && <p className="m-0 text-body font-[590] text-foreground">{first.cell(r)}</p>}
               <dl className="m-0 mt-3 grid gap-3">

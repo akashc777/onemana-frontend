@@ -83,7 +83,7 @@ export function Footer() {
               {site.name}
             </Link>
             <p className="mt-3 max-w-xs text-small text-muted-foreground">
-              Chat, docs, tasks and calls on your own server, with AI agents that answer to you.
+              Chat, docs, projects and calls on your own server, with AI agents that answer to you.
             </p>
             <p className="mt-4 text-small text-muted-foreground">
               Questions before you buy?{" "}

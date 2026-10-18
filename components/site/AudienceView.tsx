@@ -3,12 +3,12 @@ import Link from "next/link";
 import { QuestionAccordion } from "@/components/site/marketing";
 import { ProductName } from "@/components/site/ProductName";
 import { FEATURE_MARK } from "@/components/site/featureMarks";
-import { PLAN_HUE } from "@/components/site/planHues";
 import { Scene } from "@/components/site/showcase/Scene";
 import { AUDIENCE_SCENES, type AudienceSceneKind } from "@/components/site/showcase/audience";
 import { ButtonLink } from "@/components/ui/Button";
 import { Tile } from "@/components/ui/graphics/Tile";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { hueOrAgent } from "@/components/ui/graphics/hues";
+import { AREA, type Area } from "@/lib/areas";
 import { SpotImported } from "@/components/ui/graphics/spots";
 import { productHue } from "@/components/site/productHues";
 import { Margin, MarginHeading, SECTION_END, Section } from "@/components/ui/Section";
@@ -24,7 +24,24 @@ import { RecordRows } from "@/components/site/RecordRows";
 import { attemptAndRefusal } from "@/lib/recordExcerpt";
 
 /** The audiences' own hues (site.md §9): agencies berry, compliance dusk, India sun. */
-const AUDIENCE_HUE: Record<string, CampHue> = { agencies: "berry", compliance: "dusk", india: "sun" };
+/**
+ * The area each page is about (design v3.1): a rival's page takes the area
+ * of the tool it replaces, an audience's the area it leans on most. The
+ * canvas's glow and the band take that area's hue; a page about agents has
+ * the agents' indigo glow and a neutral ground (a band is a camp hue), and
+ * a page about no one area is neutral throughout. The rival keeps its own
+ * square in every comparison (productHues.ts).
+ */
+const RIVAL_AREA: Record<string, Area> = {
+  Slack: "chat",
+  Notion: "docs",
+  Basecamp: "projects",
+  ClickUp: "projects",
+  Asana: "projects",
+  "monday.com": "projects",
+  "Toggl Track": "projects",
+};
+const AUDIENCE_AREA: Record<string, Area> = { agencies: "projects", compliance: "agents" };
 
 /** The surface nearest each page's subject, drawn as the app draws it on a phone. */
 function sceneFor(a: Audience): AudienceSceneKind {
@@ -47,18 +64,21 @@ function sceneFor(a: Audience): AudienceSceneKind {
  * identity colour or the audience's; the canvas's glow takes it.
  */
 export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) {
-  const hue: CampHue = a.rival ? productHue(a.rival.name) : (AUDIENCE_HUE[a.slug] ?? "sky");
+  const area: Area | undefined = a.rival ? RIVAL_AREA[a.rival.name] : AUDIENCE_AREA[a.slug];
+  const areaHue = area ? AREA[area].hue : undefined;
+  const hue: CampHue | undefined = areaHue && areaHue !== "agent" ? areaHue : undefined;
+  const pageClass = areaHue ? hueOrAgent(areaHue) : "";
   const scene = AUDIENCE_SCENES[sceneFor(a)];
   return (
     <>
       {/* AU1: the header on the page's camp canvas, its glow in the page hue. */}
       <section className="pt-6 sm:pt-10">
         <div className="container-x">
-          <div className={HUE_CLASS[hue]} style={{ "--page-glow": "var(--hue)" } as CSSProperties}>
+          <div className={pageClass} style={areaHue ? ({ "--page-glow": "var(--hue)" } as CSSProperties) : undefined}>
             <CampCanvas rings="quiet" className="rounded-[20px] px-5 pb-5 pt-10 sm:rounded-4xl sm:px-10 sm:pb-10 sm:pt-14 lg:py-10">
               <div className="grid h-full gap-8 lg:grid-cols-12 lg:items-center lg:gap-x-8">
                 <div className="lg:col-span-7">
-                  <p className="eyebrow in-lift [--eyebrow-dot:rgb(var(--hue))]">{a.eyebrow}</p>
+                  <p className={`eyebrow in-lift ${areaHue ? "[--eyebrow-dot:rgb(var(--hue))]" : ""}`}>{a.eyebrow}</p>
                   <h1 className="in-lift text-balance text-page text-foreground">{a.title}</h1>
                   <p className="in-lift at-60 mt-5 max-w-[600px] text-lead text-muted-foreground">{a.subtitle}</p>
                   <div className="in-lift at-120 mt-8 grid gap-2.5 sm:flex sm:gap-3">
@@ -110,7 +130,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           cards on the rival's own band; the spot for a finished import heads
           the moving card, where it used to float alone above both. */}
       {(a.rival || a.move) && (
-        <Section band={hue}>
+        <Section band={hue} tone="muted">
           <div className="grid gap-4 lg:grid-cols-12 lg:gap-x-6">
             {a.rival && (
               <section aria-labelledby="they-win" className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
@@ -121,7 +141,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                   {a.rival.theyWin.map((w, i) => (
                     <li key={w} className="flex items-start justify-between gap-3 border-b border-border py-3 text-small text-foreground last:border-0">
                       <span>{w}</span>
-                      {i === 0 && <span className="hue-berry inline-flex h-[22px] shrink-0 items-center rounded-md bg-hue-tint px-2 text-[12px] font-[510] text-hue-ink">We lose this one</span>}
+                      {i === 0 && <span className="inline-flex h-[22px] shrink-0 items-center rounded-md bg-hover px-2 text-[12px] font-[510] text-muted-foreground shadow-[inset_0_0_0_1px_var(--line-c)]">We lose this one</span>}
                     </li>
                   ))}
                 </ul>
@@ -183,11 +203,11 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
       )}
 
       <Section>
-        {/* AU5: the price as two mini plan cards, each in its plan's hue. */}
+        {/* AU5: the price as two mini plan cards, neutral (a plan is no area, v3.1). */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
           <div className="rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
-            <p data-hue={PLAN_HUE.lifetime} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
-              <Dot hue={PLAN_HUE.lifetime} />
+            <p className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
+              <Dot hue="ink" />
               Own it
             </p>
             {/* The price at 28/32 and the two-line estimate under it (site.md
@@ -204,8 +224,8 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           </div>
           {pricing.cloud_configured && (
             <div className="rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
-              <p data-hue={PLAN_HUE.cloud} className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
-                <Dot hue={PLAN_HUE.cloud} />
+              <p className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
+                <Dot hue="ink" />
                 Or we run it
               </p>
               <MiniPrice price={fmtINR(pricing.cloud_inr)} per="a month" />
@@ -228,8 +248,8 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
 
         {/* AU6: questions as accordions, the plus in the page hue. */}
         <Margin className="mt-20" aside={<MarginHeading title="Questions" />}>
-          <div className={HUE_CLASS[hue]}>
-            <QuestionAccordion items={a.faqs} plus="text-hue" />
+          <div className={pageClass}>
+            <QuestionAccordion items={a.faqs} plus={areaHue ? "text-hue" : "text-muted-foreground"} />
           </div>
         </Margin>
 

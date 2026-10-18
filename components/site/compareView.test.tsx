@@ -30,7 +30,7 @@ describe("the comparison tables", () => {
     const at = html.indexOf('class="lg:hidden')
     const cards = (html.slice(at).match(/<li class="rounded-xl bg-card p-4 [^"]*"/g) ?? []).slice(0, rivals.length + 1)
     expect(cards).toHaveLength(rivals.length + 1)
-    expect(cards[0]).toContain("ring-brand/45")
+    expect(cards[0]).toContain("ring-line-3")
     for (const c of cards.slice(1)) expect(c).toContain("shadow-e1")
   })
 

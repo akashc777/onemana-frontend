@@ -14,33 +14,31 @@ import {
   TaskGlyph,
   VideoGlyph,
 } from "@/components/site/Glyphs";
-import type { CampHue } from "@/lib/campHue";
+import { AREA, type AreaHue } from "@/lib/areas";
 import type { FeatureIconKey } from "@/lib/content";
 
 /**
- * Each kind of feature has one hue and one glyph, the same on every page, so
- * a colour means something (design v3, site.md G7): the surfaces wear the
- * hues the home page's tour gives them (chat sky, docs dusk, tasks moss,
- * calendar sun) and anything about agents wears the agent's indigo, never
- * dusk; the record is dusk, as its hash chain is; people and data are lake;
- * what keeps your data yours is berry, as the blog's Security topic is.
- * These pages used to paint chat berry, docs sky and agents dusk while the
- * home page painted them sky, dusk and indigo (design/site-polish/AUDIT.md, C3).
+ * Each kind of feature has one glyph and the hue of the area it belongs to
+ * (design v3.1, lib/areas.ts), the same on every page: chat sky, calls
+ * berry, docs dusk, projects moss, tables lake, calendar sun, and anything
+ * about agents (the record included) the agent's indigo. What belongs to no
+ * area (people, automation, the API, privacy) is neutral ink.
  */
-export const FEATURE_MARK: Record<FeatureIconKey, { hue: CampHue | "agent"; Glyph: ComponentType<SVGProps<SVGSVGElement>> }> = {
-  chat: { hue: "sky", Glyph: ChatGlyph },
-  video: { hue: "sky", Glyph: VideoGlyph },
-  docs: { hue: "dusk", Glyph: DocGlyph },
-  tasks: { hue: "moss", Glyph: TaskGlyph },
-  board: { hue: "moss", Glyph: BoardGlyph },
-  table: { hue: "lake", Glyph: TableGlyph },
-  teams: { hue: "lake", Glyph: PeopleGlyph },
-  calendar: { hue: "sun", Glyph: CalendarGlyph },
-  automation: { hue: "sun", Glyph: BoltGlyph },
-  api: { hue: "sun", Glyph: BoltGlyph },
-  ai: { hue: "agent", Glyph: SparkGlyph },
-  agent: { hue: "agent", Glyph: SparkGlyph },
-  shield: { hue: "agent", Glyph: ShieldGlyph },
-  audit: { hue: "dusk", Glyph: RecordGlyph },
-  lock: { hue: "berry", Glyph: LockGlyph },
+export const FEATURE_MARK: Record<FeatureIconKey, { hue: AreaHue | "ink"; Glyph: ComponentType<SVGProps<SVGSVGElement>> }> = {
+  chat: { hue: AREA.chat.hue, Glyph: ChatGlyph },
+  video: { hue: AREA.calls.hue, Glyph: VideoGlyph },
+  docs: { hue: AREA.docs.hue, Glyph: DocGlyph },
+  tasks: { hue: AREA.projects.hue, Glyph: TaskGlyph },
+  board: { hue: AREA.projects.hue, Glyph: BoardGlyph },
+  table: { hue: AREA.tables.hue, Glyph: TableGlyph },
+  calendar: { hue: AREA.calendar.hue, Glyph: CalendarGlyph },
+  ai: { hue: AREA.agents.hue, Glyph: SparkGlyph },
+  agent: { hue: AREA.agents.hue, Glyph: SparkGlyph },
+  shield: { hue: AREA.agents.hue, Glyph: ShieldGlyph },
+  audit: { hue: AREA.agents.hue, Glyph: RecordGlyph },
+  // No area: who is on the team, what runs by itself, the API, privacy.
+  teams: { hue: "ink", Glyph: PeopleGlyph },
+  automation: { hue: "ink", Glyph: BoltGlyph },
+  api: { hue: "ink", Glyph: BoltGlyph },
+  lock: { hue: "ink", Glyph: LockGlyph },
 };
