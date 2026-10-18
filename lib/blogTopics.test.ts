@@ -6,9 +6,9 @@ import { BLOG_TOPICS, blogTopic, relatedPosts } from "./blogTopics";
  * Pinned on real posts' tags (onemana.dev/blog, 10 Oct 2026).
  */
 describe("a post's topic", () => {
-  it("has six topics, each with its own hue", () => {
+  it("has six topics, each in its area's hue, and the two that are no area neutral (v3.1)", () => {
     expect(BLOG_TOPICS.map((t) => t.label)).toEqual(["Docs and tables", "Chat and calls", "Projects", "Agents", "Security", "Running it"]);
-    expect(new Set(BLOG_TOPICS.map((t) => t.hue)).size).toBe(6);
+    expect(BLOG_TOPICS.map((t) => t.hue)).toEqual(["dusk", "sky", "moss", "agent", "ink", "ink"]);
   });
 
   it("is decided by the most specific tag", () => {

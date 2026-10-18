@@ -61,7 +61,7 @@ export default async function BlogIndexPage() {
         subtitle="What shipped, what broke, and what changed because of it, written by the person who builds it."
         art={
           <span className="relative flex size-40 items-center justify-center">
-            <Rings size={160} hue="sun" count={3} core={false} className="absolute inset-0" />
+            <Rings size={160} count={3} core={false} className="absolute inset-0 text-muted-foreground" />
             <SparkMark size={44} />
           </span>
         }

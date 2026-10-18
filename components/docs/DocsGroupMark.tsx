@@ -1,15 +1,14 @@
-import { hueFor, type CampHue } from "@/lib/campHue";
-import { IdentityMark } from "@/components/ui/graphics/IdentityMark";
+import { Dot } from "@/components/ui/v3";
 import { Tile } from "@/components/ui/graphics/Tile";
 import { Icon, type IconName } from "@/components/ui/icons";
 
 /**
- * A group of guides has a colour of its own (the playful layer: every doc
- * gets a stable hue), from its name, so the docs index and the sidebar of
- * every guide agree on it: Deployment is sky, Setup flow is moss.
+ * A group of guides (Deployment, Setup flow) is no area of the product, so
+ * its mark is neutral ink (design v3.1): a hue hashed from its name named
+ * nothing, and borrowed an area's colour besides.
  */
-export function docsGroupHue(category: string): CampHue {
-  return hueFor(category);
+export function docsGroupHue(_category: string): "ink" {
+  return "ink";
 }
 
 /** An icon for the groups the CMS has; any other group shows its initial. */
@@ -29,11 +28,13 @@ export function DocsGroupTile({ category }: { category: string }) {
       <Icon name={icon} />
     </Tile>
   ) : (
-    <IdentityMark hue={hue} variant="tile" size={36} label={category} />
+    <Tile hue={hue} size="lg">
+      <span className="text-small font-[590]">{category.trim().slice(0, 1).toUpperCase()}</span>
+    </Tile>
   );
 }
 
 /** The group's dot in the sidebar, beside its name: identity as a dot (site.md G7). */
 export function DocsGroupDot({ category }: { category: string }) {
-  return <IdentityMark hue={docsGroupHue(category)} variant="dot" size={7} />;
+  return <Dot hue="ink" size={7} />;
 }

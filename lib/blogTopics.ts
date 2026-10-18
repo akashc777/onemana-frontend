@@ -1,3 +1,4 @@
+import { AREA, type AreaHue } from "./areas";
 import type { CampHue } from "./campHue";
 
 // What a post is about, for the blog's colour: one of six topics, each with a
@@ -13,24 +14,25 @@ import type { CampHue } from "./campHue";
 export interface BlogTopic {
   key: "agents" | "security" | "projects" | "chat" | "tables" | "running";
   label: string;
-  hue: CampHue;
+  /** The area the topic is about (lib/areas.ts), or neutral ink for one that is no area (v3.1). */
+  hue: AreaHue | "ink";
 }
 
-const AGENTS: BlogTopic = { key: "agents", label: "Agents", hue: "dusk" };
+const AGENTS: BlogTopic = { key: "agents", label: "Agents", hue: AREA.agents.hue };
 
 // Most specific first. The tags decide, then the title's words, and the
 // generic "AI" tag last of all.
 const RULES: { topic: BlogTopic; tags: string[] }[] = [
   {
-    topic: { key: "tables", label: "Docs and tables", hue: "lake" },
+    topic: { key: "tables", label: "Docs and tables", hue: AREA.docs.hue },
     tags: ["tables", "formulas", "relations", "rollups", "docs", "whiteboard", "airtable alternative", "notion alternative", "databases"],
   },
   {
-    topic: { key: "chat", label: "Chat and calls", hue: "sky" },
+    topic: { key: "chat", label: "Chat and calls", hue: AREA.chat.hue },
     tags: ["chat", "clips", "voice notes", "read receipts", "calls", "video", "meetings", "meeting notes", "slack bridge"],
   },
   {
-    topic: { key: "projects", label: "Projects", hue: "moss" },
+    topic: { key: "projects", label: "Projects", hue: AREA.projects.hue },
     tags: [
       "project management", "kanban", "gantt", "timeline", "dependencies", "workload", "goals", "reports", "time tracking",
       "invoices", "invoicing", "templates", "custom fields", "cycles", "burndown", "agencies", "client portal", "freelancers",
@@ -42,11 +44,11 @@ const RULES: { topic: BlogTopic; tags: string[] }[] = [
     tags: ["ai agents", "agents", "ai teammates", "llm", "ollama", "mcp", "ai governance", "coding agent", "agent-to-agent"],
   },
   {
-    topic: { key: "security", label: "Security", hue: "berry" },
+    topic: { key: "security", label: "Security", hue: "ink" },
     tags: ["security", "scim", "single sign-on", "sso", "passkeys", "governance", "audit", "eu ai act", "two-factor", "2fa", "privacy", "permissions", "ldap", "onboarding"],
   },
   {
-    topic: { key: "running", label: "Running it", hue: "sun" },
+    topic: { key: "running", label: "Running it", hue: "ink" },
     tags: [
       "release", "post-mortem", "docker", "operations", "silent failure", "devops", "deployment", "migrations",
       "reliability", "testing", "managed hosting", "provisioning", "ci", "traefik", "tls", "backups",
@@ -92,4 +94,13 @@ export function relatedPosts<T extends { slug: string; tags?: string[] | null; t
   const same = others.filter((p) => blogTopic(p.tags, p.title).key === topic);
   const rest = others.filter((p) => !same.includes(p));
   return [...same, ...rest].slice(0, count);
+}
+
+/**
+ * The camp hue a topic's share card draws with (lib/og-post-card, which has
+ * the six camp hues only): its area's, or none for the agents' indigo and
+ * the neutral topics, where the card keeps its default.
+ */
+export function topicCampHue(hue: BlogTopic["hue"]): CampHue | undefined {
+  return hue === "agent" || hue === "ink" ? undefined : hue;
 }

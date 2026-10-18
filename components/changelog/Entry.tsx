@@ -69,7 +69,7 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 
 /** The moss "New" the home page's pill carries, on the entry it points to. */
 function NewTag() {
-  return <span className="hue-moss rounded-full bg-hue-tint px-2 text-[12px] font-[510] leading-5 text-hue-ink">New</span>;
+  return <span className="rounded-full bg-muted px-2 text-[12px] font-[510] leading-5 text-foreground shadow-[inset_0_0_0_1px_var(--line-c)]">New</span>;
 }
 
 /** "v2.71.0 with AI · v1.56.0 without AI", each tag a link to its notes on GitHub. */
@@ -95,13 +95,13 @@ export function Tags({ of }: { of: Pick<ChangelogEntry | FixGroup, "tag" | "url"
   );
 }
 
-/** A note for whoever runs the server. A known issue is drawn in sun; anything else is quiet. */
+/** A note for whoever runs the server. A known issue takes the warning colour (a meaning, not an area); anything else is neutral. */
 function NoticeLine({ notice, full }: { notice: Notice; full: boolean }) {
   const issue = /^known issue/i.test(notice.title);
   if (!full) {
     return (
       <p className="flex gap-2 text-small text-muted-foreground">
-        <Icon name={issue ? "alert" : "info"} size={16} className={`mt-0.5 ${issue ? "hue-sun text-hue-ink" : ""}`} />
+        <Icon name={issue ? "alert" : "info"} size={16} className={`mt-0.5 ${issue ? "text-warning-ink" : ""}`} />
         <span>
           <b className="font-[590] text-foreground">{`${notice.title}:`}</b>
           {` ${firstSentence(plainText(notice.text), NOTICE_CHARS)}`}
@@ -110,7 +110,7 @@ function NoticeLine({ notice, full }: { notice: Notice; full: boolean }) {
     );
   }
   return (
-    <div className={`${issue ? "hue-sun" : "hue-sky"} flex gap-3 rounded-[10px] border border-hue/25 bg-hue-tint px-4 py-3 text-small text-hue-ink`}>
+    <div className={`${issue ? "border-warning/30 bg-warning/10 text-warning-ink" : "border-line-2 bg-muted text-foreground"} flex gap-3 rounded-[10px] border px-4 py-3 text-small`}>
       <Icon name={issue ? "alert" : "info"} size={16} className="mt-0.5" />
       <p className="m-0">
         <b className="font-[590]">{`${notice.title}:`}</b> <span dangerouslySetInnerHTML={{ __html: inlineHtml(notice.text) }} />

@@ -112,6 +112,7 @@ describe("the tabs and the Cloud size", () => {
       expect(t).toContain('data-interactive="tab"')
       expect(t).not.toMatch(/\b(hover:|bg-card|shadow-e2 )/)
     }
-    expect(topics.slice(1).every((t) => /data-hue="\w+"/.test(t))).toBe(true)
+    // Each area topic hovers in its area's hue; Security and Running it are no area, so they take the accent.
+    expect(topics.slice(1).map((t) => /data-hue="(\w+)"/.exec(t)?.[1] ?? null)).toEqual(["dusk", "sky", "moss", "agent", null, null])
   })
 })

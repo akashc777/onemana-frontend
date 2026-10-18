@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BLOG_TOPICS } from "@/lib/blogTopics";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { hueOrAgent } from "@/components/ui/graphics/hues";
 import { ix } from "@/lib/interactive";
 
 /**
@@ -43,8 +43,8 @@ export function TopicFilter({ target }: { target: string }) {
           onClick={() => setTopic(c.key)}
           // A tab of the layer in the topic's hue (storefront audit B2: the
           // hover was grey); the chosen topic is the raised knob at e2.
-          {...ix("tab", { hue: c.hue ?? undefined })}
-          className={`${c.hue ? HUE_CLASS[c.hue] : ""} flex min-h-11 min-w-11 shrink-0 snap-start items-center justify-center gap-2 rounded-md px-3 text-caption font-[510] text-muted-foreground [--ix-knob:var(--e-e2)] sm:min-h-8 sm:min-w-0`}
+          {...ix("tab", { hue: c.hue && c.hue !== "ink" ? c.hue : undefined })}
+          className={`${c.hue ? hueOrAgent(c.hue) : ""} flex min-h-11 min-w-11 shrink-0 snap-start items-center justify-center gap-2 rounded-md px-3 text-caption font-[510] text-muted-foreground [--ix-knob:var(--e-e2)] sm:min-h-8 sm:min-w-0`}
         >
           {c.hue && <span aria-hidden="true" className="size-[7px] rounded-full bg-hue" />}
           {c.label}

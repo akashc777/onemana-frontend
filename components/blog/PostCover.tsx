@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { CampHue } from "@/lib/campHue";
-import { HUE_CLASS } from "@/components/ui/graphics/hues";
+import { hueOrAgent } from "@/components/ui/graphics/hues";
 
 /**
  * A post's cover (site.md BL2): r16 at e2 with no tinted frame, since the
@@ -21,9 +21,9 @@ import { HUE_CLASS } from "@/components/ui/graphics/hues";
  * image optimiser (next.config.mjs has images.unoptimized: Vercel's free plan
  * counts every resize).
  */
-export function PostCover({ src, hue }: { src: string; hue: CampHue }) {
+export function PostCover({ src, hue }: { src: string; hue: CampHue | "agent" | "ink" }) {
   return (
-    <div className={`${HUE_CLASS[hue]} -mx-4 sm:mx-0`}>
+    <div className={`${hueOrAgent(hue)} -mx-4 sm:mx-0`}>
       <div className="post-cover relative aspect-[16/10] overflow-hidden bg-muted shadow-e2 sm:rounded-2xl">
         <Image
           src={src}
