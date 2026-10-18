@@ -59,7 +59,7 @@ function github(overrides: Record<string, GithubAnswer> = {}) {
     [`${API}/repos/OneMana-Soft/OneCamp-desktop/releases?per_page=10`]: { status: 200, body: [releaseBody("v1.1.1", "2026-10-15T07:49:13Z")] },
     [`${API}/repos/OneMana-Soft/onemana-omarchy/releases?per_page=10`]: { status: 200, body: [] },
     // The organisation's other products, which must never be asked for or counted.
-    [`${API}/repos/OneMana-Soft/conva-fe`]: { status: 200, body: repoBody("OneMana-Soft/conva-fe", 500) },
+    [`${API}/repos/OneMana-Soft/another-product-fe`]: { status: 200, body: repoBody("OneMana-Soft/another-product-fe", 500) },
     ...overrides,
   }
   const asked: string[] = []
@@ -74,7 +74,7 @@ describe("the four repositories", () => {
   it("are an allowlist of OneCamp's own, in the site's order, never the organisation's other products", () => {
     expect(OPEN_SOURCE_REPOS).toEqual(["OneMana-Soft/OneCamp", "OneMana-Soft/OneCamp-fe", "OneMana-Soft/OneCamp-desktop", "OneMana-Soft/onemana-omarchy"])
     expect(OPEN_SOURCE_REPOS).toBe(site.githubRepos)
-    for (const other of ["conva-fe", "tareon-fe"]) expect(OPEN_SOURCE_REPOS.join(" ")).not.toContain(other)
+    for (const other of ["another-product-fe", "another-product-be"]) expect(OPEN_SOURCE_REPOS.join(" ")).not.toContain(other)
   })
 
   it("adds up the stars of the four and only the four, from two requests each", async () => {
@@ -84,7 +84,7 @@ describe("the four repositories", () => {
     expect(asked.sort()).toEqual(
       OPEN_SOURCE_REPOS.flatMap((r) => [`${API}/repos/${r}`, `${API}/repos/${r}/releases?per_page=10`]).sort(),
     )
-    expect(asked.some((u) => u.includes("conva") || u.includes("/orgs/"))).toBe(false)
+    expect(asked.some((u) => u.includes("another-product") || u.includes("/orgs/"))).toBe(false)
   })
 
   it("reads each one's address, licence, stars, newest release and last change", async () => {
@@ -124,7 +124,7 @@ describe("no number rather than a wrong one", () => {
       null,
       "not json",
       [],
-      repoBody("OneMana-Soft/conva-fe", 3),
+      repoBody("OneMana-Soft/another-product-fe", 3),
       repoBody("OneMana-Soft/OneCamp-desktop", 3, "MIT", { private: true }),
       repoBody("OneMana-Soft/OneCamp-desktop", 3, "MIT", { private: undefined }),
       repoBody("OneMana-Soft/OneCamp-desktop", -1),
