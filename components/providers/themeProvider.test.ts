@@ -13,11 +13,12 @@ import { THEME_SCRIPT, applyTheme } from "@/components/providers/ThemeProvider"
  * paint on a throttled phone, the longest on home (12 Oct 2026).
  */
 
-type Html = { classes: Set<string>; colorScheme: string }
+type Html = { classes: Set<string>; colorScheme: string; attrs: Record<string, string> }
 
 function fakeHtml(classes: string[], colorScheme = ""): Html & { el: unknown } {
-  const h = { classes: new Set(classes), colorScheme }
+  const h = { classes: new Set(classes), colorScheme, attrs: {} as Record<string, string> }
   const el = {
+    setAttribute: (k: string, v: string) => (h.attrs[k] = v),
     classList: {
       contains: (c: string) => h.classes.has(c),
       add: (c: string) => h.classes.add(c),
@@ -39,7 +40,7 @@ describe("the theme script, before the page paints", () => {
   const run = (stored: string | null | Error, systemDark: boolean) => {
     const html = fakeHtml(["__variable_a"])
     vm.runInNewContext(THEME_SCRIPT, {
-      document: { documentElement: html.el },
+      document: { documentElement: html.el, querySelectorAll: () => [] },
       localStorage: {
         getItem: () => {
           if (stored instanceof Error) throw stored
@@ -48,19 +49,20 @@ describe("the theme script, before the page paints", () => {
       },
       matchMedia: (q: string) => ({ matches: q === "(prefers-color-scheme: dark)" && systemDark }),
     })
-    return `${[...html.classes].join(" ")} / ${html.colorScheme}`
+    return `${[...html.classes].join(" ")} / ${html.colorScheme} / ${html.attrs["data-theme-choice"]}`
   }
 
-  it("puts the reader's choice on <html>, or the system's", () => {
-    expect(run("dark", false)).toBe("__variable_a dark / dark")
-    expect(run("light", true)).toBe("__variable_a light / light")
-    expect(run("system", true)).toBe("__variable_a dark / dark")
-    expect(run(null, false)).toBe("__variable_a light / light")
+  it("puts the reader's choice on <html>, or the system's, and names the choice", () => {
+    expect(run("dark", false)).toBe("__variable_a dark / dark / dark")
+    expect(run("light", true)).toBe("__variable_a light / light / light")
+    expect(run("system", true)).toBe("__variable_a dark / dark / system")
+    expect(run(null, false)).toBe("__variable_a light / light / system")
+    expect(run(null, true)).toBe("__variable_a dark / dark / system")
   })
 
   it("follows the system when the stored choice is unreadable or unknown", () => {
-    expect(run(new Error("storage refused"), true)).toBe("__variable_a dark / dark")
-    expect(run("solarized", true)).toBe("__variable_a dark / dark")
+    expect(run(new Error("storage refused"), true)).toBe("__variable_a dark / dark / system")
+    expect(run("solarized", true)).toBe("__variable_a dark / dark / system")
   })
 })
 

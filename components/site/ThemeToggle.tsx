@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/components/providers/ThemeProvider";
+import { nextChoice, useTheme } from "@/components/providers/ThemeProvider";
 import { Icon } from "@/components/ui/icons";
 import { ix } from "@/lib/interactive";
 import { Segmented } from "@/components/ui/Segmented";
@@ -17,28 +17,43 @@ function fadeTo(set: (t: string) => void, theme: string) {
   window.setTimeout(() => html.classList.remove("theme-fading"), 240);
 }
 
+/** Shown while <html> names this choice; System when it names none yet. */
+const SHOW = {
+  system: "[html[data-theme-choice=light]_&]:hidden [html[data-theme-choice=dark]_&]:hidden",
+  light: "hidden [html[data-theme-choice=light]_&]:inline",
+  dark: "hidden [html[data-theme-choice=dark]_&]:inline",
+} as const;
+
 /**
- * Light or dark, drawn on the server and correct before any script runs.
- * The theme script sets the theme class on <html> before the page paints, so CSS
- * chooses both the icon and the button's name: each is in the markup twice
- * and the `dark:` variant shows one. The icon turns a quarter on a change
- * (S17), on the spring.
+ * The bar's theme switch: System, Light or Dark, one press at a time
+ * (nextChoice: the first press always changes the look, and System is always
+ * a press or two away). It used to flip between Light and Dark only, so a
+ * reader who pressed it once never followed their system again on a
+ * computer. Drawn on the server and correct before any script runs: the
+ * theme script names the choice on <html> before the page paints, and CSS
+ * picks the icon and the button's name from it; each is in the markup three
+ * times. The icon turns a quarter on a press (S17), on the spring.
  */
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, systemTheme, setTheme } = useTheme();
+  const turn = "transition-transform duration-panel ease-spring motion-safe:group-active:rotate-90";
   return (
     <button
       type="button"
-      onClick={() => fadeTo(setTheme, resolvedTheme === "dark" ? "light" : "dark")}
+      onClick={() => {
+        if (theme && systemTheme) fadeTo(setTheme, nextChoice(theme, systemTheme));
+      }}
       {...ix("icon")}
       className="group inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground lg:h-8 lg:w-8"
     >
-      <span className="sr-only dark:hidden">Switch to dark mode</span>
-      <span className="sr-only hidden dark:inline">Switch to light mode</span>
+      <span className={`sr-only ${SHOW.system}`}>Theme follows your device. Change theme</span>
+      <span className={`sr-only ${SHOW.light}`}>Theme is light. Change theme</span>
+      <span className={`sr-only ${SHOW.dark}`}>Theme is dark. Change theme</span>
       {/* The quarter turn is motion, so it waits for motion to be welcome
           (storefront audit G6: it still turned, instantly, for reduced motion). */}
-      <Icon name="sun" className="transition-transform duration-panel ease-spring dark:hidden motion-safe:group-active:rotate-90" />
-      <Icon name="moon" className="hidden transition-transform duration-panel ease-spring motion-safe:group-active:-rotate-90 dark:block" />
+      <Icon name="monitor" className={`${turn} ${SHOW.system}`} />
+      <Icon name="sun" className={`${turn} ${SHOW.light}`} />
+      <Icon name="moon" className={`transition-transform duration-panel ease-spring motion-safe:group-active:-rotate-90 ${SHOW.dark}`} />
     </button>
   );
 }

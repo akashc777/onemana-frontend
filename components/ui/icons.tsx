@@ -54,6 +54,11 @@ const ICONS = {
     ["path", "M12 2.5v2M12 19.5v2M5.28 5.28l1.41 1.41M17.31 17.31l1.41 1.41M2.5 12h2M19.5 12h2M5.28 18.72l1.41-1.41M17.31 6.69l1.41-1.41"],
   ],
   moon: [["path", "M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a7 7 0 1 0 11 11z"]],
+  // Lucide's monitor: the theme follows the reader's device.
+  monitor: [
+    ["rect", 2.5, 3.5, 19, 13, 2],
+    ["path", "M8 20.5h8M12 16.5v4"],
+  ],
   info: [
     ["circle", 12, 12, 9],
     ["path", "M12 11v5M12 8h.01"],

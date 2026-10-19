@@ -30,12 +30,14 @@ describe("the nav on a phone", () => {
 describe("the theme switch", () => {
     const html = renderToString(<ThemeToggle />)
 
-    it("is drawn before any script runs, with both names and icons for CSS to choose", () => {
+    it("is drawn before any script runs, with every name and icon for CSS to choose", () => {
         // It rendered an empty square until a mounted flag flipped, and the
-        // icon popped in after hydration.
+        // icon popped in after hydration. Three states since 19 Oct 2026:
+        // System, Light and Dark (themeChoice.test.tsx).
         expect(html).toMatch(/^<button/)
-        expect(html).toContain('<span class="sr-only dark:hidden">Switch to dark mode</span>')
-        expect(html).toContain('<span class="sr-only hidden dark:inline">Switch to light mode</span>')
-        expect(html.match(/<svg/g)).toHaveLength(2)
+        expect(html).toMatch(/<span class="sr-only \[html\[data-theme-choice=light\]_&amp;\]:hidden \[html\[data-theme-choice=dark\]_&amp;\]:hidden">Theme follows your device\. Change theme<\/span>/)
+        expect(html).toContain('<span class="sr-only hidden [html[data-theme-choice=light]_&amp;]:inline">Theme is light. Change theme</span>')
+        expect(html).toContain('<span class="sr-only hidden [html[data-theme-choice=dark]_&amp;]:inline">Theme is dark. Change theme</span>')
+        expect(html.match(/<svg/g)).toHaveLength(3)
     })
 })

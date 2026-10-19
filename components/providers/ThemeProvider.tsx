@@ -25,14 +25,49 @@ type Resolved = "light" | "dark";
 const KEY = "theme";
 const MEDIA = "(prefers-color-scheme: dark)";
 const THEMES: ThemeChoice[] = ["light", "dark", "system"];
+const CHOICE_ATTR = "data-theme-choice";
 
 const isChoice = (value: unknown): value is ThemeChoice => value === "light" || value === "dark" || value === "system";
 
 /**
+ * The browser's bar (theme-color) in the chosen theme. The layout gives one
+ * colour per system scheme, by media query, so a reader who chose Light on a
+ * dark system had a dark bar over a light page. A chosen theme's own meta
+ * applies everywhere and the other nowhere; System puts the queries back.
+ * Self-contained: the theme script inlines it.
+ */
+export function pinThemeColor(choice: string | null) {
+  document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((m) => {
+    let own = m.getAttribute("data-media");
+    if (own === null) {
+      own = m.getAttribute("media") || "";
+      m.setAttribute("data-media", own);
+    }
+    m.setAttribute("media", choice === "light" || choice === "dark" ? (own.includes(choice) ? "all" : "not all") : own);
+  });
+}
+
+/** pinThemeColor as the theme script runs it, before React; themeChoice.test runs both. */
+const PIN_SCRIPT = `document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){var o=m.getAttribute("data-media");if(o===null){o=m.getAttribute("media")||"";m.setAttribute("data-media",o)}m.setAttribute("media",c?(o.indexOf(c)>-1?"all":"not all"):o)})`;
+
+/**
  * Runs before the page paints, as the first thing in <body>. It does what
  * applyTheme() does; a stored choice it cannot read means following the system.
+ * It also names the choice on <html> (data-theme-choice), so the bar's switch
+ * shows System, Light or Dark from the first paint (components/site/ThemeToggle).
  */
-export const THEME_SCRIPT = `(function(){var d=document.documentElement,c=null;try{c=localStorage.getItem(${JSON.stringify(KEY)})}catch(e){}var t=c==="light"||c==="dark"?c:matchMedia(${JSON.stringify(MEDIA)}).matches?"dark":"light";d.classList.remove("light","dark");d.classList.add(t);d.style.colorScheme=t})()`;
+export const THEME_SCRIPT = `(function(){var d=document.documentElement,c=null;try{c=localStorage.getItem(${JSON.stringify(KEY)})}catch(e){}if(c!=="light"&&c!=="dark")c=null;var t=c||(matchMedia(${JSON.stringify(MEDIA)}).matches?"dark":"light");d.classList.remove("light","dark");d.classList.add(t);d.style.colorScheme=t;d.setAttribute(${JSON.stringify(CHOICE_ATTR)},c||"system");${PIN_SCRIPT}})()`;
+
+/**
+ * The bar's switch, one press at a time: from System to the look the system
+ * is not showing, then to the system's look kept whatever the system does,
+ * then back to System. Every state is a press or two away, and the first
+ * press always changes what the page looks like.
+ */
+export function nextChoice(choice: ThemeChoice, system: Resolved): ThemeChoice {
+  if (choice === "system") return system === "dark" ? "light" : "dark";
+  return choice === system ? "system" : system;
+}
 
 function readChoice(): ThemeChoice {
   try {
@@ -81,10 +116,26 @@ const ThemeContext = createContext<ThemeState>({
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Read in the browser for the first render, as next-themes did.
-  const [theme, setThemeState] = useState<ThemeChoice | undefined>(() => (typeof window === "undefined" ? undefined : readChoice()));
-  const [systemTheme, setSystemTheme] = useState<Resolved | undefined>(() => (typeof window === "undefined" ? undefined : systemNow()));
+  // Unknown in the first render, in the browser as on the server, and read
+  // straight after. React 18 keeps the server's attributes when the first
+  // client render differs: reading the choice in the first render left the
+  // phone menu saying System to a reader who had chosen Dark (themeChoice.test).
+  // The page already wears the right theme: the script put it there.
+  const [theme, setThemeState] = useState<ThemeChoice | undefined>(undefined);
+  const [systemTheme, setSystemTheme] = useState<Resolved | undefined>(undefined);
   const resolvedTheme = theme === "system" ? systemTheme : theme;
+
+  useEffect(() => {
+    setThemeState(readChoice());
+    setSystemTheme(systemNow());
+  }, []);
+
+  // The choice, named on <html> for the bar's switch.
+  useEffect(() => {
+    if (!theme) return;
+    document.documentElement.setAttribute(CHOICE_ATTR, theme);
+    pinThemeColor(theme);
+  }, [theme]);
 
   // The script has already put this theme on the page, so on load this only
   // looks; it writes when the theme changes.
@@ -108,11 +159,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  // System clears the override: nothing is kept, and the page follows the
+  // system as it does for a reader who never chose.
   const setTheme = useCallback((next: string) => {
     const choice = isChoice(next) ? next : "system";
     setThemeState(choice);
     try {
-      localStorage.setItem(KEY, choice);
+      if (choice === "system") localStorage.removeItem(KEY);
+      else localStorage.setItem(KEY, choice);
     } catch {
       // Storage refused (a private window, blocked site data): the choice holds for this page.
     }
