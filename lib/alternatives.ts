@@ -79,7 +79,7 @@ export const alternatives: Audience[] = [
     eyebrow: "A self-hosted alternative to Basecamp",
     title: "Projects, chat and clients, with nothing per seat",
     subtitle:
-      "Basecamp counts your projects. OneCamp counts nothing until 25 people, and then you can pay once and own it. Every project, every client, free, on your own server: the calm of Basecamp, plus the chat, calls, docs, tables, Gantt and AI it doesn't have.",
+      "Basecamp counts your projects. OneCamp counts nothing until 25 people, and then you can pay once and own it. Every project, every client, free, on your own server: the calm of Basecamp, plus the threads, calls, tables, Gantt and AI it doesn't have.",
     seoTitle: "Self-hosted Basecamp alternative: OneCamp, with client links and time tracking",
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Basecamp: projects, chat, docs and a client link to follow their project, plus time tracking, booking pages and intake forms.",
