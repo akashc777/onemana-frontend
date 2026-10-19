@@ -1,6 +1,6 @@
 "use client";
 
-import { nextChoice, useTheme } from "@/components/providers/ThemeProvider";
+import { nextChoice, themeSwitchLabel, useTheme } from "@/components/providers/ThemeProvider";
 import { Icon } from "@/components/ui/icons";
 import { ix } from "@/lib/interactive";
 import { Segmented } from "@/components/ui/Segmented";
@@ -37,9 +37,15 @@ const SHOW = {
 export function ThemeToggle() {
   const { theme, systemTheme, setTheme } = useTheme();
   const turn = "transition-transform duration-panel ease-spring motion-safe:group-active:rotate-90";
+  // Once the choice and the system are known (straight after hydration), the
+  // tooltip and the name say the mode and what a press does; before then the
+  // spans below name the mode, picked by CSS.
+  const label = theme && systemTheme ? themeSwitchLabel(theme, systemTheme) : undefined;
   return (
     <button
       type="button"
+      aria-label={label}
+      title={label}
       onClick={() => {
         if (theme && systemTheme) fadeTo(setTheme, nextChoice(theme, systemTheme));
       }}

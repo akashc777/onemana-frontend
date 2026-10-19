@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import vm from "node:vm"
-import { THEME_SCRIPT, ThemeProvider, nextChoice, pinThemeColor } from "@/components/providers/ThemeProvider"
+import { THEME_SCRIPT, ThemeProvider, nextChoice, pinThemeColor, themeSwitchLabel } from "@/components/providers/ThemeProvider"
 import { ThemeSegments, ThemeToggle } from "@/components/site/ThemeToggle"
 
 /**
@@ -25,6 +25,20 @@ describe("the bar's switch", () => {
     expect(nextChoice("system", "light")).toBe("dark")
     expect(nextChoice("dark", "light")).toBe("light")
     expect(nextChoice("light", "light")).toBe("system")
+  })
+
+  it("says the mode and what a press does, in its tooltip and its name", () => {
+    // An icon alone cannot say what a three-state switch does next (DESIGN-BUILD-2).
+    expect(themeSwitchLabel("system", "dark")).toBe("Theme: System (dark). Switch to light")
+    expect(themeSwitchLabel("system", "light")).toBe("Theme: System (light). Switch to dark")
+    expect(themeSwitchLabel("light", "dark")).toBe("Theme: Light. Switch to dark")
+    expect(themeSwitchLabel("dark", "dark")).toBe("Theme: Dark. Switch to System")
+    expect(themeSwitchLabel("dark", "light")).toBe("Theme: Dark. Switch to light")
+    expect(themeSwitchLabel("light", "light")).toBe("Theme: Light. Switch to System")
+    const src = readFileSync(path.resolve(__dirname, "../site/ThemeToggle.tsx"), "utf8")
+    expect(src).toMatch(/aria-label=\{label\}/)
+    expect(src).toMatch(/title=\{label\}/)
+    expect(src).toMatch(/themeSwitchLabel\(theme, systemTheme\)/)
   })
 
   it("shows System as one of its three states, each drawn before any script runs", () => {

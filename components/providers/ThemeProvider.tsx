@@ -69,6 +69,17 @@ export function nextChoice(choice: ThemeChoice, system: Resolved): ThemeChoice {
   return choice === system ? "system" : system;
 }
 
+/**
+ * What the bar's switch is and what a press does, for its tooltip and its
+ * accessible name: an icon alone cannot say what a three-state switch will do
+ * next (DESIGN-BUILD-2, 19 Oct 2026).
+ */
+export function themeSwitchLabel(choice: ThemeChoice, system: Resolved): string {
+  const next = nextChoice(choice, system);
+  const now = choice === "system" ? `System (${system})` : choice === "light" ? "Light" : "Dark";
+  return `Theme: ${now}. Switch to ${next === "system" ? "System" : next}`;
+}
+
 function readChoice(): ThemeChoice {
   try {
     const stored = localStorage.getItem(KEY);
