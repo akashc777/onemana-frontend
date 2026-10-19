@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Vercel's Ignored Build Step (vercel.json ignoreCommand): exit 0 skips the
-# build, exit 1 builds. A push that changes only tests, e2e, design, scripts or
-# Markdown since the last deploy is skipped, to stay inside the free plan.
+# build, exit 1 builds. A push that changes only tests, e2e, design, scripts,
+# GitHub workflows or Markdown since the last deploy is skipped, to stay inside
+# the free plan.
 #
 # Whenever this can't tell, it builds. Vercel clones shallow, so after a long
 # push the last deploy's commit may not be in the clone at all; `git diff`
@@ -17,7 +18,7 @@ git cat-file -e "${prev}^{commit}" 2>/dev/null || exit 1
 git diff --quiet "$prev" HEAD -- content/legal || exit 1
 if git diff --quiet "$prev" HEAD -- . \
   ':(exclude)*.test.ts' ':(exclude)*.test.tsx' ':(exclude)*.test.mjs' \
-  ':(exclude)e2e' ':(exclude)design' ':(exclude)scripts' ':(exclude)*.md'; then
+  ':(exclude)e2e' ':(exclude)design' ':(exclude)scripts' ':(exclude).github' ':(exclude)*.md'; then
   exit 0
 fi
 exit 1

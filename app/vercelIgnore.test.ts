@@ -72,6 +72,12 @@ describe("scripts/vercel-ignore.sh", () => {
     expect(decide(deployed)).toBe(1)
   })
 
+  it("skips a push that changes only GitHub workflows, which the site never reads", () => {
+    const deployed = commit("app/page.tsx", "export default 1\n")
+    commit(".github/workflows/synthetic.yml", "on: push\n")
+    expect(decide(deployed)).toBe(0)
+  })
+
   it("builds when the last deploy's commit isn't in the clone", () => {
     expect(decide("85249c0fd33d3c12115fc48e691ac393acdfbafa")).toBe(1)
   })
