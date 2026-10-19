@@ -1,0 +1,103 @@
+name: Synthetic
+
+# Is onemana.dev working for a visitor? scripts/synthetic/check.mjs reads the key
+# pages and API routes for their real content, then renders four pages at 390 and
+# 1280 px, light and dark, and fails if the main heading is not what a visitor
+# sees (19 Oct 2026: a phone menu marked hidden but drawn open covered every page
+# on every phone, while every page answered 200).
+#
+# - every 5 minutes (GitHub may start a scheduled run late, and skips them in a
+#   repository with no activity for 60 days);
+# - after every Production deployment Vercel reports, and loudly when Vercel
+#   reports a failed one.
+#
+# Read-only: no form is submitted and nobody signs in. Alerts: alert.mjs emails
+# through Resend when the secrets are set (first failure, every 30 minutes while
+# it lasts, recovery), and fails the run at those moments, so GitHub's own
+# failed-run email reaches the owner too.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: synthetic
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment.environment == 'Production' &&
+       contains(fromJSON('["success","failure","error"]'), github.event.deployment_status.state))
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Vercel's production deployment failed
+        if: github.event_name == 'deployment_status' && github.event.deployment_status.state != 'success'
+        run: |
+          echo "::error::Vercel reports the production deployment of ${GITHUB_SHA::7} as ${{ github.event.deployment_status.state }}: the previous build is still live. ${{ github.event.deployment_status.target_url }}"
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/synthetic
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache the browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-1.60.0-${{ runner.os }}
+
+      - name: Install Playwright 1.60.0 (outside the project, so the lockfile is untouched)
+        run: |
+          npm i --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/pw" playwright@1.60.0
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium > /dev/null
+
+      - name: Last run's state
+        if: github.event_name != 'deployment_status'
+        uses: actions/cache/restore@v4
+        with:
+          path: synthetic-state.json
+          key: synthetic-state-${{ github.run_id }}
+          restore-keys: synthetic-state-
+
+      - name: Check onemana.dev
+        id: check
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/pw/node_modules/playwright/index.mjs
+        run: |
+          set +e
+          node scripts/synthetic/check.mjs --render --json result.json
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          { echo '```'; node -e 'const r=require("./result.json");for(const x of r.results)console.log((x.ok?"ok   ":"FAIL ")+x.name+": "+x.detail)'; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          test -f result.json
+
+      - name: After a deployment, any failure is loud
+        if: github.event_name == 'deployment_status' && steps.check.outputs.rc != '0'
+        run: |
+          echo "::error::onemana.dev fails its checks right after deploying ${GITHUB_SHA::7}. Roll back: npx vercel rollback, or revert and push."
+          exit 1
+
+      - name: Alert when it is news
+        if: github.event_name != 'deployment_status'
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+        run: node scripts/synthetic/alert.mjs result.json synthetic-state.json
+
+      - name: Save this run's state
+        if: always() && github.event_name != 'deployment_status'
+        uses: actions/cache/save@v4
+        with:
+          path: synthetic-state.json
+          key: synthetic-state-${{ github.run_id }}
