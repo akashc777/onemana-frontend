@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The hidden attribute always wins. Preflight's [hidden] rule loses to any
+   display utility, so a closed panel wearing "flex" showed anyway: on 19 Oct
+   2026 every phone saw the open menu over the page. */
+[hidden]:not([hidden="until-found"]) {
+  display: none !important;
+}
+
 /* Inter's stand-ins while it loads, sized to Inter so no line rewraps when it
    lands. next/font sizes Arial (Windows, Apple) and nothing else; Android
    has Roboto and Linux Liberation Sans (Arial's metrics), and unsized they

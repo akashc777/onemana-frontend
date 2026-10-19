@@ -25,6 +25,15 @@ describe("the nav on a phone", () => {
         expect(html).toMatch(/aria-controls="mobile-menu"/)
         expect(html).toMatch(/aria-expanded="false"/)
     })
+
+    it("keeps the closed menu out of sight, not just marked hidden", () => {
+        // On 19 Oct 2026 the closed menu carried hidden="" and a flex class;
+        // the class won, so every phone saw the open menu over the page.
+        const tag = html.slice(menuStart, html.indexOf(">", menuStart))
+        const cls = (tag.match(/class="([^"]*)"/)?.[1] ?? "").split(/\s+/)
+        for (const shown of ["flex", "block", "grid", "inline-flex", "inline-block"]) expect(cls).not.toContain(shown)
+        expect(cls).toContain("hidden")
+    })
 })
 
 describe("the theme switch", () => {

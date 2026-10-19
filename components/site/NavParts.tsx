@@ -145,7 +145,7 @@ export function MobileMenu({ children, footer }: { children: ReactNode; footer?:
         id="mobile-menu"
         hidden={!open}
         onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
-        className="fx-slide absolute inset-x-0 top-full flex h-[calc(100dvh-3.5rem)] flex-col bg-background shadow-[inset_0_1px_0_var(--line-c)] lg:hidden"
+        className={`fx-slide absolute inset-x-0 top-full h-[calc(100dvh-3.5rem)] flex-col bg-background shadow-[inset_0_1px_0_var(--line-c)] lg:hidden ${open ? "flex" : "hidden"}`}
       >
         {/* The links scroll; the ways in sit in a footer that is always in
             view, clear of the home indicator (the phone rule: actions in a
