@@ -79,7 +79,7 @@ export const alternatives: Audience[] = [
     eyebrow: "A self-hosted alternative to Basecamp",
     title: "Projects, chat and clients, with nothing per seat",
     subtitle:
-      "Projects with boards and repeating tasks, channels for the team, and a link that lets a client follow their project. On your own server, free for up to 25 people.",
+      "Basecamp counts your projects. OneCamp counts nothing until 25 people, and then you can pay once and own it. Every project, every client, free, on your own server: the calm of Basecamp, plus the chat, calls, docs, tables, Gantt and AI it doesn't have.",
     seoTitle: "Self-hosted Basecamp alternative: OneCamp, with client links and time tracking",
     seoDescription:
       "OneCamp is an open-source, self-hosted alternative to Basecamp: projects, chat, docs and a client link to follow their project, plus time tracking, booking pages and intake forms.",
@@ -100,7 +100,7 @@ export const alternatives: Audience[] = [
     proof: { label: "Share a project with a client", href: "/docs/share-a-project-with-a-client" },
     rival: {
       name: "Basecamp",
-      billing: "Per user, or a flat monthly price for unlimited users. Clients and guests are free.",
+      billing: "Five plans priced by how many projects are active, from a free plan with one project and five users up to Unlimited, which is billed annually. Clients count toward the user caps on the two smallest plans.",
       theyWin: [
         "A calm, opinionated product with twenty years of polish.",
         "Hill charts, which show where each piece of work stands by feel, in every project.",
