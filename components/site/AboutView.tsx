@@ -120,7 +120,7 @@ export function AboutView() {
       {/* 40 px under the header's rule, as under each row's. */}
       <div className={`container-x pt-10 ${SECTION_END}`}>
         {SECTIONS.map((s) => (
-          <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 lg:grid-cols-12 lg:gap-x-8">
+          <section key={s.title} className="grid gap-4 border-b border-border py-10 first:pt-0 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
             <h2 className="text-h3 text-foreground lg:col-span-4">{s.title}</h2>
             <div className="max-w-prose space-y-4 text-body text-muted-foreground lg:col-span-8">
               {s.body}
@@ -128,7 +128,7 @@ export function AboutView() {
           </section>
         ))}
 
-        <section id="contact" className="grid gap-4 py-10 lg:grid-cols-12 lg:gap-x-8">
+        <section id="contact" className="grid gap-4 py-10 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
           <h2 className="text-h3 text-foreground lg:col-span-4">Who writes the code</h2>
           <div className="flex max-w-prose gap-5 lg:col-span-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -162,7 +162,7 @@ export function AboutView() {
 
         {/* The next step. A reader doing due diligence on a one-person company
             reached the end of the page with nowhere to go but back. */}
-        <div className="grid border-t border-border pt-10 lg:grid-cols-12 lg:gap-x-8">
+        <div className="grid border-t border-border pt-10 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
           <p className="max-w-prose text-body text-foreground lg:col-span-8 lg:col-start-5">
             Try it before you decide: the{" "}
             <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">

@@ -76,7 +76,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         <div className="container-x">
           <div className={pageClass} style={areaHue ? ({ "--page-glow": "var(--hue)" } as CSSProperties) : undefined}>
             <CampCanvas rings="quiet" className="rounded-[20px] px-5 pb-5 pt-10 sm:rounded-4xl sm:px-10 sm:pb-10 sm:pt-14 lg:py-10">
-              <div className="grid h-full gap-8 lg:grid-cols-12 lg:items-center lg:gap-x-8">
+              <div className="grid h-full gap-8 grid-cols-1 lg:grid-cols-12 lg:items-center lg:gap-x-8">
                 <div className="lg:col-span-7">
                   <p className={`eyebrow in-lift ${areaHue ? "[--eyebrow-dot:rgb(var(--hue))]" : ""}`}>{a.eyebrow}</p>
                   <h1 className="in-lift text-balance text-page text-foreground">{a.title}</h1>
@@ -131,7 +131,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           the moving card, where it used to float alone above both. */}
       {(a.rival || a.move) && (
         <Section band={hue} tone="muted">
-          <div className="grid gap-4 lg:grid-cols-12 lg:gap-x-6">
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-12 lg:gap-x-6">
             {a.rival && (
               <section aria-labelledby="they-win" className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
                 <h2 id="they-win" className="text-h3 text-foreground">

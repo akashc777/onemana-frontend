@@ -100,7 +100,7 @@ export default async function DocsIndexPage() {
               ))}
             </ul>
             {groups.map((group) => (
-              <section key={group.category} className="grid gap-4 lg:grid-cols-12 lg:gap-x-8">
+              <section key={group.category} className="grid gap-4 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
                 {/* The group in the margin: its tile (its colour, which its
                     guides' sidebar repeats), its name and how many guides. */}
                 <div className="flex items-center gap-3 lg:sticky lg:top-24 lg:col-span-3 lg:h-fit lg:flex-col lg:items-start lg:gap-0 lg:pt-4">

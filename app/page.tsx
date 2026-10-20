@@ -69,7 +69,7 @@ function ReleasePill({ release }: { release: ReleaseFacts | null }) {
       className="tap-target in-lift group mb-[22px] inline-flex h-[30px] max-w-full items-center gap-2 rounded-full bg-card pl-1 pr-3 text-caption text-muted-foreground shadow-e1"
     >
       <span className="rounded-full bg-muted px-2 text-[12px] font-[510] leading-5 text-foreground shadow-[inset_0_0_0_1px_var(--line-c)]">New</span>
-      <span className="truncate">{release.pill.headline}</span>
+      <span className="min-w-0 truncate">{release.pill.headline}</span>
       <Icon name="chevron-right" size={14} className="go-arrow" />
     </Link>
   );
@@ -123,7 +123,7 @@ export default async function HomePage() {
       {/* 1. What it is (H1), with the product on the camp canvas (H2) and the facts (H3). */}
       <section className={`overflow-x-clip pt-10 sm:pt-[72px] ${SECTION_END}`}>
         <div className="container-x">
-          <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-x-8">
+          <div className="grid gap-10 grid-cols-1 lg:grid-cols-12 lg:items-end lg:gap-x-8">
             <div className="lg:col-span-8">
               <ReleasePill release={release} />
               {/* Two tones (G2, H1): the soft half in ink-3, the claim in ink,
@@ -196,7 +196,7 @@ export default async function HomePage() {
         />
         <GovernedDemo />
         <GuaranteeList items={governance.points} layout="row" night className="mt-16" />
-        <div className="mt-14 grid gap-8 border-t border-border pt-8 lg:grid-cols-12 lg:gap-x-8">
+        <div className="mt-14 grid gap-8 border-t border-border pt-8 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
           <p className="m-0 text-body text-muted-foreground lg:col-span-5">
             The live demo runs the same check.{" "}
             <Link href={site.demoDrillUrl()} className="link">
@@ -288,7 +288,7 @@ export default async function HomePage() {
           hues turning round the ring, the claim, both ways in, and a quieter
           way to keep in touch. The footer's camp flag follows straight on. */}
       <Section id="start" tone="muted">
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-x-8">
+        <div className="grid gap-10 grid-cols-1 lg:grid-cols-12 lg:items-center lg:gap-x-8">
           <div className="lg:col-span-4">
             <CloseSpot />
           </div>

@@ -67,7 +67,7 @@ export default async function ChangelogEntryPage({ params }: { params: { slug: s
         What&apos;s new
       </Link>
 
-      <div className="mt-8 grid gap-16 lg:grid-cols-12 lg:gap-x-8">
+      <div className="mt-8 grid gap-16 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
         <article className="min-w-0 lg:col-span-8">
           <EntryFull entry={entry} isNew={pillEntry(entries) === entry} />
 

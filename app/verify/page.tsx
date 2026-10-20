@@ -51,7 +51,7 @@ export default function VerifyPage() {
           </p>
         </div>
 
-        <section className="mt-20 grid gap-8 border-t border-border pt-16 sm:mt-28 sm:pt-24 lg:grid-cols-12 lg:gap-x-8">
+        <section className="mt-20 grid gap-8 border-t border-border pt-16 sm:mt-28 sm:pt-24 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
           <h2 className="text-h3 text-foreground lg:col-span-4">Where the file comes from</h2>
           <div className="lg:col-span-8">
             {/* Side by side, each kind takes two rows of one subgrid, so the

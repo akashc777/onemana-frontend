@@ -37,7 +37,7 @@ export default function FreePage() {
       {/* What it takes and what you get (F2): two raised cards on the page's
           one muted ground; a plan is no area, so it wears no hue (v3.1). */}
       <Section tone="muted" className="mt-10 sm:mt-[4.5rem]">
-        <div className="grid gap-4 lg:grid-cols-12 lg:gap-x-6">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-12 lg:gap-x-6">
           <div className="reveal rounded-2xl bg-card p-6 shadow-e1 lg:col-span-6">
             <h2 className="text-h3 text-foreground">What you need</h2>
             <ul className="m-0 mt-5 list-none space-y-4 border-t border-border p-0 pt-5">

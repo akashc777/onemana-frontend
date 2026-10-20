@@ -44,7 +44,7 @@ export function QuestionGroups({ groups }: { groups: readonly { label: string; d
   return (
     <div className="space-y-10 lg:space-y-0">
       {groups.map((g) => (
-        <div key={g.label} className="reveal grid gap-4 lg:grid-cols-12 lg:gap-x-8 lg:border-t lg:border-border lg:pb-10 lg:pt-6">
+        <div key={g.label} className="reveal grid gap-4 grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:border-t lg:border-border lg:pb-10 lg:pt-6">
           <p className="sticky top-16 z-10 m-0 flex h-8 w-fit items-center gap-2 rounded-full bg-background/90 pr-3 text-caption font-[510] text-foreground lg:static lg:col-span-3 lg:h-auto lg:items-start lg:bg-transparent">
             <span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full lg:mt-1.5 ${g.dot}`} />
             {g.label}

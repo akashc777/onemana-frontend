@@ -61,7 +61,7 @@ export default async function ChangelogPage() {
       />
 
       <div className={`container-x ${SECTION_END}`}>
-        <div className="grid gap-16 lg:grid-cols-12 lg:gap-x-8">
+        <div className="grid gap-16 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
           <div className="min-w-0 lg:col-span-8">
             {digests.length ? (
               digests.map((e) => <EntryDigest key={e.slug} entry={e} isNew={e === newest} />)

@@ -81,7 +81,7 @@ export default async function BlogIndexPage() {
           <style dangerouslySetInnerHTML={{ __html: FILTER_CSS }} />
           <div id="posts" className="mt-6 border-t border-border">
             {byMonth(posts.slice(1)).map(([month, items]) => (
-              <section key={month} className="grid gap-0 border-b border-border py-2 lg:grid-cols-12 lg:gap-x-8">
+              <section key={month} className="grid gap-0 border-b border-border py-2 grid-cols-1 lg:grid-cols-12 lg:gap-x-8">
                 <h2 className="pt-6 font-sans text-small font-medium tracking-normal text-muted-foreground lg:sticky lg:top-24 lg:col-span-3 lg:h-fit">
                   {month}
                 </h2>
@@ -129,7 +129,7 @@ function Featured({ post }: { post: Post }) {
   const topic = blogTopic(post.tags, post.title);
   const cover = mediaUrl(post.cover_image);
   return (
-    <Link href={`/blog/${post.slug}`} data-topic={topic.key} {...ix("card")} className="group grid gap-6 rounded-[20px] bg-card p-4 shadow-e1 sm:p-5 lg:grid-cols-2 lg:items-center lg:gap-10">
+    <Link href={`/blog/${post.slug}`} data-topic={topic.key} {...ix("card")} className="group grid grid-cols-1 gap-6 rounded-[20px] bg-card p-4 shadow-e1 sm:p-5 lg:grid-cols-2 lg:items-center lg:gap-10">
       {cover ? (
         <div className="overflow-hidden rounded-xl">
           <PostCover src={cover} hue={topic.hue} />
