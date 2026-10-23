@@ -13,8 +13,14 @@ type ReadOptions = { revalidate?: number; noStore?: boolean };
 /** How long to wait before each retry of a read that failed in passing: a 429
  *  from the backend's per-address limit (a burst of 120, then 4 a second, and
  *  Vercel's server-side reads share a few addresses), an answer of 500 or more
- *  (Cloudflare's 52x included), or no answer at all (lib/backend.test.ts). */
+ *  (Cloudflare's 52x included), or no answer at all (lib/backend.test.ts). The
+ *  429's Retry-After of 60 s is ignored: the bucket refills a read in 0.25 s. */
 const RETRY_WAITS_MS = [400, 1200];
+
+/** How long one attempt may take, answer and body, before it's abandoned and
+ *  counts as unreached. Three attempts and their waits stay inside Next's 60 s
+ *  limit on building a page. */
+const READ_TIMEOUT_MS = 15_000;
 
 const passing = (status: number) => status === 429 || status >= 500;
 
@@ -29,15 +35,26 @@ export async function backendJSON<T>(path: string, opts: ReadOptions = {}): Prom
     : { next: { revalidate: opts.revalidate ?? 300 } };
   for (let attempt = 0; ; attempt++) {
     const retry = attempt < RETRY_WAITS_MS.length;
+    // Each attempt carries a signal of its own. In a server render React
+    // memoizes fetch by URL and init, failures included, and would hand a
+    // retry the first attempt's answer; it skips a fetch with its own signal.
+    // Next drops the signal when it revalidates, so its data cache still works.
+    const attemptCtl = new AbortController();
+    const timer = setTimeout(() => attemptCtl.abort(), READ_TIMEOUT_MS);
     let res: Response;
+    let data: unknown;
     try {
-      res = await fetch(`${site.backendUrl}${path}`, init);
+      res = await fetch(`${site.backendUrl}${path}`, { ...init, signal: attemptCtl.signal });
+      // A good answer must parse: a body cut off or garbled is a failed read,
+      // never "no data", which a page would take for a missing guide.
+      data = res.ok ? await res.json() : await res.json().catch(() => ({}));
     } catch (e) {
       if (!retry) throw e;
       await wait(RETRY_WAITS_MS[attempt]);
       continue;
+    } finally {
+      clearTimeout(timer);
     }
-    const data = await res.json().catch(() => ({}));
     if (res.ok) return (data as { data: T }).data;
     if (passing(res.status) && retry) {
       await wait(RETRY_WAITS_MS[attempt]);
