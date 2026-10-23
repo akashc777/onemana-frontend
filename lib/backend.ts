@@ -18,9 +18,10 @@ type ReadOptions = { revalidate?: number; noStore?: boolean };
 const RETRY_WAITS_MS = [400, 1200];
 
 /** How long one attempt may take, answer and body, before it's abandoned and
- *  counts as unreached. Three attempts and their waits stay inside Next's 60 s
- *  limit on building a page. */
-const READ_TIMEOUT_MS = 15_000;
+ *  counts as unreached. A backend that never answers then costs a page at most
+ *  3 × 10 s plus the waits, 31.6 s: inside Next's 60 s limit on building a
+ *  page and the render check's 45 s, and shorter for a visitor (CR-18's SF). */
+const READ_TIMEOUT_MS = 10_000;
 
 const passing = (status: number) => status === 429 || status >= 500;
 
