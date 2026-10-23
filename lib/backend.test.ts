@@ -29,10 +29,10 @@ function answers(...steps: Array<{ body: unknown; status: number } | Error>) {
 }
 
 /** Settles a read while its retry waits run on fake timers. */
-async function settled<T>(read: Promise<T>) {
+async function settled(read: Promise<unknown>) {
   const out = read.then(
     (value) => ({ value, error: undefined as unknown }),
-    (error: unknown) => ({ value: undefined, error }),
+    (error: unknown) => ({ value: undefined as unknown, error }),
   );
   await vi.runAllTimersAsync();
   return out;
