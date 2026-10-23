@@ -19,13 +19,10 @@ import { ix } from "@/lib/interactive";
 
 export const revalidate = 120;
 
+/** No post is built ahead of time, for the reason app/docs/[slug]/page.tsx
+ *  gives: each renders on its first visit and is then kept for `revalidate`. */
 export async function generateStaticParams() {
-  try {
-    const posts = await listPublishedPosts();
-    return posts.map((p) => ({ slug: p.slug }));
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

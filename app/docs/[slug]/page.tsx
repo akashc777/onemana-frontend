@@ -14,13 +14,12 @@ import { OnThisPageDisclosure } from "@/components/reading/OnThisPageDisclosure"
 
 export const revalidate = 120;
 
+/** No guide is built ahead of time: each renders on its first visit and is then
+ *  kept for `revalidate` seconds. Building every guide and post in one go read
+ *  them all in a burst from one address, past the backend's per-address limit,
+ *  and a read it turned away failed the deploy (23 Oct, lib/backend.ts). */
 export async function generateStaticParams() {
-  try {
-    const docs = await listPublishedDocs();
-    return docs.map((d) => ({ slug: d.slug }));
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

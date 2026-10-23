@@ -10,11 +10,13 @@ export class BackendError extends Error {
 
 type ReadOptions = { revalidate?: number; noStore?: boolean };
 
-/** How long to wait before each retry of a read that failed in passing: an
- *  answer of 500 or more (Cloudflare's 52x included) or no answer at all. The
- *  backend sits behind Cloudflare, and from Vercel's builders it sometimes
- *  fails a read and answers the next one (lib/backend.test.ts). */
+/** How long to wait before each retry of a read that failed in passing: a 429
+ *  from the backend's per-address limit (a burst of 120, then 4 a second, and
+ *  Vercel's server-side reads share a few addresses), an answer of 500 or more
+ *  (Cloudflare's 52x included), or no answer at all (lib/backend.test.ts). */
 const RETRY_WAITS_MS = [400, 1200];
+
+const passing = (status: number) => status === 429 || status >= 500;
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -37,7 +39,7 @@ export async function backendJSON<T>(path: string, opts: ReadOptions = {}): Prom
     }
     const data = await res.json().catch(() => ({}));
     if (res.ok) return (data as { data: T }).data;
-    if (res.status >= 500 && retry) {
+    if (passing(res.status) && retry) {
       await wait(RETRY_WAITS_MS[attempt]);
       continue;
     }
