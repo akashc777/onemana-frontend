@@ -92,4 +92,48 @@ describe.each([
     answers(new TypeError("fetch failed"), { body: found, status: 200 });
     expect((await settled(read("passkeys"))).value).toMatchObject({ slug: "passkeys" });
   });
+
+  // In a server render React memoizes fetch by URL and init, failures included,
+  // so a retry with the same init would get the first attempt's answer back
+  // without reaching the backend. It skips a fetch carrying a signal of its own.
+  it("gives each attempt a signal of its own", async () => {
+    const signals: unknown[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init?: RequestInit) => {
+        signals.push(init?.signal);
+        return json({ msg: "internal error" }, 500);
+      }),
+    );
+    await settled(read("passkeys"));
+    expect(signals).toHaveLength(3);
+    for (const s of signals) expect(s).toBeInstanceOf(AbortSignal);
+    expect(new Set(signals).size).toBe(3);
+  });
+
+  it("gives up on a read that never answers, and asks again", async () => {
+    let calls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string, init?: RequestInit) => {
+        calls++;
+        if (calls > 1) return Promise.resolve(json(found, 200));
+        return new Promise<Response>((_, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(new DOMException("The read timed out", "AbortError")));
+        });
+      }),
+    );
+    expect((await settled(read("passkeys"))).value).toMatchObject({ slug: "passkeys" });
+    expect(calls).toBe(2);
+  });
+
+  it("asks again when a good answer's body can't be read, rather than calling the page missing", async () => {
+    let calls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => (++calls === 1 ? new Response("{not json", { status: 200 }) : json(found, 200))),
+    );
+    expect((await settled(read("passkeys"))).value).toMatchObject({ slug: "passkeys" });
+    expect(calls).toBe(2);
+  });
 });
