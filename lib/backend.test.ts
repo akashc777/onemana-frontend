@@ -79,6 +79,15 @@ describe.each([
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  // The backend limits each address to a burst of 120 reads, then 4 a second
+  // (onemana-backend router.go, generalLimiter), and Vercel's server-side reads
+  // share a few addresses. A short wait lets the bucket refill.
+  it("asks again when the backend says to slow down", async () => {
+    const fetchMock = answers({ body: { msg: "too many requests, please slow down" }, status: 429 }, { body: found, status: 200 });
+    expect((await settled(read("passkeys"))).value).toMatchObject({ slug: "passkeys" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it("asks again when a read doesn't reach the backend once", async () => {
     answers(new TypeError("fetch failed"), { body: found, status: 200 });
     expect((await settled(read("passkeys"))).value).toMatchObject({ slug: "passkeys" });
