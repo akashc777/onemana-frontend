@@ -1,6 +1,6 @@
 // Typed client for the self-hosted docs CMS (onemana-backend).
 
-import { backendJSON } from "./backend";
+import { backendJSON, backendJSONOrNull } from "./backend";
 
 export interface DocPage {
   id: string;
@@ -44,16 +44,13 @@ export async function listPublishedDocs(opts: { fresh?: boolean } = {}): Promise
  *  so the index is whole whichever backend answers. */
 export async function publishedDocsWithContent(): Promise<DocPage[]> {
   const docs = (await backendJSON<DocPage[] | null>("/onecamp/docs?include=content", { revalidate: 300 })) ?? [];
-  return Promise.all(docs.map(async (d) => (d.content ? d : ((await getDoc(d.slug)) ?? d))));
+  return Promise.all(docs.map(async (d) => (d.content ? d : ((await getDoc(d.slug).catch(() => null)) ?? d))));
 }
 
-/** A single published doc by slug. Returns null on 404. */
+/** A single published doc by slug. Returns null on 404, and throws when the
+ *  backend fails, so the page keeps its last copy (lib/backend.test.ts). */
 export async function getDoc(slug: string): Promise<DocPage | null> {
-  try {
-    return await backendJSON<DocPage>(`/onecamp/docs/${encodeURIComponent(slug)}`, { revalidate: 120 });
-  } catch {
-    return null;
-  }
+  return backendJSONOrNull<DocPage>(`/onecamp/docs/${encodeURIComponent(slug)}`, { revalidate: 120 });
 }
 
 /** Groups docs into ordered sidebar sections, preserving first-seen order.

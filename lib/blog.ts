@@ -1,6 +1,6 @@
 // Typed client for the self-hosted blog (onemana-backend).
 
-import { backendJSON } from "./backend";
+import { backendJSON, backendJSONOrNull } from "./backend";
 import { site } from "./site";
 
 export interface BlogPost {
@@ -38,11 +38,8 @@ export async function listPublishedPosts(opts: { cached?: boolean } = {}): Promi
   return (await backendJSON<BlogPost[] | null>("/onecamp/blog", opts.cached ? { revalidate: 120 } : { noStore: true })) ?? [];
 }
 
-/** A single published post by slug. Returns null on 404. */
+/** A single published post by slug. Returns null on 404, and throws when the
+ *  backend fails, so the page keeps its last copy (lib/backend.test.ts). */
 export async function getPost(slug: string): Promise<BlogPost | null> {
-  try {
-    return await backendJSON<BlogPost>(`/onecamp/blog/${encodeURIComponent(slug)}`, { revalidate: 120 });
-  } catch {
-    return null;
-  }
+  return backendJSONOrNull<BlogPost>(`/onecamp/blog/${encodeURIComponent(slug)}`, { revalidate: 120 });
 }
