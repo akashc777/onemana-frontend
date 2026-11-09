@@ -9,27 +9,41 @@ const p = {
 } as unknown as Pricing;
 
 describe("planOptions", () => {
-  it("offers the four ways, each with every row filled", () => {
+  it("offers the three plans, each with every row filled", () => {
     const plans = planOptions(p);
-    expect(plans.map((x) => x.key)).toEqual(["source", "free", "lifetime", "cloud"]);
+    expect(plans.map((x) => x.key)).toEqual(["free", "lifetime", "cloud"]);
     for (const plan of plans) for (const row of PLAN_ROWS) expect(plan[row.key], `${plan.key}.${row.key}`).toBeTruthy();
+  });
+
+  // The table was drawn under the pay button on /buy, and its first column
+  // said: build it yourself, free, unlimited people, company controls
+  // included. At the moment of paying, the page argued for not paying.
+  // Building from source is said once, under the table, as a link to
+  // /open-source; it is not a plan beside a price.
+  it("never offers a build-it-yourself option beside a price", () => {
+    for (const plan of planOptions(p)) {
+      expect(plan.key, plan.name).not.toBe("source");
+      expect(`${plan.name} ${plan.runs} ${plan.install} ${plan.updates}`, plan.name).not.toMatch(/build|GitHub|source/i);
+      expect(plan.cta.external, plan.name).toBeFalsy();
+      expect(plan.cta.href, plan.name).toMatch(/^\/(free|buy)\b/);
+    }
   });
 
   it("takes prices and seats from live pricing, never from copy", () => {
     const plans = planOptions(p);
     // Rupees, which the table writes with the reader's estimate beside them (lib/pricing priceWithEstimate).
-    expect(plans[2].price).toEqual({ inr: 24999, per: " once" });
-    expect(plans[3].price).toEqual({ lead: "From ", inr: 9999, per: "/mo" });
-    expect(plans[3].people).toContain("30");
-    expect(plans[1].people).toContain(String(FREE_SEATS));
+    const [free, lifetime, cloud] = plans;
+    expect(lifetime.price).toEqual({ inr: 24999, per: " once" });
+    expect(cloud.price).toEqual({ lead: "From ", inr: 9999, per: "/mo" });
+    expect(cloud.people).toContain("30");
+    expect(free.people).toContain(String(FREE_SEATS));
     const changed = planOptions({ ...p, lifetime_inr: 30000, cloud_seats: 40, business_configured: false } as Pricing);
-    expect(changed[2].price).toEqual({ inr: 30000, per: " once" });
-    expect(changed[3].people).toBe("Up to 40");
+    expect(changed[1].price).toEqual({ inr: 30000, per: " once" });
+    expect(changed[2].people).toBe("Up to 40");
   });
 
   it("says plainly which ones carry AGPL obligations", () => {
-    const [source, free, lifetime] = planOptions(p);
-    expect(source.licence).toMatch(/AGPL/);
+    const [free, lifetime] = planOptions(p);
     expect(free.licence).toMatch(/AGPL/);
     expect(lifetime.licence).toMatch(/no AGPL obligations/);
   });

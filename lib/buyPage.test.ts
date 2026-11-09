@@ -146,9 +146,14 @@ describe("the buy page renders on the server", () => {
     expect(checkout).not.toMatch(/useState<Pricing>\(defaultPricing\)/)
   })
 
-  it("draws the plan table outside the form, so typing does not redraw it", () => {
-    expect(page).toContain("<PlanComparison pricing={pricing} />")
+  // The plan table under the form put "build it yourself: free, unlimited,
+  // company controls included" a scroll below the pay button, so the page
+  // argued against paying at the moment of paying. A buyer who wants to
+  // compare goes to the table on /pricing; the checkout draws none.
+  it("sends a buyer who wants to compare to /pricing, and draws no plan table under the form", () => {
+    expect(page).not.toContain("PlanComparison")
     expect(checkout).not.toContain("PlanComparison")
+    expect(checkout).toContain('href="/pricing#plans"')
   })
 })
 

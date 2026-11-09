@@ -124,6 +124,23 @@ describe("a buyer outside India", () => {
     expect(sg).toContain("About S$10,800")
   })
 
+  // The home comparison's price row read "₹24,999 once" beside "About
+  // $8,300": a dollar reader compared 24,999 with 8,300, and ours was the
+  // bigger number. Every row, on a wide screen and on a phone, compares in one
+  // currency; the rupee charge may be said only as the charge, in brackets.
+  it("never sets rupees beside a rival's dollars in one row", () => {
+    const shown = (html: string) => words(html.replace(/<span class="sr-only">[^<]*<\/span>/g, "")).replace(/\(charged ₹[\d,]+\)/g, "")
+    for (const [country, locale] of [...ABROAD, ["JP", "ja-JP"] as [string, string]]) {
+      const html = as(regionFor(country, locale), <HomeComparison pricing={live} />)
+      const table = html.slice(html.indexOf("<table"), html.indexOf("</table>"))
+      const rows = [...(table.match(/<tr[^>]*>[\s\S]*?<\/tr>/g) ?? []), ...(html.slice(html.indexOf("</table>")).match(/<li [\s\S]*?<\/li>/g) ?? [])]
+      expect(rows.length).toBeGreaterThan(8)
+      for (const row of rows) expect(shown(row), `${country}: ${shown(row).slice(0, 60)}`).not.toContain("₹")
+    }
+    const india = as(INDIA, <HomeComparison pricing={live} />)
+    expect(shown(india)).not.toMatch(/\$\d|€|£/)
+  })
+
   it("sees the free plan as Free, never ₹0", () => {
     const html = words(as(regionFor("US"), <PlanColumns pricing={live} />))
     expect(html).toMatch(/Free Up to 25 people|Free\b/)

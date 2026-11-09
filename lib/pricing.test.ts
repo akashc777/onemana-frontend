@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { currencyNote, defaultPricing, priceWithEstimate, type Pricing } from "@/lib/pricing"
+import { currencyNote, defaultPricing, displayPrice, priceWithEstimate, type Pricing } from "@/lib/pricing"
 import { regionFor } from "@/lib/visitorCurrency"
 
 const rupeesOnly = { ...defaultPricing, usd_rate: 96.37, charge_usd: false }
@@ -74,5 +74,42 @@ describe("priceWithEstimate", () => {
     const noRate: Pricing = { ...defaultPricing, usd_rate: 0, rates: undefined }
     expect(priceWithEstimate(noRate, 24999, regionFor("GB", "en-GB"))).toBe("₹24,999")
     expect(priceWithEstimate(noRate, 24999, null, "/mo")).toBe("₹24,999/mo")
+  })
+})
+
+/**
+ * A price as one figure for the reader to compare, and what the card is
+ * charged when that differs: the reader's own money abroad with the rupee
+ * charge beside it, rupees alone in India and when there is no rate, and the
+ * exact dollar amount when the backend charges the licence in dollars.
+ */
+describe("displayPrice", () => {
+  /** Rupees to one unit of each currency, as the backend answers on a day; a test fixture, not a price. */
+  const live: Pricing = { ...defaultPricing, rates: { USD: 96.87, EUR: 112.64, GBP: 129.16, SGD: 74.52, AUD: 63.73, CAD: 70.19 } }
+
+  it("is the reader's money first abroad, with the rupee charge in the reader's grouping", () => {
+    expect(displayPrice(live, 24999, regionFor("US"))).toEqual({ figure: "$258", approx: true, charge: "₹24,999" })
+    expect(displayPrice(live, 24999, regionFor("GB", "en-GB"))).toEqual({ figure: "£194", approx: true, charge: "₹24,999" })
+    expect(displayPrice(live, 1460000, regionFor("US")).charge).toBe("₹1,460,000")
+    // Not known yet (the server's HTML), or a country with no display currency: dollars.
+    expect(displayPrice(live, 24999, null).figure).toBe("$258")
+    expect(displayPrice(live, 24999, regionFor("JP", "ja-JP")).figure).toBe("$258")
+  })
+
+  it("is rupees alone in India, and when there is no rate", () => {
+    expect(displayPrice(live, 1460000, regionFor("IN", "en-IN"))).toEqual({ figure: "₹14,60,000", approx: false, charge: "" })
+    const noRate: Pricing = { ...defaultPricing, usd_rate: 0, rates: undefined }
+    expect(displayPrice(noRate, 24999, regionFor("GB", "en-GB"))).toEqual({ figure: "₹24,999", approx: false, charge: "" })
+  })
+
+  it("is the exact dollar charge for the licence when the backend charges it in dollars, and rupees in India", () => {
+    const usd: Pricing = { ...live, charge_usd: true, lifetime_usd: 263 }
+    expect(displayPrice(usd, usd.lifetime_inr, regionFor("US"), { licence: true })).toEqual({ figure: "$263", approx: false, charge: "" })
+    expect(displayPrice(usd, usd.lifetime_inr, null, { licence: true })).toEqual({ figure: "$263", approx: false, charge: "" })
+    // A pound reader compares in pounds; the card is charged the dollars.
+    expect(displayPrice(usd, usd.lifetime_inr, regionFor("GB", "en-GB"), { licence: true })).toEqual({ figure: "£194", approx: true, charge: "$263" })
+    expect(displayPrice(usd, usd.lifetime_inr, regionFor("IN", "en-IN"), { licence: true }).figure).toBe("₹24,999")
+    // Cloud is still a rupee subscription.
+    expect(displayPrice(usd, usd.cloud_inr, regionFor("US")).charge).toBe("₹9,999")
   })
 })

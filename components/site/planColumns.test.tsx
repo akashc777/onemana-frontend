@@ -73,7 +73,33 @@ describe("a plan's colour follows it", () => {
         const html = renderToString(<PlanComparison pricing={defaultPricing} />)
         const head = html.slice(html.indexOf("<thead"), html.indexOf("</thead>"))
         const hues = [...head.matchAll(/data-hue="([a-z]+)"/g)].map((m) => m[1])
-        expect(hues).toEqual([PLAN_HUE.source, PLAN_HUE.free, PLAN_HUE.lifetime, PLAN_HUE.cloud])
+        expect(hues).toEqual([PLAN_HUE.free, PLAN_HUE.lifetime, PLAN_HUE.cloud])
+    })
+})
+
+/**
+ * The plan table compares the three plans a buyer can choose (Free, the
+ * licence, Cloud). Building from source is how the code is licensed, not a
+ * plan: one quiet line under the table sends a reader who wants it to
+ * /open-source, and the section answers /pricing#plans, the link /buy gives
+ * a buyer who wants to compare.
+ */
+describe("the plan table", () => {
+    const html = renderToString(<PlanComparison pricing={defaultPricing} />)
+    const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")
+
+    it("compares the three plans, on /pricing#plans", () => {
+        expect(html).toMatch(/<section id="plans"/)
+        expect(text).toContain("Compare the three plans")
+        const head = html.slice(html.indexOf("<thead"), html.indexOf("</thead>"))
+        expect(head.match(/<th scope="col"/g)).toHaveLength(3)
+    })
+
+    it("names building from source in one quiet line, never as a plan", () => {
+        expect(text).not.toMatch(/View on GitHub|Open source Unlimited|Build it yourself/)
+        expect(html).not.toContain('href="https://github.com')
+        expect(html.match(/href="\/open-source#run"/g)).toHaveLength(1)
+        expect(text).toMatch(/Prefer to build it from source\? The server is AGPL-3\.0\./)
     })
 })
 
