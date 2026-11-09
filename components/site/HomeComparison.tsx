@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ProductName } from "@/components/site/ProductName";
 import type { ReactNode } from "react";
 import { type Pricing } from "@/lib/pricing";
-import { PRICES_CHECKED, SEAT_COST_SOURCES, stackYearUsd } from "@/lib/teamCost";
-import { Rupees, StackBasis, StackCost } from "@/components/site/RegionalMoney";
+import { PRICES_CHECKED, SEAT_COSTS, SEAT_COST_SOURCES, SERVER_USD_PER_MONTH, stackYearUsd, teamCost } from "@/lib/teamCost";
+import { MoneyText, SavingChip, StackBasis, StackCost } from "@/components/site/RegionalMoney";
 import { LogoRing } from "@/components/ui/v3";
 import { RAISED_COLUMN, RAISED_ROW } from "@/components/site/planHues";
 
@@ -19,9 +19,12 @@ import { RAISED_COLUMN, RAISED_ROW } from "@/components/site/planHues";
  * the way they discount adverts. Claims about the others are structural (what
  * exists, how you pay) and come from their own pages, linked under the table.
  * The figures are worked out, never typed: OneCamp's from the live pricing,
- * in rupees because that is the charge; the per-seat stack from its list
- * prices, in dollars (or the reader's currency at the day's rate) outside
- * India and in rupees in India (RegionalMoney).
+ * the per-seat stack from its list prices. The price row compares the two,
+ * so both are in one currency: the reader's own outside India (OneCamp's
+ * with its rupee charge in brackets) and rupees in India (RegionalMoney
+ * MoneyText and StackCost). It read "₹24,999 once" beside "About $8,300",
+ * and a dollar reader saw the bigger number on our side. The moss chip under
+ * OneCamp's figure is the calculator's own multiple, from the same figures.
  *
  * OneCamp's tinted column keeps 16 px inside its edges, and the column after
  * it starts 16 px past the tint, as every column starts 16 px after the one
@@ -43,6 +46,7 @@ type Row = { label: string; cells: [ReactNode, ReactNode, ReactNode, ReactNode];
 
 function rows(p: Pricing): Row[] {
   const stack = stackYearUsd(40, false);
+  const { multiple } = teamCost(40, false, p.lifetime_usd, SERVER_USD_PER_MONTH, SEAT_COSTS);
   return [
     { label: "Runs on your own server", cells: ["Yes", "No, their cloud", "Yes", "Yes"] },
     { label: "Source code you can read", cells: ["Yes, AGPL-3.0", "No", "Yes, open core", "Yes"] },
@@ -50,7 +54,8 @@ function rows(p: Pricing): Row[] {
       label: "40 people, first year",
       cells: [
         <>
-          <Rupees inr={p.lifetime_inr} /> once, plus your server
+          <MoneyText pricing={p} inr={p.lifetime_inr} per=" once" licence />, plus your server
+          <SavingChip multiple={multiple} className="mt-2" />
         </>,
         stack > 0 ? <StackCost pricing={p} usd={stack} /> : "Per seat, per tool",
         "Free Team edition; paid editions quoted by sales",

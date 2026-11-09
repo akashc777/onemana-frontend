@@ -224,15 +224,51 @@ function estimateIn(p: Pricing, region: Region | null): { currency: DisplayCurre
   return rate ? { currency, rate } : null;
 }
 
+/** A rupee amount in the estimate's currency, unsigned ("€224"), or "" where localEstimate gives none. */
+function estimateFigure(p: Pricing, inr: number, region: Region | null): string {
+  const estimate = estimateIn(p, region);
+  if (!estimate || !(inr > 0)) return "";
+  return fmtLocal(inr / estimate.rate, estimate.currency, region?.locale ?? "en-US");
+}
+
 /**
  * A rupee amount in the reader's own currency, at the day's rate: "≈ €224",
  * in the currency estimateIn picks. "" in India, and when there is no amount
  * or no rate at all. Worked out, never typed.
  */
 export function localEstimate(p: Pricing, inr: number, region: Region | null): string {
-  const estimate = estimateIn(p, region);
-  if (!estimate || !(inr > 0)) return "";
-  return `≈ ${fmtLocal(inr / estimate.rate, estimate.currency, region?.locale ?? "en-US")}`;
+  const figure = estimateFigure(p, inr, region);
+  return figure ? `≈ ${figure}` : "";
+}
+
+/** A price as a reader compares it: see displayPrice. */
+export interface DisplayPrice {
+  /** The amount to read and compare: "$258", "222 €", "₹24,999". */
+  figure: string;
+  /** The figure is an estimate at the day's rate, not the amount charged. */
+  approx: boolean;
+  /** What the card is charged, when it is not the figure ("₹24,999"); "" when the figure is the charge. */
+  charge: string;
+}
+
+/**
+ * A price in one currency, for a row or a sentence that compares it with
+ * other amounts in the reader's money (a rival's per-seat bill, say), so the
+ * reader never sets rupees against dollars. Abroad the figure is the
+ * estimate in their money and the rupee charge comes with it, in their
+ * grouping; in India, and with no rate to estimate with, the rupees alone.
+ * The licence, when the backend charges it in dollars abroad (charge_usd),
+ * is that exact dollar amount, or the reader's estimate of it with the
+ * dollars as the charge. Worked out, never typed.
+ */
+export function displayPrice(p: Pricing, inr: number, region: Region | null, opts: { licence?: boolean } = {}): DisplayPrice {
+  if (opts.licence && p.charge_usd && !region?.inIndia) {
+    const charged = fmtUSD(p.lifetime_usd);
+    const local = estimateIn(p, region)?.currency !== "USD" ? estimateFigure(p, inr, region) : "";
+    return local ? { figure: local, approx: true, charge: charged } : { figure: charged, approx: false, charge: "" };
+  }
+  const figure = estimateFigure(p, inr, region);
+  return figure ? { figure, approx: true, charge: fmtINRFor(inr, region) } : { figure: fmtINRFor(inr, region), approx: false, charge: "" };
 }
 
 /**

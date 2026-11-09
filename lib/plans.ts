@@ -1,19 +1,24 @@
 import type { Pricing } from "@/lib/pricing";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { site } from "@/lib/site";
 
 /**
- * The four ways to have OneCamp, side by side, in words a buyer uses.
+ * The three plans, side by side, in words a buyer uses.
  *
- * Every option has the product: chat, docs, tasks, calls and AI teammates. They
+ * Every plan has the product: chat, docs, tasks, calls and AI teammates. They
  * differ in who installs and updates it, how many people it covers, the licence
  * terms, and (since 3 Oct 2026) the company controls, which the free licence
  * leaves out. Those are the rows.
  * Prices and seat counts come from the live pricing (never typed here), and the
  * free plan's size from FREE_SEATS, so this table cannot disagree with checkout.
+ *
+ * Building the server from source is not a plan here (9 Nov 2026). As a
+ * column it read "free, unlimited people, company controls included" beside
+ * the plans that cost money, and it was drawn under the pay button on /buy:
+ * the page argued against paying at the moment of paying. It is how the code
+ * is licensed, and /open-source says so; the table links there once.
  */
 export interface PlanOption {
-  key: "source" | "free" | "lifetime" | "cloud";
+  key: "free" | "lifetime" | "cloud";
   name: string;
   summary: string;
   price: PlanPrice;
@@ -61,20 +66,6 @@ export function planOptions(p: Pricing): PlanOption[] {
     ? `${p.cloud_seats} (Team) or ${p.business_seats} (Business)`
     : `Up to ${p.cloud_seats}`;
   return [
-    {
-      key: "source",
-      name: "Open source",
-      summary: "The code, free for any number of people. You build and run it.",
-      price: "Free",
-      runs: "You, built from GitHub",
-      people: "Unlimited",
-      install: "Build it yourself with Docker",
-      updates: "Pull and rebuild",
-      licence: "AGPL-3.0: share your changes if you offer them to others",
-      controls: "Included",
-      help: "Community, on GitHub",
-      cta: { label: "View on GitHub", href: site.serverGithubUrl, external: true },
-    },
     {
       key: "free",
       name: "Free licence",

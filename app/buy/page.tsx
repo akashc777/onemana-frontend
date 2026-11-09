@@ -1,5 +1,4 @@
 import { BuyCheckout } from "./BuyCheckout";
-import { PlanComparison } from "@/components/site/PlanComparison";
 import { billingFromParams, planFromParams } from "@/lib/paymentTerms";
 import { getPricing } from "@/lib/pricing";
 
@@ -23,20 +22,21 @@ function one(v: string | string[] | undefined): string | null {
  * Reading the query makes the page dynamic, which is right for a checkout: it
  * is rendered for the link it was opened with, and pricing stays cached for
  * five minutes inside getPricing.
+ *
+ * No plan table under the form (9 Nov 2026): it put building from source,
+ * free for unlimited people, a scroll below the pay button. A buyer who
+ * wants to compare follows the checkout's "Compare plans" to /pricing#plans.
  */
 export default async function BuyPage({ searchParams }: { searchParams: SearchParams }) {
   const pricing = await getPricing();
   return (
-    <>
-      <BuyCheckout
-        initialPlan={planFromParams(one(searchParams.plan))}
-        // ?size=business opens on Business and ?billing=yearly on Team yearly
-        // (cloudBuyHref writes them); BuyCheckout falls back to Team monthly
-        // when the link names a plan that is not on sale.
-        initialBilling={billingFromParams(one(searchParams.size), one(searchParams.billing))}
-        initialPricing={pricing}
-      />
-      <PlanComparison pricing={pricing} />
-    </>
+    <BuyCheckout
+      initialPlan={planFromParams(one(searchParams.plan))}
+      // ?size=business opens on Business and ?billing=yearly on Team yearly
+      // (cloudBuyHref writes them); BuyCheckout falls back to Team monthly
+      // when the link names a plan that is not on sale.
+      initialBilling={billingFromParams(one(searchParams.size), one(searchParams.billing))}
+      initialPricing={pricing}
+    />
   );
 }

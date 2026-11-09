@@ -9,13 +9,11 @@ import { HUE_CLASS } from "@/components/ui/graphics/hues";
  *   free      moss  (go: nothing to pay)
  *   lifetime  sun   (the key you keep)
  *   cloud     sky
- *   source    lake  (the code on GitHub)
  */
 export const PLAN_HUE = {
   free: "moss",
   lifetime: "sun",
   cloud: "sky",
-  source: "lake",
 } as const satisfies Record<string, CampHue>;
 
 /**

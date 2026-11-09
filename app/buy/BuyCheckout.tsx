@@ -41,9 +41,8 @@ const PLANS: readonly Plan[] = ["lifetime", "cloud"];
  * plan and the live pricing and hands them in, so the first HTML a buyer gets
  * is this page and not a "Loading…" line: reading the query with
  * useSearchParams made the whole page render in the browser, after its
- * JavaScript, and the footer jumped down the screen when it did. The plan
- * table under the form is drawn by the page, outside this component, so
- * typing in a field no longer redraws it.
+ * JavaScript, and the footer jumped down the screen when it did. The plans
+ * are compared on /pricing#plans, linked under the form, not drawn here.
  *
  * Payment behaviour is unchanged: the same checks, the same useCheckout
  * calls and the same Razorpay script, and pricing is still fetched again
@@ -495,7 +494,8 @@ export function BuyCheckout({
             <p className="text-caption text-muted-foreground">
               By {isCloud ? "subscribing" : "purchasing"} you agree to our{" "}
               <a href="/terms-of-service" className="link">terms of service</a> and{" "}
-              <a href="/refund-policy" className="link">refund policy</a>.
+              <a href="/refund-policy" className="link">refund policy</a>. Not sure which plan?{" "}
+              <a href="/pricing#plans" className="link">Compare plans</a>.
             </p>
           </form>
 

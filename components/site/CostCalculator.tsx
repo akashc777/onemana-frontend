@@ -32,6 +32,7 @@ import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fromUsd, priceWithEstimate } 
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
+import { SavingChip } from "@/components/site/RegionalMoney"
 import { Icon } from "@/components/ui/icons"
 import { ix } from "@/lib/interactive"
 
@@ -170,11 +171,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                 floated with a space before its comma, and said twice in one
                 line (design/site-polish/AUDIT.md, L6). */}
             <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-small text-foreground">
-                {multiple >= 2 && (
-                    <span className="hue-moss inline-flex h-7 items-center rounded-full bg-hue-tint px-3 text-caption font-[590] text-hue-ink">
-                        {Math.round(multiple)}× less in the first year
-                    </span>
-                )}
+                <SavingChip multiple={multiple} />
                 <span>
                     {multiple >= 2
                         ? `for ${Math.max(1, Math.min(1000, people))} people; the gap widens with every person you add.`

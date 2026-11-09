@@ -4,7 +4,7 @@ import { PLAN_HUE, RAISED_COLUMN } from "@/components/site/planHues";
 import { PriceText } from "@/components/site/RegionalMoney";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { buttonClasses } from "@/components/ui/Button";
-import { Dot } from "@/components/ui/v3";
+import { Arrow, Dot } from "@/components/ui/v3";
 import type { Pricing } from "@/lib/pricing";
 import { PLAN_ROWS, planOptions, type PlanOption, type PlanRowKey } from "@/lib/plans";
 
@@ -12,21 +12,23 @@ import { PLAN_ROWS, planOptions, type PlanOption, type PlanRowKey } from "@/lib/
 const LIFT = RAISED_COLUMN;
 
 /**
- * "Which OneCamp is for you" (site.md P3): the four ways to have it,
- * compared on the things that actually differ. From md a table with the
- * licence's column lifted under a 2px brand rule, each option's header a
- * hue dot, its name and one line, and buttons on the last row (the licence
- * the one primary). On a phone, one card per option with its rows as a
- * definition list, from the same data, so nothing scrolls sideways.
+ * "Compare the three plans" (site.md P3), on /pricing at #plans, where /buy
+ * sends a buyer who wants to compare: Free, the licence and Cloud, on the
+ * things that actually differ. From md a table with the licence's column
+ * lifted under a 2px brand rule, each plan's header a hue dot, its name and
+ * one line, and buttons on the last row (the licence the one primary). On a
+ * phone, one card per plan with its rows as a definition list, from the same
+ * data, so nothing scrolls sideways. Building from source is one quiet line
+ * under both, to /open-source (lib/plans says why it is not a column).
  */
 export function PlanComparison({ pricing }: { pricing: Pricing }) {
   const plans = planOptions(pricing);
   return (
-    <Section divider labelledBy="plans-heading">
+    <Section id="plans" divider labelledBy="plans-heading">
       <SectionHeading
         id="plans-heading"
-        title="Which OneCamp is for you"
-        subtitle="Every option has chat, docs, tasks, calls and AI teammates. They differ in who installs and updates it, how many people it covers, the licence, and whether company controls come with it."
+        title="Compare the three plans"
+        subtitle="Every plan has chat, docs, projects, calls and agents. They differ in who runs the server, how many people it covers, and whether company controls come with it."
       />
 
       <table className="reveal mt-10 hidden w-full border-collapse text-small md:table">
@@ -91,6 +93,13 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
           </div>
         ))}
       </div>
+
+      <p className="mt-6 text-small text-muted-foreground">
+        Prefer to build it from source? The server is AGPL-3.0.{" "}
+        <Link href="/open-source#run" className="go tap-target">
+          Run it from source <Arrow size={14} />
+        </Link>
+      </p>
     </Section>
   );
 }

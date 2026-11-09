@@ -32,8 +32,8 @@ export async function generateMetadata(): Promise<Metadata> {
  * Pricing, as a page of its own. It used to redirect to the bottom of a
  * 12,700 px home page. Three ways to have OneCamp, each with what it includes
  * (one block of prices: the paid plans' matched cards below it said the same
- * prices again), then the table from /buy that compares all four on what
- * differs.
+ * prices again), then the table that compares the three on what differs
+ * (#plans, where /buy's "Compare plans" lands).
  * Every amount comes from /onecamp/pricing; rupees are the price and dollars
  * an estimate. Nothing here offers a trial or a refund: the demo and the free
  * plan are how somebody tries it.
