@@ -1,5 +1,8 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { cloudPlanCode, paymentTerms, yearlyOffered, yearlySaving } from "./paymentTerms";
+import { cloudPlanCode, MONEY_RULE, paymentTerms, yearlyOffered, yearlySaving } from "./paymentTerms";
+import { FREE_SEATS } from "./freePlan";
 import { defaultPricing } from "./pricing";
 
 describe("paymentTerms", () => {
@@ -37,5 +40,23 @@ describe("yearly offer", () => {
   it("claims no saving when the yearly price does not earn one", () => {
     const flat = { ...defaultPricing, cloud_yearly_configured: true, cloud_yearly_paise: 11_998_800, cloud_yearly_free_months: 0 };
     expect(yearlySaving(flat)).toBe("");
+  });
+});
+
+/**
+ * The money rule under the plan cards, on the checkout and on the rival and
+ * audience pages. It led with the refusal ("No trials or refunds: try the
+ * demo..."), the first line after the price. It is one sentence now, the same
+ * everywhere, with the offer first and the rule kept: payments are final.
+ */
+describe("the money rule", () => {
+  it("says the offer before the rule, in one sentence used everywhere", () => {
+    expect(MONEY_RULE).toBe(`Try it first: the live demo, and the free plan for up to ${FREE_SEATS} people. Payments are final.`);
+    expect(MONEY_RULE.indexOf("live demo")).toBeLessThan(MONEY_RULE.indexOf("Payments are final"));
+    for (const file of ["components/site/PlanColumns.tsx", "app/buy/BuyCheckout.tsx", "components/site/AudienceView.tsx"]) {
+      const src = readFileSync(join(process.cwd(), file), "utf8");
+      expect(src, file).toContain("<MoneyRule");
+      expect(src, file).not.toMatch(/No trials or refunds/);
+    }
   });
 });
