@@ -3,7 +3,9 @@ import { ProductName } from "@/components/site/ProductName";
 import type { ReactNode } from "react";
 import { type Pricing } from "@/lib/pricing";
 import { PRICES_CHECKED, SEAT_COSTS, SEAT_COST_SOURCES, SERVER_USD_PER_MONTH, stackYearUsd, teamCost } from "@/lib/teamCost";
-import { MoneyText, SavingChip, StackBasis, StackCost } from "@/components/site/RegionalMoney";
+import { StackBasis, StackCost } from "@/components/site/RegionalMoney";
+import { MoneyText } from "@/components/site/MoneyText";
+import { SavingChip } from "@/components/site/SavingChip";
 import { LogoRing } from "@/components/ui/v3";
 import { RAISED_COLUMN, RAISED_ROW } from "@/components/site/planHues";
 

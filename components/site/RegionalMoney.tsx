@@ -1,7 +1,7 @@
 "use client";
 
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
-import { BILLED_IN_RUPEES, displayPrice, fromUsd, localEstimate, priceWithEstimate, taxWords, type Pricing } from "@/lib/pricing";
+import { BILLED_IN_RUPEES, fromUsd, localEstimate, priceWithEstimate, taxWords, type Pricing } from "@/lib/pricing";
 
 /**
  * The money words that depend on where the reader is, for pages the server
@@ -144,45 +144,4 @@ export function StackBasis() {
   if (region?.inIndia) return <>at list price and today&apos;s exchange rate</>;
   if (region && region.currency !== "USD") return <>at their US-dollar list prices, converted at today&apos;s rate</>;
   return <>at their US-dollar list prices</>;
-}
-
-/**
- * A price in running text, in one currency with whatever it sits beside
- * (lib/pricing displayPrice): "≈ $258 once (charged ₹24,999)" abroad,
- * "₹24,999 once" in India. For a row that compares it with a rival's bill in
- * the reader's money; PriceText is for a price read on its own. The "≈" is
- * read as "about". It cross-fades in place when the reader's own money
- * arrives after mount.
- */
-export function MoneyText({ pricing, inr, per = "", licence }: { pricing: Pricing; inr: number; per?: string; licence?: boolean }) {
-  const region = useVisitorRegion();
-  const { figure, approx, charge } = displayPrice(pricing, inr, region, { licence });
-  return (
-    <span key={figure} className={region ? "tabular-nums fx-fade" : "tabular-nums"}>
-      {approx && (
-        <>
-          <span aria-hidden="true">≈ </span>
-          <span className="sr-only">about </span>
-        </>
-      )}
-      {figure}
-      {per}
-      {charge && ` (charged ${charge})`}
-    </span>
-  );
-}
-
-/**
- * How many times less OneCamp's first year is than the per-seat stack's
- * (lib/teamCost multiple), as the moss chip the calculator and the home
- * comparison share. Nothing below twice: a small gap is said in words.
- * A line of its own in running text; an item like any other in a flex row.
- */
-export function SavingChip({ multiple, className = "" }: { multiple: number; className?: string }) {
-  if (!(multiple >= 2)) return null;
-  return (
-    <span className={`hue-moss flex h-7 w-fit items-center rounded-full bg-hue-tint px-3 text-caption font-[590] text-hue-ink ${className}`}>
-      {Math.round(multiple)}× less in the first year
-    </span>
-  );
 }
