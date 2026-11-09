@@ -72,7 +72,8 @@ describe("the plan glossary", () => {
     for (const [name, html] of surfaces) {
       const plan = buttons(html).filter(([href]) => ctaFor(href))
       expect(plan.length, name).toBeGreaterThan(0)
-      for (const [href, label] of plan) expect(label, `${name}: ${href}`).toBe(ctaFor(href))
+      // The glossary's words, alone or with what they cover after a comma ("Install free, up to 25 people").
+      for (const [href, label] of plan) expect(label.split(", ")[0], `${name}: ${href}`).toBe(ctaFor(href))
     }
   })
 

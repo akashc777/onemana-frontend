@@ -47,7 +47,7 @@ export default async function PricingPage() {
     },
     {
       q: "What happens when we pass the free plan's limit?",
-      a: "Buy a licence and re-run the install with the key from your purchase email. The workspace you already run keeps its data and carries on.",
+      a: "Buy the licence and re-run the install with the key from your purchase email. The workspace you already run keeps its data and carries on.",
     },
     // Every price line links here (#currency). Dollar charges are off; were
     // they switched on, the note built from the same switch /buy reads says so.

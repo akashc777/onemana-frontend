@@ -15,6 +15,8 @@ import { regionFor } from "@/lib/visitorCurrency";
 import { taxIdLabel } from "@/lib/invoiceFields";
 import { RegionProvider } from "@/hooks/useVisitorRegion";
 import { PlanPrice } from "@/components/site/RegionalMoney";
+import { MoneyRule } from "@/components/site/MoneyRule";
+import { CLOUD_SIZE, PLAN } from "@/lib/plans";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -248,7 +250,7 @@ export function BuyCheckout({
               <p className="mt-4 border-l-2 border-line-3 pl-4 text-small text-muted-foreground">
                 Up to {FREE_SEATS} people? OneCamp is free for you.{" "}
                 <a href="/free" className="link font-medium">
-                  Get the install command
+                  {PLAN.free.cta}
                 </a>
                 , no card or email needed.
               </p>
@@ -264,7 +266,7 @@ export function BuyCheckout({
               <div className="p-6">
               <span className="flex items-center gap-2 text-body font-[590] text-foreground">
                 {isCloud ? <CloudGlyph className="size-4 shrink-0 text-muted-foreground" /> : <KeyGlyph className="size-4 shrink-0 text-muted-foreground" />}
-                {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
+                {isCloud ? (business ? CLOUD_SIZE.business : CLOUD_SIZE.team) : PLAN.licence.name}
               </span>
               {/* The price the plan cards draw (RegionalMoney PlanPrice), for
                   the country chosen in the form: the buyer's own money first
@@ -328,13 +330,11 @@ export function BuyCheckout({
               </ul>
               </div>
               {/* THE MONEY RULE, BEFORE THE FORM. No trials and no refunds is a
-                  standing decision; said here, on the card's sunken foot, as the
-                  reason the demo and the free plan exist (B2). */}
+                  standing decision; said here, on the card's sunken foot, offer
+                  first: the demo and the free plan, then the rule (B2). */}
               <div className="flex flex-col gap-3 bg-muted px-6 py-4 shadow-[inset_0_1px_0_var(--line-c)] sm:flex-row sm:items-center sm:justify-between">
                 <p className="m-0 text-small text-foreground">
-                  No trials or refunds: try the{" "}
-                  <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">live demo</a>{" "}
-                  and the <a href="/free" className="link">free plan</a> first.
+                  <MoneyRule />
                 </p>
                 <ButtonLink href={site.demoStartUrl} external variant="ghost" size="sm" className="shrink-0 max-md:min-h-11">
                   Open the live demo

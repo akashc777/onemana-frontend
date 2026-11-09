@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { PLAN_HUE } from "@/components/site/planHues";
@@ -12,8 +11,9 @@ import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
 import { choicePerPerson, choicePrice, cloudBuyHref, cloudChoices, yearlySaving } from "@/lib/paymentTerms";
 import type { Pricing } from "@/lib/pricing";
 import { cloudBenefits, lifetimeBenefits, planHighlights } from "@/lib/content";
-import { site } from "@/lib/site";
 import { PlanPrice, PricesFootnote, TaxText } from "@/components/site/RegionalMoney";
+import { MoneyRule } from "@/components/site/MoneyRule";
+import { PLAN } from "@/lib/plans";
 
 /** The pill on the free plan (D8): where most teams begin, not a popularity claim. */
 export const FREE_PILL = "Most teams start here";
@@ -35,7 +35,7 @@ export const FREE_PILL = "Most teams start here";
  * cards share a subgrid, so every row lines up whatever wraps.
  *
  * NO TRIALS AND NO REFUNDS is said under the cards, before anyone reaches a
- * form, framed as what it is: the reason the demo and the free plan exist.
+ * form, offer first (MoneyRule): the demo and the free plan, then the rule.
  *
  * `detailed` (/pricing): each card's full list, and Cloud's sizes as a
  * segmented control at the top of its card.
@@ -70,7 +70,7 @@ export function PlanColumns({
   const cards: Card[] = [
     {
       key: "free",
-      name: "Free",
+      name: PLAN.free.name,
       hue: PLAN_HUE.free,
       pill: FREE_PILL,
       price: <PlanPrice pricing={pricing} free="No card, no email" />,
@@ -79,14 +79,14 @@ export function PlanColumns({
       list: detailed ? freeIncludes.slice(1, 5) : planHighlights.free,
       gets: "a free key and one install command",
       cta: (
-        <ButtonLink href="/free" variant="ghost" size="lg" className="w-full">
-          Install free
+        <ButtonLink href={PLAN.free.href} variant="ghost" size="lg" className="w-full">
+          {PLAN.free.cta}
         </ButtonLink>
       ),
     },
     {
       key: "lifetime",
-      name: "Licence",
+      name: PLAN.licence.name,
       hue: PLAN_HUE.lifetime,
       lifted: true,
       price: <PlanPrice pricing={pricing} inr={pricing.lifetime_inr} cadence="one-time" licence />,
@@ -99,14 +99,14 @@ export function PlanColumns({
         </>
       ),
       cta: (
-        <ButtonLink href="/buy" variant="brand" size="lg" className="w-full">
-          Buy a licence
+        <ButtonLink href={PLAN.licence.href} variant="brand" size="lg" className="w-full">
+          {PLAN.licence.cta}
         </ButtonLink>
       ),
     },
     {
       key: "cloud",
-      name: "Cloud",
+      name: PLAN.cloud.name,
       hue: PLAN_HUE.cloud,
       price: <PlanPrice pricing={pricing} inr={monthly.inr} cadence={monthly.cadence} perPerson={monthly.perPerson} />,
       fits: monthly.fits,
@@ -115,7 +115,7 @@ export function PlanColumns({
       gets: "an address on onemana.dev, or your own domain",
       cta: (
         <ButtonLink href={monthly.href} variant="ghost" size="lg" className="w-full">
-          Choose Cloud
+          {PLAN.cloud.cta}
         </ButtonLink>
       ),
     },
@@ -162,15 +162,7 @@ export function PlanColumns({
       <p className="mt-8 flex items-start gap-2.5 text-body text-foreground sm:items-center">
         <Dot hue="ink" size={7} className="mt-2 sm:mt-0" />
         <span>
-          No trials or refunds: try the{" "}
-          <a href={site.demoStartUrl} target="_blank" rel="noreferrer" className="link">
-            live demo
-          </a>{" "}
-          and the{" "}
-          <Link href="/free" className="link">
-            free plan
-          </Link>{" "}
-          first.
+          <MoneyRule />
         </span>
       </p>
       <p className="mt-2 pl-[17px] text-small text-muted-foreground">

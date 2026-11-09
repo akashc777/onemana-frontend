@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site";
 import { fmtINR, getPricing } from "@/lib/pricing";
+import { PLAN } from "@/lib/plans";
 
 // Worked out from live pricing, never from constants: link previews in Slack,
 // X and email are often the first price a buyer sees, and a fixed "$299" there
@@ -9,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const p = await getPricing();
   const once = fmtINR(p.lifetime_inr);
   const monthly = `${fmtINR(p.cloud_inr)} a month`;
-  const alt = `Get OneCamp: ${once} lifetime or ${monthly} cloud`;
+  const alt = `Get OneCamp: the ${PLAN.licence.name.toLowerCase()} for ${once} once, or ${PLAN.cloud.name} from ${monthly}`;
   return {
     title: "Get OneCamp",
     description: `A licence for ${once} once, or managed cloud from ${monthly}. Unlimited users, your server, local AI included.`,

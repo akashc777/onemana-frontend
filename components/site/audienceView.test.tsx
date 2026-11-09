@@ -6,6 +6,7 @@ import { FEATURE_MARK } from "@/components/site/featureMarks"
 import { hueOrAgent } from "@/components/ui/graphics/hues"
 import { alternativeBySlug } from "@/lib/alternatives"
 import { audienceBySlug } from "@/lib/audiences"
+import { PLAN } from "@/lib/plans"
 import { productHue } from "@/components/site/productHues"
 import { defaultPricing } from "@/lib/pricing"
 import { AREA } from "@/lib/areas"
@@ -49,7 +50,10 @@ describe("an alternatives page", () => {
     })
 
     it("draws each price neutral: a plan is no area (v3.1)", () => {
-        const prices = html.slice(html.indexOf("Own it") - 400, html.indexOf("Own it") + 2000)
+        // The licence's mini card, by the glossary's name ("Own it" until 9 Nov 2026).
+        const at = html.indexOf(`${PLAN.licence.name}</p>`)
+        expect(at).toBeGreaterThan(0)
+        const prices = html.slice(at - 400, at + 2000)
         expect(prices).not.toMatch(/data-hue=/)
     })
 })

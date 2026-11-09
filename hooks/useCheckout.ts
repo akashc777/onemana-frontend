@@ -4,7 +4,7 @@ import { trackEvent } from "@/lib/track";
 import { CHECKOUT_THEME } from "@/lib/razorpayCheckout";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { cloudCheckoutDescription } from "@/lib/paymentTerms";
+import { cloudCheckoutDescription, LICENCE_CHECKOUT_DESCRIPTION } from "@/lib/paymentTerms";
 import { savePurchase } from "@/lib/purchaseHandoff";
 import { checkoutFailure } from "@/lib/checkoutFailure";
 import {
@@ -85,7 +85,7 @@ export function useCheckout(): CheckoutController {
           amount: order.amount,
           currency: order.currency,
           name: "OneCamp",
-          description: "Self-Hosted Unified Workspace, Lifetime License",
+          description: LICENCE_CHECKOUT_DESCRIPTION,
           prefill: { email: order.email, name: order.name, contact: contact ?? "" },
           theme: { color: CHECKOUT_THEME },
           handler: async (resp: unknown) => {

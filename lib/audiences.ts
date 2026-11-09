@@ -85,7 +85,7 @@ export const audiences: Audience[] = [
       {
         icon: "teams",
         title: "Every freelancer, no seat tax",
-        body: "A lifetime licence covers everyone on your server. Bring in contractors for a project and take them off after, without a bill that moves.",
+        body: "The licence covers everyone on your server. Bring in contractors for a project and take them off after, without a bill that moves.",
       },
       {
         icon: "docs",

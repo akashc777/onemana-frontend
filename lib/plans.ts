@@ -2,6 +2,23 @@ import type { Pricing } from "@/lib/pricing";
 import { FREE_SEATS } from "@/lib/freePlan";
 
 /**
+ * One name per plan and one word for its button, read by every page that
+ * sells a plan: the cards, the plan table, the rival and audience pages, the
+ * checkout, the payment window and the account page (9 Nov 2026). A buyer met
+ * the licence under four names and Cloud's button under three, page by page.
+ * Code names (`lifetime`, `lifetime_inr`) and plan codes are not copy and
+ * stay as they are.
+ */
+export const PLAN = {
+  free: { name: "Free", cta: "Install free", href: "/free" },
+  licence: { name: "Licence", cta: "Buy the licence", href: "/buy" },
+  cloud: { name: "Cloud", cta: "Start Cloud", href: "/buy?plan=cloud" },
+} as const;
+
+/** Cloud's two sizes, by name. */
+export const CLOUD_SIZE = { team: "Cloud Team", business: "Cloud Business" } as const;
+
+/**
  * The three plans, side by side, in words a buyer uses.
  *
  * Every plan has the product: chat, docs, tasks, calls and AI teammates. They
@@ -68,7 +85,7 @@ export function planOptions(p: Pricing): PlanOption[] {
   return [
     {
       key: "free",
-      name: "Free licence",
+      name: PLAN.free.name,
       summary: `The ready-made release with a one-command installer, for teams of up to ${FREE_SEATS}.`,
       price: "Free",
       runs: "You, from our official release",
@@ -78,11 +95,11 @@ export function planOptions(p: Pricing): PlanOption[] {
       licence: "AGPL-3.0",
       controls: "Not included",
       help: "Community",
-      cta: { label: "Get a free key", href: "/free" },
+      cta: { label: PLAN.free.cta, href: PLAN.free.href },
     },
     {
       key: "lifetime",
-      name: "Licence",
+      name: PLAN.licence.name,
       summary: "The ready-made release for any number of people, under a commercial licence. Pay once.",
       price: { inr: p.lifetime_inr, per: " once" },
       runs: "You, from our official release",
@@ -92,11 +109,11 @@ export function planOptions(p: Pricing): PlanOption[] {
       licence: "Commercial: no AGPL obligations",
       controls: "Included",
       help: "Email support",
-      cta: { label: "Buy a licence", href: "/buy?plan=lifetime" },
+      cta: { label: PLAN.licence.cta, href: PLAN.licence.href },
     },
     {
       key: "cloud",
-      name: "OneCamp Cloud",
+      name: PLAN.cloud.name,
       summary: "We run it for you on a server of your own, with backups and updates.",
       price: { lead: "From ", inr: p.cloud_inr, per: "/mo" },
       runs: "We do",
@@ -106,7 +123,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       licence: "Commercial, and a self-host licence is included",
       controls: "Included",
       help: "Email support",
-      cta: { label: "Start with Cloud", href: "/buy?plan=cloud" },
+      cta: { label: PLAN.cloud.cta, href: PLAN.cloud.href },
     },
   ];
 }

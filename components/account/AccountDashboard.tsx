@@ -2,6 +2,7 @@
 
 import { ChangeEmail } from "@/components/account/ChangeEmail";
 import { FREE_PLAN_CODE, FREE_SEATS } from "@/lib/freePlan";
+import { PLAN } from "@/lib/plans";
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import Script from "next/script";
 import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
@@ -154,8 +155,8 @@ export function AccountDashboard({
 
 function licenceKind(l: PortalOverview["licenses"][number]): string {
   if (l.product_type === "saas_subscription") return "Cloud, includes self-hosting";
-  if (l.plan_code === FREE_PLAN_CODE) return `Free self-host licence, up to ${FREE_SEATS} people`;
-  return "Lifetime self-host licence";
+  if (l.plan_code === FREE_PLAN_CODE) return `${PLAN.free.name} (self-hosted), up to ${FREE_SEATS} people`;
+  return `${PLAN.licence.name} (self-hosted)`;
 }
 
 function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (tab: Tab) => void }) {
@@ -228,7 +229,7 @@ function OverviewTab({ overview, onOpen }: { overview: PortalOverview; onOpen: (
                 : nextSub.next_due_date
                   ? `Renews on ${formatDay(nextSub.next_due_date)}.`
                   : "Active."
-              : "The lifetime licence has nothing to renew."
+              : "The licence has nothing to renew."
           }
           action={
             nextSub ? (
@@ -506,7 +507,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   if (subs.length === 0)
     return (
       <p className="text-small text-muted-foreground">
-        You don&apos;t have any subscriptions. The lifetime licence is a one-time purchase with nothing to manage here.
+        You don&apos;t have any subscriptions. The licence is a one-time purchase with nothing to manage here.
       </p>
     );
 

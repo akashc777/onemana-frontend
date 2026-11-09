@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
 import { PlanPrice } from "@/components/site/RegionalMoney";
 import type { Pricing } from "@/lib/pricing";
+import { PLAN } from "@/lib/plans";
 
 /** One Cloud size, every figure worked out on the server from /onecamp/pricing. */
 export interface CloudOption {
@@ -105,7 +106,7 @@ export function CloudChoice({
       {gets}
       <div className="pt-5">
         <ButtonLink href={o.href} variant="ghost" size="lg" className="w-full">
-          Choose Cloud
+          {PLAN.cloud.cta}
         </ButtonLink>
       </div>
     </>

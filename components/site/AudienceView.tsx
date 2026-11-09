@@ -17,6 +17,8 @@ import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import type { Pricing } from "@/lib/pricing";
 import { PlanPrice } from "@/components/site/RegionalMoney";
+import { MoneyRule } from "@/components/site/MoneyRule";
+import { PLAN } from "@/lib/plans";
 import type { Audience } from "@/lib/audiences";
 import type { CampHue } from "@/lib/campHue";
 import { ALTERNATIVES_CHECKED } from "@/lib/alternatives";
@@ -86,7 +88,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                       Try the live demo
                     </ButtonLink>
                     <ButtonLink href="/free" variant="ghost" size="xl">
-                      Install free, up to {FREE_SEATS} people
+                      {PLAN.free.cta}, up to {FREE_SEATS} people
                     </ButtonLink>
                   </div>
                 </div>
@@ -208,26 +210,26 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
           <div className="rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
             <p className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
               <Dot hue="ink" />
-              Own it
+              {PLAN.licence.name}
             </p>
             {/* The price at 28/32 in the reader's money, the rupee charge
                 under it (site.md AU5; RegionalMoney PlanPrice). */}
             <PlanPrice pricing={pricing} inr={pricing.lifetime_inr} cadence="one-time" licence size="mini" why="/pricing#currency" className="mt-3" />
             <p className="mt-2 text-small text-muted-foreground">Everyone on your server, for good.</p>
-            <ButtonLink href="/buy" variant="ghost" size="md" className="mt-4">
-              Buy a licence
+            <ButtonLink href={PLAN.licence.href} variant="ghost" size="md" className="mt-4">
+              {PLAN.licence.cta}
             </ButtonLink>
           </div>
           {pricing.cloud_configured && (
             <div className="rounded-xl bg-card p-5 shadow-e1 lg:col-span-5">
               <p className="m-0 flex items-center gap-2 text-body font-[590] text-foreground">
                 <Dot hue="ink" />
-                Or we run it
+                {PLAN.cloud.name}
               </p>
               <PlanPrice pricing={pricing} inr={pricing.cloud_inr} cadence="/mo" size="mini" why="/pricing#currency" className="mt-3" />
-              <p className="mt-2 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
-              <ButtonLink href="/buy?plan=cloud" variant="ghost" size="md" className="mt-4">
-                Choose Cloud
+              <p className="mt-2 text-small text-muted-foreground">We run it for you, for up to {pricing.cloud_seats} people.</p>
+              <ButtonLink href={PLAN.cloud.href} variant="ghost" size="md" className="mt-4">
+                {PLAN.cloud.cta}
               </ButtonLink>
             </div>
           )}
@@ -237,7 +239,9 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
             </Link>
           </div>
         </div>
-        <p className="mt-5 text-caption text-muted-foreground">{a.priceNote} No trials or refunds: the demo and the free plan are how to try it.</p>
+        <p className="mt-5 text-caption text-muted-foreground">
+          {a.priceNote} <MoneyRule />
+        </p>
 
         {/* AU6: questions as accordions, the plus in the page hue. */}
         <Margin className="mt-20" aside={<MarginHeading title="Questions" />}>

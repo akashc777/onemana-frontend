@@ -1,4 +1,6 @@
 import type { Pricing } from "./pricing";
+import { FREE_SEATS } from "./freePlan";
+import { CLOUD_SIZE } from "./plans";
 
 /**
  * The sentence next to the pay button, and the plan code behind it.
@@ -92,20 +94,33 @@ export function paymentTerms(kind: "lifetime" | "addon" | Billing): string {
   }
 }
 
+/**
+ * The money rule, where a price is (under the plan cards, on the checkout,
+ * on the rival and audience pages): one sentence, the offer first and the
+ * rule kept. It led with the refusal ("No trials or refunds: try the
+ * demo..."), the first line a buyer read after the price; no refunds is a
+ * standing decision, and the demo and the free plan are why it is fair.
+ * MoneyRule draws it with the two links.
+ */
+export const MONEY_RULE = `Try it first: the live demo, and the free plan for up to ${FREE_SEATS} people. Payments are final.`;
+
+/** What the payment window says is being bought for the licence. */
+export const LICENCE_CHECKOUT_DESCRIPTION = "OneCamp licence, one-time, for your own server";
+
 /** Whether extra storage can be bought: a plan exists and a price is set. */
 export function storageOffered(p: Pricing): boolean {
   return Boolean(p.storage_addon_configured) && p.storage_addon_paise > 0 && p.storage_addon_gb > 0;
 }
 
-/** What the Razorpay window says is being bought, for each Cloud plan. */
+/** What the Razorpay window says is being bought, for each Cloud plan, in the plans' own names. */
 export function cloudCheckoutDescription(planCode?: string): string {
   switch (planCode) {
     case "onecamp_cloud_team_yearly":
-      return "Managed hosting, Team, yearly (includes a self-host license)";
+      return `${CLOUD_SIZE.team}, yearly (includes a self-host licence)`;
     case "onecamp_cloud_business":
-      return "Managed hosting, Business, monthly (includes a self-host license)";
+      return `${CLOUD_SIZE.business}, monthly (includes a self-host licence)`;
   }
-  return "Managed hosting, Team, monthly (includes a self-host license)";
+  return `${CLOUD_SIZE.team}, monthly (includes a self-host licence)`;
 }
 
 /** The checkout link for a Cloud choice, so every page opens it on that choice. */

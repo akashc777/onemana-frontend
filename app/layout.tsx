@@ -3,6 +3,8 @@ import "./globals.css";
 import { fontMono, fontRupee, fontSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { getPricing } from "@/lib/pricing";
+import { LICENCE_CHECKOUT_DESCRIPTION } from "@/lib/paymentTerms";
+import { CLOUD_SIZE } from "@/lib/plans";
 import { getOpenSource } from "@/lib/github";
 import { jsonLdScript } from "@/lib/jsonLd";
 import { defaultOgImages, defaultTwitterImages, OG_DESCRIPTION, OG_TITLE } from "@/lib/og-card";
@@ -88,8 +90,8 @@ function buildJsonLd(lifetimeInr: number, lifetimeUsd: number, cloudInr: number,
         operatingSystem: "Docker, Linux",
         description: site.description,
         offers: [
-          { "@type": "Offer", price: String(lifetimeInr), priceCurrency: "INR", name: `Lifetime self-host licence (≈ $${lifetimeUsd})` },
-          { "@type": "Offer", price: String(cloudInr), priceCurrency: "INR", name: `OneCamp Cloud - managed hosting, monthly (≈ $${cloudUsd})` },
+          { "@type": "Offer", price: String(lifetimeInr), priceCurrency: "INR", name: `${LICENCE_CHECKOUT_DESCRIPTION} (≈ $${lifetimeUsd})` },
+          { "@type": "Offer", price: String(cloudInr), priceCurrency: "INR", name: `OneCamp ${CLOUD_SIZE.team}, monthly (≈ $${cloudUsd})` },
         ],
       },
     ],
