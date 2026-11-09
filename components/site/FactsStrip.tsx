@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 import type { ReleaseFacts } from "@/lib/releases";
 import type { Pricing } from "@/lib/pricing";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { PriceText } from "@/components/site/RegionalMoney";
+import { MoneyText } from "@/components/site/RegionalMoney";
 import { Arrow, Dot } from "@/components/ui/v3";
 import { Icon, type IconName } from "@/components/ui/icons";
 
@@ -30,9 +30,9 @@ import { Icon, type IconName } from "@/components/ui/icons";
  * reader met the first price twelve screens down, and the loss is between
  * the demo and paying. So the two prices a team chooses between stand here,
  * under the product, each after a neutral dot (no plan is an area): free up to 25 people, and the
- * licence's rupees with the reader's estimate (PriceText, the one way a
- * sentence writes a price). The estimate ends its line, so when the reader's
- * currency arrives after mount nothing after it moves.
+ * licence in the reader's own money with its rupee charge (MoneyText, the
+ * way a sentence writes a price). The price ends its line, so when the
+ * reader's currency arrives after mount nothing after it moves.
  */
 const GLYPH: Record<"licence" | "releases" | "size" | "data", IconName> = {
   licence: "branch",
@@ -99,7 +99,7 @@ export function FactsStrip({ release, pricing }: { release: ReleaseFacts | null;
             <span>
               Any number of people:{" "}
               <b className="font-[590] tabular-nums text-foreground">
-                <PriceText pricing={pricing} inr={pricing.lifetime_inr} per=" once" />
+                <MoneyText pricing={pricing} inr={pricing.lifetime_inr} per=" once" licence />
               </b>
             </span>
           </span>

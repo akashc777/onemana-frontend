@@ -70,21 +70,27 @@ export function detectRegion(): Region {
  */
 const SYMBOL: Record<Exclude<DisplayCurrency, "EUR">, string> = { USD: "$", GBP: "£", SGD: "S$", AUD: "A$", CAD: "C$" };
 
-/** A whole amount in a display currency: "$258", "S$336", "224 €" (de) or "€224" (en). */
-export function fmtLocal(amount: number, currency: DisplayCurrency, locale = "en-US"): string {
-  const n = Math.round(amount || 0);
+/**
+ * An amount in a display currency: "$258", "S$336", "224 €" (de) or "€224"
+ * (en). Whole by default; `cents` gives two decimals ("$2.58"), for a small
+ * figure such as a price per person, where a rounded dollar is a third out.
+ */
+export function fmtLocal(amount: number, currency: DisplayCurrency, locale = "en-US", cents = false): string {
+  const fraction = cents ? 2 : 0;
+  const n = cents ? Math.round((amount || 0) * 100) / 100 : Math.round(amount || 0);
+  const digitsOf = { minimumFractionDigits: fraction, maximumFractionDigits: fraction };
   if (currency === "EUR") {
     try {
-      return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+      return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", ...digitsOf }).format(n);
     } catch {
-      return `€${n.toLocaleString("en-US")}`;
+      return `€${n.toLocaleString("en-US", digitsOf)}`;
     }
   }
   let digits: string;
   try {
-    digits = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Math.abs(n));
+    digits = new Intl.NumberFormat(locale, digitsOf).format(Math.abs(n));
   } catch {
-    digits = Math.abs(n).toLocaleString("en-US");
+    digits = Math.abs(n).toLocaleString("en-US", digitsOf);
   }
   return `${n < 0 ? "-" : ""}${SYMBOL[currency]}${digits}`;
 }

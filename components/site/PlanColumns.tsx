@@ -9,11 +9,11 @@ import { AreaRow } from "@/components/site/Areas";
 import { Dot } from "@/components/ui/v3";
 import type { CampHue } from "@/lib/campHue";
 import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
-import { choicePrice, cloudBuyHref, cloudChoices, yearlySaving } from "@/lib/paymentTerms";
-import { fmtINR, type Pricing } from "@/lib/pricing";
+import { choicePerPerson, choicePrice, cloudBuyHref, cloudChoices, yearlySaving } from "@/lib/paymentTerms";
+import type { Pricing } from "@/lib/pricing";
 import { cloudBenefits, lifetimeBenefits, planHighlights } from "@/lib/content";
 import { site } from "@/lib/site";
-import { PriceLines, PricesFootnote, TaxText } from "@/components/site/RegionalMoney";
+import { PlanPrice, PricesFootnote, TaxText } from "@/components/site/RegionalMoney";
 
 /** The pill on the free plan (D8): where most teams begin, not a popularity claim. */
 export const FREE_PILL = "Most teams start here";
@@ -21,10 +21,12 @@ export const FREE_PILL = "Most teams start here";
 /**
  * Free, a licence, or Cloud (site.md H9 and P2): three neutral cards, the
  * plan's identity as a dot (moss, sun, sky, the same hue wherever the plan
- * appears), rupees first. The rupee amount is the price because it is what
- * is charged; the line under it is an estimate in the reader's currency at
- * today's rate, in a block that never changes height. Every figure comes
- * from the backend's /onecamp/pricing, never from this file.
+ * appears). Each price is the reader's own money first, with the rupee
+ * charge in ink right under it (RegionalMoney PlanPrice; rupees in India),
+ * in a block that never changes height, and the cadence is part of the
+ * figure ("one-time", "/mo"), so Business a month and the licence once are
+ * never read as one number. Every figure comes from the backend's
+ * /onecamp/pricing, never from this file.
  *
  * The licence is lifted (e3 and a brand ring at 45%) with no words claiming
  * popularity; Free carries "Most teams start here". No drawing sits behind a
@@ -56,9 +58,9 @@ export function PlanColumns({
       label: b === "monthly" ? "Team monthly" : b === "yearly" ? "Team yearly" : "Business",
       short: b === "monthly" ? "Monthly" : b === "yearly" ? "Yearly" : "Business",
       hint: b === "yearly" ? saving : "",
-      price: fmtINR(c.inr),
-      per: c.per === "/yr" ? "a year" : "a month",
       inr: c.inr,
+      cadence: c.per,
+      perPerson: choicePerPerson(b, pricing),
       fits: b === "business" ? `Up to ${pricing.business_seats} people, run by us` : `Up to ${pricing.cloud_seats} people, run by us`,
       href: cloudBuyHref(b),
     };
@@ -71,8 +73,7 @@ export function PlanColumns({
       name: "Free",
       hue: PLAN_HUE.free,
       pill: FREE_PILL,
-      price: <PriceFigure price="Free" />,
-      lines: <PriceLines pricing={pricing} inr={0} free="No card, no email" />,
+      price: <PlanPrice pricing={pricing} free="No card, no email" />,
       fits: `Up to ${FREE_SEATS} people`,
       body: "Everything a team uses, on your own server.",
       list: detailed ? freeIncludes.slice(1, 5) : planHighlights.free,
@@ -88,8 +89,7 @@ export function PlanColumns({
       name: "Licence",
       hue: PLAN_HUE.lifetime,
       lifted: true,
-      price: <PriceFigure price={fmtINR(pricing.lifetime_inr)} per="once" />,
-      lines: <PriceLines pricing={pricing} inr={pricing.lifetime_inr} />,
+      price: <PlanPrice pricing={pricing} inr={pricing.lifetime_inr} cadence="one-time" licence />,
       fits: "Any number of people",
       body: "Everyone on your server, for good. Single sign-on, SCIM and audit export included.",
       list: detailed ? lifetimeBenefits : planHighlights.lifetime,
@@ -108,8 +108,7 @@ export function PlanColumns({
       key: "cloud",
       name: "Cloud",
       hue: PLAN_HUE.cloud,
-      price: <PriceFigure price={monthly.price} per={monthly.per} />,
-      lines: <PriceLines pricing={pricing} inr={monthly.inr} />,
+      price: <PlanPrice pricing={pricing} inr={monthly.inr} cadence={monthly.cadence} perPerson={monthly.perPerson} />,
       fits: monthly.fits,
       body: "Your own server, which we set up, update and back up. A self-host licence is included.",
       list: detailed ? cloudBenefits : planHighlights.cloud,
@@ -126,8 +125,8 @@ export function PlanColumns({
     <div>
       {/* Three across from lg; at a tablet's width two and one, the third
           centred under them (three 230px cards were too narrow to read).
-          Side by side, the cards share one subgrid of eight rows (the name,
-          the price, its two lines, who it is for, what it is, the list, what
+          Side by side, the cards share one subgrid of seven rows (the name,
+          the price with its lines, who it is for, what it is, the list, what
           you get, the button), so each row lines up across the three. Stacked
           on a phone, each card is a plain column, Free first. */}
       <div className="grid gap-6 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-y-0">
@@ -135,7 +134,7 @@ export function PlanColumns({
           <div
             key={c.key}
             data-plan={c.key}
-            className={`${HUE_CLASS[c.hue]} reveal relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 ${c.lifted ? "shadow-e3 ring-1 ring-line-3" : "shadow-e1"} lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
+            className={`${HUE_CLASS[c.hue]} reveal relative isolate flex flex-col overflow-hidden rounded-2xl bg-card p-6 ${c.lifted ? "shadow-e3 ring-1 ring-line-3" : "shadow-e1"} lg:row-span-7 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${c.key === "cloud" ? "md:col-span-2 md:mx-auto md:w-[calc(50%-8px)] lg:col-span-1 lg:mx-0 lg:w-auto" : ""}`}
           >
             {c.key === "cloud" && detailed && cloudOptions.length > 1 ? (
               <CloudChoice options={cloudOptions} title={<CardName H={H} hue={c.hue} name={c.name} />} pricing={pricing} body={c.body} areas={<AreaRow className="mt-auto pt-4" />} list={<BenefitList items={c.list} />} gets={<Gets>{c.gets}</Gets>} />
@@ -146,7 +145,6 @@ export function PlanColumns({
                   {c.pill && <span className="rounded-full bg-muted px-2 text-[12px] font-[510] leading-[22px] text-muted-foreground shadow-[inset_0_0_0_1px_var(--line-c)]">{c.pill}</span>}
                 </div>
                 <div className="mt-5">{c.price}</div>
-                <div className="mt-1.5">{c.lines}</div>
                 <p className="mt-4 text-small font-[510] text-foreground">{c.fits}</p>
                 {/* The areas sit at the cell's foot, so the three rows line up whatever the line above wraps to. */}
                 <div className="mt-1.5 flex flex-col">
@@ -189,7 +187,6 @@ interface Card {
   pill?: string;
   lifted?: boolean;
   price: ReactNode;
-  lines: ReactNode;
   fits: string;
   body: string;
   list: readonly string[];
@@ -204,16 +201,6 @@ function CardName({ H, hue, name }: { H: "h2" | "h3"; hue: CampHue; name: string
       <Dot hue="ink" />
       {name}
     </H>
-  );
-}
-
-/** The price in the price step (44/48, tabular), with "once" or "a month" on its baseline. */
-export function PriceFigure({ price, per }: { price: string; per?: string }) {
-  return (
-    <p className="flex flex-wrap items-baseline gap-x-2">
-      <span className="font-display text-price tabular-nums text-foreground">{price}</span>
-      {per && <span className="text-body text-muted-foreground">{per}</span>}
-    </p>
   );
 }
 

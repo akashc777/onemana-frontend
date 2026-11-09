@@ -31,7 +31,7 @@ describe("planOptions", () => {
 
   it("takes prices and seats from live pricing, never from copy", () => {
     const plans = planOptions(p);
-    // Rupees, which the table writes with the reader's estimate beside them (lib/pricing priceWithEstimate).
+    // Rupees, which the table writes in the reader's money with the rupee charge (lib/pricing displayPrice).
     const [free, lifetime, cloud] = plans;
     expect(lifetime.price).toEqual({ inr: 24999, per: " once" });
     expect(cloud.price).toEqual({ lead: "From ", inr: 9999, per: "/mo" });

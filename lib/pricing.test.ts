@@ -142,7 +142,7 @@ describe("a per-person figure for each Cloud size", () => {
   it("is said with the cents abroad and in whole rupees in India", () => {
     const business = choicePerPerson("business", live)
     expect(displayPrice(live, business, regionFor("US"), { cents: true }).figure).toBe("$2.58")
-    expect(displayPrice(live, business, regionFor("DE", "de-DE"), { cents: true }).figure).toBe("2,22 €")
+    expect(displayPrice(live, business, regionFor("DE", "de-DE"), { cents: true }).figure).toBe("2,22\u00a0€")
     expect(displayPrice(live, business, regionFor("GB", "en-GB"), { cents: true }).figure).toBe("£1.94")
     expect(displayPrice(live, business, regionFor("IN", "en-IN"), { cents: true }).figure).toBe("₹250")
   })

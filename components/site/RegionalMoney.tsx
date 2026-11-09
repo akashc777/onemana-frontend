@@ -1,7 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
-import { BILLED_IN_RUPEES, displayPrice, fromUsd, localEstimate, priceWithEstimate, taxWords, type Pricing } from "@/lib/pricing";
+import { displayPrice, fromUsd, taxWords, type Pricing } from "@/lib/pricing";
 
 /**
  * The money words that depend on where the reader is, for pages the server
@@ -10,89 +11,133 @@ import { BILLED_IN_RUPEES, displayPrice, fromUsd, localEstimate, priceWithEstima
  * reader's own follows after mount. See hooks/useVisitorRegion.
  */
 
-/**
- * The line under a rupee price (plan A1): "≈ €224 · billed in Indian rupees,
- * your card converts", in the reader's currency, with "billed in Indian
- * rupees" linking to the answer that says why. Nothing in India.
- */
-export function PriceEstimate({ pricing, inr, why = "#currency" }: { pricing: Pricing; inr: number; why?: string }) {
-  const region = useVisitorRegion();
-  const estimate = localEstimate(pricing, inr, region);
-  if (!estimate) return null;
-  const [billed, converts] = BILLED_IN_RUPEES.split(", ");
+/** How a price's cadence is said to a screen reader, where it is drawn short. */
+const CADENCE_SAID: Record<Cadence, string> = { "one-time": "one-time", "/mo": "a month", "/yr": "a year" };
+type Cadence = "one-time" | "/mo" | "/yr";
+
+/** "≈", read as "about": an estimate at the day's rate, not the charge. */
+function About({ className }: { className?: string }) {
   return (
     <>
-      <span className="font-medium tabular-nums">{estimate}</span>
-      {" · "}
-      <a href={why} className="link">
-        {billed}
-      </a>
-      , {converts}
+      <span aria-hidden="true" className={className}>
+        {"≈ "}
+      </span>
+      <span className="sr-only">about </span>
     </>
   );
 }
 
 /**
- * THE PRICE BLOCK'S TWO FIXED LINES (site.md S14). A 36px block reserved on
- * every card, Free's included, so the currency swap after mount never moves
- * anything (CLS 0):
+ * A plan's price, as one block (plan cards, Cloud's sizes, the rival and
+ * audience pages' two prices, the checkout's price card):
  *
- *   ≈ $258                                    (13, ink, the figure at 590)
- *   Billed in Indian rupees, your card converts (13, ink-2, linking to why)
+ *   ≈ $258 one-time                      the reader's money at the price step,
+ *                                        "≈" small and muted, the cadence in ink
+ *   Charged as ₹24,999 · why rupees?     14 px, ink: what the card is charged
+ *   ≈ $3.44 per person a month           Cloud only: its month for one person
  *
- * India sees "GST included" and no estimate; Free carries its own line.
- * The figure sits in a 7ch tabular span, so dollars, euros or pounds never
- * reflow, and it cross-fades in place (opacity only) when the reader's own
- * currency arrives. No count-up: a number that moves reads as a deal timer.
+ * In India: "₹24,999 one-time" over "GST included". With no rate to estimate
+ * with: the rupees, over "Billed in Indian rupees". The licence charged in
+ * dollars abroad: the dollars, over "Charged in US dollars". Free: "Free" over
+ * its own line. Every figure is lib/pricing displayPrice's.
+ *
+ * The server's HTML is in dollars, before the reader is known; their own
+ * money arrives after mount and cross-fades in place (opacity only). Each
+ * line keeps its height through the swap (one line each, reserved), so it
+ * moves nothing. `children` goes under the lines and outside the fade: the
+ * Cloud size control, which must keep its focus while the price changes.
  */
-export function PriceLines({ pricing, inr, why = "#currency", free }: { pricing: Pricing; inr: number; why?: string; free?: string }) {
+export function PlanPrice({
+  pricing,
+  inr = 0,
+  cadence,
+  free,
+  licence,
+  perPerson = 0,
+  why = "#currency",
+  size = "card",
+  live,
+  className,
+  children,
+}: {
+  pricing: Pricing;
+  /** The rupee price. */
+  inr?: number;
+  cadence?: Cadence;
+  /** The free plan's line under "Free" (no price at all). */
+  free?: string;
+  /** The licence: charged in dollars abroad when the backend says so (charge_usd). */
+  licence?: boolean;
+  /** Rupees a person a month, for the third line (lib/paymentTerms choicePerPerson). */
+  perPerson?: number;
+  /** Where "why rupees?" goes: #currency on /pricing, /pricing#currency elsewhere. */
+  why?: string;
+  /** "mini": the rival and audience pages' smaller cards. */
+  size?: "card" | "mini";
+  /** Say a changed price aloud (the Cloud sizes switch it in place). */
+  live?: boolean;
+  className?: string;
+  children?: ReactNode;
+}) {
   const region = useVisitorRegion();
-  if (free) {
-    return (
-      <span className="block h-9 text-caption text-muted-foreground">
-        <span className="block">{free}</span>
-      </span>
-    );
-  }
-  const estimate = localEstimate(pricing, inr, region);
-  const [billed, converts] = BILLED_IN_RUPEES.split(", ");
-  return (
-    <span className="block h-9 text-caption">
-      {region?.inIndia ? (
+  const price = free ? null : displayPrice(pricing, inr, region, { licence });
+  const each = !free && perPerson > 0 ? displayPrice(pricing, perPerson, region, { cents: true }) : null;
+  const card = size === "card";
+  let charged: ReactNode;
+  if (free) charged = free;
+  else if (region?.inIndia) charged = taxWords(true).priceLine;
+  else if (price?.approx)
+    charged =
+      price.chargedIn === "INR" ? (
         <>
-          <span className="block">&nbsp;</span>
-          <span className="block text-muted-foreground">GST included</span>
+          Charged as {price.charge} ·{" "}
+          <a href={why} className="link">
+            why rupees?
+          </a>
         </>
       ) : (
-        <>
-          <span key={estimate} className={`inline-block min-w-[7ch] font-[590] tabular-nums text-foreground ${region ? "fx-fade" : ""}`}>
-            {estimate}
-          </span>
-          <span className="sr-only"> · </span>
-          <span className="block text-muted-foreground first-letter:uppercase">
-            <a href={why} className="link text-muted-foreground decoration-current/40">
-              {billed}
-            </a>
-            , {converts}
-          </span>
-        </>
-      )}
-    </span>
-  );
-}
-
-/**
- * A rupee price in running text with the estimate beside it, in the reader's
- * money (lib/pricing priceWithEstimate): "From ₹9,999/mo (≈ £77)". The plan
- * table's prices, so a reader meets the cards' own estimate there too.
- */
-export function PriceText({ pricing, inr, per, lead = "" }: { pricing: Pricing; inr: number; per?: string; lead?: string }) {
-  const region = useVisitorRegion();
+        <>Charged as {price.charge}</>
+      );
+  else if (price?.chargedIn === "USD") charged = "Charged in US dollars";
+  else
+    charged = (
+      <>
+        <a href={why} className="link">
+          Billed in Indian rupees
+        </a>
+        , your card converts
+      </>
+    );
   return (
-    <>
-      {lead}
-      {priceWithEstimate(pricing, inr, region, per)}
-    </>
+    <div className={className}>
+      <div aria-live={live ? "polite" : undefined}>
+        <div key={`${price?.figure ?? free}|${region?.country ?? ""}`} className={region ? "fx-fade" : undefined}>
+          <p className={card ? "flex min-h-10 flex-wrap items-baseline gap-x-1.5 sm:min-h-12" : "flex min-h-8 flex-wrap items-baseline gap-x-1.5"}>
+            <span className="tabular-nums">
+              {price?.approx && <About className={`font-sans font-[510] text-muted-foreground ${card ? "text-body-lg" : "text-body"}`} />}
+              <span className={`font-display tabular-nums text-foreground ${card ? "text-price" : "text-price-sm"}`}>{price ? price.figure : "Free"}</span>
+            </span>
+            {cadence &&
+              (cadence === "one-time" ? (
+                <span className="text-body font-[510] text-foreground">one-time</span>
+              ) : (
+                <span className="text-body font-[510] text-foreground">
+                  <span aria-hidden="true">{cadence}</span>
+                  <span className="sr-only">{CADENCE_SAID[cadence]}</span>
+                </span>
+              ))}
+          </p>
+          <p className="mt-1 min-h-5 text-small text-foreground">{charged}</p>
+          {each && (
+            <p className="m-0 mt-0.5 text-small tabular-nums text-muted-foreground">
+              {each.approx && <About />}
+              {each.figure} per person a month
+            </p>
+          )}
+        </div>
+      </div>
+      {children}
+    </div>
   );
 }
 
@@ -112,7 +157,7 @@ export function PricesFootnote() {
   if (region?.inIndia) return <>Prices include GST, and your GST invoice shows it separately.</>;
   return (
     <>
-      No tax added at checkout: the price shown is the total charged, in Indian rupees, and your card converts it.{" "}
+      No tax added at checkout: the rupee amount under each price is the total charged, and your card converts it.{" "}
       <a href="#currency" className="link">
         Why rupees?
       </a>
@@ -149,22 +194,17 @@ export function StackBasis() {
 /**
  * A price in running text, in one currency with whatever it sits beside
  * (lib/pricing displayPrice): "≈ $258 once (charged ₹24,999)" abroad,
- * "₹24,999 once" in India. For a row that compares it with a rival's bill in
- * the reader's money; PriceText is for a price read on its own. The "≈" is
- * read as "about". It cross-fades in place when the reader's own money
- * arrives after mount.
+ * "₹24,999 once" in India: a price in a sentence, a table cell or a row that
+ * compares it with a rival's bill in the reader's money (PlanPrice is the
+ * block on a plan's card). The "≈" is read as "about". It cross-fades in
+ * place when the reader's own money arrives after mount.
  */
 export function MoneyText({ pricing, inr, per = "", licence }: { pricing: Pricing; inr: number; per?: string; licence?: boolean }) {
   const region = useVisitorRegion();
   const { figure, approx, charge } = displayPrice(pricing, inr, region, { licence });
   return (
     <span key={figure} className={region ? "tabular-nums fx-fade" : "tabular-nums"}>
-      {approx && (
-        <>
-          <span aria-hidden="true">≈ </span>
-          <span className="sr-only">about </span>
-        </>
-      )}
+      {approx && <About />}
       {figure}
       {per}
       {charge && ` (charged ${charge})`}

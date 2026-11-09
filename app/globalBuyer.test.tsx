@@ -189,7 +189,7 @@ describe("a buyer outside India", () => {
       const table = words(as(region, <PlanComparison pricing={live} />))
       expect(cards, country).toContain(figure)
       expect(table, country).toContain(`${figure} once (charged ₹24,999)`)
-      expect(table, country).toMatch(/From ≈ \S+ ?\/mo \(charged ₹9,999\)/)
+      expect(table, country).toMatch(/From ≈ [^(]+\/mo \(charged ₹9,999\)/)
       expect(table, country).not.toMatch(/about \$/)
     }
     const india = words(as(INDIA, <PlanComparison pricing={live} />))

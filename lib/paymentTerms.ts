@@ -44,6 +44,18 @@ export function choicePrice(b: Billing, p: Pricing): { inr: number; usd: number;
   return { inr: p.cloud_inr, usd: p.cloud_usd, per: "/mo" };
 }
 
+/**
+ * What a Cloud choice comes to for one person a month, in rupees: its
+ * monthly price (a year's over twelve) over the people it covers. Shown under
+ * a Cloud price so Business a month and the licence once, which can be one
+ * figure, are never read as the same thing. 0 when the size covers nobody.
+ */
+export function choicePerPerson(b: Billing, p: Pricing): number {
+  const seats = b === "business" ? p.business_seats : p.cloud_seats;
+  const month = b === "yearly" ? p.cloud_yearly_inr / 12 : choicePrice(b, p).inr;
+  return seats > 0 ? month / seats : 0;
+}
+
 /** A choice's name on its button. */
 export function choiceLabel(b: Billing, p: Pricing): string {
   if (b === "business") return `Business · ${p.business_seats} users`;

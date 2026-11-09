@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PLAN_HUE, RAISED_COLUMN } from "@/components/site/planHues";
-import { PriceText } from "@/components/site/RegionalMoney";
+import { MoneyText } from "@/components/site/RegionalMoney";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { buttonClasses } from "@/components/ui/Button";
 import { Arrow, Dot } from "@/components/ui/v3";
@@ -105,13 +105,20 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
 }
 
 /**
- * What a row says for a plan. A price is written with the reader's estimate
- * beside it, the cards' own (RegionalMoney PriceText); every other row as
- * lib/plans words it.
+ * What a row says for a plan. A price is written the cards' way, the
+ * reader's money first with the rupee charge (RegionalMoney MoneyText); every
+ * other row as lib/plans words it.
  */
 function cell(p: PlanOption, key: PlanRowKey, pricing: Pricing): ReactNode {
   if (key !== "price") return p[key];
-  return typeof p.price === "string" ? p.price : <PriceText pricing={pricing} {...p.price} />;
+  if (typeof p.price === "string") return p.price;
+  const { lead = "", inr, per } = p.price;
+  return (
+    <>
+      {lead}
+      <MoneyText pricing={pricing} inr={inr} per={per} licence={p.key === "lifetime"} />
+    </>
+  );
 }
 
 function PlanButton({ cta, primary }: { cta: { label: string; href: string; external?: boolean }; primary: boolean }) {

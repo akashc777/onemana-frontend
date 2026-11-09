@@ -1,13 +1,22 @@
 // Dual-currency pricing. Charges always happen in INR (enforced server-side).
 //
-// THE RUPEE PRICE IS THE PRICE. Every dollar figure is that charge at the
-// backend's daily exchange rate (usd_rate), rounded to the dollar. None is
-// typed in anywhere: the two that used to be ($299 and $99) were 14% high
-// and 5% low against what a US card was actually charged, and yearly,
-// Business and storage had none. Rupees first since 10 Oct 2026: the charge
-// is in rupees, so showing dollars large and rupees small put the estimate
-// above the fact. currencyNote() goes wherever money is paid. See
-// business/onecamp/usdRate.go in onemana-backend.
+// THE RUPEE PRICE IS THE CHARGE. Every other figure is that charge at the
+// backend's daily exchange rates (usd_rate, rates), rounded. None is typed
+// in anywhere: the two that used to be ($299 and $99) were 14% high and 5%
+// low against what a US card was actually charged, and yearly, Business and
+// storage had none. See business/onecamp/usdRate.go in onemana-backend.
+//
+// THE READER'S MONEY FIRST, OUTSIDE INDIA (9 Nov 2026; it was rupees first
+// from 10 Oct). Most buyers are abroad, and a buyer who has to convert a
+// price in their head before they can weigh it is a buyer who worries about
+// what the card will really be charged; checkouts that show the local
+// currency convert better. So a price a reader weighs (a plan card, a
+// comparison, a sentence) is their money first, marked as an estimate, with
+// the rupee charge in ink directly under or beside it: displayPrice. Where
+// the money is paid (the pay button, the payment window's own words) the
+// rupees come first, because that is the figure the window shows:
+// priceWithEstimate. In India it is rupees throughout. currencyNote() goes
+// wherever money is paid.
 
 import { site } from "./site";
 import { fmtLocal, type DisplayCurrency, type Region } from "./visitorCurrency";
@@ -225,10 +234,10 @@ function estimateIn(p: Pricing, region: Region | null): { currency: DisplayCurre
 }
 
 /** A rupee amount in the estimate's currency, unsigned ("€224"), or "" where localEstimate gives none. */
-function estimateFigure(p: Pricing, inr: number, region: Region | null): string {
+function estimateFigure(p: Pricing, inr: number, region: Region | null, cents = false): string {
   const estimate = estimateIn(p, region);
   if (!estimate || !(inr > 0)) return "";
-  return fmtLocal(inr / estimate.rate, estimate.currency, region?.locale ?? "en-US");
+  return fmtLocal(inr / estimate.rate, estimate.currency, region?.locale ?? "en-US", cents);
 }
 
 /**
@@ -249,6 +258,8 @@ export interface DisplayPrice {
   approx: boolean;
   /** What the card is charged, when it is not the figure ("₹24,999"); "" when the figure is the charge. */
   charge: string;
+  /** The currency the card is charged in: rupees, or dollars for the licence abroad when the backend says so. */
+  chargedIn: "INR" | "USD";
 }
 
 /**
@@ -259,16 +270,19 @@ export interface DisplayPrice {
  * grouping; in India, and with no rate to estimate with, the rupees alone.
  * The licence, when the backend charges it in dollars abroad (charge_usd),
  * is that exact dollar amount, or the reader's estimate of it with the
- * dollars as the charge. Worked out, never typed.
+ * dollars as the charge. `cents` says a small figure (a price per person)
+ * to the cent abroad; rupees stay whole. Worked out, never typed.
  */
-export function displayPrice(p: Pricing, inr: number, region: Region | null, opts: { licence?: boolean } = {}): DisplayPrice {
+export function displayPrice(p: Pricing, inr: number, region: Region | null, opts: { licence?: boolean; cents?: boolean } = {}): DisplayPrice {
   if (opts.licence && p.charge_usd && !region?.inIndia) {
     const charged = fmtUSD(p.lifetime_usd);
     const local = estimateIn(p, region)?.currency !== "USD" ? estimateFigure(p, inr, region) : "";
-    return local ? { figure: local, approx: true, charge: charged } : { figure: charged, approx: false, charge: "" };
+    return local ? { figure: local, approx: true, charge: charged, chargedIn: "USD" } : { figure: charged, approx: false, charge: "", chargedIn: "USD" };
   }
-  const figure = estimateFigure(p, inr, region);
-  return figure ? { figure, approx: true, charge: fmtINRFor(inr, region) } : { figure: fmtINRFor(inr, region), approx: false, charge: "" };
+  const figure = estimateFigure(p, inr, region, opts.cents);
+  return figure
+    ? { figure, approx: true, charge: fmtINRFor(inr, region), chargedIn: "INR" }
+    : { figure: fmtINRFor(inr, region), approx: false, charge: "", chargedIn: "INR" };
 }
 
 /**
@@ -300,9 +314,6 @@ export function fromUsd(p: Pricing, usd: number, region: Region | null): string 
   if (currency === "USD" || !usdRate || !target) return fmtLocal(round(usd, 100), "USD", region?.locale);
   return fmtLocal(round((usd * usdRate) / target, 100), currency, region?.locale);
 }
-
-/** What the line under a rupee price says beside the estimate (A1). */
-export const BILLED_IN_RUPEES = "billed in Indian rupees, your card converts";
 
 /**
  * The words about tax that depend on where the buyer is. India's are about

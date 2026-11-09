@@ -2,7 +2,7 @@
 
 import { guessCountry } from "@/lib/guessCountry";
 import Script from "next/script";
-import { choiceLabel, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing } from "@/lib/paymentTerms";
+import { choiceLabel, choicePerPerson, choicePrice, cloudChoices, cloudPlanCode, paymentTerms, yearlySaving, type Billing } from "@/lib/paymentTerms";
 import { useEffect, useState } from "react";
 import { useCheckout } from "@/hooks/useCheckout";
 import { indianStates } from "@/lib/states";
@@ -14,7 +14,7 @@ import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, currencyNote, price
 import { regionFor } from "@/lib/visitorCurrency";
 import { taxIdLabel } from "@/lib/invoiceFields";
 import { RegionProvider } from "@/hooks/useVisitorRegion";
-import { PriceEstimate } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/RegionalMoney";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -262,30 +262,28 @@ export function BuyCheckout({
                 and its glyph. */}
             <div className="relative isolate mt-6 overflow-hidden rounded-2xl bg-card shadow-e1">
               <div className="p-6">
-              <div className="flex items-baseline justify-between gap-4">
-                <span className="flex items-center gap-2 self-center text-body font-[590] text-foreground">
-                  {isCloud ? <CloudGlyph className="size-4 shrink-0 text-muted-foreground" /> : <KeyGlyph className="size-4 shrink-0 text-muted-foreground" />}
-                  {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
-                </span>
-                {/* Rupees are the price: they are what is charged. The licence
-                    abroad is the one exception, once the backend charges dollars. */}
-                <span key={isCloud ? "c" : "l"} className="fx-fade text-right font-display text-price tabular-nums text-foreground">
-                  {!isCloud && pricing.charge_usd && !isIndia ? fmtUSD(pricing.lifetime_usd) : fmtINR(isCloud ? price.inr : pricing.lifetime_inr)}
-                  {isCloud && <span className="font-sans text-body font-normal text-muted-foreground">{" " + price.per}</span>}
-                </span>
-              </div>
-              {/* Under the rupee price, the estimate in the buyer's own money
-                  and that the charge is in rupees (plan A1), in the text
-                  colour; nothing in India. The licence abroad is the one
-                  exception, once the backend charges dollars (charge_usd). */}
-              {!(pricing.charge_usd && !isCloud) && (
-                <RegionProvider region={region}>
-                  <p className="mt-1 text-small text-foreground empty:hidden">
-                    <PriceEstimate pricing={pricing} inr={isCloud ? price.inr : pricing.lifetime_inr} why="/pricing#currency" />
-                  </p>
-                </RegionProvider>
-              )}
-              <p className="mt-1 text-caption text-muted-foreground">
+              <span className="flex items-center gap-2 text-body font-[590] text-foreground">
+                {isCloud ? <CloudGlyph className="size-4 shrink-0 text-muted-foreground" /> : <KeyGlyph className="size-4 shrink-0 text-muted-foreground" />}
+                {isCloud ? (business ? "OneCamp Cloud Business" : "OneCamp Cloud") : "OneCamp licence"}
+              </span>
+              {/* The price the plan cards draw (RegionalMoney PlanPrice), for
+                  the country chosen in the form: the buyer's own money first
+                  and the rupee charge under it, rupees and GST in India, the
+                  dollars when the backend charges the licence in dollars.
+                  The pay button below says the rupees first: they are what
+                  the payment window shows. */}
+              <RegionProvider region={region}>
+                <PlanPrice
+                  pricing={pricing}
+                  inr={isCloud ? price.inr : pricing.lifetime_inr}
+                  cadence={isCloud ? price.per : "one-time"}
+                  licence={!isCloud}
+                  perPerson={isCloud ? choicePerPerson(choice, pricing) : 0}
+                  why="/pricing#currency"
+                  className="mt-4"
+                />
+              </RegionProvider>
+              <p className="mt-2 text-caption text-muted-foreground">
                 {isCloud
                   ? business
                     ? `${pricing.business_seats} users, a larger machine and a self-host licence included`
@@ -293,10 +291,10 @@ export function BuyCheckout({
                       ? `${saving ? `${saving}, ` : ""}${pricing.cloud_seats} users and a self-host licence included`
                       : `${pricing.cloud_seats} users and a self-host licence included`
                   : pricing.charge_usd && !isIndia
-                    ? "Charged in US dollars, one-time, unlimited users"
+                    ? "Unlimited users"
                     : isIndia
-                      ? "One-time, GST included, unlimited users"
-                      : "One-time, no tax added at checkout, unlimited users"}
+                      ? "Unlimited users, with a GST invoice"
+                      : "Unlimited users, no tax added at checkout"}
               </p>
               {showChoices && (
                 /* Each choice is its name over what it adds, the three alike:

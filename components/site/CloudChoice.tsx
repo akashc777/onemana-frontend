@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
-import { PriceLines } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/RegionalMoney";
 import type { Pricing } from "@/lib/pricing";
 
 /** One Cloud size, every figure worked out on the server from /onecamp/pricing. */
@@ -14,9 +14,11 @@ export interface CloudOption {
   short: string;
   /** "2 months free", worked out from the prices (cloudYear.ts), or nothing. */
   hint: string;
-  price: string;
-  per: string;
+  /** The rupee price, and what it is for. */
   inr: number;
+  cadence: "/mo" | "/yr";
+  /** Rupees a person a month (lib/paymentTerms choicePerPerson). */
+  perPerson: number;
   fits: string;
   href: string;
 }
@@ -82,24 +84,18 @@ export function CloudChoice({
     </Segmented>
   );
 
-  // The rows are the card's subgrid rows (the name, the price, its lines,
-  // who it is for...). The switch sits under the price it changes, in the
-  // lines' row: at the top of the card it made the name's row tall, and the
-  // Free and Licence cards beside it opened an empty band under their names
-  // (design/site-polish/AUDIT.md, L2).
+  // The rows are the card's subgrid rows (the name, the price with its
+  // lines, who it is for...). The switch sits under the price it changes, in
+  // the price's row: at the top of the card it made the name's row tall, and
+  // the Free and Licence cards beside it opened an empty band under their
+  // names (design/site-polish/AUDIT.md, L2). The price is said aloud when it
+  // changes; the switch keeps its focus (it is outside the price's fade).
   return (
     <>
       <div>{title}</div>
-      <div className="mt-5" aria-live="polite">
-        <p key={o.id} className="fx-fade flex flex-wrap items-baseline gap-x-2">
-          <span className="font-display text-price tabular-nums text-foreground">{o.price}</span>
-          <span className="text-body text-muted-foreground">{o.per}</span>
-        </p>
-      </div>
-      <div className="mt-1.5">
-        <PriceLines pricing={pricing} inr={o.inr} />
+      <PlanPrice pricing={pricing} inr={o.inr} cadence={o.cadence} perPerson={o.perPerson} live className="mt-5">
         {control}
-      </div>
+      </PlanPrice>
       <p className="mt-4 text-small font-[510] text-foreground">{o.fits}</p>
       <div className="mt-1.5 flex flex-col">
         <p className="m-0 text-small text-muted-foreground">{body}</p>

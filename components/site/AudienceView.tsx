@@ -15,8 +15,8 @@ import { Margin, MarginHeading, SECTION_END, Section } from "@/components/ui/Sec
 import { Arrow, CampCanvas, Dot } from "@/components/ui/v3";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { fmtINR, type Pricing } from "@/lib/pricing";
-import { PriceLines } from "@/components/site/RegionalMoney";
+import type { Pricing } from "@/lib/pricing";
+import { PlanPrice } from "@/components/site/RegionalMoney";
 import type { Audience } from "@/lib/audiences";
 import type { CampHue } from "@/lib/campHue";
 import { ALTERNATIVES_CHECKED } from "@/lib/alternatives";
@@ -210,13 +210,9 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               <Dot hue="ink" />
               Own it
             </p>
-            {/* The price at 28/32 and the two-line estimate under it (site.md
-                AU5, S14): "(about $258)" at the price's size wrapped a phone
-                onto two heavy lines. */}
-            <MiniPrice price={fmtINR(pricing.lifetime_inr)} per="once" />
-            <div className="mt-1.5">
-              <PriceLines pricing={pricing} inr={pricing.lifetime_inr} why="/pricing#currency" />
-            </div>
+            {/* The price at 28/32 in the reader's money, the rupee charge
+                under it (site.md AU5; RegionalMoney PlanPrice). */}
+            <PlanPrice pricing={pricing} inr={pricing.lifetime_inr} cadence="one-time" licence size="mini" why="/pricing#currency" className="mt-3" />
             <p className="mt-2 text-small text-muted-foreground">Everyone on your server, for good.</p>
             <ButtonLink href="/buy" variant="ghost" size="md" className="mt-4">
               Buy a licence
@@ -228,10 +224,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                 <Dot hue="ink" />
                 Or we run it
               </p>
-              <MiniPrice price={fmtINR(pricing.cloud_inr)} per="a month" />
-              <div className="mt-1.5">
-                <PriceLines pricing={pricing} inr={pricing.cloud_inr} why="/pricing#currency" />
-              </div>
+              <PlanPrice pricing={pricing} inr={pricing.cloud_inr} cadence="/mo" size="mini" why="/pricing#currency" className="mt-3" />
               <p className="mt-2 text-small text-muted-foreground">Cloud, for {pricing.cloud_seats} people.</p>
               <ButtonLink href="/buy?plan=cloud" variant="ghost" size="md" className="mt-4">
                 Choose Cloud
@@ -263,15 +256,5 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
         )}
       </Section>
     </>
-  );
-}
-
-/** A mini plan card's price (site.md AU5): 28/32 at 600, tabular, with "once" or "a month" on its baseline. */
-function MiniPrice({ price, per }: { price: string; per: string }) {
-  return (
-    <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
-      <span className="font-display text-price-sm tabular-nums text-foreground">{price}</span>
-      <span className="text-body text-muted-foreground">{per}</span>
-    </p>
   );
 }

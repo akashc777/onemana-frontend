@@ -34,10 +34,10 @@ export interface PlanOption {
 }
 
 /**
- * A plan's price: words ("Free"), or rupees the page writes with the
- * reader's estimate beside them (lib/pricing priceWithEstimate). Not a
- * finished string, because the estimate is in the reader's own money, and
- * only the browser knows where the reader is.
+ * A plan's price: words ("Free"), or rupees the page writes in the reader's
+ * own money with the rupee charge beside it (lib/pricing displayPrice). Not
+ * a finished string, because the reader's money is only known in the
+ * browser.
  */
 export type PlanPrice = string | { inr: number; per?: string; lead?: string };
 

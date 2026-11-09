@@ -28,11 +28,11 @@ import React, { useMemo, useState } from "react"
 import Link from "next/link"
 import type { Pricing } from "@/lib/pricing"
 import { cloudYearFor } from "@/lib/cloudYear"
-import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fromUsd, priceWithEstimate } from "@/lib/pricing"
+import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fromUsd } from "@/lib/pricing"
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
-import { SavingChip } from "@/components/site/RegionalMoney"
+import { MoneyText, SavingChip } from "@/components/site/RegionalMoney"
 import { Icon } from "@/components/ui/icons"
 import { ix } from "@/lib/interactive"
 
@@ -58,8 +58,8 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     const region = useVisitorRegion()
     const p = pricing ?? defaultPricing
     const fmt = (usd: number) => (region?.inIndia ? inrAt(usd, rate) : fromUsd(p, usd, region))
-    // OneCamp's own price stays in rupees, the charge, with the estimate beside it.
-    const licence = pricing ? priceWithEstimate(pricing, pricing.lifetime_inr, region) : fmt(lifetimeUsd)
+    // OneCamp's own price in the totals' money, with the rupee charge beside it (MoneyText).
+    const licence = pricing ? <MoneyText pricing={pricing} inr={pricing.lifetime_inr} licence /> : fmt(lifetimeUsd)
     const [withAi, setWithAi] = useState(true)
 
     // First year, so a licence is included rather than amortised away; a team
@@ -158,7 +158,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     <div key={`o${oneCampYear}`} className="fx-fade mt-1 font-display text-price tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>
                     <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
-                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : `${licence} licence, paid once, unlimited users`}</li>
+                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : <>{licence} licence, paid once, unlimited users</>}</li>
                         <li>About {fmt(SERVER_USD_PER_MONTH)} a month for the server that runs it</li>
                         {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>
@@ -193,12 +193,11 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                             {" "}Or nobody does:{" "}
                             <Link href={cloud.href} className="link">
                                 OneCamp Cloud ({cloud.plan}) is{" "}
-                                {priceWithEstimate(
-                                    pricing,
-                                    cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr,
-                                    region,
-                                )}{" "}
-                                a year
+                                <MoneyText
+                                    pricing={pricing}
+                                    inr={cloud.plan === "Business" ? pricing.business_inr * 12 : cloud.plan === "Team" ? pricing.cloud_inr * 12 : pricing.cloud_yearly_inr}
+                                    per=" a year"
+                                />
                             </Link>
                             , hosted, backed up and updated for you.
                         </>
