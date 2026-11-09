@@ -20,6 +20,8 @@ import { PlanColumns } from "@/components/site/PlanColumns"
 import { PlanComparison } from "@/components/site/PlanComparison"
 import { HomeComparison } from "@/components/site/HomeComparison"
 import { CostCalculator } from "@/components/site/CostCalculator"
+import { AudienceView } from "@/components/site/AudienceView"
+import { alternatives } from "@/lib/alternatives"
 import { RegionProvider } from "@/hooks/useVisitorRegion"
 import { defaultPricing, type Pricing } from "@/lib/pricing"
 import { regionFor, type Region } from "@/lib/visitorCurrency"
@@ -49,10 +51,11 @@ const live: Pricing = { ...defaultPricing, rates: { USD: 96.87, EUR: 112.64, GBP
 
 const as = (region: Region, node: React.ReactNode) => renderToString(<RegionProvider region={region}>{node}</RegionProvider>)
 
-/** The words a reader sees: markup, attributes and React's comment markers removed. */
+/** The words a reader sees: markup, attributes, React's comment markers and screen-reader-only words removed. */
 const words = (html: string) =>
   html
     .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<span class="sr-only">[^<]*<\/span>/g, "")
     .replace(/<script[\s\S]*?<\/script>/g, "")
     .replace(/<[^>]+>/g, " ")
     .replace(/&#x27;/g, "'")
@@ -147,22 +150,37 @@ describe("a buyer outside India", () => {
     expect(html).not.toContain("₹0")
   })
 
-  it("sees each price's estimate in their own currency, beside 'billed in Indian rupees'", () => {
+  // Changed on purpose (9 Nov 2026): the rupee figure was the big one and the
+  // reader's own money a 13 px line under it, so a buyer in New York met
+  // "₹24,999" at 48 px. The owner's rule for buyers abroad is their money
+  // first. The rupee charge is still on every card, in ink, directly under
+  // the figure, and the pay button still says the rupees first: they are
+  // what the card is charged and what the payment window shows.
+  it("sees each price in their own money first, with the rupee charge under it", async () => {
     const by = (c: string, l: string) => words(as(regionFor(c, l), <PlanColumns pricing={live} />))
-    expect(by("US", "en-US")).toContain("≈ $258 · billed in Indian rupees, your card converts")
-    expect(by("GB", "en-GB")).toContain("≈ £194 · billed in Indian rupees")
-    expect(by("DE", "de-DE")).toContain("≈ 222 € · billed in Indian rupees")
-    expect(by("SG", "en-SG")).toContain("≈ S$335 · billed in Indian rupees")
-    expect(by("AU", "en-AU")).toContain("≈ A$392")
-    expect(by("CA", "en-CA")).toContain("≈ C$356")
+    expect(by("US", "en-US")).toContain("≈ $258 one-time Charged as ₹24,999 · why rupees?")
+    expect(by("GB", "en-GB")).toContain("≈ £194 one-time Charged as ₹24,999")
+    expect(by("DE", "de-DE")).toContain("≈ 222 € one-time Charged as ₹24,999")
+    expect(by("SG", "en-SG")).toContain("≈ S$335 one-time Charged as ₹24,999")
+    expect(by("AU", "en-AU")).toContain("≈ A$392 one-time")
+    expect(by("CA", "en-CA")).toContain("≈ C$356 one-time")
     // A country with no display currency sees dollars.
-    expect(by("JP", "ja-JP")).toContain("≈ $258")
+    expect(by("JP", "ja-JP")).toContain("≈ $258 one-time")
+    // Cloud a month, and what it comes to for one person.
+    expect(by("US", "en-US")).toContain("≈ $103 /mo Charged as ₹9,999 · why rupees? ≈ $3.44 per person a month")
+    // The checkout's price card says it the same way; the pay button keeps the rupees first.
+    const buy = words((await pagesFor(regionFor("US", "en-US")))["buy-lifetime"])
+    expect(buy).toContain("≈ $258 one-time Charged as ₹24,999")
+    expect(buy).toContain("Pay ₹24,999 (≈ $258) and get your key")
+    // The rival and audience pages' two prices, and the calculator's licence line under a dollar total.
+    expect(words(as(regionFor("US"), <AudienceView a={alternatives[0]!} pricing={live} />))).toContain("≈ $258 one-time Charged as ₹24,999")
+    expect(words(as(regionFor("US"), <CostCalculator lifetimeUsd={live.lifetime_usd} pricing={live} />))).toContain("≈ $258 (charged ₹24,999) licence, paid once")
   })
 
   // "Which OneCamp is for you" said "(about $261)" under cards that said
   // "≈ £197" to the same reader (storefront audit §5.2 and P3). The table
-  // writes its prices through lib/pricing priceWithEstimate, so its estimate
-  // is the cards' own, in the reader's money.
+  // writes its prices the cards' way (lib/pricing displayPrice), so a reader
+  // meets the same figure, in their own money first, in both.
   it("reads the plan table's prices in the same money as the cards above it", () => {
     const readers = [["US", "en-US", "≈ $258"], ["GB", "en-GB", "≈ £194"], ["DE", "de-DE", "≈ 222 €"], ["SG", "en-SG", "≈ S$335"]] as const
     for (const [country, locale, figure] of readers) {
@@ -170,8 +188,8 @@ describe("a buyer outside India", () => {
       const cards = words(as(region, <PlanColumns pricing={live} />))
       const table = words(as(region, <PlanComparison pricing={live} />))
       expect(cards, country).toContain(figure)
-      expect(table, country).toContain(`₹24,999 once (${figure})`)
-      expect(table, country).toMatch(/From ₹9,999\/mo \(≈ /)
+      expect(table, country).toContain(`${figure} once (charged ₹24,999)`)
+      expect(table, country).toMatch(/From ≈ \S+ ?\/mo \(charged ₹9,999\)/)
       expect(table, country).not.toMatch(/about \$/)
     }
     const india = words(as(INDIA, <PlanComparison pricing={live} />))
@@ -201,6 +219,8 @@ describe("a buyer in India, the control", () => {
     expect(words(pages["buy-lifetime"])).toContain("GST included")
     expect(words(pages["success?pending=1"])).toContain("a GST invoice")
     expect(words(as(INDIA, <PlanColumns pricing={live} />))).not.toContain("≈")
+    expect(words(as(INDIA, <PlanColumns pricing={live} />))).toContain("₹24,999 one-time GST included")
+    expect(words(pages["buy-lifetime"])).toContain("₹24,999 one-time GST included")
   })
 
   it("reads rupees in lakh grouping", () => {

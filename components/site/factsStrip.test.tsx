@@ -31,8 +31,11 @@ describe("the facts strip", () => {
     expect(prices).not.toMatch(/hue-(sky|moss|sun|lake|dusk|berry)/)
     expect(prices.match(/bg-ink-4/g)).toHaveLength(2)
     expect(prices).toMatch(/Free<\/b> for up to <!-- -->25<!-- --> people/)
-    // Rupees from the pricing the page reads, never typed here; the estimate follows after mount.
-    expect(prices).toContain("₹24,999 once")
+    // From the pricing the page reads, never typed here. In the reader's own
+    // money first (the server's HTML is in dollars until the reader is known),
+    // with the rupee charge beside it; changed on purpose on 9 Nov 2026, when
+    // every price a reader compares went the reader's money first.
+    expect(prices.replace(/<!-- -->/g, "")).toMatch(/≈ <\/span><span class="sr-only">about <\/span>\$263 once \(charged ₹24,999\)/)
     expect(prices).toMatch(/<a [^>]*href="\/pricing"[^>]*>See pricing/)
   })
 

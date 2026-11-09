@@ -47,14 +47,23 @@ describe("the plan cards", () => {
     })
 
     // Each part lines up across the three whatever wraps: the cards share a
-    // subgrid of eight rows from lg; at a tablet's width they are two and one.
+    // subgrid of seven rows from lg (the price, its charge line and Cloud's
+    // per-person line are one block since 9 Nov 2026); at a tablet's width
+    // they are two and one.
     it("share one row grid side by side, a row per part", () => {
-        for (const c of cards) expect(c).toContain("lg:row-span-8 lg:grid lg:grid-rows-subgrid lg:gap-y-0")
+        for (const c of cards) expect(c).toContain("lg:row-span-7 lg:grid lg:grid-rows-subgrid lg:gap-y-0")
         expect(cards[2]).toContain("md:col-span-2 md:mx-auto")
     })
 
-    it("reserve the estimate's two lines on every card, so the currency swap moves nothing", () => {
-        expect(html.match(/<span class="block h-9 text-caption/g)).toHaveLength(3)
+    // The figure's line and the charge's line are drawn on the server for
+    // every card, Free's included, at the height they keep after the
+    // reader's own money arrives (India's "GST included" is one line, as
+    // "Charged as ₹24,999 · why rupees?" is), so the swap moves nothing.
+    it("reserve the price block's two lines on every card, so the currency swap moves nothing", () => {
+        expect(html.match(/<p class="flex min-h-10 flex-wrap items-baseline/g)).toHaveLength(3)
+        expect(html.match(/<p class="mt-1 min-h-5 text-small text-foreground/g)).toHaveLength(3)
+        // Cloud's third line, what it comes to for one person, is there before and after the swap.
+        expect(html.match(/per person a month/g)).toHaveLength(1)
     })
 })
 

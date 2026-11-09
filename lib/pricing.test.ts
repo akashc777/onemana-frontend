@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { currencyNote, defaultPricing, displayPrice, priceWithEstimate, type Pricing } from "@/lib/pricing"
 import { regionFor } from "@/lib/visitorCurrency"
+import { choicePerPerson, cloudChoices } from "@/lib/paymentTerms"
 
 const rupeesOnly = { ...defaultPricing, usd_rate: 96.37, charge_usd: false }
 const dollars = { ...rupeesOnly, charge_usd: true }
@@ -88,8 +89,8 @@ describe("displayPrice", () => {
   const live: Pricing = { ...defaultPricing, rates: { USD: 96.87, EUR: 112.64, GBP: 129.16, SGD: 74.52, AUD: 63.73, CAD: 70.19 } }
 
   it("is the reader's money first abroad, with the rupee charge in the reader's grouping", () => {
-    expect(displayPrice(live, 24999, regionFor("US"))).toEqual({ figure: "$258", approx: true, charge: "₹24,999" })
-    expect(displayPrice(live, 24999, regionFor("GB", "en-GB"))).toEqual({ figure: "£194", approx: true, charge: "₹24,999" })
+    expect(displayPrice(live, 24999, regionFor("US"))).toEqual({ figure: "$258", approx: true, charge: "₹24,999", chargedIn: "INR" })
+    expect(displayPrice(live, 24999, regionFor("GB", "en-GB"))).toEqual({ figure: "£194", approx: true, charge: "₹24,999", chargedIn: "INR" })
     expect(displayPrice(live, 1460000, regionFor("US")).charge).toBe("₹1,460,000")
     // Not known yet (the server's HTML), or a country with no display currency: dollars.
     expect(displayPrice(live, 24999, null).figure).toBe("$258")
@@ -97,19 +98,52 @@ describe("displayPrice", () => {
   })
 
   it("is rupees alone in India, and when there is no rate", () => {
-    expect(displayPrice(live, 1460000, regionFor("IN", "en-IN"))).toEqual({ figure: "₹14,60,000", approx: false, charge: "" })
+    expect(displayPrice(live, 1460000, regionFor("IN", "en-IN"))).toEqual({ figure: "₹14,60,000", approx: false, charge: "", chargedIn: "INR" })
     const noRate: Pricing = { ...defaultPricing, usd_rate: 0, rates: undefined }
-    expect(displayPrice(noRate, 24999, regionFor("GB", "en-GB"))).toEqual({ figure: "₹24,999", approx: false, charge: "" })
+    expect(displayPrice(noRate, 24999, regionFor("GB", "en-GB"))).toEqual({ figure: "₹24,999", approx: false, charge: "", chargedIn: "INR" })
   })
 
   it("is the exact dollar charge for the licence when the backend charges it in dollars, and rupees in India", () => {
     const usd: Pricing = { ...live, charge_usd: true, lifetime_usd: 263 }
-    expect(displayPrice(usd, usd.lifetime_inr, regionFor("US"), { licence: true })).toEqual({ figure: "$263", approx: false, charge: "" })
-    expect(displayPrice(usd, usd.lifetime_inr, null, { licence: true })).toEqual({ figure: "$263", approx: false, charge: "" })
+    expect(displayPrice(usd, usd.lifetime_inr, regionFor("US"), { licence: true })).toEqual({ figure: "$263", approx: false, charge: "", chargedIn: "USD" })
+    expect(displayPrice(usd, usd.lifetime_inr, null, { licence: true })).toEqual({ figure: "$263", approx: false, charge: "", chargedIn: "USD" })
     // A pound reader compares in pounds; the card is charged the dollars.
-    expect(displayPrice(usd, usd.lifetime_inr, regionFor("GB", "en-GB"), { licence: true })).toEqual({ figure: "£194", approx: true, charge: "$263" })
+    expect(displayPrice(usd, usd.lifetime_inr, regionFor("GB", "en-GB"), { licence: true })).toEqual({ figure: "£194", approx: true, charge: "$263", chargedIn: "USD" })
     expect(displayPrice(usd, usd.lifetime_inr, regionFor("IN", "en-IN"), { licence: true }).figure).toBe("₹24,999")
     // Cloud is still a rupee subscription.
     expect(displayPrice(usd, usd.cloud_inr, regionFor("US")).charge).toBe("₹9,999")
+  })
+})
+
+/**
+ * Cloud Business and the licence can be the same figure (one a month, one
+ * once), so each Cloud size also says what it comes to for one person a
+ * month: its monthly price over the people it covers, worked out from the
+ * pricing payload, in the reader's money with the cents abroad.
+ */
+describe("a per-person figure for each Cloud size", () => {
+  const live: Pricing = {
+    ...defaultPricing,
+    rates: { USD: 96.87, EUR: 112.64, GBP: 129.16, SGD: 74.52, AUD: 63.73, CAD: 70.19 },
+    cloud_yearly_configured: true, cloud_yearly_inr: 99990, cloud_yearly_paise: 9999000,
+    business_configured: true,
+  }
+
+  it("is the size's month over the people it covers, never typed", () => {
+    expect(cloudChoices(live)).toEqual(["monthly", "yearly", "business"])
+    expect(choicePerPerson("monthly", live)).toBeCloseTo(live.cloud_inr / live.cloud_seats)
+    expect(choicePerPerson("yearly", live)).toBeCloseTo(live.cloud_yearly_inr / 12 / live.cloud_seats)
+    expect(choicePerPerson("business", live)).toBeCloseTo(live.business_inr / live.business_seats)
+    const moved = { ...live, business_inr: 30000, business_seats: 120 }
+    expect(choicePerPerson("business", moved)).toBeCloseTo(250)
+    expect(choicePerPerson("business", { ...live, business_seats: 0 })).toBe(0)
+  })
+
+  it("is said with the cents abroad and in whole rupees in India", () => {
+    const business = choicePerPerson("business", live)
+    expect(displayPrice(live, business, regionFor("US"), { cents: true }).figure).toBe("$2.58")
+    expect(displayPrice(live, business, regionFor("DE", "de-DE"), { cents: true }).figure).toBe("2,22 €")
+    expect(displayPrice(live, business, regionFor("GB", "en-GB"), { cents: true }).figure).toBe("£1.94")
+    expect(displayPrice(live, business, regionFor("IN", "en-IN"), { cents: true }).figure).toBe("₹250")
   })
 })
