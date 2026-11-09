@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 import type { ReleaseFacts } from "@/lib/releases";
 import type { Pricing } from "@/lib/pricing";
 import { FREE_SEATS } from "@/lib/freePlan";
-import { MoneyText } from "@/components/site/RegionalMoney";
+import { MoneyText } from "@/components/site/MoneyText";
 import { Arrow, Dot } from "@/components/ui/v3";
 import { Icon, type IconName } from "@/components/ui/icons";
 

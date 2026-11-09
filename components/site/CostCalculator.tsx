@@ -32,7 +32,8 @@ import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fromUsd } from "@/lib/pricing
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
-import { MoneyText, SavingChip } from "@/components/site/RegionalMoney"
+import { MoneyText } from "@/components/site/MoneyText"
+import { SavingChip } from "@/components/site/SavingChip"
 import { Icon } from "@/components/ui/icons"
 import { ix } from "@/lib/interactive"
 

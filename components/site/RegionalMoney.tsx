@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { displayPrice, fromUsd, taxWords, type Pricing } from "@/lib/pricing";
+import { About } from "@/components/site/MoneyText";
 
 /**
  * The money words that depend on where the reader is, for pages the server
@@ -14,18 +15,6 @@ import { displayPrice, fromUsd, taxWords, type Pricing } from "@/lib/pricing";
 /** How a price's cadence is said to a screen reader, where it is drawn short. */
 const CADENCE_SAID: Record<Cadence, string> = { "one-time": "one-time", "/mo": "a month", "/yr": "a year" };
 type Cadence = "one-time" | "/mo" | "/yr";
-
-/** "≈", read as "about": an estimate at the day's rate, not the charge. */
-function About({ className }: { className?: string }) {
-  return (
-    <>
-      <span aria-hidden="true" className={className}>
-        {"≈ "}
-      </span>
-      <span className="sr-only">about </span>
-    </>
-  );
-}
 
 /**
  * A plan's price, as one block (plan cards, Cloud's sizes, the rival and
@@ -189,40 +178,4 @@ export function StackBasis() {
   if (region?.inIndia) return <>at list price and today&apos;s exchange rate</>;
   if (region && region.currency !== "USD") return <>at their US-dollar list prices, converted at today&apos;s rate</>;
   return <>at their US-dollar list prices</>;
-}
-
-/**
- * A price in running text, in one currency with whatever it sits beside
- * (lib/pricing displayPrice): "≈ $258 once (charged ₹24,999)" abroad,
- * "₹24,999 once" in India: a price in a sentence, a table cell or a row that
- * compares it with a rival's bill in the reader's money (PlanPrice is the
- * block on a plan's card). The "≈" is read as "about". It cross-fades in
- * place when the reader's own money arrives after mount.
- */
-export function MoneyText({ pricing, inr, per = "", licence }: { pricing: Pricing; inr: number; per?: string; licence?: boolean }) {
-  const region = useVisitorRegion();
-  const { figure, approx, charge } = displayPrice(pricing, inr, region, { licence });
-  return (
-    <span key={figure} className={region ? "tabular-nums fx-fade" : "tabular-nums"}>
-      {approx && <About />}
-      {figure}
-      {per}
-      {charge && ` (charged ${charge})`}
-    </span>
-  );
-}
-
-/**
- * How many times less OneCamp's first year is than the per-seat stack's
- * (lib/teamCost multiple), as the moss chip the calculator and the home
- * comparison share. Nothing below twice: a small gap is said in words.
- * A line of its own in running text; an item like any other in a flex row.
- */
-export function SavingChip({ multiple, className = "" }: { multiple: number; className?: string }) {
-  if (!(multiple >= 2)) return null;
-  return (
-    <span className={`hue-moss flex h-7 w-fit items-center rounded-full bg-hue-tint px-3 text-caption font-[590] text-hue-ink ${className}`}>
-      {Math.round(multiple)}× less in the first year
-    </span>
-  );
 }
