@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PLAN_HUE, RAISED_COLUMN } from "@/components/site/planHues";
-import { MoneyText } from "@/components/site/RegionalMoney";
+import { MoneyText } from "@/components/site/MoneyText";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { buttonClasses } from "@/components/ui/Button";
 import { Arrow, Dot } from "@/components/ui/v3";
