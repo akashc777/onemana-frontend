@@ -130,12 +130,6 @@ export function PlanPrice({
   );
 }
 
-/** One of taxWords' phrases, for the reader's region. */
-export function TaxText({ kind }: { kind: "priceLine" | "invoice" }) {
-  const region = useVisitorRegion();
-  return <>{taxWords(region?.inIndia)[kind]}</>;
-}
-
 /**
  * The line under the plan cards: what the price includes, said for the
  * reader. India: GST. Everyone else: that nothing is added, and why it is in

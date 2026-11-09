@@ -1,4 +1,4 @@
-import { TaxText } from "@/components/site/RegionalMoney";
+import { TaxText } from "@/components/site/TaxText";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/PageHeader";
 import { AgentSquare, LogoRing } from "@/components/ui/v3";
