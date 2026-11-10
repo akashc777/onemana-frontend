@@ -15,8 +15,8 @@ import { PlanColumns } from "@/components/site/PlanColumns"
 import { PlanComparison } from "@/components/site/PlanComparison"
 import { alternatives } from "@/lib/alternatives"
 import { audiences } from "@/lib/audiences"
-import { cloudCheckoutDescription, LICENCE_CHECKOUT_DESCRIPTION, MONEY_RULE } from "@/lib/paymentTerms"
-import { CLOUD_SIZE, PLAN, planOptions } from "@/lib/plans"
+import { choiceLabel, cloudCheckoutDescription, cloudChoices, LICENCE_CHECKOUT_DESCRIPTION, MONEY_RULE } from "@/lib/paymentTerms"
+import { CLOUD_CHOICE, CLOUD_SIZE, PLAN, planOptions } from "@/lib/plans"
 import { defaultPricing } from "@/lib/pricing"
 
 /**
@@ -101,6 +101,52 @@ describe("the plan glossary", () => {
     expect(cloudCheckoutDescription("onecamp_cloud_business")).toBe(`${CLOUD_SIZE.business}, monthly (includes a self-host licence)`)
     const checkout = readFileSync(join(process.cwd(), "hooks/useCheckout.ts"), "utf8")
     expect(checkout).toContain("description: LICENCE_CHECKOUT_DESCRIPTION")
+  })
+})
+
+/**
+ * Cloud's choice had three sets of names (10 Nov 2026): /pricing said "Team
+ * monthly | Team yearly | Business", "Monthly | Yearly | Business" on a
+ * phone, and the checkout "Team (30 users) | Team yearly | Business (100
+ * users)", where every other line on the site says "people". One set now,
+ * from the glossary (CLOUD_CHOICE), drawn the same at every width on both
+ * pages: the name, and under it what the choice adds.
+ */
+describe("the Cloud choice", () => {
+  const sizes = { ...onSale, cloud_yearly_free_months: 2 }
+  /** Each choice of a radio group, as read: name and line under it. */
+  const choices = (html: string, group: string) => {
+    const at = html.indexOf(`role="radiogroup" aria-label="${group}"`)
+    expect(at, group).toBeGreaterThan(-1)
+    const body = html.slice(at, html.indexOf("</div>", at))
+    return [...body.matchAll(/<button[^>]*role="radio"[^>]*>([\s\S]*?)<\/button>/g)].map((m) => text(m[1]!))
+  }
+  const SET = ["Team monthly 30 people", "Team yearly 2 months free", "Business 100 people"]
+
+  it("names each choice one way on /pricing and the checkout, at every width", () => {
+    expect(Object.values(CLOUD_CHOICE)).toEqual(["Team monthly", "Team yearly", "Business"])
+    expect(cloudChoices(sizes).map((b) => choiceLabel(b, sizes))).toEqual([
+      { name: "Team monthly", detail: "30 people" },
+      { name: "Team yearly", detail: "2 months free" },
+      { name: "Business", detail: "100 people" },
+    ])
+    const pricing = renderToString(<PlanColumns pricing={sizes} detailed headingLevel="h2" />)
+    const checkout = renderToString(<BuyCheckout initialPlan="cloud" initialBilling="monthly" initialPricing={sizes} initialCountry="US" />)
+    // One group name, and no second label set for a phone (a short form drawn beside the long one).
+    expect(choices(pricing, "Cloud plan")).toEqual(SET)
+    expect(choices(checkout, "Cloud plan")).toEqual(SET)
+  })
+
+  it("says what Team yearly covers when the yearly price earns no free months", () => {
+    expect(choiceLabel("yearly", { ...sizes, cloud_yearly_free_months: 0 })).toEqual({ name: "Team yearly", detail: "30 people" })
+  })
+
+  it("says people, not users, on the checkout's Cloud card", () => {
+    const checkout = (billing: "monthly" | "yearly" | "business") =>
+      text(renderToString(<BuyCheckout initialPlan="cloud" initialBilling={billing} initialPricing={sizes} initialCountry="US" />))
+    for (const b of ["monthly", "yearly", "business"] as const) expect(checkout(b), b).not.toMatch(/\busers\b/)
+    expect(checkout("monthly")).toContain("30 people and a self-host licence included")
+    expect(checkout("business")).toContain("100 people, a larger machine and a self-host licence included")
   })
 })
 
