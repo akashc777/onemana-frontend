@@ -2,6 +2,7 @@ import { renderToString } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
 import { HomeComparison } from "@/components/site/HomeComparison"
+import { SavingChip } from "@/components/site/SavingChip"
 import { RegionProvider } from "@/hooks/useVisitorRegion"
 import { defaultPricing, type Pricing } from "@/lib/pricing"
 import { SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
@@ -109,5 +110,41 @@ describe("the price row", () => {
   it("reads the estimate's sign as 'about' to a screen reader", () => {
     const html = render(regionFor("US", "en-US"))
     expect(html).toMatch(/<span aria-hidden="true">≈ <\/span><span class="sr-only">about <\/span>\$258/)
+  })
+
+  // With the backend's charge_usd on, checkout charges a buyer abroad the
+  // licence's exact dollar price, so the row says that price: never a dollar
+  // estimate "(charged ₹24,999)" beside a charge in dollars. In India it stays
+  // rupees, which is what India is charged.
+  it("says the exact dollar charge for the licence abroad when the backend charges it in dollars, and rupees in India", () => {
+    const dollars: Pricing = { ...live, charge_usd: true }
+    const row = (region: Region) => priceRow(renderToString(<RegionProvider region={region}><HomeComparison pricing={dollars} /></RegionProvider>))
+    const usd = `$${dollars.lifetime_usd}`
+    const us = row(regionFor("US", "en-US"))
+    expect(us.cells[0]).toContain(`${usd} once, plus your server`)
+    expect(us.cells[0]).not.toContain("≈")
+    expect(us.cells[0]).not.toContain("₹")
+    expect(us.card).toContain(`${usd} once, plus your server`)
+    const uk = row(regionFor("GB", "en-GB"))
+    expect(uk.cells[0]).toContain(`once (charged ${usd}), plus your server`)
+    expect(uk.cells[0]).not.toContain("₹")
+    const india = row(regionFor("IN", "en-IN"))
+    expect(india.cells[0]).toContain("₹24,999 once, plus your server")
+    expect(india.cells[0]).not.toContain("$")
+  })
+})
+
+/**
+ * The moss chip says a multiple only from twice up: below that the gap is
+ * small, and the calculator says so in words. The home row and the
+ * calculator draw the same chip, so the rule is pinned once, here.
+ */
+describe("the saving chip", () => {
+  it("draws nothing below twice, and the rounded multiple from twice up", () => {
+    const chip = (multiple: number) => renderToString(<SavingChip multiple={multiple} />).replace(/<!--[\s\S]*?-->/g, "")
+    expect(chip(1.9)).toBe("")
+    expect(chip(Number.NaN)).toBe("")
+    expect(chip(2)).toContain(">2× less in the first year<")
+    expect(chip(20.4)).toContain(">20× less in the first year<")
   })
 })

@@ -10,10 +10,11 @@ import { checkIndianBilling } from "@/lib/gstin";
 import { countries } from "@/lib/countries";
 import { contactForCheckout, dialPrefix, phoneForCountry } from "@/lib/dialCodes";
 import { cloudBenefits, lifetimeBenefits } from "@/lib/content";
-import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, currencyNote, priceWithEstimate, setupEstimateFor, type Pricing } from "@/lib/pricing";
+import { defaultPricing, fmtUSD, fmtINR, currencyNote, priceWithEstimate, setupEstimateFor, type Pricing } from "@/lib/pricing";
 import { regionFor } from "@/lib/visitorCurrency";
 import { taxIdLabel } from "@/lib/invoiceFields";
 import { RegionProvider } from "@/hooks/useVisitorRegion";
+import { livePricing } from "@/hooks/useDayPricing";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import { MoneyRule } from "@/components/site/MoneyRule";
 import { CLOUD_SIZE, PLAN } from "@/lib/plans";
@@ -76,7 +77,9 @@ export function BuyCheckout({
     // A refresh that fails hands back the built-in fallback (the same object,
     // defaultPricing); the page already has the live prices from the server,
     // so a failed refresh must not replace them with the fallback's.
-    fetchPricingClient().then((fresh) => {
+    // One request per page load, shared with the price card's day check
+    // (hooks/useDayPricing).
+    livePricing().then((fresh) => {
       if (fresh !== defaultPricing) setPricing(fresh);
     });
   }, []);

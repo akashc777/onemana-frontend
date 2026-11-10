@@ -2,6 +2,7 @@
 
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { displayPrice, type Pricing } from "@/lib/pricing";
+import { useDayPricing } from "@/hooks/useDayPricing";
 
 /** "≈", read as "about": an estimate at the day's rate, not the charge. */
 export function About({ className }: { className?: string }) {
@@ -25,8 +26,9 @@ export function About({ className }: { className?: string }) {
  * arrives after mount. A module of its own, so a page that says one price
  * in a sentence does not load every regional money island.
  */
-export function MoneyText({ pricing, inr, per = "", licence }: { pricing: Pricing; inr: number; per?: string; licence?: boolean }) {
+export function MoneyText({ pricing: page, inr, per = "", licence }: { pricing: Pricing; inr: number; per?: string; licence?: boolean }) {
   const region = useVisitorRegion();
+  const pricing = useDayPricing(page);
   const { figure, approx, charge } = displayPrice(pricing, inr, region, { licence });
   return (
     <span key={figure} className={region ? "tabular-nums fx-fade" : "tabular-nums"}>

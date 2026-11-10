@@ -32,6 +32,7 @@ import { DEFAULT_USD_RATE, defaultPricing, fmtINR, fromUsd } from "@/lib/pricing
 import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/lib/teamCost"
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
+import { useDayPricing } from "@/hooks/useDayPricing"
 import { MoneyText } from "@/components/site/MoneyText"
 import { SavingChip } from "@/components/site/SavingChip"
 import { Icon } from "@/components/ui/icons"
@@ -55,9 +56,10 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
     // licence is about the licence. At 20 it priced the free plan and claimed
     // "70x less" next to a price it was not about (buyer review, 3 Oct 2026).
     const [people, setPeople] = useState(40)
-    const rate = pricing?.usd_rate || DEFAULT_USD_RATE
+    // The day's rates (hooks/useDayPricing), as every price beside it.
+    const p = useDayPricing(pricing ?? defaultPricing)
+    const rate = p.usd_rate || DEFAULT_USD_RATE
     const region = useVisitorRegion()
-    const p = pricing ?? defaultPricing
     const fmt = (usd: number) => (region?.inIndia ? inrAt(usd, rate) : fromUsd(p, usd, region))
     // OneCamp's own price in the totals' money, with the rupee charge beside it (MoneyText).
     const licence = pricing ? <MoneyText pricing={pricing} inr={pricing.lifetime_inr} licence /> : fmt(lifetimeUsd)
