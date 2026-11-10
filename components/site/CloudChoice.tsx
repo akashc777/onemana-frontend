@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
-import { PlanPrice } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/PlanPrice";
 import type { Pricing } from "@/lib/pricing";
 
 /** One Cloud size, every figure worked out on the server from /onecamp/pricing. */

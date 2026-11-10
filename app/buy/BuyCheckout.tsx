@@ -14,7 +14,7 @@ import { defaultPricing, fetchPricingClient, fmtUSD, fmtINR, currencyNote, price
 import { regionFor } from "@/lib/visitorCurrency";
 import { taxIdLabel } from "@/lib/invoiceFields";
 import { RegionProvider } from "@/hooks/useVisitorRegion";
-import { PlanPrice } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/PlanPrice";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";

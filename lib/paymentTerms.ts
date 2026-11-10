@@ -1,3 +1,4 @@
+import type { Billing } from "./cloudLinks";
 import type { Pricing } from "./pricing";
 
 /**
@@ -14,8 +15,7 @@ import type { Pricing } from "./pricing";
  * (lib/refundClaims.test.ts) has one place to read.
  */
 
-/** What a Cloud buyer chooses: Team monthly, Team yearly, or Business (monthly). */
-export type Billing = "monthly" | "yearly" | "business";
+export { cloudBuyHref, type Billing } from "./cloudLinks";
 
 /** The plan code the backend expects. Monthly is the default and sends nothing, as every older client did. */
 export function cloudPlanCode(billing: Billing): string | undefined {
@@ -106,13 +106,6 @@ export function cloudCheckoutDescription(planCode?: string): string {
       return "Managed hosting, Business, monthly (includes a self-host license)";
   }
   return "Managed hosting, Team, monthly (includes a self-host license)";
-}
-
-/** The checkout link for a Cloud choice, so every page opens it on that choice. */
-export function cloudBuyHref(b: Billing): string {
-  if (b === "business") return "/buy?plan=cloud&size=business";
-  if (b === "yearly") return "/buy?plan=cloud&billing=yearly";
-  return "/buy?plan=cloud";
 }
 
 /**

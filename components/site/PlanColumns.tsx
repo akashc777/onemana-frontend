@@ -13,7 +13,8 @@ import { choicePerPerson, choicePrice, cloudBuyHref, cloudChoices, yearlySaving 
 import type { Pricing } from "@/lib/pricing";
 import { cloudBenefits, lifetimeBenefits, planHighlights } from "@/lib/content";
 import { site } from "@/lib/site";
-import { PlanPrice, PricesFootnote } from "@/components/site/RegionalMoney";
+import { PricesFootnote } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/PlanPrice";
 import { TaxText } from "@/components/site/TaxText";
 
 /** The pill on the free plan (D8): where most teams begin, not a popularity claim. */
