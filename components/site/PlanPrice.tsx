@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { displayPrice, taxWords, type Pricing } from "@/lib/pricing";
+import { useDayPricing } from "@/hooks/useDayPricing";
 import { About } from "@/components/site/MoneyText";
 
 /** How a price's cadence is said to a screen reader, where it is drawn short. */
@@ -21,7 +22,8 @@ type Cadence = "one-time" | "/mo" | "/yr";
  * In India: "₹24,999 one-time" over "GST included". With no rate to estimate
  * with: the rupees, over "Billed in Indian rupees". The licence charged in
  * dollars abroad: the dollars, over "Charged in US dollars". Free: "Free" over
- * its own line. Every figure is lib/pricing displayPrice's.
+ * its own line. Every figure is lib/pricing displayPrice's, at the day's
+ * rates (hooks/useDayPricing), so every page gives a plan one figure.
  *
  * The server's HTML is in dollars, before the reader is known; their own
  * money arrives after mount and cross-fades in place (opacity only). Each
@@ -30,7 +32,7 @@ type Cadence = "one-time" | "/mo" | "/yr";
  * Cloud size control, which must keep its focus while the price changes.
  */
 export function PlanPrice({
-  pricing,
+  pricing: page,
   inr = 0,
   cadence,
   free,
@@ -62,6 +64,7 @@ export function PlanPrice({
   children?: ReactNode;
 }) {
   const region = useVisitorRegion();
+  const pricing = useDayPricing(page);
   const price = free ? null : displayPrice(pricing, inr, region, { licence });
   const each = !free && perPerson > 0 ? displayPrice(pricing, perPerson, region, { cents: true }) : null;
   const card = size === "card";

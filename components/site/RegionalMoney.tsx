@@ -2,6 +2,7 @@
 
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { fromUsd, taxWords, type Pricing } from "@/lib/pricing";
+import { useDayPricing } from "@/hooks/useDayPricing";
 
 /**
  * The money words that depend on where the reader is, for pages the server
@@ -43,7 +44,8 @@ export function TaxQuestion({ part }: { part: "q" | "a" }) {
  */
 export function StackCost({ pricing, usd }: { pricing: Pricing; usd: number }) {
   const region = useVisitorRegion();
-  return <>About {fromUsd(pricing, usd, region)}</>;
+  const day = useDayPricing(pricing);
+  return <>About {fromUsd(day, usd, region)}</>;
 }
 
 /** How the stack's figure was reached, said for the currency it is shown in. */

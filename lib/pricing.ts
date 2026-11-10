@@ -158,6 +158,32 @@ export async function fetchPricingClient(): Promise<Pricing> {
   }
 }
 
+/*
+ * ONE DAY'S RATES ON EVERY PAGE (10 Nov 2026). Each page is rendered at its
+ * own moment (every five minutes at most, and a page nobody has opened
+ * since keeps the pricing it was rendered with), and the backend's rates
+ * move once a day. So on the day they moved, one reader was shown the same
+ * ₹9,999 month as "≈ £80" on /pricing and "≈ £79" on a rival page: one
+ * function, two days' pound. A page whose rates are a day old asks the
+ * backend for the day's, and draws whichever pricing is newer
+ * (hooks/useDayPricing).
+ */
+
+/** When a pricing's rates were fetched; "" for the built-in fallback, which knows no day. */
+function ratesAt(p: Pricing): string {
+  return p.rates_at || p.usd_rate_at || "";
+}
+
+/** The newer of a page's pricing and another (the backend's answer), by when their rates were fetched. Pure. */
+export function newerPricing(page: Pricing, other: Pricing | null | undefined): Pricing {
+  return other && ratesAt(other) > ratesAt(page) ? other : page;
+}
+
+/** Whether a pricing's rates are a day old or more, when the backend has fetched newer ones (or no day at all). Pure. */
+export function ratesOutOfDate(p: Pricing, now = Date.now()): boolean {
+  return !(now - Date.parse(ratesAt(p)) < 864e5);
+}
+
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const inr = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
@@ -246,8 +272,8 @@ function estimateFigure(p: Pricing, inr: number, region: Region | null, cents = 
  * or no rate at all. Worked out, never typed.
  */
 export function localEstimate(p: Pricing, inr: number, region: Region | null): string {
-  const figure = estimateFigure(p, inr, region);
-  return figure ? `≈ ${figure}` : "";
+  const { figure, approx } = displayPrice(p, inr, region);
+  return approx ? `≈ ${figure}` : "";
 }
 
 /** A price as a reader compares it: see displayPrice. */
@@ -272,6 +298,11 @@ export interface DisplayPrice {
  * is that exact dollar amount, or the reader's estimate of it with the
  * dollars as the charge. `cents` says a small figure (a price per person)
  * to the cent abroad; rupees stay whole. Worked out, never typed.
+ *
+ * THE ONE WAY a rupee price becomes the reader's money: the price block, a
+ * price in a sentence, the pay button (priceWithEstimate, through
+ * localEstimate) and the calculator's licence all say it through here, at
+ * the day's rates (hooks/useDayPricing).
  */
 export function displayPrice(p: Pricing, inr: number, region: Region | null, opts: { licence?: boolean; cents?: boolean } = {}): DisplayPrice {
   if (opts.licence && p.charge_usd && !region?.inIndia) {
