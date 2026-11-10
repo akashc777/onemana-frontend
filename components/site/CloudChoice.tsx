@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
-import { PlanPrice } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/PlanPrice";
 import type { Pricing } from "@/lib/pricing";
 import { PLAN } from "@/lib/plans";
 

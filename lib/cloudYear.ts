@@ -1,5 +1,5 @@
 import type { Pricing } from "@/lib/pricing"
-import { cloudBuyHref, type Billing } from "@/lib/paymentTerms"
+import { cloudBuyHref, type Billing } from "@/lib/cloudLinks"
 
 // What OneCamp Cloud costs a year for a team of this size, for the cost
 // calculator. The calculator's own caveat is that someone has to run the

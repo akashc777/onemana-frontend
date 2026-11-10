@@ -16,7 +16,7 @@ import { Arrow, CampCanvas, Dot } from "@/components/ui/v3";
 import { site } from "@/lib/site";
 import { FREE_SEATS } from "@/lib/freePlan";
 import type { Pricing } from "@/lib/pricing";
-import { PlanPrice } from "@/components/site/RegionalMoney";
+import { PlanPrice } from "@/components/site/PlanPrice";
 import { MoneyRule } from "@/components/site/MoneyRule";
 import { PLAN } from "@/lib/plans";
 import type { Audience } from "@/lib/audiences";
