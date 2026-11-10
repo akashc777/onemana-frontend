@@ -13,6 +13,7 @@ import { PlanColumns } from "@/components/site/PlanColumns"
 import { ProductTabs } from "@/components/site/ProductTabs"
 import { firstTourScene } from "@/components/site/showcase/tour"
 import { Segmented } from "@/components/ui/Segmented"
+import { CLOUD_CHOICE_GROUP } from "@/lib/plans"
 import { defaultPricing } from "@/lib/pricing"
 
 /**
@@ -93,7 +94,7 @@ describe("the tabs and the Cloud size", () => {
   // P1: the Cloud size had ←→ only, and no hover.
   it("the Cloud size is a Segmented whose knob is the sliding thumb", () => {
     const html = renderToString(<PlanColumns pricing={{ ...defaultPricing, cloud_yearly_configured: true, business_configured: true }} detailed />)
-    const rs = group(html, "Cloud size")
+    const rs = group(html, CLOUD_CHOICE_GROUP)
     expect(rs.length).toBeGreaterThanOrEqual(2)
     oneTabStop(rs)
     for (const r of rs) {

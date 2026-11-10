@@ -19,8 +19,8 @@ describe("Cloud plan choices", () => {
   });
 
   it("names and prices each choice", () => {
-    expect(choiceLabel("business", on)).toBe("Business · 100 users");
-    expect(choiceLabel("yearly", on)).toBe("Team yearly · 2 months free");
+    expect(choiceLabel("business", on)).toEqual({ name: "Business", detail: "100 people" });
+    expect(choiceLabel("yearly", on)).toEqual({ name: "Team yearly", detail: "2 months free" });
     expect(choicePrice("business", on)).toEqual({ inr: 24999, usd: usdAt(2499900, on.usd_rate), per: "/mo" });
     expect(choicePrice("yearly", on)).toEqual({ inr: 99990, usd: usdAt(9999000, on.usd_rate), per: "/yr" });
   });

@@ -17,7 +17,7 @@ import { RegionProvider } from "@/hooks/useVisitorRegion";
 import { livePricing } from "@/hooks/useDayPricing";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import { MoneyRule } from "@/components/site/MoneyRule";
-import { CLOUD_SIZE, PLAN } from "@/lib/plans";
+import { CLOUD_CHOICE_GROUP, CLOUD_SIZE, PLAN } from "@/lib/plans";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -291,10 +291,10 @@ export function BuyCheckout({
               <p className="mt-2 text-caption text-muted-foreground">
                 {isCloud
                   ? business
-                    ? `${pricing.business_seats} users, a larger machine and a self-host licence included`
+                    ? `${pricing.business_seats} people, a larger machine and a self-host licence included`
                     : yearly
-                      ? `${saving ? `${saving}, ` : ""}${pricing.cloud_seats} users and a self-host licence included`
-                      : `${pricing.cloud_seats} users and a self-host licence included`
+                      ? `${saving ? `${saving}, ` : ""}${pricing.cloud_seats} people and a self-host licence included`
+                      : `${pricing.cloud_seats} people and a self-host licence included`
                   : pricing.charge_usd && !isIndia
                     ? "Unlimited users"
                     : isIndia
@@ -302,23 +302,25 @@ export function BuyCheckout({
                       : "Unlimited users, no tax added at checkout"}
               </p>
               {showChoices && (
-                /* Each choice is its name over what it adds, the three alike:
-                   as one line, "Team yearly · 2 months free" wrapped beside
-                   one-line neighbours. One Tab stop with the arrows (storefront
-                   audit K2: a radiogroup that did not act like one). */
+                /* Each choice is its name over what it adds, the three alike,
+                   in the words the Cloud card on /pricing uses (lib/plans
+                   CLOUD_CHOICE): as one line, "Team yearly · 2 months free"
+                   wrapped beside one-line neighbours. One Tab stop with the
+                   arrows (storefront audit K2: a radiogroup that did not act
+                   like one). */
                 <Segmented
-                  label="Cloud plan"
+                  label={CLOUD_CHOICE_GROUP}
                   options={choices}
                   value={choice}
                   onChange={setBilling}
                   className={`mt-4 grid gap-1 rounded-ctl bg-muted p-1 text-caption ring-1 ring-inset ring-border ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
                   itemClass="flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 text-muted-foreground"
                   option={(b) => {
-                    const [name, detail] = choiceLabel(b, pricing).split(" · ");
+                    const { name, detail } = choiceLabel(b, pricing);
                     return (
                       <>
                         <span className="font-medium">{name}</span>
-                        {detail && <span className="font-normal">{detail}</span>}
+                        <span className="font-normal">{detail}</span>
                       </>
                     );
                   }}

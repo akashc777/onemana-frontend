@@ -5,16 +5,14 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import type { Pricing } from "@/lib/pricing";
-import { PLAN } from "@/lib/plans";
+import { CLOUD_CHOICE_GROUP, PLAN } from "@/lib/plans";
 
 /** One Cloud size, every figure worked out on the server from /onecamp/pricing. */
 export interface CloudOption {
   id: string;
-  label: string;
-  /** The label on a phone. */
-  short: string;
-  /** "2 months free", worked out from the prices (cloudYear.ts), or nothing. */
-  hint: string;
+  /** The glossary's name (lib/plans CLOUD_CHOICE), and what the choice adds under it (lib/paymentTerms choiceLabel). */
+  name: string;
+  detail: string;
   /** The rupee price, and what it is for. */
   inr: number;
   cadence: "/mo" | "/yr";
@@ -59,7 +57,7 @@ export function CloudChoice({
   // pointer; the chosen one's knob is the thumb that slides under it.
   const control = (
     <Segmented
-      label="Cloud size"
+      label={CLOUD_CHOICE_GROUP}
       options={options.map((opt) => opt.id)}
       value={o.id}
       onChange={setId}
@@ -70,9 +68,8 @@ export function CloudChoice({
         const opt = options.find((x) => x.id === value)!;
         return (
           <>
-            <span className="hidden sm:inline">{opt.label}</span>
-            <span className="sm:hidden">{opt.short}</span>
-            {opt.hint && <span className="text-[11px] font-normal leading-3 text-camp-moss-ink">{opt.hint}</span>}
+            <span>{opt.name}</span>
+            <span className="text-[11px] font-normal leading-3">{opt.detail}</span>
           </>
         );
       }}

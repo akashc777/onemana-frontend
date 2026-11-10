@@ -8,7 +8,7 @@ import { AreaRow } from "@/components/site/Areas";
 import { Dot } from "@/components/ui/v3";
 import type { CampHue } from "@/lib/campHue";
 import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
-import { choicePerPerson, choicePrice, cloudBuyHref, cloudChoices, yearlySaving } from "@/lib/paymentTerms";
+import { choiceLabel, choicePerPerson, choicePrice, cloudBuyHref, cloudChoices } from "@/lib/paymentTerms";
 import type { Pricing } from "@/lib/pricing";
 import { cloudBenefits, lifetimeBenefits, planHighlights } from "@/lib/content";
 import { PricesFootnote } from "@/components/site/RegionalMoney";
@@ -52,14 +52,11 @@ export function PlanColumns({
   detailed?: boolean;
 }) {
   const H = headingLevel;
-  const saving = yearlySaving(pricing);
   const cloudOptions: CloudOption[] = cloudChoices(pricing).map((b) => {
     const c = choicePrice(b, pricing);
     return {
       id: b,
-      label: b === "monthly" ? "Team monthly" : b === "yearly" ? "Team yearly" : "Business",
-      short: b === "monthly" ? "Monthly" : b === "yearly" ? "Yearly" : "Business",
-      hint: b === "yearly" ? saving : "",
+      ...choiceLabel(b, pricing),
       inr: c.inr,
       cadence: c.per,
       perPerson: choicePerPerson(b, pricing),

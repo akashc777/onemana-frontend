@@ -1,7 +1,7 @@
 import type { Billing } from "./cloudLinks";
 import type { Pricing } from "./pricing";
 import { FREE_SEATS } from "./freePlan";
-import { CLOUD_SIZE } from "./plans";
+import { CLOUD_CHOICE, CLOUD_SIZE } from "./plans";
 
 /**
  * The sentence next to the pay button, and the plan code behind it.
@@ -58,12 +58,14 @@ export function choicePerPerson(b: Billing, p: Pricing): number {
   return seats > 0 ? month / seats : 0;
 }
 
-/** A choice's name on its button. */
-export function choiceLabel(b: Billing, p: Pricing): string {
-  if (b === "business") return `Business · ${p.business_seats} users`;
-  const saving = yearlySaving(p);
-  if (b === "yearly") return saving ? `Team yearly · ${saving}` : "Team yearly";
-  return `Team · ${p.cloud_seats} users`;
+/**
+ * A choice as the Cloud card and the checkout draw it: the glossary's name
+ * (lib/plans CLOUD_CHOICE) and, under it, what it adds: the people it
+ * covers, or the free months a year earns.
+ */
+export function choiceLabel(b: Billing, p: Pricing): { name: string; detail: string } {
+  const people = `${b === "business" ? p.business_seats : p.cloud_seats} people`;
+  return { name: CLOUD_CHOICE[b], detail: (b === "yearly" && yearlySaving(p)) || people };
 }
 
 /** Whether the page may offer yearly at all: only once a plan exists to charge it. */

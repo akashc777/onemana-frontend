@@ -19,6 +19,16 @@ export const PLAN = {
 export const CLOUD_SIZE = { team: "Cloud Team", business: "Cloud Business" } as const;
 
 /**
+ * Cloud's three choices (lib/cloudLinks Billing), by name, wherever a buyer
+ * picks one: the Cloud card on /pricing and the checkout, at every width,
+ * under the group name CLOUD_CHOICE_GROUP. lib/paymentTerms choiceLabel
+ * puts what each adds under it, in people. There were three sets: "Team
+ * monthly", "Monthly" on a phone, and "Team (30 users)" on the checkout.
+ */
+export const CLOUD_CHOICE = { monthly: "Team monthly", yearly: "Team yearly", business: "Business" } as const;
+export const CLOUD_CHOICE_GROUP = "Cloud plan";
+
+/**
  * The three plans, side by side, in words a buyer uses.
  *
  * Every plan has the product: chat, docs, tasks, calls and AI teammates. They

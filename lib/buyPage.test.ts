@@ -219,7 +219,7 @@ describe("the buy page's layout", () => {
   })
 
   it("draws each Cloud choice as its name over its detail", () => {
-    expect(page).toContain('const [name, detail] = choiceLabel(b, pricing).split(" · ")')
-    expect(page).toMatch(/<span className="font-medium">\{name\}<\/span>\s*\{detail && <span className="font-normal">\{detail\}<\/span>\}/)
+    expect(page).toContain("const { name, detail } = choiceLabel(b, pricing)")
+    expect(page).toMatch(/<span className="font-medium">\{name\}<\/span>\s*<span className="font-normal">\{detail\}<\/span>/)
   })
 })
