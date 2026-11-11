@@ -39,7 +39,10 @@ describe("planOptions", () => {
     expect(free.people).toContain(String(FREE_SEATS));
     const changed = planOptions({ ...p, lifetime_inr: 30000, cloud_seats: 40, business_configured: false } as Pricing);
     expect(changed[1].price).toEqual({ inr: 30000, per: " once" });
-    expect(changed[2].people).toBe("Up to 40");
+    expect(changed[2].people).toBe("Sized for 40 people");
+    const both = planOptions({ ...p, cloud_seats: 40, business_seats: 120, business_configured: true } as Pricing);
+    expect(both[2].people).toBe("Sized for 40 people on Team, 120 on Business");
+    expect(both[1].people).toBe("Any number of people");
   });
 
   it("says plainly which ones carry AGPL obligations", () => {
