@@ -221,6 +221,22 @@ describe("retired plan names", () => {
   // the US spelling of the noun ("licensed", the British verb, is right).
   const RETIRED = /\b(Own it|Or we run it|Choose Cloud|Start with Cloud|Get a free key|Buy a licence|Get the install command)\b|\blifetime licen[cs]e\b|\bLifetime\b|\b[Ll]icenses?\b/
 
+  // How many people a plan takes is said in people, one way per plan: never
+  // "unlimited users" beside a Cloud plan "for 100 users", which read as a cap.
+  // Read over the whole source (comments out), so JSX text after an
+  // expression is read too. Rivals' own billing ("Per user, per month") is
+  // about them, and is not matched.
+  const ALLOWANCE_IN_USERS = /\b(unlimited|any number of) (users|seats)\b|\b(users|seats) included\b|\$\{[^}]*\} (users|seats)\b/gi
+
+  it("says how many people a plan takes in people, never users or seats", () => {
+    const offenders: string[] = []
+    for (const file of ROOTS.flatMap((r) => walk(r))) {
+      const code = readFileSync(join(process.cwd(), file), "utf8").replace(/\/\*[\s\S]*?\*\//g, " ").replace(/(^|\s)\/\/[^\n]*/g, "$1")
+      for (const hit of code.matchAll(ALLOWANCE_IN_USERS)) offenders.push(`${file}: "${hit[0]}"`)
+    }
+    expect(offenders).toEqual([])
+  })
+
   it("no retired plan name is left in copy", () => {
     const offenders: string[] = []
     for (const file of ROOTS.flatMap((r) => walk(r))) {

@@ -22,6 +22,16 @@ describe("plan change words", () => {
     expect(switchLabel("monthly", "onecamp_cloud_team_yearly", p)).toBe("Switch to monthly when the year ends");
   });
 
+  it("says what Business's number means, in people: the people its larger machine is sized for", () => {
+    // The number is not a cap (nobody past it is turned away) and not a
+    // price step: it is what the machine is sized for. "100 users" read as a
+    // cap beside a licence for any number of people.
+    expect(switchLabel("business", "onecamp_cloud_team", p)).toBe("Upgrade to Business, sized for 100 people");
+    const up = switchConfirm("business", "onecamp_cloud_team", p, null);
+    expect(up).toContain("a larger machine sized for 100 people");
+    for (const words of [switchLabel("business", "onecamp_cloud_team", p), up]) expect(words).not.toMatch(/\b(users?|seats?)\b/i);
+  });
+
   it("says what is charged and that nothing is refunded", () => {
     const up = switchConfirm("business", "onecamp_cloud_team", p, null);
     expect(up).toContain("difference");
