@@ -22,6 +22,7 @@ import {
     rivals,
     rivalsLine,
 } from "@/lib/compare";
+import { PEOPLE } from "@/lib/plans";
 import { site } from "@/lib/site";
 import { StackTable } from "@/components/ui/StackTable";
 
@@ -228,7 +229,7 @@ export function CompareView({ pricing }: { pricing: Pricing }) {
                 </div>
                 <p className="mt-4 max-w-2xl text-small text-muted-foreground">
                     No token to paste: the agent signs in, and whoever approves it picks the agent it acts as and what
-                    it may do. OneCamp itself is one licence with unlimited people, so an agent is never another seat.
+                    it may do. OneCamp itself is one licence for {PEOPLE.licence.toLowerCase()}, so an agent is never another seat.
                     Checked {AGENTS_CHECKED}.
                 </p>
             </Section>

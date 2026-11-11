@@ -38,7 +38,7 @@ describe("the plan cards", () => {
     it("take every price from the pricing payload", () => {
         expect(html).toContain(fmtINR(31337))
         expect(html).toContain(fmtINR(12345))
-        expect(html).toContain("Up to 42 people, run by us")
+        expect(html).toContain("Run by us, sized for 42 people")
         expect(html).not.toContain(fmtINR(defaultPricing.lifetime_inr))
     })
 

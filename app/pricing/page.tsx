@@ -7,6 +7,7 @@ import { PlanOrbit } from "@/components/ui/graphics/v3marks";
 import { TaxQuestion } from "@/components/site/RegionalMoney";
 import { Margin, MarginHeading, SECTION_END, Section } from "@/components/ui/Section";
 import { FREE_SEATS } from "@/lib/freePlan";
+import { PEOPLE } from "@/lib/plans";
 import { defaultOgImages, defaultTwitterImages } from "@/lib/og-card";
 import { currencyNote, fmtINR, getPricing } from "@/lib/pricing";
 import { whyRupees } from "@/lib/content";
@@ -18,7 +19,7 @@ export const revalidate = 300;
 // price somebody sees, and a fixed number there outlives the price.
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getPricing();
-  const description = `Free for up to ${FREE_SEATS} people. A licence for ${fmtINR(p.lifetime_inr)} once for unlimited people on your server, or OneCamp Cloud from ${fmtINR(p.cloud_inr)} a month.`;
+  const description = `Free for up to ${FREE_SEATS} people. A licence for ${fmtINR(p.lifetime_inr)} once for ${PEOPLE.licence.toLowerCase()} on your server, or OneCamp Cloud from ${fmtINR(p.cloud_inr)} a month.`;
   return {
     title: "Pricing",
     description,

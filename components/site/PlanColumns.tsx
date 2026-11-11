@@ -15,7 +15,7 @@ import { PricesFootnote } from "@/components/site/RegionalMoney";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import { TaxText } from "@/components/site/TaxText";
 import { MoneyRule } from "@/components/site/MoneyRule";
-import { PLAN } from "@/lib/plans";
+import { PEOPLE, PLAN } from "@/lib/plans";
 
 /** The pill on the free plan (D8): where most teams begin, not a popularity claim. */
 export const FREE_PILL = "Most teams start here";
@@ -60,7 +60,7 @@ export function PlanColumns({
       inr: c.inr,
       cadence: c.per,
       perPerson: choicePerPerson(b, pricing),
-      fits: b === "business" ? `Up to ${pricing.business_seats} people, run by us` : `Up to ${pricing.cloud_seats} people, run by us`,
+      fits: `Run by us, ${PEOPLE.cloud(b === "business" ? pricing.business_seats : pricing.cloud_seats)}`,
       href: cloudBuyHref(b),
     };
   });
@@ -89,7 +89,7 @@ export function PlanColumns({
       hue: PLAN_HUE.lifetime,
       lifted: true,
       price: <PlanPrice pricing={pricing} inr={pricing.lifetime_inr} cadence="one-time" licence />,
-      fits: "Any number of people",
+      fits: PEOPLE.licence,
       body: "Everyone on your server, for good. Single sign-on, SCIM and audit export included.",
       list: detailed ? lifetimeBenefits : planHighlights.lifetime,
       gets: (

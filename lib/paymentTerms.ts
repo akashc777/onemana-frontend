@@ -1,7 +1,7 @@
 import type { Billing } from "./cloudLinks";
 import type { Pricing } from "./pricing";
 import { FREE_SEATS } from "./freePlan";
-import { CLOUD_CHOICE, CLOUD_SIZE } from "./plans";
+import { CLOUD_CHOICE, CLOUD_SIZE, PEOPLE } from "./plans";
 
 /**
  * The sentence next to the pay button, and the plan code behind it.
@@ -60,11 +60,12 @@ export function choicePerPerson(b: Billing, p: Pricing): number {
 
 /**
  * A choice as the Cloud card and the checkout draw it: the glossary's name
- * (lib/plans CLOUD_CHOICE) and, under it, what it adds: the people it
- * covers, or the free months a year earns.
+ * (lib/plans CLOUD_CHOICE) and, under it, what it adds: the people it is
+ * sized for (PEOPLE.size: the card or checkout line beside it says what the
+ * number means), or the free months a year earns.
  */
 export function choiceLabel(b: Billing, p: Pricing): { name: string; detail: string } {
-  const people = `${b === "business" ? p.business_seats : p.cloud_seats} people`;
+  const people = PEOPLE.size(b === "business" ? p.business_seats : p.cloud_seats);
   return { name: CLOUD_CHOICE[b], detail: (b === "yearly" && yearlySaving(p)) || people };
 }
 

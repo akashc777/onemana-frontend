@@ -18,7 +18,7 @@ import { FREE_SEATS } from "@/lib/freePlan";
 import type { Pricing } from "@/lib/pricing";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import { MoneyRule } from "@/components/site/MoneyRule";
-import { PLAN } from "@/lib/plans";
+import { PEOPLE, PLAN } from "@/lib/plans";
 import type { Audience } from "@/lib/audiences";
 import type { CampHue } from "@/lib/campHue";
 import { ALTERNATIVES_CHECKED } from "@/lib/alternatives";
@@ -227,7 +227,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
                 {PLAN.cloud.name}
               </p>
               <PlanPrice pricing={pricing} inr={pricing.cloud_inr} cadence="/mo" size="mini" why="/pricing#currency" className="mt-3" />
-              <p className="mt-2 text-small text-muted-foreground">We run it for you, for up to {pricing.cloud_seats} people.</p>
+              <p className="mt-2 text-small text-muted-foreground">We run it for you, on a machine {PEOPLE.cloud(pricing.cloud_seats)}.</p>
               <ButtonLink href={PLAN.cloud.href} variant="ghost" size="md" className="mt-4">
                 {PLAN.cloud.cta}
               </ButtonLink>

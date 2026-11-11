@@ -60,7 +60,7 @@ export const audiences: Audience[] = [
       "Client channels, project links, request forms, booking links and billable hours, on a server you own. Add every contractor without a per-seat bill.",
     seoTitle: "OneCamp for agencies: client channels, request forms and booking links",
     seoDescription:
-      "Invite clients into a shared channel with no account, turn their requests into tasks, let them book calls, and run sprints. Self-hosted, pay once, unlimited people.",
+      "Invite clients into a shared channel with no account, turn their requests into tasks, let them book calls, and run sprints. Self-hosted, pay once, any number of people.",
     points: [
       {
         icon: "chat",

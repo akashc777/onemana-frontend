@@ -291,10 +291,8 @@ export function BuyCheckout({
               <p className="mt-2 text-caption text-muted-foreground">
                 {isCloud
                   ? business
-                    ? `${pricing.business_seats} people, a larger machine and a self-host licence included`
-                    : yearly
-                      ? `${saving ? `${saving}, ` : ""}${pricing.cloud_seats} people and a self-host licence included`
-                      : `${pricing.cloud_seats} people and a self-host licence included`
+                    ? `A larger machine ${PEOPLE.cloud(pricing.business_seats)} and a self-host licence included`
+                    : `${yearly && saving ? `${saving}, a` : "A"} machine ${PEOPLE.cloud(pricing.cloud_seats)} and a self-host licence included`
                   : pricing.charge_usd && !isIndia
                     ? PEOPLE.licence
                     : isIndia

@@ -147,8 +147,9 @@ describe("the Cloud choice", () => {
     const checkout = (billing: "monthly" | "yearly" | "business") =>
       text(renderToString(<BuyCheckout initialPlan="cloud" initialBilling={billing} initialPricing={sizes} initialCountry="US" />))
     for (const b of ["monthly", "yearly", "business"] as const) expect(checkout(b), b).not.toMatch(/\busers\b/)
-    expect(checkout("monthly")).toContain("30 people and a self-host licence included")
-    expect(checkout("business")).toContain("100 people, a larger machine and a self-host licence included")
+    expect(checkout("monthly")).toContain("A machine sized for 30 people and a self-host licence included")
+    expect(checkout("yearly")).toContain("2 months free, a machine sized for 30 people and a self-host licence included")
+    expect(checkout("business")).toContain("A larger machine sized for 100 people and a self-host licence included")
   })
 
   // A Cloud plan's number is the people its machine is sized for: nobody

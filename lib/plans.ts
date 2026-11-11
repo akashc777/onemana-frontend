@@ -33,11 +33,15 @@ export const CLOUD_CHOICE_GROUP = "Cloud plan";
  * people (never users or seats). The licence takes any number. A Cloud
  * plan's number is the people its machine is sized for: nobody past it is
  * turned away and nothing is charged per person, so it is not a cap. "100
- * users" for Business beside "Unlimited users" for the licence read as one.
+ * users" for Business beside "Unlimited users" for the licence read as one,
+ * and "up to 30 people" as a limit. The free plan's "up to 25 people" is one.
+ * The size entry is a Cloud choice's tag under its name, where the sentence
+ * won't fit; the line beside the choice always says what the number means.
  */
 export const PEOPLE = {
   licence: "Any number of people",
   cloud: (n: number) => `sized for ${n} people`,
+  size: (n: number) => `${n} people`,
 } as const;
 
 /**
@@ -101,9 +105,8 @@ export const PLAN_ROWS: { key: PlanRowKey; label: string; note?: string }[] = [
 ];
 
 export function planOptions(p: Pricing): PlanOption[] {
-  const cloudPeople = p.business_configured
-    ? `${p.cloud_seats} (Team) or ${p.business_seats} (Business)`
-    : `Up to ${p.cloud_seats}`;
+  const team = PEOPLE.cloud(p.cloud_seats);
+  const cloudPeople = `${team.charAt(0).toUpperCase()}${team.slice(1)}${p.business_configured ? ` on Team, ${p.business_seats} on Business` : ""}`;
   return [
     {
       key: "free",
@@ -125,7 +128,7 @@ export function planOptions(p: Pricing): PlanOption[] {
       summary: "The ready-made release for any number of people, under a commercial licence. Pay once.",
       price: { inr: p.lifetime_inr, per: " once" },
       runs: "You, from our official release",
-      people: "Unlimited",
+      people: PEOPLE.licence,
       install: "One command",
       updates: "One command, free within your major version",
       licence: "Commercial: no AGPL obligations",
