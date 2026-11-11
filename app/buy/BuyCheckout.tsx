@@ -307,20 +307,22 @@ export function BuyCheckout({
                    CLOUD_CHOICE): as one line, "Team yearly · 2 months free"
                    wrapped beside one-line neighbours. One Tab stop with the
                    arrows (storefront audit K2: a radiogroup that did not act
-                   like one). */
+                   like one). On a phone each choice is a third of the card,
+                   so it takes /pricing's sizes there (12 px over 11 px) and
+                   2 px a side: "Team monthly" stays on one line. */
                 <Segmented
                   label={CLOUD_CHOICE_GROUP}
                   options={choices}
                   value={choice}
                   onChange={setBilling}
                   className={`mt-4 grid gap-1 rounded-ctl bg-muted p-1 text-caption ring-1 ring-inset ring-border ${choices.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
-                  itemClass="flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-1.5 text-muted-foreground"
+                  itemClass="flex min-h-11 flex-col items-center justify-center rounded-sm px-0.5 py-1.5 text-[12px] leading-4 text-muted-foreground sm:text-caption"
                   option={(b) => {
                     const { name, detail } = choiceLabel(b, pricing);
                     return (
                       <>
                         <span className="font-medium">{name}</span>
-                        <span className="font-normal">{detail}</span>
+                        <span className="text-[11px] font-normal leading-3 sm:text-caption">{detail}</span>
                       </>
                     );
                   }}
