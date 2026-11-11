@@ -220,6 +220,7 @@ describe("the buy page's layout", () => {
 
   it("draws each Cloud choice as its name over its detail", () => {
     expect(page).toContain("const { name, detail } = choiceLabel(b, pricing)")
-    expect(page).toMatch(/<span className="font-medium">\{name\}<\/span>\s*<span className="font-normal">\{detail\}<\/span>/)
+    // Its sizes on a phone are pinned in planGlossary.test ("the Cloud choice").
+    expect(page).toMatch(/<span className="font-medium">\{name\}<\/span>\s*<span className="[^"]*\bfont-normal\b[^"]*">\{detail\}<\/span>/)
   })
 })
