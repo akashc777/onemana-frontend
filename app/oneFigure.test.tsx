@@ -19,7 +19,7 @@ import { PlanComparison } from "@/components/site/PlanComparison"
 import { RegionProvider } from "@/hooks/useVisitorRegion"
 import { alternatives } from "@/lib/alternatives"
 import { audienceBySlug } from "@/lib/audiences"
-import { defaultPricing, displayPrice, newerPricing, ratesOutOfDate, type Pricing } from "@/lib/pricing"
+import { currencyNote, defaultPricing, displayPrice, newerPricing, ratesOutOfDate, type Pricing } from "@/lib/pricing"
 import { regionFor, type Region } from "@/lib/visitorCurrency"
 
 /**
@@ -169,6 +169,22 @@ describe("one day's rates on every page", () => {
     // A fetch that failed hands back the fallback, which never replaces a page's live pricing.
     expect(newerPricing(DAY2, defaultPricing)).toBe(DAY2)
     expect(displayPrice(newerPricing(DAY1, DAY2), 9999, london).figure).toBe(displayPrice(DAY2, 9999, london).figure)
+  })
+
+  // /pricing answers "Which currency am I charged in?" (when the licence is
+  // charged in dollars) on the server, for every reader, from the page's own
+  // pricing. It named that pricing's dollar rate as "today's", under cards a
+  // reader may read in pounds, at the day's rate. Written before the reader is
+  // known, it names no rate; once the reader is known, the rate their figures
+  // are at.
+  it("answers which currency is charged in the same words on any day, naming no rate, before the reader is known", () => {
+    const charged = (p: Pricing) => currencyNote({ ...p, charge_usd: true })
+    expect(charged(DAY1)).toBe(charged(DAY2))
+    expect(charged(DAY2)).not.toMatch(/₹[\d.]+ to the/)
+    expect(charged(DAY2)).toBe(
+      "The licence is charged in US dollars outside India and in rupees in India. OneCamp Cloud is billed in rupees: your card converts at its own rate and may add a small foreign transaction fee.",
+    )
+    expect(currencyNote(newerPricing(DAY1, DAY2), { region: london })).toContain("(₹125.67 to the pound)")
   })
 
   /** The site's own source files, tests left out. */
