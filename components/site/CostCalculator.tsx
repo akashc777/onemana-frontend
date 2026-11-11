@@ -33,6 +33,7 @@ import { PRICES_CHECKED, SEAT_COSTS, SERVER_USD_PER_MONTH, teamCost } from "@/li
 import { FREE_SEATS } from "@/lib/freePlan"
 import { useVisitorRegion } from "@/hooks/useVisitorRegion"
 import { useDayPricing } from "@/hooks/useDayPricing"
+import { PEOPLE } from "@/lib/plans"
 import { MoneyText } from "@/components/site/MoneyText"
 import { SavingChip } from "@/components/site/SavingChip"
 import { Icon } from "@/components/ui/icons"
@@ -161,7 +162,7 @@ export const CostCalculator: React.FC<{ lifetimeUsd: number; pricing?: Pricing }
                     <div key={`o${oneCampYear}`} className="fx-fade mt-1 font-display text-price tabular-nums">{fmt(oneCampYear)}</div>
                     <div className="text-caption text-muted-foreground">first year, and it does not grow with the team</div>
                     <ul className="mt-3 space-y-0.5 text-caption text-muted-foreground">
-                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : <>{licence} licence, paid once, unlimited users</>}</li>
+                        <li>{free ? `Free plan, up to ${FREE_SEATS} people` : <>{licence} licence, paid once, for {PEOPLE.licence.toLowerCase()}</>}</li>
                         <li>About {fmt(SERVER_USD_PER_MONTH)} a month for the server that runs it</li>
                         {withAi && <li>AI included: local models, or your own API key billed at cost</li>}
                         <li>Every year after this one is just the server</li>

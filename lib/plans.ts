@@ -29,6 +29,18 @@ export const CLOUD_CHOICE = { monthly: "Team monthly", yearly: "Team yearly", bu
 export const CLOUD_CHOICE_GROUP = "Cloud plan";
 
 /**
+ * How many people a plan takes, said one way wherever a buyer reads it, in
+ * people (never users or seats). The licence takes any number. A Cloud
+ * plan's number is the people its machine is sized for: nobody past it is
+ * turned away and nothing is charged per person, so it is not a cap. "100
+ * users" for Business beside "Unlimited users" for the licence read as one.
+ */
+export const PEOPLE = {
+  licence: "Any number of people",
+  cloud: (n: number) => `sized for ${n} people`,
+} as const;
+
+/**
  * The three plans, side by side, in words a buyer uses.
  *
  * Every plan has the product: chat, docs, tasks, calls and AI teammates. They

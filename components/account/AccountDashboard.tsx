@@ -2,7 +2,7 @@
 
 import { ChangeEmail } from "@/components/account/ChangeEmail";
 import { FREE_PLAN_CODE, FREE_SEATS } from "@/lib/freePlan";
-import { PLAN } from "@/lib/plans";
+import { PEOPLE, PLAN } from "@/lib/plans";
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import Script from "next/script";
 import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
@@ -522,7 +522,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <div className="min-w-0">
               <p className="text-body font-semibold text-foreground">{s.label || "OneCamp Cloud"}</p>
-              <p className="mt-0.5 text-caption text-muted-foreground">{s.seats > 0 ? `${s.seats} users included` : s.plan_code}</p>
+              <p className="mt-0.5 text-caption text-muted-foreground">{s.seats > 0 ? `A machine ${PEOPLE.cloud(s.seats)}` : s.plan_code}</p>
             </div>
             <StatusDot tone={subscriptionTone(s.status)}>{statusLabel(s.status)}</StatusDot>
           </div>

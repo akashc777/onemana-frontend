@@ -17,7 +17,7 @@ import { RegionProvider } from "@/hooks/useVisitorRegion";
 import { livePricing } from "@/hooks/useDayPricing";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import { MoneyRule } from "@/components/site/MoneyRule";
-import { CLOUD_CHOICE_GROUP, CLOUD_SIZE, PLAN } from "@/lib/plans";
+import { CLOUD_CHOICE_GROUP, CLOUD_SIZE, PEOPLE, PLAN } from "@/lib/plans";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { site } from "@/lib/site";
@@ -296,10 +296,10 @@ export function BuyCheckout({
                       ? `${saving ? `${saving}, ` : ""}${pricing.cloud_seats} people and a self-host licence included`
                       : `${pricing.cloud_seats} people and a self-host licence included`
                   : pricing.charge_usd && !isIndia
-                    ? "Unlimited users"
+                    ? PEOPLE.licence
                     : isIndia
-                      ? "Unlimited users, with a GST invoice"
-                      : "Unlimited users, no tax added at checkout"}
+                      ? `${PEOPLE.licence}, with a GST invoice`
+                      : `${PEOPLE.licence}, no tax added at checkout`}
               </p>
               {showChoices && (
                 /* Each choice is its name over what it adds, the three alike,

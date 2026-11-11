@@ -15,7 +15,7 @@ describe("plan change words", () => {
   });
 
   it("labels each change by what it does and when", () => {
-    expect(switchLabel("business", "onecamp_cloud_team", p)).toBe("Upgrade to Business, 100 users");
+    expect(switchLabel("business", "onecamp_cloud_team", p)).toBe("Upgrade to Business, sized for 100 people");
     expect(switchLabel("business", "onecamp_cloud_team_yearly", p)).toContain("when the year ends");
     expect(switchLabel("yearly", "onecamp_cloud_team", p)).toBe("Switch to yearly, 2 months free");
     expect(switchLabel("monthly", "onecamp_cloud_business", p)).toBe("Move down to Team when this month ends");
@@ -47,7 +47,7 @@ describe("plan change words", () => {
   // page (lib/pricing priceWithEstimate), and none in India.
   it("gives Business's price with the reader's own estimate", () => {
     const gb = { ...p, rates: { USD: 96.87, GBP: 129.16 } };
-    expect(switchConfirm("business", "onecamp_cloud_team", gb, regionFor("GB", "en-GB"))).toContain("Business is ₹24,999 a month (≈ £194) for 100 users");
-    expect(switchConfirm("business", "onecamp_cloud_team", gb, regionFor("IN", "en-IN"))).toContain("Business is ₹24,999 a month for 100 users");
+    expect(switchConfirm("business", "onecamp_cloud_team", gb, regionFor("GB", "en-GB"))).toContain("Business is ₹24,999 a month (≈ £194) for a larger machine sized for 100 people");
+    expect(switchConfirm("business", "onecamp_cloud_team", gb, regionFor("IN", "en-IN"))).toContain("Business is ₹24,999 a month for a larger machine sized for 100 people");
   });
 });

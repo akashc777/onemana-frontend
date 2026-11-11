@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site";
 import { fmtINR, getPricing } from "@/lib/pricing";
-import { PLAN } from "@/lib/plans";
+import { PEOPLE, PLAN } from "@/lib/plans";
 
 // Worked out from live pricing, never from constants: link previews in Slack,
 // X and email are often the first price a buyer sees, and a fixed "$299" there
@@ -13,11 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const alt = `Get OneCamp: the ${PLAN.licence.name.toLowerCase()} for ${once} once, or ${PLAN.cloud.name} from ${monthly}`;
   return {
     title: "Get OneCamp",
-    description: `A licence for ${once} once, or managed cloud from ${monthly}. Unlimited users, your server, local AI included.`,
+    description: `A licence for ${once} once, or managed cloud from ${monthly}. ${PEOPLE.licence}, your server, local AI included.`,
     alternates: { canonical: "/buy" },
     openGraph: {
       title: "Get OneCamp · Buy once, or let us host it",
-      description: `Pay ${once} once for unlimited users on your server, or choose managed hosting from ${monthly}.`,
+      description: `Pay ${once} once for ${PEOPLE.licence.toLowerCase()} on your server, or choose managed hosting from ${monthly}.`,
       url: `${site.url}/buy`,
       type: "website",
       images: [{ url: "/buy/opengraph-image?v=7", width: 1200, height: 630, alt, type: "image/png" }],

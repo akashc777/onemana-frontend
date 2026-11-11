@@ -1,3 +1,4 @@
+import { PEOPLE } from "@/lib/plans";
 import { FREE_SEATS } from "./freePlan";
 // Marketing copy - company voice, uneven on purpose.
 //
@@ -224,7 +225,7 @@ export const faqs = [
   },
   {
     q: "I pay once. What is included?",
-    a: "One licence key, unlimited users, no annual renewal. Everything is included: agents, local AI, SSO, LDAP, SCIM and audit export. Cloud plans include a self-host licence so you can switch later.",
+    a: `One licence key for ${PEOPLE.licence.toLowerCase()}, no annual renewal. Everything is included: agents, local AI, SSO, LDAP, SCIM and audit export. Cloud plans include a self-host licence so you can switch later.`,
   },
   {
     q: "What if OneMana shuts down?",
@@ -365,7 +366,7 @@ export const beforeYouPay = [
 ] as const;
 
 export const lifetimeBenefits = [
-  "Unlimited users. No per-seat fees",
+  `${PEOPLE.licence}, no per-seat fees`,
   "All modules incl. local AI and agents",
   "SSO, LDAP, SCIM and audit export: the company controls",
   "Commercial licence: no AGPL obligations",
@@ -379,6 +380,6 @@ export const lifetimeBenefits = [
  */
 export const planHighlights = {
   free: ["Chat, docs, projects, calls and agents", "Your server, one command", "Updates within your major version"],
-  lifetime: ["Unlimited people, no per-seat fees", "SSO, LDAP, SCIM and audit export", "Commercial licence, no AGPL duties", "Email support from the person who builds it"],
+  lifetime: [`${PEOPLE.licence}, no per-seat fees`, "SSO, LDAP, SCIM and audit export", "Commercial licence, no AGPL duties", "Email support from the person who builds it"],
   cloud: ["Your own machine, no shared database", "SSL, monitoring and backups handled", "A model on your server, no key needed"],
 } as const;

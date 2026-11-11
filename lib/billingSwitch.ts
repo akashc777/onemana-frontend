@@ -1,3 +1,4 @@
+import { PEOPLE } from "./plans";
 import { priceWithEstimate, type Pricing } from "./pricing";
 import type { Region } from "./visitorCurrency";
 
@@ -21,7 +22,7 @@ export function switchLabel(to: string, fromPlanCode: string, p: Pricing): strin
   const now = changesNow(to, fromPlanCode);
   switch (to) {
     case "business":
-      return now ? `Upgrade to Business, ${p.business_seats} users` : "Upgrade to Business when the year ends";
+      return now ? `Upgrade to Business, ${PEOPLE.cloud(p.business_seats)}` : "Upgrade to Business when the year ends";
     case "yearly": {
       const free = p.cloud_yearly_free_months > 0 ? `, ${p.cloud_yearly_free_months} months free` : "";
       return now ? `Switch to yearly${free}` : `Switch to Team yearly when this month ends${free}`;
@@ -37,7 +38,7 @@ export function switchConfirm(to: string, fromPlanCode: string, p: Pricing, regi
   if (changesNow(to, fromPlanCode)) {
     const what =
       to === "business"
-        ? `Business is ${priceWithEstimate(p, p.business_inr, region, " a month")} for ${p.business_seats} users on a larger machine. Your workspace moves to it in the next quiet hours, or at once if you choose Move now.`
+        ? `Business is ${priceWithEstimate(p, p.business_inr, region, " a month")} for a larger machine ${PEOPLE.cloud(p.business_seats)}. Your workspace moves to it in the next quiet hours, or at once if you choose Move now.`
         : "The yearly price applies from your next renewal.";
     return `Razorpay charges the difference for the rest of this month now. ${what} Payments are final; we do not offer refunds. Go ahead?`;
   }
