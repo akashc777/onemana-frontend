@@ -16,8 +16,10 @@ import { PlanComparison } from "@/components/site/PlanComparison"
 import { alternatives } from "@/lib/alternatives"
 import { audiences } from "@/lib/audiences"
 import { choiceLabel, cloudCheckoutDescription, cloudChoices, LICENCE_CHECKOUT_DESCRIPTION, MONEY_RULE } from "@/lib/paymentTerms"
-import { CLOUD_CHOICE, CLOUD_SIZE, PLAN, planOptions } from "@/lib/plans"
+import { FREE_SEATS } from "@/lib/freePlan"
+import { CLOUD_CHOICE, CLOUD_SIZE, PEOPLE, PLAN, planOptions } from "@/lib/plans"
 import { defaultPricing } from "@/lib/pricing"
+import { seatsLine } from "@/lib/seatsLine"
 
 /**
  * One name per plan and one word per plan's button (9 Nov 2026). A buyer met
@@ -149,6 +151,35 @@ describe("the Cloud choice", () => {
     expect(checkout("business")).toContain("100 people, a larger machine and a self-host licence included")
   })
 
+  // A Cloud plan's number is the people its machine is sized for: nobody
+  // past it is turned away and nothing is charged per person. "Up to 30
+  // people" read as a cap, and "100 people ... included" as a price step, so
+  // each place says it the glossary's way (lib/plans PEOPLE.cloud). The free
+  // plan's "up to 25 people" is a real limit, and stays. The licence's people
+  // are said one way too, in the table as on the cards.
+  it("says what a Cloud plan's number means one way, wherever a buyer reads it", () => {
+    const [team, business] = [sizes.cloud_seats, sizes.business_seats]
+    expect([team, business]).not.toContain(FREE_SEATS)
+    const asCap = new RegExp(`\\bup to (${team}|${business})\\b|(?<!sized for )\\b(${team}|${business}) people\\b[^.]*\\bincluded\\b`, "i")
+    const says = (where: string, read: string, n: number) => {
+      expect(read, where).not.toMatch(asCap)
+      expect(read.toLowerCase(), where).toContain(PEOPLE.cloud(n).toLowerCase())
+    }
+    const cards = text(renderToString(<PlanColumns pricing={sizes} />))
+    says("cards", cards, team)
+    expect(cards, "the free plan's limit").toContain(`Up to ${FREE_SEATS} people`)
+    const table = text(renderToString(<PlanComparison pricing={sizes} />))
+    says("table", table, team)
+    expect(table, "table: Business's number").toMatch(new RegExp(`\\b${business} on Business\\b`))
+    expect(table, "the licence's people in the table").toContain(PEOPLE.licence)
+    says("audience page", text(renderToString(<AudienceView a={alternatives[0]!} pricing={sizes} />)), team)
+    for (const [b, n] of [["monthly", team], ["yearly", team], ["business", business]] as const) {
+      says(`checkout ${b}`, text(renderToString(<BuyCheckout initialPlan="cloud" initialBilling={b} initialPricing={sizes} initialCountry="US" />)), n)
+    }
+    says("workspace card", seatsLine(team - 1, team), team)
+    says("workspace card, past it", seatsLine(team + 1, team), team)
+  })
+
   // On a 390 px phone the choice is 310 px across, a third each. "Team
   // monthly" is 82 px of words at 12 px and about 89 at 13. /pricing draws
   // it at 12 px in a 102 px choice with 4 px a side (94 px for words). The
@@ -227,12 +258,17 @@ describe("retired plan names", () => {
   // expression is read too. Rivals' own billing ("Per user, per month") is
   // about them, and is not matched.
   const ALLOWANCE_IN_USERS = /\b(unlimited|any number of) (users|seats)\b|\b(users|seats) included\b|\$\{[^}]*\} (users|seats)\b/gi
+  // A Cloud plan's number is the people its machine is sized for, not a cap:
+  // never "up to" it, and never written beside "people" outside the glossary
+  // (lib/plans PEOPLE). The free plan's "up to ${FREE_SEATS} people" is a
+  // real limit and is not matched. The licence's people are "any number".
+  const CLOUD_AS_A_CAP = /\bup to \$?\{[^}\n]*\b(cloud|business)_seats\b[^}\n]*\}|\$?\{[^}\n]*\b(cloud|business)_seats\b[^}\n]*\} people\b|\bunlimited people\b/gi
 
-  it("says how many people a plan takes in people, never users or seats", () => {
+  it("says how many people a plan takes in people, one way: never users or seats, and never up to a Cloud plan's number", () => {
     const offenders: string[] = []
     for (const file of ROOTS.flatMap((r) => walk(r))) {
       const code = readFileSync(join(process.cwd(), file), "utf8").replace(/\/\*[\s\S]*?\*\//g, " ").replace(/(^|\s)\/\/[^\n]*/g, "$1")
-      for (const hit of code.matchAll(ALLOWANCE_IN_USERS)) offenders.push(`${file}: "${hit[0]}"`)
+      for (const hit of [...code.matchAll(ALLOWANCE_IN_USERS), ...code.matchAll(CLOUD_AS_A_CAP)]) offenders.push(`${file}: "${hit[0]}"`)
     }
     expect(offenders).toEqual([])
   })
