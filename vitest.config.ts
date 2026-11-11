@@ -19,6 +19,11 @@ import path from "path";
  * dependency on a site whose whole job is to load fast — no jsdom, no react plugin, no
  * testing-library. If a component ever needs rendering, adding jsdom then is a smaller
  * change than carrying it now.
+ *
+ * JSDOM FOR ONE FILE (11 Nov 2026). A component's effects run only in a browser, and the
+ * day's exchange rates reach a page's price islands through one (hooks/useDayPricing). So
+ * hooks/useDayPricing.test.tsx mounts them in jsdom, a dev dependency that ships nothing,
+ * and opts in with "@vitest-environment jsdom" at its top: every other file runs in node.
  */
 export default defineConfig({
   // JSX via the automatic runtime, so a component can be rendered to a string
