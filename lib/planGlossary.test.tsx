@@ -148,6 +148,31 @@ describe("the Cloud choice", () => {
     expect(checkout("monthly")).toContain("30 people and a self-host licence included")
     expect(checkout("business")).toContain("100 people, a larger machine and a self-host licence included")
   })
+
+  // On a 390 px phone the choice is 310 px across, a third each. "Team
+  // monthly" is 82 px of words at 12 px and about 89 at 13. /pricing draws
+  // it at 12 px in a 102 px choice with 4 px a side (94 px for words). The
+  // checkout drew it in its caption size, 13 px, in a 98 px choice (its
+  // choices stand 4 px apart) with 8 px a side: 82 px for 89 px of words,
+  // so the name broke over two lines there. Same sizes now, and 2 px a
+  // side on the checkout, which leaves it the 94 px /pricing has.
+  it("draws each choice in one size on a phone, with room for its name on one line", () => {
+    /** How a phone draws a group's choices: the classes with no breakpoint, for the name, the line under it and the sides. */
+    const onPhone = (html: string) => {
+      const at = html.indexOf('role="radiogroup" aria-label="Cloud plan"')
+      expect(at).toBeGreaterThan(-1)
+      const radio = html.slice(at).match(/<button[^>]*role="radio"[^>]*class="([^"]*)"[^>]*>([\s\S]*?)<\/button>/)!
+      const last = (classes: string | undefined, re: RegExp, inherited: string) => (classes ?? "").split(" ").filter((c) => re.test(c)).pop() ?? inherited
+      const size = (classes: string | undefined, inherited: string) => last(classes, /^text-\[\d+px\]$/, inherited)
+      const [name, detail] = [...radio[2]!.matchAll(/<span(?: class="([^"]*)")?>/g)].map((m) => m[1])
+      const own = size(radio[1], "the card's size")
+      return { name: size(name, own), detail: size(detail, own), sides: last(radio[1], /^px-[\d.]+$/, "none") }
+    }
+    const pricing = onPhone(renderToString(<PlanColumns pricing={sizes} detailed headingLevel="h2" />))
+    const checkout = onPhone(renderToString(<BuyCheckout initialPlan="cloud" initialBilling="monthly" initialPricing={sizes} initialCountry="US" />))
+    expect(pricing).toEqual({ name: "text-[12px]", detail: "text-[11px]", sides: "px-1" })
+    expect(checkout).toEqual({ name: "text-[12px]", detail: "text-[11px]", sides: "px-0.5" })
+  })
 })
 
 // The money rule (lib/paymentTerms MONEY_RULE): one sentence, offer first,
