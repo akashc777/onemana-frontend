@@ -106,7 +106,7 @@ export function PlanComparison({ pricing }: { pricing: Pricing }) {
 
 /**
  * What a row says for a plan. A price is written the cards' way, the
- * reader's money first with the rupee charge (RegionalMoney MoneyText); every
+ * reader's money first with the rupee charge (components/site/MoneyText); every
  * other row as lib/plans words it.
  */
 function cell(p: PlanOption, key: PlanRowKey, pricing: Pricing): ReactNode {

@@ -213,7 +213,7 @@ export function AudienceView({ a, pricing }: { a: Audience; pricing: Pricing }) 
               {PLAN.licence.name}
             </p>
             {/* The price at 28/32 in the reader's money, the rupee charge
-                under it (site.md AU5; RegionalMoney PlanPrice). */}
+                under it (site.md AU5; components/site/PlanPrice). */}
             <PlanPrice pricing={pricing} inr={pricing.lifetime_inr} cadence="one-time" licence size="mini" why="/pricing#currency" className="mt-3" />
             <p className="mt-2 text-small text-muted-foreground">Everyone on your server, for good.</p>
             <ButtonLink href={PLAN.licence.href} variant="ghost" size="md" className="mt-4">

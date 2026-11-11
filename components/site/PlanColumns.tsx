@@ -24,7 +24,7 @@ export const FREE_PILL = "Most teams start here";
  * Free, a licence, or Cloud (site.md H9 and P2): three neutral cards, the
  * plan's identity as a dot (moss, sun, sky, the same hue wherever the plan
  * appears). Each price is the reader's own money first, with the rupee
- * charge in ink right under it (RegionalMoney PlanPrice; rupees in India),
+ * charge in ink right under it (components/site/PlanPrice; rupees in India),
  * in a block that never changes height, and the cadence is part of the
  * figure ("one-time", "/mo"), so Business a month and the licence once are
  * never read as one number. Every figure comes from the backend's

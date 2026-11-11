@@ -271,7 +271,7 @@ export function BuyCheckout({
                 {isCloud ? <CloudGlyph className="size-4 shrink-0 text-muted-foreground" /> : <KeyGlyph className="size-4 shrink-0 text-muted-foreground" />}
                 {isCloud ? (business ? CLOUD_SIZE.business : CLOUD_SIZE.team) : PLAN.licence.name}
               </span>
-              {/* The price the plan cards draw (RegionalMoney PlanPrice), for
+              {/* The price the plan cards draw (components/site/PlanPrice), for
                   the country chosen in the form: the buyer's own money first
                   and the rupee charge under it, rupees and GST in India, the
                   dollars when the backend charges the licence in dollars.

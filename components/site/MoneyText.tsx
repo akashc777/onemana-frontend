@@ -20,8 +20,8 @@ export function About({ className }: { className?: string }) {
  * A price in running text, in one currency with whatever it sits beside
  * (lib/pricing displayPrice): "≈ $258 once (charged ₹24,999)" abroad,
  * "₹24,999 once" in India: a price in a sentence, a table cell or a row that
- * compares it with a rival's bill in the reader's money (PlanPrice in
- * components/site/RegionalMoney is the block on a plan's card). The "≈" is
+ * compares it with a rival's bill in the reader's money (the block on a
+ * plan's card is components/site/PlanPrice). The "≈" is
  * read as "about". It cross-fades in place when the reader's own money
  * arrives after mount. A module of its own, so a page that says one price
  * in a sentence does not load every regional money island.

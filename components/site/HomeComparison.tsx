@@ -23,8 +23,8 @@ import { RAISED_COLUMN, RAISED_ROW } from "@/components/site/planHues";
  * The figures are worked out, never typed: OneCamp's from the live pricing,
  * the per-seat stack from its list prices. The price row compares the two,
  * so both are in one currency: the reader's own outside India (OneCamp's
- * with its rupee charge in brackets) and rupees in India (RegionalMoney
- * MoneyText and StackCost). It read "₹24,999 once" beside "About $8,300",
+ * with its rupee charge in brackets) and rupees in India (MoneyText and
+ * RegionalMoney's StackCost). It read "₹24,999 once" beside "About $8,300",
  * and a dollar reader saw the bigger number on our side. The moss chip under
  * OneCamp's figure is the calculator's own multiple, from the same figures.
  *

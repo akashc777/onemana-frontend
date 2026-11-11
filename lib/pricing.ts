@@ -326,7 +326,7 @@ export function displayPrice(p: Pricing, inr: number, region: Region | null, opt
  * (≈ £194)", "₹9,999/mo (≈ $103)". The rupees alone in India, and when there
  * is no rate to estimate with. The one way a sentence or a button writes a
  * price; a plan card gives the same estimate on a line of its own
- * (components/site/RegionalMoney).
+ * (components/site/PlanPrice).
  */
 export function priceWithEstimate(p: Pricing, inr: number, region: Region | null, per = ""): string {
   const estimate = localEstimate(p, inr, region);
