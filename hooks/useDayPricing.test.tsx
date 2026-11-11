@@ -78,7 +78,7 @@ async function islands() {
     import("@/hooks/useVisitorRegion"),
   ])
   const island = (name: (typeof ISLANDS)[number], node: ReactNode) => <div data-island={name}>{node}</div>
-  return (pricing: Pricing) => (
+  const page = (pricing: Pricing) => (
     <RegionProvider region={london}>
       {island("plan-price", <PlanPrice pricing={pricing} inr={pricing.cloud_inr} cadence="/mo" />)}
       {island("money-text", <MoneyText pricing={pricing} inr={pricing.lifetime_inr} per=" once" licence />)}
@@ -86,6 +86,7 @@ async function islands() {
       {island("cost-calculator", <CostCalculator lifetimeUsd={pricing.lifetime_usd} pricing={pricing} />)}
     </RegionProvider>
   )
+  return page
 }
 
 /** What each island says, by its name. */
