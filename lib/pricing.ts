@@ -210,11 +210,16 @@ const UNIT_NAME: Record<DisplayCurrency, string> = {
  * the estimate is close, not exact, and saying so here is cheaper than a
  * buyer finding out on their statement. It names the currency the estimate
  * beside it is in (the region's, as localEstimate chooses), and in India,
- * where no estimate is shown, it talks of none.
+ * where no estimate is shown, it talks of none. Written before the reader
+ * is known (/pricing's answer to "Which currency am I charged in?", sent to
+ * every reader from the page's own pricing), it names no rate: the one it
+ * could name is the dollar's on the day the page was rendered, while the
+ * reader's figures may be in pounds, and at the day's rate.
  */
 export function currencyNote(p: Pricing, ctx: { inIndia?: boolean; cloud?: boolean; region?: Region | null } = {}): string {
   const inIndia = ctx.inIndia ?? ctx.region?.inIndia;
-  const estimate = inIndia ? null : estimateIn(p, ctx.region ?? null);
+  const known = ctx.region != null || inIndia !== undefined;
+  const estimate = inIndia || !known ? null : estimateIn(p, ctx.region ?? null);
   const converts = "your card converts at its own rate and may add a small foreign transaction fee.";
   const rupees = estimate
     ? `The estimate is at today's exchange rate (₹${estimate.rate.toFixed(2)} to the ${UNIT_NAME[estimate.currency]}); ${converts}`
