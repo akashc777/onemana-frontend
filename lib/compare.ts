@@ -1,4 +1,4 @@
-import { PEOPLE } from "@/lib/plans";
+import { PEOPLE } from "@/lib/freePlan";
 
 /**
  * The comparison page's data.

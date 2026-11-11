@@ -1,5 +1,4 @@
-import { PEOPLE } from "@/lib/plans";
-import { FREE_SEATS } from "./freePlan";
+import { FREE_SEATS, PEOPLE } from "./freePlan";
 // Marketing copy - company voice, uneven on purpose.
 //
 // POSITIONING: governed AI, not all-in-one.

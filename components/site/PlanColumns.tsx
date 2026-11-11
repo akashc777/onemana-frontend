@@ -7,7 +7,7 @@ import { HUE_CLASS } from "@/components/ui/graphics/hues";
 import { AreaRow } from "@/components/site/Areas";
 import { Dot } from "@/components/ui/v3";
 import type { CampHue } from "@/lib/campHue";
-import { FREE_SEATS, freeIncludes } from "@/lib/freePlan";
+import { FREE_SEATS, PEOPLE, freeIncludes } from "@/lib/freePlan";
 import { choiceLabel, choicePerPerson, choicePrice, cloudBuyHref, cloudChoices } from "@/lib/paymentTerms";
 import type { Pricing } from "@/lib/pricing";
 import { cloudBenefits, lifetimeBenefits, planHighlights } from "@/lib/content";
@@ -15,7 +15,7 @@ import { PricesFootnote } from "@/components/site/RegionalMoney";
 import { PlanPrice } from "@/components/site/PlanPrice";
 import { TaxText } from "@/components/site/TaxText";
 import { MoneyRule } from "@/components/site/MoneyRule";
-import { PEOPLE, PLAN } from "@/lib/plans";
+import { PLAN } from "@/lib/plans";
 
 /** The pill on the free plan (D8): where most teams begin, not a popularity claim. */
 export const FREE_PILL = "Most teams start here";

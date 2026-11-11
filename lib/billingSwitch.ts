@@ -1,4 +1,4 @@
-import { PEOPLE } from "./plans";
+import { PEOPLE } from "./freePlan";
 import { priceWithEstimate, type Pricing } from "./pricing";
 import type { Region } from "./visitorCurrency";
 

@@ -1,5 +1,5 @@
 import type { Pricing } from "@/lib/pricing";
-import { FREE_SEATS } from "@/lib/freePlan";
+import { FREE_SEATS, PEOPLE } from "@/lib/freePlan";
 
 /**
  * One name per plan and one word for its button, read by every page that
@@ -27,22 +27,6 @@ export const CLOUD_SIZE = { team: "Cloud Team", business: "Cloud Business" } as 
  */
 export const CLOUD_CHOICE = { monthly: "Team monthly", yearly: "Team yearly", business: "Business" } as const;
 export const CLOUD_CHOICE_GROUP = "Cloud plan";
-
-/**
- * How many people a plan takes, said one way wherever a buyer reads it, in
- * people (never users or seats). The licence takes any number. A Cloud
- * plan's number is the people its machine is sized for: nobody past it is
- * turned away and nothing is charged per person, so it is not a cap. "100
- * users" for Business beside "Unlimited users" for the licence read as one,
- * and "up to 30 people" as a limit. The free plan's "up to 25 people" is one.
- * The size entry is a Cloud choice's tag under its name, where the sentence
- * won't fit; the line beside the choice always says what the number means.
- */
-export const PEOPLE = {
-  licence: "Any number of people",
-  cloud: (n: number) => `sized for ${n} people`,
-  size: (n: number) => `${n} people`,
-} as const;
 
 /**
  * The three plans, side by side, in words a buyer uses.

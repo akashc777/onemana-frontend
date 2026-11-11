@@ -22,7 +22,7 @@ import {
     rivals,
     rivalsLine,
 } from "@/lib/compare";
-import { PEOPLE } from "@/lib/plans";
+import { PEOPLE } from "@/lib/freePlan";
 import { site } from "@/lib/site";
 import { StackTable } from "@/components/ui/StackTable";
 

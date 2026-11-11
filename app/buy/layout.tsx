@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site";
 import { fmtINR, getPricing } from "@/lib/pricing";
-import { PEOPLE, PLAN } from "@/lib/plans";
+import { PEOPLE } from "@/lib/freePlan";
+import { PLAN } from "@/lib/plans";
 
 // Worked out from live pricing, never from constants: link previews in Slack,
 // X and email are often the first price a buyer sees, and a fixed "$299" there

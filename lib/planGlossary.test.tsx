@@ -16,8 +16,8 @@ import { PlanComparison } from "@/components/site/PlanComparison"
 import { alternatives } from "@/lib/alternatives"
 import { audiences } from "@/lib/audiences"
 import { choiceLabel, cloudCheckoutDescription, cloudChoices, LICENCE_CHECKOUT_DESCRIPTION, MONEY_RULE } from "@/lib/paymentTerms"
-import { FREE_SEATS } from "@/lib/freePlan"
-import { CLOUD_CHOICE, CLOUD_SIZE, PEOPLE, PLAN, planOptions } from "@/lib/plans"
+import { FREE_SEATS, PEOPLE } from "@/lib/freePlan"
+import { CLOUD_CHOICE, CLOUD_SIZE, PLAN, planOptions } from "@/lib/plans"
 import { defaultPricing } from "@/lib/pricing"
 import { seatsLine } from "@/lib/seatsLine"
 
@@ -155,7 +155,7 @@ describe("the Cloud choice", () => {
   // A Cloud plan's number is the people its machine is sized for: nobody
   // past it is turned away and nothing is charged per person. "Up to 30
   // people" read as a cap, and "100 people ... included" as a price step, so
-  // each place says it the glossary's way (lib/plans PEOPLE.cloud). The free
+  // each place says it the glossary's way (lib/freePlan PEOPLE.cloud). The free
   // plan's "up to 25 people" is a real limit, and stays. The licence's people
   // are said one way too, in the table as on the cards.
   it("says what a Cloud plan's number means one way, wherever a buyer reads it", () => {
@@ -261,7 +261,7 @@ describe("retired plan names", () => {
   const ALLOWANCE_IN_USERS = /\b(unlimited|any number of) (users|seats)\b|\b(users|seats) included\b|\$\{[^}]*\} (users|seats)\b/gi
   // A Cloud plan's number is the people its machine is sized for, not a cap:
   // never "up to" it, and never written beside "people" outside the glossary
-  // (lib/plans PEOPLE). The free plan's "up to ${FREE_SEATS} people" is a
+  // (lib/freePlan PEOPLE). The free plan's "up to ${FREE_SEATS} people" is a
   // real limit and is not matched. The licence's people are "any number".
   const CLOUD_AS_A_CAP = /\bup to \$?\{[^}\n]*\b(cloud|business)_seats\b[^}\n]*\}|\$?\{[^}\n]*\b(cloud|business)_seats\b[^}\n]*\} people\b|\bunlimited people\b/gi
 

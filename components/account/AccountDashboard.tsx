@@ -1,8 +1,8 @@
 "use client";
 
 import { ChangeEmail } from "@/components/account/ChangeEmail";
-import { FREE_PLAN_CODE, FREE_SEATS } from "@/lib/freePlan";
-import { PEOPLE, PLAN } from "@/lib/plans";
+import { FREE_PLAN_CODE, FREE_SEATS, PEOPLE } from "@/lib/freePlan";
+import { PLAN } from "@/lib/plans";
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import Script from "next/script";
 import { switchConfirm, switchLabel } from "@/lib/billingSwitch";

@@ -1,7 +1,7 @@
 import type { Billing } from "./cloudLinks";
 import type { Pricing } from "./pricing";
-import { FREE_SEATS } from "./freePlan";
-import { CLOUD_CHOICE, CLOUD_SIZE, PEOPLE } from "./plans";
+import { FREE_SEATS, PEOPLE } from "./freePlan";
+import { CLOUD_CHOICE, CLOUD_SIZE } from "./plans";
 
 /**
  * The sentence next to the pay button, and the plan code behind it.

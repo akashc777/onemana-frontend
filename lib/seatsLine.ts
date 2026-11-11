@@ -1,10 +1,10 @@
 import { formatDayMonth } from "@/lib/format";
-import { PEOPLE } from "@/lib/plans";
+import { PEOPLE } from "@/lib/freePlan";
 
 /**
  * The one sentence about people on a workspace card.
  *
- * The plan is sold as sized for N people (lib/plans PEOPLE.cloud), and until
+ * The plan is sold as sized for N people (lib/freePlan PEOPLE.cloud), and until
  * then the customer's own status page said nothing about how many of their
  * people were in the workspace. This is that sentence, kept pure so the three
  * cases it has to get right can be tested: never counted, counted, and counted
