@@ -123,10 +123,12 @@ describe("the workspace card past the number its plan is sized for", () => {
     renderToString(<WorkspaceSection onReload={() => {}} subscriptions={subs} initial={[inst]} />).replace(/<!-- -->/g, "");
   const { cloud_seats: team, business_seats: business } = defaultPricing;
 
-  it("on Team, names Business and links to the upgrade on the subscription tab, never a dead-end \"get in touch\"", () => {
+  it("on Team, the first paint stops at the plan's own number: no Business size or link before the pricing answer, never a dead-end \"get in touch\"", () => {
+    // The answer arriving, and the link it brings, is the jsdom case in confirmSheet.test.tsx.
     const html = card([sub("onecamp_cloud_team", ["business"])], live("team", team, team + 2));
-    expect(html).toContain(`Business is ${PEOPLE.cloud(business)}.`);
-    expect(html).toMatch(/<a [^>]*href="\?tab=subscription"[^>]*>Upgrade to Business<\/a>/);
+    expect(html).toContain(`Your plan is ${PEOPLE.cloud(team)}.`);
+    expect(html).not.toContain("Business is");
+    expect(html).not.toContain('href="?tab=subscription"');
     expect(html.toLowerCase()).not.toContain("get in touch");
   });
 

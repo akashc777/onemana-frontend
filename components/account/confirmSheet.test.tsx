@@ -3,6 +3,8 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PortalInstance, PortalOverview, PortalSubscription } from "@/lib/portalApi";
+import { defaultPricing, type Pricing } from "@/lib/pricing";
+import { PEOPLE } from "@/lib/freePlan";
 
 // The account page's money confirms (an upgrade or a switch, Cancel subscription,
 // Move now) are the house's own dialog, never the browser's window.confirm: a
@@ -19,8 +21,16 @@ const api = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/portalApi", async (orig) => ({ ...(await orig<typeof import("@/lib/portalApi")>()), portalApi: api }));
 
+// The page's one pricing answer. A test that wants the card before it lands holds it here.
+const day = vi.hoisted(() => ({ held: null as Promise<Pricing> | null }));
+vi.mock("@/hooks/useDayPricing", async (orig) => {
+  const m = await orig<typeof import("@/hooks/useDayPricing")>();
+  return { ...m, livePricing: vi.fn(() => day.held ?? m.livePricing()) };
+});
+
 const { AccountDashboard } = await import("@/components/account/AccountDashboard");
 const { WorkspaceSection } = await import("@/components/account/WorkspaceSection");
+const { livePricing } = await import("@/hooks/useDayPricing");
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -195,5 +205,32 @@ describe("the account page's money confirms", () => {
     expect(row?.className).toContain("overflow-x-auto");
     expect(row?.className).toContain("[scrollbar-width:none]");
     expect(row?.className).toContain("[&::-webkit-scrollbar]:hidden");
+  });
+});
+
+describe("the workspace card past Team's number", () => {
+  afterEach(() => {
+    day.held = null;
+  });
+
+  it("names no Business size and no link until the page's one pricing answer lands, then the live size and the link", async () => {
+    let answer!: (p: Pricing) => void;
+    day.held = new Promise<Pricing>((r) => (answer = r));
+    const past: PortalInstance = { ...moving, move: undefined, seats_used: 34 };
+    api.instances.mockResolvedValue([past]);
+    await mount(<WorkspaceSection onReload={() => {}} subscriptions={[team]} initial={[past]} />);
+    const line = () => [...document.querySelectorAll("p")].find((p) => p.textContent?.startsWith("34 people"));
+    const upgrade = () => document.querySelector('a[href="?tab=subscription"]');
+
+    expect(line()?.textContent).toBe(`34 people. Your plan is ${PEOPLE.cloud(30)}.`);
+    expect(line()?.textContent).not.toContain("Business");
+    expect(upgrade()).toBeNull();
+    expect(line()?.querySelector("a"), "no step is drawn while the answer is out").toBeNull();
+    expect(livePricing).toHaveBeenCalled();
+
+    await act(async () => answer({ ...defaultPricing, business_seats: 150 }));
+    expect(line()?.textContent).toContain(`Business is ${PEOPLE.cloud(150)}.`);
+    expect(line()?.textContent).not.toContain(PEOPLE.cloud(defaultPricing.business_seats));
+    expect(upgrade()?.textContent).toBe("Upgrade to Business");
   });
 });

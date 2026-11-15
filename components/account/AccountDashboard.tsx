@@ -8,7 +8,8 @@ import Script from "next/script";
 import { changesNow, switchConfirm, switchLabel } from "@/lib/billingSwitch";
 import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
 import { cloudCheckoutDescription, cloudPlanCode } from "@/lib/paymentTerms";
-import { fetchPricingClient, defaultPricing, type Pricing } from "@/lib/pricing";
+import { defaultPricing, type Pricing } from "@/lib/pricing";
+import { livePricing } from "@/hooks/useDayPricing";
 import { portalApi, type PortalInstance, type PortalOverview, type PortalSubscription, type Invoice } from "@/lib/portalApi";
 import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { formatINR, formatDate, formatDay } from "@/lib/format";
@@ -420,7 +421,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   const [confirm, confirmSheet] = useConfirm();
   useEffect(() => {
     let alive = true;
-    fetchPricingClient().then((p) => { if (alive) setPricing(p); }).catch(() => {});
+    livePricing().then((p) => { if (alive) setPricing(p); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 

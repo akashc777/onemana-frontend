@@ -21,7 +21,7 @@ import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddr
 import { usePoll } from "@/hooks/usePoll";
 import { buttonClasses } from "@/components/ui/Button";
 import { useConfirm } from "./ConfirmSheet";
-import { defaultPricing, fetchPricingClient } from "@/lib/pricing";
+import { livePricing } from "@/hooks/useDayPricing";
 
 /** The support address, as the footer names it. */
 const SUPPORT = "support@onemana.dev";
@@ -201,13 +201,17 @@ function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void })
   );
 }
 
-/** Business's size from the day's pricing answer, read only when the card names it. */
-function useBusinessSeats(wanted: boolean): number {
-  const [n, setN] = useState(defaultPricing.business_seats);
+/**
+ * Business's size from the page's one pricing answer (livePricing, shared with
+ * the subscription tab, so the two never disagree), read only when the card
+ * names it. Null until the answer lands: the house default is never drawn.
+ */
+function useBusinessSeats(wanted: boolean): number | null {
+  const [n, setN] = useState<number | null>(null);
   useEffect(() => {
     if (!wanted) return;
     let alive = true;
-    void fetchPricingClient().then((p) => {
+    void livePricing().then((p) => {
       if (alive) setN(p.business_seats);
     });
     return () => {
@@ -230,8 +234,11 @@ function Workspace({
 }) {
   const line = (business: number) =>
     seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of, inst.size, businessOffered ? business : 0);
-  const business = useBusinessSeats(line(defaultPricing.business_seats).step === "upgrade");
-  const seats = line(business);
+  // Whether some Business size would be the step: only then is the size read.
+  const wanted = line(Number.MAX_SAFE_INTEGER).step === "upgrade";
+  const business = useBusinessSeats(wanted);
+  // Until the size is in, the sentence stops at the plan's own number, with no step drawn.
+  const seats = wanted && business === null ? { text: line(0).text } : line(business ?? 0);
   if (inst.needs_name) return <ChooseAddress inst={inst} onChanged={onChanged} />;
 
   return (
