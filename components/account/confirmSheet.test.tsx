@@ -234,3 +234,193 @@ describe("the workspace card past Team's number", () => {
     expect(upgrade()?.textContent).toBe("Upgrade to Business");
   });
 });
+
+// Each money confirm pressed every way a hurried hand or a stray key can: Tab stays inside, leaving the page
+// while it is open, a double tap, a double Enter and a second ask. None acts by mistake; the action acts once.
+const { useConfirm } = await import("@/components/account/ConfirmSheet");
+
+let asked: ((a: { title: string; body: string; yes: string; no?: string }) => Promise<boolean>) | null = null;
+function AskHarness() {
+  const [confirm, sheet] = useConfirm();
+  asked = confirm;
+  return <>{sheet}</>;
+}
+
+const flush = () => act(async () => { await new Promise((r) => setTimeout(r, 0)); });
+
+type Case = { name: string; mountIt: () => Promise<void>; trigger: () => HTMLElement | null; yes: string; safe: string; action: ReturnType<typeof vi.fn> };
+const cases: Case[] = [
+  {
+    name: "upgrade",
+    mountIt: async () => {
+      window.history.replaceState(null, "", "/account?tab=subscription");
+      await mount(<AccountDashboard overview={overview} instances={[]} onLogout={() => {}} onReload={() => {}} />);
+    },
+    trigger: () => button(/^Upgrade to Business/) as HTMLElement | null,
+    yes: "Go ahead",
+    safe: "Not now",
+    action: api.changePlan as unknown as ReturnType<typeof vi.fn>,
+  },
+  {
+    name: "cancel",
+    mountIt: async () => {
+      window.history.replaceState(null, "", "/account?tab=subscription");
+      await mount(<AccountDashboard overview={overview} instances={[]} onLogout={() => {}} onReload={() => {}} />);
+    },
+    trigger: () => button("Cancel subscription") as HTMLElement | null,
+    yes: "Cancel subscription",
+    safe: "Keep subscription",
+    action: api.cancelSubscription as unknown as ReturnType<typeof vi.fn>,
+  },
+  {
+    name: "move",
+    mountIt: async () => {
+      await mount(<WorkspaceSection onReload={() => {}} subscriptions={[team]} initial={[moving]} />);
+    },
+    trigger: () => button("Move now") as HTMLElement | null,
+    yes: "Move now",
+    safe: "Not now",
+    action: api.moveNow as unknown as ReturnType<typeof vi.fn>,
+  },
+];
+
+describe("the money confirms, pressed every way", () => {
+  for (const c of cases) {
+    it(`${c.name}: Esc never acts; focus home; scroll lock released`, async () => {
+      await c.mountIt();
+      const d = await open(c.trigger());
+      expect(document.body.style.overflow).toBe("hidden");
+      expect(d.el.getAttribute("role")).toBe("alertdialog");
+      expect(d.modal).toBe("true");
+      expect(d.name.length).toBeGreaterThan(0);
+      expect(d.description.length).toBeGreaterThan(0);
+      await key("Escape");
+      await flush();
+      expect(dialog()).toBeNull();
+      expect(c.action).not.toHaveBeenCalled();
+      expect(document.activeElement).toBe(c.trigger());
+      expect(document.body.style.overflow).toBe("");
+    });
+
+    it(`${c.name}: backdrop never acts; a press on the panel itself does not close`, async () => {
+      await c.mountIt();
+      const d = await open(c.trigger());
+      await press(d.el);
+      expect(dialog(), "a press on the panel keeps it open").not.toBeNull();
+      await press(d.el.parentElement);
+      await flush();
+      expect(dialog()).toBeNull();
+      expect(c.action).not.toHaveBeenCalled();
+    });
+
+    it(`${c.name}: the safe button never acts, and is where focus starts`, async () => {
+      await c.mountIt();
+      const d = await open(c.trigger());
+      expect(document.activeElement).toBe(button(c.safe, d.el));
+      await press(button(c.safe, d.el));
+      await flush();
+      expect(dialog()).toBeNull();
+      expect(c.action).not.toHaveBeenCalled();
+    });
+
+    it(`${c.name}: unmount (navigation) while open never acts and releases the page`, async () => {
+      await c.mountIt();
+      await open(c.trigger());
+      await act(async () => root?.unmount());
+      root = null;
+      await flush();
+      expect(dialog()).toBeNull();
+      expect(c.action).not.toHaveBeenCalled();
+      expect(document.body.style.overflow).toBe("");
+    });
+
+    it(`${c.name}: a double tap on the action (same frame, and next frame) acts exactly once`, async () => {
+      await c.mountIt();
+      const d = await open(c.trigger());
+      const yes = button(c.yes, d.el) as HTMLElement;
+      await act(async () => { yes.click(); yes.click(); });
+      await act(async () => { yes.click(); });
+      await flush();
+      expect(dialog()).toBeNull();
+      expect(c.action).toHaveBeenCalledTimes(1);
+    });
+
+    it(`${c.name}: a double Enter (activation lands on whatever has focus) acts exactly once`, async () => {
+      await c.mountIt();
+      const d = await open(c.trigger());
+      (button(c.yes, d.el) as HTMLElement).focus();
+      const enter = () => act(async () => { (document.activeElement as HTMLElement).click(); });
+      await enter();
+      await flush();
+      await enter();
+      await flush();
+      await enter();
+      await flush();
+      expect(c.action).toHaveBeenCalledTimes(1);
+    });
+
+    it(`${c.name}: Tab and Shift+Tab stay inside`, async () => {
+      await c.mountIt();
+      const d = await open(c.trigger());
+      const safe = button(c.safe, d.el) as HTMLElement;
+      const yes = button(c.yes, d.el) as HTMLElement;
+      const tab = (shiftKey: boolean) =>
+        act(async () => { (document.activeElement as HTMLElement).dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey, bubbles: true, cancelable: true })); });
+      expect(document.activeElement).toBe(safe);
+      await tab(true);
+      expect(document.activeElement, "Shift+Tab from the first goes to the last").toBe(yes);
+      await tab(false);
+      expect(document.activeElement, "Tab from the last goes to the first").toBe(safe);
+      d.el.focus();
+      await tab(true);
+      expect(document.activeElement, "Shift+Tab from the panel goes to the last").toBe(yes);
+    });
+  }
+
+  it("a double tap on the opener opens one dialog and never acts", async () => {
+    await cases[2].mountIt();
+    const t = cases[2].trigger() as HTMLElement;
+    t.focus();
+    await act(async () => { t.click(); t.click(); });
+    expect(document.querySelectorAll('[role="alertdialog"]').length).toBe(1);
+    await key("Escape");
+    await flush();
+    expect(api.moveNow).not.toHaveBeenCalled();
+  });
+
+  it("useConfirm: a second ask answers the first false; unmount answers the open one false", async () => {
+    await mount(<AskHarness />);
+    let p1!: Promise<boolean>, p2!: Promise<boolean>;
+    await act(async () => { p1 = asked!({ title: "One", body: "b", yes: "Y" }); });
+    await act(async () => { p2 = asked!({ title: "Two", body: "b", yes: "Y" }); });
+    await expect(p1).resolves.toBe(false);
+    expect(dialog()?.name).toBe("Two");
+    await act(async () => root?.unmount());
+    root = null;
+    await expect(p2).resolves.toBe(false);
+    expect(dialog()).toBeNull();
+  });
+
+  it("useConfirm: Esc, backdrop and safe answer false; the action answers true once", async () => {
+    await mount(<AskHarness />);
+    const results: boolean[] = [];
+    for (const way of ["Escape", "backdrop", "safe"] as const) {
+      let p!: Promise<boolean>;
+      await act(async () => { p = asked!({ title: way, body: "b", yes: "Do it", no: "Leave it" }); });
+      if (way === "Escape") await key("Escape");
+      else if (way === "backdrop") await press(dialog()!.el.parentElement);
+      else await press(button("Leave it", dialog()!.el));
+      results.push(await p);
+    }
+    let runs = 0;
+    let p!: Promise<boolean>;
+    await act(async () => { p = asked!({ title: "go", body: "b", yes: "Do it" }); });
+    void p.then((ok) => { if (ok) runs++; });
+    const yes = button("Do it", dialog()!.el) as HTMLElement;
+    await act(async () => { yes.click(); yes.click(); });
+    await flush();
+    expect(results).toEqual([false, false, false]);
+    expect(await p).toBe(true);
+    expect(runs).toBe(1);
+  });
+});
