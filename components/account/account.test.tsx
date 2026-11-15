@@ -4,7 +4,10 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { AccountDashboard } from "@/components/account/AccountDashboard";
 import { AccountLogin } from "@/components/account/AccountLogin";
-import type { PortalOverview } from "@/lib/portalApi";
+import { WorkspaceSection } from "@/components/account/WorkspaceSection";
+import { PEOPLE } from "@/lib/freePlan";
+import { defaultPricing } from "@/lib/pricing";
+import type { PortalInstance, PortalOverview, PortalSubscription } from "@/lib/portalApi";
 
 const overview: PortalOverview = {
   customer: {
@@ -104,4 +107,32 @@ it("lists invoices on a phone with each one's download in reach, and keeps the t
   // "GST" stays with its figure when the line wraps on a 360 px phone.
   expect(list).toContain('{"\\u00a0· GST\\u00a0"}{gst(inv)}');
   expect(body).toMatch(/className="relative hidden [^"]*sm:block"[\s\S]*<table/);
+});
+
+describe("the workspace card past the number its plan is sized for", () => {
+  const sub = (plan_code: string, switch_options: string[]): PortalSubscription => ({
+    id: "s1", plan_code, switch_options, status: "active", seats: 0, next_due_date: null, cancel_at_period_end: false,
+    can_cancel: true, created_at: "2026-09-01T00:00:00Z",
+  });
+  const live = (size: string, included: number, used: number): PortalInstance => ({
+    id: "i1", address: "camp.example.com", state: "live", status: "Live", needs_name: false, region: "in", tier: size,
+    edition: "", has_ai: false, working: false, terminal: false, seats_used: used, seats_included: included, size,
+    backups_nightly: false, offsite_configured: false, storage_addon_gb: 0, storage_addon_state: "",
+  });
+  const card = (subs: PortalSubscription[], inst: PortalInstance) =>
+    renderToString(<WorkspaceSection onReload={() => {}} subscriptions={subs} initial={[inst]} />).replace(/<!-- -->/g, "");
+  const { cloud_seats: team, business_seats: business } = defaultPricing;
+
+  it("on Team, names Business and links to the upgrade on the subscription tab, never a dead-end \"get in touch\"", () => {
+    const html = card([sub("onecamp_cloud_team", ["business"])], live("team", team, team + 2));
+    expect(html).toContain(`Business is ${PEOPLE.cloud(business)}.`);
+    expect(html).toMatch(/<a [^>]*href="\?tab=subscription"[^>]*>Upgrade to Business<\/a>/);
+    expect(html.toLowerCase()).not.toContain("get in touch");
+  });
+
+  it("on Business, says get in touch as a link to the support address the footer names", () => {
+    const html = card([sub("onecamp_cloud_business", ["monthly"])], live("business", business, business + 2));
+    expect(html).toMatch(/<a [^>]*href="mailto:support@onemana\.dev[^"]*"[^>]*>Get in touch about a larger workspace<\/a>/);
+    expect(source("components/site/Footer.tsx")).toContain("mailto:support@onemana.dev");
+  });
 });
