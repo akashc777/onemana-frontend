@@ -5,7 +5,7 @@ import { FREE_PLAN_CODE, FREE_SEATS, PEOPLE } from "@/lib/freePlan";
 import { PLAN } from "@/lib/plans";
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import Script from "next/script";
-import { switchConfirm, switchLabel } from "@/lib/billingSwitch";
+import { changesNow, switchConfirm, switchLabel } from "@/lib/billingSwitch";
 import { openSubscriptionCheckout } from "@/lib/razorpayCheckout";
 import { cloudCheckoutDescription, cloudPlanCode } from "@/lib/paymentTerms";
 import { fetchPricingClient, defaultPricing, type Pricing } from "@/lib/pricing";
@@ -14,6 +14,7 @@ import { useVisitorRegion } from "@/hooks/useVisitorRegion";
 import { formatINR, formatDate, formatDay } from "@/lib/format";
 import { subscriptionTone } from "@/lib/instanceState";
 import { WorkspaceSection } from "./WorkspaceSection";
+import { useConfirm } from "./ConfirmSheet";
 import { CopyField, StatusDot, SummaryTile, glyphs } from "./AccountParts";
 import { SpotWelcome } from "@/components/ui/graphics/spots";
 import { buttonClasses } from "@/components/ui/Button";
@@ -112,7 +113,7 @@ export function AccountDashboard({
         </button>
       </div>
 
-      <div role="tablist" aria-label="Your account" onKeyDown={onTabKey} className="-mx-4 mb-8 mt-8 flex gap-4 overflow-x-auto border-b border-border px-4 sm:mx-0 sm:gap-6 sm:px-0">
+      <div role="tablist" aria-label="Your account" onKeyDown={onTabKey} className="-mx-4 mb-8 mt-8 flex gap-4 overflow-x-auto border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden border-border px-4 sm:mx-0 sm:gap-6 sm:px-0">
         {TABS.map((t) => {
           const selected = tab === t.key;
           return (
@@ -416,6 +417,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   const [note, setNote] = useState<Record<string, string>>({});
   const [pricing, setPricing] = useState<Pricing>(defaultPricing);
   const region = useVisitorRegion();
+  const [confirm, confirmSheet] = useConfirm();
   useEffect(() => {
     let alive = true;
     fetchPricingClient().then((p) => { if (alive) setPricing(p); }).catch(() => {});
@@ -423,7 +425,12 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   }, []);
 
   async function changePlan(s: PortalSubscription, to: string) {
-    if (!window.confirm(switchConfirm(to, s.plan_code, pricing, region))) return;
+    const ask = {
+      title: switchLabel(to, s.plan_code, pricing),
+      body: switchConfirm(to, s.plan_code, pricing, region),
+      yes: changesNow(to, s.plan_code) ? "Go ahead" : "Schedule it",
+    };
+    if (!(await confirm(ask))) return;
     setBusy(s.id);
     const done = async (detail: string) => {
       setNote((n) => ({ ...n, [s.id]: detail }));
@@ -489,7 +496,14 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   }
 
   async function cancel(s: PortalSubscription) {
-    if (!window.confirm("Cancel this subscription? It stays active until the current period ends, then will not renew. You can keep it from this page until then.")) return;
+    const ask = {
+      title: "Cancel this subscription?",
+      body: "It stays active until the current period ends, then will not renew. You can keep it from this page until then.",
+      yes: "Cancel subscription",
+      no: "Keep subscription",
+      danger: true,
+    };
+    if (!(await confirm(ask))) return;
     setBusy(s.id);
     try {
       await portalApi.cancelSubscription(s.id);
@@ -517,6 +531,7 @@ function SubscriptionTab({ initial, onChanged }: { initial: PortalSubscription[]
   return (
     <div className="space-y-4">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      {confirmSheet}
       {subs.map((s) => (
         <div key={s.id} className="rounded-2xl bg-card shadow-e1 p-4 sm:p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">

@@ -43,6 +43,7 @@ const overview: PortalOverview = {
 const moving: PortalInstance = {
   id: "i1", address: "camp.example.com", state: "live", status: "Live", needs_name: false, region: "in", tier: "cloud",
   edition: "", has_ai: false, working: false, terminal: false, seats_included: 30, size: "team",
+  backups_nightly: false, offsite_configured: false, storage_addon_gb: 0, storage_addon_state: "",
   move: { to_size: "business", label: "a larger machine is ready", can_move_now: true },
 };
 

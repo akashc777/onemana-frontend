@@ -20,6 +20,7 @@ import { SpotWelcome } from "@/components/ui/graphics/spots";
 import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddress";
 import { usePoll } from "@/hooks/usePoll";
 import { buttonClasses } from "@/components/ui/Button";
+import { useConfirm } from "./ConfirmSheet";
 
 // The customer's view of the workspace their subscription bought.
 //
@@ -158,14 +159,21 @@ function BackupDownload({ id }: { id: string }) {
 function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [confirm, confirmSheet] = useConfirm();
   return (
     <>
+      {confirmSheet}
       <button
         type="button"
         disabled={busy}
         className={buttonClasses("ghost", "sm")}
         onClick={async () => {
-          if (!window.confirm("Move now? Your workspace pauses while the last backup is copied and restored, usually 10 to 30 minutes, then carries on at the same address.")) return;
+          const ask = {
+            title: "Move now?",
+            body: "Your workspace pauses while the last backup is copied and restored, usually 10 to 30 minutes, then carries on at the same address.",
+            yes: "Move now",
+          };
+          if (!(await confirm(ask))) return;
           setBusy(true);
           try {
             setMsg(await portalApi.moveNow(id));
