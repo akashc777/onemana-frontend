@@ -8,7 +8,7 @@ import { buttonClasses } from "@/components/ui/Button";
 export type ConfirmAsk = {
   title: string;
   body: string;
-  /** The action, in the words of the button that opened it. */
+  /** The button that acts, in a few words of what it does ("Move now", "Go ahead"), never a bare OK. */
   yes: string;
   /** The way out that does nothing. */
   no?: string;
