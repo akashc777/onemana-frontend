@@ -21,6 +21,10 @@ import { WORKSPACE_ZONE, editionLabel, slugFromInput } from "@/lib/workspaceAddr
 import { usePoll } from "@/hooks/usePoll";
 import { buttonClasses } from "@/components/ui/Button";
 import { useConfirm } from "./ConfirmSheet";
+import { defaultPricing, fetchPricingClient } from "@/lib/pricing";
+
+/** The support address, as the footer names it. */
+const SUPPORT = "support@onemana.dev";
 
 // The customer's view of the workspace their subscription bought.
 //
@@ -34,10 +38,13 @@ const POLL_MS = 15000;
 
 export function WorkspaceSection({
   onReload,
+  onUpgrade,
   subscriptions = [],
   initial = null,
 }: {
   onReload: () => void;
+  /** Opens the subscription tab, where Business is bought; the card links to it past Team's number. */
+  onUpgrade?: () => void;
   /** The account's subscriptions, to tell "no workspace" from "not created yet". */
   subscriptions?: PortalSubscription[];
   /** The workspaces as the page read them with the overview: shown at once,
@@ -100,6 +107,8 @@ export function WorkspaceSection({
           <Workspace
             key={inst.id}
             inst={inst}
+            businessOffered={subscriptions.some((s) => s.switch_options?.includes("business"))}
+            onUpgrade={onUpgrade}
             onChanged={() => {
               void load();
               onReload();
@@ -192,7 +201,37 @@ function MoveNowButton({ id, onChanged }: { id: string; onChanged: () => void })
   );
 }
 
-function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () => void }) {
+/** Business's size from the day's pricing answer, read only when the card names it. */
+function useBusinessSeats(wanted: boolean): number {
+  const [n, setN] = useState(defaultPricing.business_seats);
+  useEffect(() => {
+    if (!wanted) return;
+    let alive = true;
+    void fetchPricingClient().then((p) => {
+      if (alive) setN(p.business_seats);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [wanted]);
+  return n;
+}
+
+function Workspace({
+  inst,
+  onChanged,
+  businessOffered = false,
+  onUpgrade,
+}: {
+  inst: PortalInstance;
+  onChanged: () => void;
+  businessOffered?: boolean;
+  onUpgrade?: () => void;
+}) {
+  const line = (business: number) =>
+    seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of, inst.size, businessOffered ? business : 0);
+  const business = useBusinessSeats(line(defaultPricing.business_seats).step === "upgrade");
+  const seats = line(business);
   if (inst.needs_name) return <ChooseAddress inst={inst} onChanged={onChanged} />;
 
   return (
@@ -224,9 +263,33 @@ function Workspace({ inst, onChanged }: { inst: PortalInstance; onChanged: () =>
       {/* Only ever what the backend judged safe to show. */}
       {inst.detail && <p className="text-small text-muted-foreground">{inst.detail}</p>}
 
-      {inst.state === "live" && seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of) && (
+      {inst.state === "live" && seats.text && (
         <p className="text-small text-muted-foreground">
-          {seatsLine(inst.seats_used, inst.seats_included, inst.seats_as_of)}
+          {seats.text}
+          {seats.step === "upgrade" && (
+            <>
+              {" "}
+              <a
+                href="?tab=subscription"
+                onClick={(e) => {
+                  if (!onUpgrade) return;
+                  e.preventDefault();
+                  onUpgrade();
+                }}
+                className="link"
+              >
+                Upgrade to Business
+              </a>
+            </>
+          )}
+          {seats.step === "talk" && (
+            <>
+              {" "}
+              <a href={`mailto:${SUPPORT}`} className="link">
+                Get in touch about a larger workspace
+              </a>
+            </>
+          )}
         </p>
       )}
 
@@ -302,10 +365,10 @@ function UseOwnDomain({ inst }: { inst: PortalInstance }) {
       </p>
       <p className="text-muted-foreground">Your {current} address keeps working throughout.</p>
       <a
-        href={`mailto:support@onemana.dev?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}
+        href={`mailto:${SUPPORT}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}
         className="btn-ghost h-9 px-3.5 py-0"
       >
-        Write to support@onemana.dev
+        Write to {SUPPORT}
       </a>
     </div>
   );

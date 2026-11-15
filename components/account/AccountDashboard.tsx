@@ -144,7 +144,7 @@ export function AccountDashboard({
         {/* First on the overview, because when a workspace still needs a name this is
             the only thing on the page that matters. Everything else is a record of
             what has already happened. */}
-        {tab === "overview" && <WorkspaceSection onReload={onReload} subscriptions={overview.subscriptions} initial={instances} />}
+        {tab === "overview" && <WorkspaceSection onReload={onReload} onUpgrade={() => choose("subscription")} subscriptions={overview.subscriptions} initial={instances} />}
         {tab === "overview" && <OverviewTab overview={overview} onOpen={choose} />}
         {tab === "invoices" && <InvoicesTab customer={c.id} />}
         {tab === "subscription" && <SubscriptionTab initial={overview.subscriptions} onChanged={onReload} />}

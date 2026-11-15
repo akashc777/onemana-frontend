@@ -177,8 +177,9 @@ describe("the Cloud choice", () => {
     for (const [b, n] of [["monthly", team], ["yearly", team], ["business", business]] as const) {
       says(`checkout ${b}`, text(renderToString(<BuyCheckout initialPlan="cloud" initialBilling={b} initialPricing={sizes} initialCountry="US" />)), n)
     }
-    says("workspace card", seatsLine(team - 1, team), team)
-    says("workspace card, past it", seatsLine(team + 1, team), team)
+    says("workspace card", seatsLine(team - 1, team).text, team)
+    says("workspace card, past it", seatsLine(team + 1, team, undefined, "team", business).text, team)
+    says("workspace card, past it, the next step", seatsLine(team + 1, team, undefined, "team", business).text, business)
   })
 
   // On a 390 px phone the choice is 310 px across, a third each. "Team
