@@ -58,6 +58,11 @@ jobs:
 
       - name: Build
         # Builds as production would, catching anything the editor and tsc let past.
+        # The changelog is read from GitHub's releases at build time. Unsigned reads
+        # from a shared runner hit the anonymous rate limit and the page builds with
+        # no entries, so the build reads with the job's own token, as production does.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: npm run build
 
       - name: Cache the browser
